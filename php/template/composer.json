@@ -1,0 +1,22 @@
+{
+  "name": "dreamstechnologies/dreamstimer",
+  "description": "Dreams Timer - Time Tracking Bootstrap 5 Admin Dashboard",
+  "require": {
+    "php": "^8.1",
+    "phpmailer/phpmailer": "^6.10",
+    "vlucas/phpdotenv": "^5.6"
+  },
+  "require-dev": {
+    "phpstan/phpstan": "^2.1"
+  },
+  "autoload": {
+    "psr-4": {
+      "Dreamstimer\\": "src/"
+    }
+      },
+    "scripts": {
+        "test": "phpstan analyse src/ partials/ --level=8 --generate-baseline --allow-empty-baseline",
+        "test:quick": "phpstan analyse src/ partials/ --level=5",
+        "test:fix": "phpstan analyse src/ partials/ --level=8 --generate-baseline --allow-empty-baseline && echo 'Run phpstan analyse src/ partials/ --level=8 to see current issues'"
+    }
+}
