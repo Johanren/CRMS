@@ -12,7 +12,7 @@
             <!-- Page Header -->
             <div class="d-flex align-items-center justify-content-between gap-2 mb-4 flex-wrap">
                 <div>
-                    <h4 class="mb-0">Leads Dashboard</h4>
+                    <h4 class="mb-0">Panle de control de clientes potenciales</h4>
                 </div>
                 <div class="gap-2 d-flex align-items-center flex-wrap">
                     <div class="daterangepick form-control w-auto d-flex align-items-center">
@@ -32,17 +32,17 @@
                     <div class="card flex-fill">
                         <div class="card-header">
                             <div class="d-flex align-items-center justify-content-between flex-wrap row-gap-3">
-                                <h6 class="mb-0">Recently Created Leads</h6>
+                                <h6 class="mb-0">Clientes potenciales creados recientemente</h6>
                                 <div class="dropdown">
                                     <a class="dropdown-toggle btn btn-outline-light shadow" data-bs-toggle="dropdown" href="javascript:void(0);">
-                                        Last 30 days
+                                        últimos 30 días
                                     </a>
                                     <div class="dropdown-menu dropdown-menu-end">
                                         <a href="javascript:void(0);" class="dropdown-item">
-                                            Last 15 days
+                                            últimos 15 días
                                         </a>
                                         <a href="javascript:void(0);" class="dropdown-item">
-                                            Last 30 days
+                                            últimos 30 días
                                         </a>
                                     </div>
                                 </div>
@@ -53,10 +53,10 @@
                                 <table class="table table-nowrap dataTable" id="lead-project">
                                     <thead class="table-light">
                                         <tr>
-                                            <th>Lead Name</th>
-                                            <th>Company Name</th>
-                                            <th>Phone</th>
-                                            <th>Status</th>
+                                            <th>Nombre</th>
+                                            <th>Carrera</th>
+                                            <th>Teléfono</th>
+                                            <th>Estado</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -71,20 +71,20 @@
                     <div class="card flex-fill">
                         <div class="card-header">
                             <div class="d-flex align-items-center justify-content-between flex-wrap row-gap-3">
-                                <h6 class="mb-0">Projects By Stage</h6>
+                                <h6 class="mb-0">PrProyectos por etapa</h6>
                                 <div class="dropdown">
                                     <a class="dropdown-toggle btn btn-outline-light shadow" data-bs-toggle="dropdown" href="javascript:void(0);">
-                                        Last 30 Days
+                                        últimos 30 días
                                     </a>
                                     <div class="dropdown-menu dropdown-menu-end">
                                         <a href="javascript:void(0);" class="dropdown-item">
-                                            Last 30 Days
+                                            últimos 30 días
                                         </a>
                                         <a href="javascript:void(0);" class="dropdown-item">
-                                            Last 15 Days
+                                            últimos 15 días
                                         </a>
                                         <a href="javascript:void(0);" class="dropdown-item">
-                                            Last 7 Days
+                                            últimos 7 días
                                         </a>
                                     </div>
                                 </div>
@@ -106,45 +106,45 @@
                     <div class="card flex-fill">
                         <div class="card-header">
                             <div class="d-flex align-items-center justify-content-between flex-wrap row-gap-3">
-                                <h6 class="mb-0">Projects By Stage</h6>
+                                <h6 class="mb-0">Proyectos por etapa</h6>
                                 <div class="d-flex align-items-center flex-wrap row-gap-3">
                                     <div class="dropdown me-2">
                                         <a class="dropdown-toggle btn btn-outline-light shadow" data-bs-toggle="dropdown"
                                             href="javascript:void(0);">
-                                            Sales Pipeline
+                                            Canal de ventas
                                         </a>
                                         <div class="dropdown-menu dropdown-menu-end">
                                             <a href="javascript:void(0);" class="dropdown-item">
-                                                Marketing Pipeline
+                                                Canal de marketing
                                             </a>
                                             <a href="javascript:void(0);" class="dropdown-item">
-                                                Sales Pipeline
+                                                Canal de ventas
                                             </a>
                                             <a href="javascript:void(0);" class="dropdown-item">
-                                                Email
+                                                E-mail
                                             </a>
                                             <a href="javascript:void(0);" class="dropdown-item">
                                                 Chats
                                             </a>
                                             <a href="javascript:void(0);" class="dropdown-item">
-                                                Operational
+                                                Operacional
                                             </a>
                                         </div>
                                     </div>
                                     <div class="dropdown">
                                         <a class="dropdown-toggle btn btn-outline-light shadow" data-bs-toggle="dropdown"
                                             href="javascript:void(0);">
-                                            Last 30 Days
+                                            Últimos 30 días
                                         </a>
                                         <div class="dropdown-menu dropdown-menu-end">
                                             <a href="javascript:void(0);" class="dropdown-item">
-                                                Last 30 Days
+                                                Últimos 30 días
                                             </a>
                                             <a href="javascript:void(0);" class="dropdown-item">
-                                                Last 15 Days
+                                                Últimos 15 días
                                             </a>
                                             <a href="javascript:void(0);" class="dropdown-item">
-                                                Last 7 Days
+                                                Últimos 7 días
                                             </a>
                                         </div>
                                     </div>
@@ -167,44 +167,44 @@
                     <div class="card flex-fill">
                         <div class="card-header">
                             <div class="d-flex align-items-center justify-content-between flex-wrap row-gap-3">
-                                <h6 class="mb-0">Lost Deals Stage</h6>
+                                <h6 class="mb-0">Etpa de acuerdos perdidos</h6>
                                 <div class="d-flex align-items-center flex-wrap row-gap-3">
                                     <div class="dropdown me-2">
                                         <a class="dropdown-toggle btn btn-outline-light shadow" data-bs-toggle="dropdown" href="javascript:void(0);">
-                                            Marketing Pipeline
+                                            Canal de marketing
                                         </a>
                                         <div class="dropdown-menu dropdown-menu-end">
                                             <a href="javascript:void(0);" class="dropdown-item">
-                                                Marketing Pipeline
+                                                Canal de marketing
                                             </a>
                                             <a href="javascript:void(0);" class="dropdown-item">
-                                                Sales Pipeline
+                                                Canal de ventas
                                             </a>
                                             <a href="javascript:void(0);" class="dropdown-item">
-                                                Email
+                                                E-mail
                                             </a>
                                             <a href="javascript:void(0);" class="dropdown-item">
                                                 Chats
                                             </a>
                                             <a href="javascript:void(0);" class="dropdown-item">
-                                                Operational
+                                                Operacional
                                             </a>
                                         </div>
                                     </div>
                                     <div class="dropdown">
                                         <a class="dropdown-toggle btn btn-outline-light shadow" data-bs-toggle="dropdown"
                                             href="javascript:void(0);">
-                                            Last 3 months
+                                            Últimos 3 meses
                                         </a>
                                         <div class="dropdown-menu dropdown-menu-end">
                                             <a href="javascript:void(0);" class="dropdown-item">
-                                                Last 3 months
+                                                Últimos 3 meses
                                             </a>
                                             <a href="javascript:void(0);" class="dropdown-item">
-                                                Last 6 months
+                                                Últimos 6 meses
                                             </a>
                                             <a href="javascript:void(0);" class="dropdown-item">
-                                                Last 12 months
+                                                Últimos 12 meses
                                             </a>
                                         </div>
                                     </div>
@@ -221,43 +221,43 @@
                     <div class="card w-100">
                         <div class="card-header">
                             <div class="d-flex align-items-center justify-content-between flex-wrap row-gap-3">
-                                <h6 class="mb-0">Won Deals Stage</h6>
+                                <h6 class="mb-0">Etapa de acuerdos ganados</h6>
                                 <div class="d-flex align-items-center flex-wrap row-gap-3">
                                     <div class="dropdown me-2">
                                         <a class="dropdown-toggle btn btn-outline-light shadow" data-bs-toggle="dropdown" href="javascript:void(0);">
-                                            Marketing Pipeline
+                                            Canal de marketing
                                         </a>
                                         <div class="dropdown-menu dropdown-menu-end">
                                             <a href="javascript:void(0);" class="dropdown-item">
-                                                Marketing Pipeline
+                                                Canal de marketing
                                             </a>
                                             <a href="javascript:void(0);" class="dropdown-item">
-                                                Sales Pipeline
+                                                Canal de ventas
                                             </a>
                                             <a href="javascript:void(0);" class="dropdown-item">
-                                                Email
+                                                E-mail
                                             </a>
                                             <a href="javascript:void(0);" class="dropdown-item">
                                                 Chats
                                             </a>
                                             <a href="javascript:void(0);" class="dropdown-item">
-                                                Operational
+                                                Operacional
                                             </a>
                                         </div>
                                     </div>
                                     <div class="dropdown">
                                         <a class="dropdown-toggle btn btn-outline-light shadow" data-bs-toggle="dropdown" href="javascript:void(0);">
-                                            Last 3 months
+                                            Últimos 3 meses
                                         </a>
                                         <div class="dropdown-menu dropdown-menu-end">
                                             <a href="javascript:void(0);" class="dropdown-item">
-                                                Last 3 months
+                                                Últimos 3 meses
                                             </a>
                                             <a href="javascript:void(0);" class="dropdown-item">
-                                                Last 6 months
+                                                Últimos 6 meses
                                             </a>
                                             <a href="javascript:void(0);" class="dropdown-item">
-                                                Last 12 months
+                                                Últimos 12 meses
                                             </a>
                                         </div>
                                     </div>

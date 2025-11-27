@@ -12,25 +12,25 @@
             <!-- Page Header -->
             <div class="d-flex align-items-center justify-content-between gap-2 mb-4 flex-wrap">
                 <div>
-                    <h4 class="mb-1">Leads<span class="badge badge-soft-primary ms-2">125</span></h4>
+                    <h4 class="mb-1">Dirige<span class="badge badge-soft-primary ms-2">125</span></h4>
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb mb-0 p-0">
-                            <li class="breadcrumb-item"><a href="index.php">Home</a></li>
-                            <li class="breadcrumb-item active" aria-current="page">Leads</li>
+                            <li class="breadcrumb-item"><a href="index.php">Hogar</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Dirige</li>
                         </ol>
                     </nav>
                 </div>
                 <div class="gap-2 d-flex align-items-center flex-wrap">
                     <div class="dropdown">
-                        <a href="javascript:void(0);" class="dropdown-toggle btn btn-outline-light px-2 shadow" data-bs-toggle="dropdown"><i class="ti ti-package-export me-2"></i>Export</a>
+                        <a href="javascript:void(0);" class="dropdown-toggle btn btn-outline-light px-2 shadow" data-bs-toggle="dropdown"><i class="ti ti-package-export me-2"></i>Exportar</a>
                         <div class="dropdown-menu  dropdown-menu-end">
                             <ul>
                                 <li>
-                                    <a href="javascript:void(0);" class="dropdown-item"><i class="ti ti-file-type-pdf me-1"></i>Export as
+                                    <a href="javascript:void(0);" class="dropdown-item"><i class="ti ti-file-type-pdf me-1"></i>Exportar por
                                         PDF</a>
                                 </li>
                                 <li>
-                                    <a href="javascript:void(0);" class="dropdown-item"><i class="ti ti-file-type-xls me-1"></i>Export as
+                                    <a href="javascript:void(0);" class="dropdown-item"><i class="ti ti-file-type-xls me-1"></i>Exportar por
                                         Excel </a>
                                 </li>
                             </ul>
@@ -47,9 +47,9 @@
                 <div class="card-header d-flex align-items-center justify-content-between gap-2 flex-wrap">
                     <div class="input-icon input-icon-start position-relative">
                         <span class="input-icon-addon text-dark"><i class="ti ti-search"></i></span>
-                        <input type="text" class="form-control" placeholder="Search">
+                        <input type="text" class="form-control" placeholder="Buscar">
                     </div>
-                    <a href="javascript:void(0);" class="btn btn-primary" data-bs-toggle="offcanvas" data-bs-target="#offcanvas_add"><i class="ti ti-square-rounded-plus-filled me-1"></i>Add Lead</a>
+                    <a href="javascript:void(0);" class="btn btn-primary" data-bs-toggle="offcanvas" data-bs-target="#offcanvas_add"><i class="ti ti-square-rounded-plus-filled me-1"></i>Agregar cliente portencial</a>
                 </div>
                 <div class="card-body">
 
@@ -57,14 +57,14 @@
                     <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
                         <div class="d-flex align-items-center gap-2 flex-wrap">
                             <div class="dropdown">
-                                <a href="javascript:void(0);" class="dropdown-toggle btn btn-outline-light px-2 shadow" data-bs-toggle="dropdown"><i class="ti ti-sort-ascending-2 me-2"></i>Sort By</a>
+                                <a href="javascript:void(0);" class="dropdown-toggle btn btn-outline-light px-2 shadow" data-bs-toggle="dropdown"><i class="ti ti-sort-ascending-2 me-2"></i>Ordenar por</a>
                                 <div class="dropdown-menu">
                                     <ul>
                                         <li>
-                                            <a href="javascript:void(0);" class="dropdown-item">Newest</a>
+                                            <a href="javascript:void(0);" class="dropdown-item">El más nuevo</a>
                                         </li>
                                         <li>
-                                            <a href="javascript:void(0);" class="dropdown-item">Oldest</a>
+                                            <a href="javascript:void(0);" class="dropdown-item">El más antiguo</a>
                                         </li>
                                     </ul>
                                 </div>
@@ -75,7 +75,7 @@
                         </div>
                         <div class="d-flex align-items-center gap-2 flex-wrap">                                
                             <div class="dropdown">
-                                <a href="javascript:void(0);" class="btn btn-outline-light shadow px-2" data-bs-toggle="dropdown" data-bs-auto-close="outside"><i class="ti ti-filter me-2"></i>Filter<i class="ti ti-chevron-down ms-2"></i></a>
+                                <a href="javascript:void(0);" class="btn btn-outline-light shadow px-2" data-bs-toggle="dropdown" data-bs-auto-close="outside"><i class="ti ti-filter me-2"></i>Filtrar<i class="ti ti-chevron-down ms-2"></i></a>
                                 <div class="filter-dropdown-menu dropdown-menu dropdown-menu-lg p-0">
                                     <div class="filter-header d-flex align-items-center justify-content-between border-bottom">
                                         <h6 class="mb-0"><i class="ti ti-filter me-1"></i>Filter</h6>
@@ -85,7 +85,7 @@
                                         <div class="accordion" id="accordionExample">
                                             <div class="filter-set-content">
                                                 <div class="filter-set-content-head">
-                                                    <a href="#" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">Lead Name</a>
+                                                    <a href="#" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">Nombre</a>
                                                 </div>
                                                 <div class="filter-set-contents accordion-collapse collapse show" id="collapseTwo" data-bs-parent="#accordionExample">
                                                     <div class="filter-content-list bg-light rounded border p-2 shadow mt-2">
@@ -94,7 +94,7 @@
                                                                 <span class="input-icon-addon fs-12">
                                                                     <i class="ti ti-search"></i>
                                                                 </span>
-                                                                <input type="text" class="form-control form-control-md" placeholder="Search">
+                                                                <input type="text" class="form-control form-control-md" placeholder="Buscar">
                                                             </div>
                                                         </div>
                                                         <ul class="mb-0">
@@ -159,7 +159,7 @@
                                                                 </label>
                                                             </li>
                                                             <li>
-                                                                <a href="javascript:void(0);" class="link-primary text-decoration-underline p-2 d-flex">Load More</a>
+                                                                <a href="javascript:void(0);" class="link-primary text-decoration-underline p-2 d-flex">Carrera</a>
                                                             </li>
                                                         </ul>
                                                     </div>
@@ -176,7 +176,7 @@
                                                                 <span class="input-icon-addon fs-12">
                                                                     <i class="ti ti-search"></i>
                                                                 </span>
-                                                                <input type="text" class="form-control form-control-md" placeholder="Search">
+                                                                <input type="text" class="form-control form-control-md" placeholder="Buscar">
                                                             </div>
                                                         </div>
                                                         <ul>
@@ -210,7 +210,7 @@
                                             </div>
                                             <div class="filter-set-content">
                                                 <div class="filter-set-content-head">
-                                                    <a href="#" class="collapsed" data-bs-toggle="collapse" data-bs-target="#status" aria-expanded="false" aria-controls="status">Lead Status</a>
+                                                    <a href="#" class="collapsed" data-bs-toggle="collapse" data-bs-target="#status" aria-expanded="false" aria-controls="status">Estado</a>
                                                 </div>
                                                 <div class="filter-set-contents accordion-collapse collapse" id="status" data-bs-parent="#accordionExample">
                                                     <div class="filter-content-list bg-light rounded border p-2 shadow mt-2">
@@ -219,7 +219,7 @@
                                                                 <span class="input-icon-addon fs-12">
                                                                     <i class="ti ti-search"></i>
                                                                 </span>
-                                                                <input type="text" class="form-control form-control-md" placeholder="Search">
+                                                                <input type="text" class="form-control form-control-md" placeholder="Buscar">
                                                             </div>
                                                         </div>
                                                         <ul class="mb-0">
@@ -253,7 +253,7 @@
                                             </div>   
                                             <div class="filter-set-content">
                                                 <div class="filter-set-content-head">
-                                                    <a href="#" class="collapsed" data-bs-toggle="collapse" data-bs-target="#date2" aria-expanded="false" aria-controls="date2">Created Date</a>
+                                                    <a href="#" class="collapsed" data-bs-toggle="collapse" data-bs-target="#date2" aria-expanded="false" aria-controls="date2">Fecha creación</a>
                                                 </div>
                                                 <div class="filter-set-contents accordion-collapse collapse" id="date2" data-bs-parent="#accordionExample">
                                                     <div class="filter-content-list bg-light rounded border p-2 shadow mt-2">
@@ -266,7 +266,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="filter-set-content">
+                                            <!--<div class="filter-set-content">
                                                 <div class="filter-set-content-head">
                                                     <a href="#" class="collapsed" data-bs-toggle="collapse" data-bs-target="#owner" aria-expanded="false" aria-controls="owner">Lead Owner</a>
                                                 </div>
@@ -277,7 +277,7 @@
                                                                 <span class="input-icon-addon fs-12">
                                                                     <i class="ti ti-search"></i>
                                                                 </span>
-                                                                <input type="text" class="form-control form-control-md" placeholder="Search">
+                                                                <input type="text" class="form-control form-control-md" placeholder="Buscar">
                                                             </div>
                                                         </div>
                                                         <ul class="mb-0">
@@ -344,11 +344,11 @@
                                                         </ul>
                                                     </div>
                                                 </div>
-                                            </div>                                              
+                                            </div>-->                                              
                                         </div>
                                         <div class="d-flex align-items-center gap-2">
-                                            <a href="javascript:void(0);" class="btn btn-outline-light w-100">Reset</a>
-                                            <a href="javascript:void(0);" class="btn btn-primary w-100">Filter</a>
+                                            <a href="javascript:void(0);" class="btn btn-outline-light w-100">Reiniciar</a>
+                                            <a href="javascript:void(0);" class="btn btn-primary w-100">Filtrar</a>
                                         </div>
                                     </div>
                                 </div>
@@ -356,7 +356,7 @@
                             <div class="dropdown">
                                 <a href="javascript:void(0);" class="btn bg-soft-indigo px-2 border-0"
                                     data-bs-toggle="dropdown" data-bs-auto-close="outside"><i
-                                        class="ti ti-columns-3 me-2"></i>Manage Columns</a>
+                                        class="ti ti-columns-3 me-2"></i>Administrar columnas</a>
                                 <div class="dropdown-menu dropdown-menu-md dropdown-md p-3">
                                     <ul>
                                         <li class="gap-1 d-flex align-items-center mb-2">       
@@ -364,7 +364,7 @@
                                             <div class="form-check form-switch w-100 ps-0">
                                                                                                     
                                                 <label class="form-check-label d-flex align-items-center gap-2 w-100">
-                                                    <span>Lead Name</span>   
+                                                    <span>Nombre</span>   
                                                     <input class="form-check-input switchCheckDefault ms-auto" type="checkbox" role="switch" checked>     
                                                 </label>
                                             </div>
@@ -374,7 +374,7 @@
                                             <div class="form-check form-switch w-100 ps-0">
                                                                                                     
                                                 <label class="form-check-label d-flex align-items-center gap-2 w-100">
-                                                    <span>Phone</span>   
+                                                    <span>Telefono</span>   
                                                     <input class="form-check-input switchCheckDefault ms-auto" type="checkbox" role="switch" checked>     
                                                 </label>
                                             </div>
@@ -394,7 +394,7 @@
                                             <div class="form-check form-switch w-100 ps-0">
                                                                                                     
                                                 <label class="form-check-label d-flex align-items-center gap-2 w-100">
-                                                    <span>Company Name</span>   
+                                                    <span>Carrera</span>   
                                                     <input class="form-check-input switchCheckDefault ms-auto" type="checkbox" role="switch" checked>     
                                                 </label>
                                             </div>
@@ -404,12 +404,12 @@
                                             <div class="form-check form-switch w-100 ps-0">
                                                                                                     
                                                 <label class="form-check-label d-flex align-items-center gap-2 w-100">
-                                                    <span>Lead Status</span>   
+                                                    <span>Estado</span>   
                                                     <input class="form-check-input switchCheckDefault ms-auto" type="checkbox" role="switch" checked>     
                                                 </label>
                                             </div>
                                         </li>
-                                        <li class="gap-1 d-flex align-items-center mb-2">       
+                                        <!--<li class="gap-1 d-flex align-items-center mb-2">       
                                             <i class="ti ti-columns me-1"></i>                                     
                                             <div class="form-check form-switch w-100 ps-0">
                                                                                                     
@@ -428,13 +428,13 @@
                                                     <input class="form-check-input switchCheckDefault ms-auto" type="checkbox" role="switch" checked>     
                                                 </label>
                                             </div>
-                                        </li>
+                                        </li>-->
                                         <li class="gap-1 d-flex align-items-center mb-0">       
                                             <i class="ti ti-columns me-1"></i>                                     
                                             <div class="form-check form-switch w-100 ps-0">
                                                                                                     
                                                 <label class="form-check-label d-flex align-items-center gap-2 w-100">
-                                                    <span>Action</span>   
+                                                    <span>Acción</span>   
                                                     <input class="form-check-input switchCheckDefault ms-auto" type="checkbox" role="switch" checked>     
                                                 </label>
                                             </div>
@@ -461,13 +461,13 @@
                                         </div>
                                     </th>
                                     <th class="no-sort"></th>
-                                    <th>Lead Name</th>
-                                    <th>Company Name</th>
-                                    <th>Phone</th>
-                                    <th>Lead Status</th>                                        
+                                    <th>Nombre</th>
+                                    <th>Carrera</th>
+                                    <th>Telefono</th>
+                                    <th>Estado</th>                                        
                                     <th>Lead Owner</th>
-                                    <th>Created Date</th>
-                                    <th class="text-end no-sort">Action</th>
+                                    <th>Fecha creación</th>
+                                    <th class="text-end no-sort">Acción</th>
                                 </tr>
                             </thead>
                             <tbody>

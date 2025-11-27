@@ -8,13 +8,13 @@
 
                     <!-- Logo Normal -->
                     <span class="logo-light">
-                        <span class="logo-lg"><img src="assets/img/logo.svg" alt="logo"></span>
-                        <span class="logo-sm"><img src="assets/img/logo-small.svg" alt="small logo"></span>
+                        <span class="logo-lg"><img src="https://multitech.envision.com.co/img/logo.png" alt="logo"></span>
+                        <span class="logo-sm"><img src="https://multitech.envision.com.co/img/logo.png" alt="small logo"></span>
                     </span>
 
                     <!-- Logo Dark -->
                     <span class="logo-dark">
-                        <span class="logo-lg"><img src="assets/img/logo-white.svg" alt="dark logo"></span>
+                        <span class="logo-lg"><img src="https://multitech.envision.com.co/img/logo.png" alt="dark logo"></span>
                     </span>
                 </a>
 

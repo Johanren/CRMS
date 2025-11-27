@@ -65,7 +65,7 @@
                                                         <span class="input-icon-addon fs-12">
                                                             <i class="ti ti-search"></i>
                                                         </span>
-                                                        <input type="text" class="form-control form-control-md" placeholder="Search">
+                                                        <input type="text" class="form-control form-control-md" placeholder="Buscar">
                                                     </div>
                                                 </div>
                                                 <ul class="mb-0">
@@ -147,7 +147,7 @@
                                                         <span class="input-icon-addon fs-12">
                                                             <i class="ti ti-search"></i>
                                                         </span>
-                                                        <input type="text" class="form-control form-control-md" placeholder="Search">
+                                                        <input type="text" class="form-control form-control-md" placeholder="Buscar">
                                                     </div>
                                                 </div>
                                                 <ul>
@@ -190,7 +190,7 @@
                                                         <span class="input-icon-addon fs-12">
                                                             <i class="ti ti-search"></i>
                                                         </span>
-                                                        <input type="text" class="form-control form-control-md" placeholder="Search">
+                                                        <input type="text" class="form-control form-control-md" placeholder="Buscar">
                                                     </div>
                                                 </div>
                                                 <ul class="mb-0">
@@ -347,7 +347,7 @@
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
                                     <h6 class="d-flex align-items-center mb-1"><i
-                                            class="ti ti-circle-filled fs-10 text-warning me-1"></i>Contacted
+                                            class="ti ti-circle-filled fs-10 text-warning me-1"></i>Contactado
                                     </h6>
                                     <span class="fw-medium">45 Leads - $15,44,540</span>
                                 </div>
@@ -537,8 +537,7 @@
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
                                     <h6 class="d-flex align-items-center mb-1"><i
-                                            class="ti ti-circle-filled fs-10 text-info me-1"></i>Not
-                                        Contacted</h6>
+                                            class="ti ti-circle-filled fs-10 text-info me-1"></i>No contactado</h6>
                                     <span class="fw-medium">45 Leads - $15,44,540</span>
                                 </div>
                                 <div class="d-flex align-items-center">
@@ -727,7 +726,7 @@
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
                                     <h6 class="d-flex align-items-center mb-1"><i
-                                            class="ti ti-circle-filled fs-10 text-success me-1"></i>Closed
+                                            class="ti ti-circle-filled fs-10 text-success me-1"></i>Cerrado
                                     </h6>
                                     <span class="fw-medium">45 Leads - $15,44,540</span>
                                 </div>
@@ -917,7 +916,7 @@
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
                                     <h6 class="d-flex align-items-center mb-1"><i
-                                            class="ti ti-circle-filled fs-10 text-danger me-1"></i>Lost</h6>
+                                            class="ti ti-circle-filled fs-10 text-danger me-1"></i>Perdido</h6>
                                     <span class="fw-medium">15 Leads - $14,89,543</span>
                                 </div>
                                 <div class="d-flex align-items-center">
