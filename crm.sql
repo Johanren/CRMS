@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.1.1
+-- version 5.2.0
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 27-11-2025 a las 22:04:55
--- Versión del servidor: 10.4.21-MariaDB
--- Versión de PHP: 7.3.31
+-- Tiempo de generación: 29-11-2025 a las 11:34:12
+-- Versión del servidor: 10.4.27-MariaDB
+-- Versión de PHP: 7.4.33
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -30,7 +30,14 @@ SET time_zone = "+00:00";
 CREATE TABLE `accion` (
   `id_accion` int(11) NOT NULL,
   `nombre` varchar(80) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `accion`
+--
+
+INSERT INTO `accion` (`id_accion`, `nombre`) VALUES
+(1, 'PRIVILEGIAL');
 
 -- --------------------------------------------------------
 
@@ -42,7 +49,14 @@ CREATE TABLE `barrio` (
   `id_barrio` int(11) NOT NULL,
   `nombre` varchar(100) NOT NULL,
   `ciudad_id` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `barrio`
+--
+
+INSERT INTO `barrio` (`id_barrio`, `nombre`, `ciudad_id`) VALUES
+(1, 'Ciudad Montes', 1);
 
 -- --------------------------------------------------------
 
@@ -52,8 +66,20 @@ CREATE TABLE `barrio` (
 
 CREATE TABLE `campana` (
   `id_campana` int(11) NOT NULL,
-  `nombre` varchar(120) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  `nombre` varchar(120) NOT NULL,
+  `codigo` int(11) NOT NULL,
+  `fecha` date NOT NULL,
+  `id_audiencia` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `campana`
+--
+
+INSERT INTO `campana` (`id_campana`, `nombre`, `codigo`, `fecha`, `id_audiencia`) VALUES
+(1, 'Prueba', 11, '2025-11-28', 1),
+(2, 'Prueba', 11, '2025-11-28', 1),
+(3, 'fsfds', 22, '2025-11-26', 2);
 
 -- --------------------------------------------------------
 
@@ -63,9 +89,16 @@ CREATE TABLE `campana` (
 
 CREATE TABLE `carrera` (
   `id_carrera` int(11) NOT NULL,
-  `nombre` varchar(150) NOT NULL,
-  `activo` tinyint(1) NOT NULL DEFAULT 1
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  `nombre` varchar(150) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `carrera`
+--
+
+INSERT INTO `carrera` (`id_carrera`, `nombre`) VALUES
+(1, 'ING SISTEMA'),
+(2, 'ING SOFTWARE');
 
 -- --------------------------------------------------------
 
@@ -75,8 +108,16 @@ CREATE TABLE `carrera` (
 
 CREATE TABLE `ciudad` (
   `id_ciudad` int(11) NOT NULL,
-  `nombre` varchar(100) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  `nombre` varchar(100) NOT NULL,
+  `id_departamento` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `ciudad`
+--
+
+INSERT INTO `ciudad` (`id_ciudad`, `nombre`, `id_departamento`) VALUES
+(1, 'Girardot', 1);
 
 -- --------------------------------------------------------
 
@@ -95,7 +136,25 @@ CREATE TABLE `cliente` (
   `barrio_id` int(11) DEFAULT NULL,
   `ciudad_id` int(11) DEFAULT NULL,
   `fecha_creacion` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `departamento`
+--
+
+CREATE TABLE `departamento` (
+  `id_dep` int(11) NOT NULL,
+  `nom_dep` varchar(100) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `departamento`
+--
+
+INSERT INTO `departamento` (`id_dep`, `nom_dep`) VALUES
+(1, 'Cundinamarca');
 
 -- --------------------------------------------------------
 
@@ -106,7 +165,14 @@ CREATE TABLE `cliente` (
 CREATE TABLE `estado_leads` (
   `id_estado_leads` int(11) NOT NULL,
   `nombre` varchar(80) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `estado_leads`
+--
+
+INSERT INTO `estado_leads` (`id_estado_leads`, `nombre`) VALUES
+(1, 'CONTACTADO');
 
 -- --------------------------------------------------------
 
@@ -117,7 +183,14 @@ CREATE TABLE `estado_leads` (
 CREATE TABLE `fuente` (
   `id_fuente` int(11) NOT NULL,
   `nombre` varchar(80) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `fuente`
+--
+
+INSERT INTO `fuente` (`id_fuente`, `nombre`) VALUES
+(1, 'FACEBOOK');
 
 -- --------------------------------------------------------
 
@@ -128,7 +201,14 @@ CREATE TABLE `fuente` (
 CREATE TABLE `horario` (
   `id_horario` int(11) NOT NULL,
   `descripcion` varchar(50) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `horario`
+--
+
+INSERT INTO `horario` (`id_horario`, `descripcion`) VALUES
+(1, 'Mañana');
 
 -- --------------------------------------------------------
 
@@ -139,7 +219,14 @@ CREATE TABLE `horario` (
 CREATE TABLE `interes` (
   `id_interes` int(11) NOT NULL,
   `nombre` varchar(80) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `interes`
+--
+
+INSERT INTO `interes` (`id_interes`, `nombre`) VALUES
+(1, 'SISTEMA');
 
 -- --------------------------------------------------------
 
@@ -158,12 +245,13 @@ CREATE TABLE `leads` (
   `fuente_id` int(11) DEFAULT NULL,
   `campana_id` int(11) DEFAULT NULL,
   `accion_id` int(11) DEFAULT NULL,
+  `departamento_id` int(11) NOT NULL,
   `barrio_id` int(11) DEFAULT NULL,
   `ciudad_id` int(11) DEFAULT NULL,
   `estado_leads_id` int(11) DEFAULT NULL,
   `observaciones` text DEFAULT NULL,
   `fecha_creacion` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -174,7 +262,14 @@ CREATE TABLE `leads` (
 CREATE TABLE `medio` (
   `id_medio` int(11) NOT NULL,
   `nombre` varchar(80) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `medio`
+--
+
+INSERT INTO `medio` (`id_medio`, `nombre`) VALUES
+(1, 'REDES');
 
 -- --------------------------------------------------------
 
@@ -187,7 +282,26 @@ CREATE TABLE `telefono_adicional` (
   `cliente_id` int(11) NOT NULL,
   `telefono` varchar(30) NOT NULL,
   `descripcion` varchar(100) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `tipo_audiencia`
+--
+
+CREATE TABLE `tipo_audiencia` (
+  `id_audiencia` int(11) NOT NULL,
+  `tipo_audiencia` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `tipo_audiencia`
+--
+
+INSERT INTO `tipo_audiencia` (`id_audiencia`, `tipo_audiencia`) VALUES
+(1, 'Auditoria'),
+(2, 'Estudiante');
 
 -- --------------------------------------------------------
 
@@ -206,7 +320,7 @@ CREATE TABLE `user` (
   `rol_id` int(11) NOT NULL,
   `estado` tinyint(1) NOT NULL DEFAULT 1,
   `fecha_creacion` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -217,7 +331,7 @@ CREATE TABLE `user` (
 CREATE TABLE `user_role` (
   `id_rol` int(11) NOT NULL,
   `nombre_rol` varchar(50) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Índices para tablas volcadas
@@ -252,7 +366,8 @@ ALTER TABLE `carrera`
 -- Indices de la tabla `ciudad`
 --
 ALTER TABLE `ciudad`
-  ADD PRIMARY KEY (`id_ciudad`);
+  ADD PRIMARY KEY (`id_ciudad`),
+  ADD KEY `id_departamento` (`id_departamento`);
 
 --
 -- Indices de la tabla `cliente`
@@ -263,6 +378,12 @@ ALTER TABLE `cliente`
   ADD KEY `fk_cliente_ciudad` (`ciudad_id`),
   ADD KEY `idx_cliente_email` (`email`),
   ADD KEY `idx_cliente_ident` (`identificacion`);
+
+--
+-- Indices de la tabla `departamento`
+--
+ALTER TABLE `departamento`
+  ADD PRIMARY KEY (`id_dep`);
 
 --
 -- Indices de la tabla `estado_leads`
@@ -319,6 +440,12 @@ ALTER TABLE `telefono_adicional`
   ADD KEY `idx_telefono_cliente` (`cliente_id`);
 
 --
+-- Indices de la tabla `tipo_audiencia`
+--
+ALTER TABLE `tipo_audiencia`
+  ADD PRIMARY KEY (`id_audiencia`);
+
+--
 -- Indices de la tabla `user`
 --
 ALTER TABLE `user`
@@ -340,31 +467,31 @@ ALTER TABLE `user_role`
 -- AUTO_INCREMENT de la tabla `accion`
 --
 ALTER TABLE `accion`
-  MODIFY `id_accion` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_accion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `barrio`
 --
 ALTER TABLE `barrio`
-  MODIFY `id_barrio` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_barrio` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `campana`
 --
 ALTER TABLE `campana`
-  MODIFY `id_campana` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_campana` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `carrera`
 --
 ALTER TABLE `carrera`
-  MODIFY `id_carrera` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_carrera` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `ciudad`
 --
 ALTER TABLE `ciudad`
-  MODIFY `id_ciudad` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_ciudad` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `cliente`
@@ -373,28 +500,34 @@ ALTER TABLE `cliente`
   MODIFY `id_cliente` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT de la tabla `departamento`
+--
+ALTER TABLE `departamento`
+  MODIFY `id_dep` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
 -- AUTO_INCREMENT de la tabla `estado_leads`
 --
 ALTER TABLE `estado_leads`
-  MODIFY `id_estado_leads` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_estado_leads` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `fuente`
 --
 ALTER TABLE `fuente`
-  MODIFY `id_fuente` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_fuente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `horario`
 --
 ALTER TABLE `horario`
-  MODIFY `id_horario` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_horario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `interes`
 --
 ALTER TABLE `interes`
-  MODIFY `id_interes` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_interes` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `leads`
@@ -406,13 +539,19 @@ ALTER TABLE `leads`
 -- AUTO_INCREMENT de la tabla `medio`
 --
 ALTER TABLE `medio`
-  MODIFY `id_medio` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_medio` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `telefono_adicional`
 --
 ALTER TABLE `telefono_adicional`
   MODIFY `id_numero_adicional` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `tipo_audiencia`
+--
+ALTER TABLE `tipo_audiencia`
+  MODIFY `id_audiencia` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `user`

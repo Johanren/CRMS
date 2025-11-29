@@ -1,0 +1,5 @@
+Felipe, en esta primera version lo que necesitamos es lo siguiente:
+1. Parametrizacion de la informacion  como origen, campañas, ciudad, departamento, carrera, barrio, jornada, etapas del embudo de ventas, estados del lead, semaforizacion, interes, asesores, agentes,  entre otras
+1. Registro del LEAD: Pueden ser automatico que llegan por redes, o se registran en la aplicacion
+2. Gestion del LEAD: Si el lead llega por redes se debe registrar la gestion dinamicamente
+3. Informe de la Gestion.
