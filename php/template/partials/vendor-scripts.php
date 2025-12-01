@@ -317,7 +317,7 @@ $page = end($link_array);
     <script src="assets/json/language-web.js"></script>
 <?php } ?>
 
-<?php if ($page == 'leads-list.php') {   ?>
+<?php if ($page == 'leads-list.php' || $page == 'leads.php') {   ?>
     <script src="assets/json/leads-list.js"></script>
 <?php } ?>
 

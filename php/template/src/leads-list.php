@@ -455,17 +455,11 @@
                         <table class="table table-nowrap" id="leads_list">
                             <thead class="table-light">
                                 <tr>
-                                    <th class="no-sort">
-                                        <div class="form-check form-check-md">
-                                            <input class="form-check-input" type="checkbox" id="select-all">
-                                        </div>
-                                    </th>
-                                    <th class="no-sort"></th>
                                     <th>Nombre</th>
                                     <th>Carrera</th>
                                     <th>Telefono</th>
                                     <th>Estado</th>                                        
-                                    <th>Lead Owner</th>
+                                    <th>Usuario</th>
                                     <th>Fecha creación</th>
                                     <th class="text-end no-sort">Acción</th>
                                 </tr>

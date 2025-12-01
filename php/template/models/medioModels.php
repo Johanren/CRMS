@@ -4,7 +4,7 @@ class MedioModels
 {
     public static function listarMedio()
     {
-        $sql = "SELECT * FROM medio";
+        $sql = "SELECT * FROM medio1";
         $conn = new Conexion();
         $conectar = $conn->conectar();
         $stmt = $conectar->prepare($sql);
@@ -15,7 +15,7 @@ class MedioModels
 
     public static function agregarMedio($data)
     {
-        $sql = "INSERT INTO medio (nombre) VALUES (?)";
+        $sql = "INSERT INTO medio1 (desc_med) VALUES (?)";
         $conn = new Conexion();
         $conectar = $conn->conectar();
         $stmt = $conectar->prepare($sql);
@@ -30,7 +30,7 @@ class MedioModels
 
     public static function listarMedioId($id)
     {
-        $sql = "SELECT * FROM medio WHERE id_medio = ?";
+        $sql = "SELECT * FROM medio1 WHERE cod_med = ?";
         $conn = new Conexion();
         $conectar = $conn->conectar();
         $stmt = $conectar->prepare($sql);
@@ -41,7 +41,7 @@ class MedioModels
 
     public static function eliminarMedio($id)
     {
-        $sql = "DELETE FROM medio WHERE id_medio = ?";
+        $sql = "DELETE FROM medio1 WHERE cod_med = ?";
         $conn = new Conexion();
         $conectar = $conn->conectar();
         $stmt = $conectar->prepare($sql);

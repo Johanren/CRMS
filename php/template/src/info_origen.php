@@ -305,6 +305,7 @@
                                     <tr>
                                         <th>#</th>
                                         <th>Fuente</th>
+                                        <th>Medio</th>
                                         <th>Acciones</th>
                                     </tr>
                                 </thead>

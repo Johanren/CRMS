@@ -31,4 +31,9 @@ class EstadoLeadsControllersControllers
             return ["status" => "error", "message" => "No se pudo registrar"];
         }
     }
+
+    public static function getEstados() {
+        return EstadoLeadsModels::getEstados();
+    }
+
 }

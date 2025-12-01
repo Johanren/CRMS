@@ -31,4 +31,9 @@ class FuenteControllers
             return ["status" => "error", "message" => "No se pudo registrar"];
         }
     }
+
+    public static function listarFuentePorMedio($id)
+    {
+        return FuenteModels::listarFuentePorMedio($id);
+    }
 }

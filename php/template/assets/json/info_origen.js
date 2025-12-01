@@ -30,8 +30,8 @@ function inicializarDataTabledepartamento(departamento) {
         "data": departamento,
 
         "columns": [
-            { "data": "id_dep" },
-            { "data": "nom_dep" },
+            { "data": "cod_dep" },
+            { "data": "desc_dep" },
             {
                 "render": (data, type, row) => `
                         <div class="dropdown table-action">
@@ -39,12 +39,12 @@ function inicializarDataTabledepartamento(departamento) {
                                 <i class="ti ti-dots-vertical"></i>
                             </a>
                             <div class="dropdown-menu dropdown-menu-right">
-                                <a class="dropdown-item" href="#" onclick="editarDepartament(${row.id_dep})">
+                                <a class="dropdown-item" href="#" onclick="editarDepartament(${row.cod_dep})">
                                     <i class="ti ti-edit text-blue"></i> Edit
                                 </a>
                                 <a class="dropdown-item" 
                                 href="#" 
-                                onclick="eliminarDepartament(${row.id_dep})"
+                                onclick="eliminarDepartament(${row.cod_dep})"
                                 data-bs-toggle="modal" 
                                 data-bs-target="#delete_campaign">
                                     <i class="ti ti-trash"></i> Delete
@@ -105,13 +105,13 @@ window.editarDepartament = (id) => {
         .then(res => res.json())
         .then(data => {
 
-            const campana = data.find(c => c.id_dep == id);
+            const campana = data.find(c => c.cod_dep == id);
             if (!campana) return;
             // Cambiar título del OFFCANVAS
             document.getElementById("title-canvas-depar").textContent = "Editar Departamento";
             document.getElementById("btn-canvas-depar").textContent = "Editar";
             // Llenar campos
-            document.getElementById("nom_dep").value = campana.nom_dep;
+            document.getElementById("nom_dep").value = campana.desc_dep;
 
             // Guardar ID oculto
             if (!document.getElementById("departamento_id")) {
@@ -121,7 +121,7 @@ window.editarDepartament = (id) => {
                 hidden.name = "departamento_id";
                 document.getElementById("formDepart").appendChild(hidden);
             }
-            document.getElementById("departamento_id").value = campana.id_dep;
+            document.getElementById("departamento_id").value = campana.cod_dep;
 
             // Abrir offcanvas manualmente
             let el = document.getElementById('offdepartamento_add');
@@ -218,21 +218,21 @@ function inicializarDataTableCiudad(ciudad) {
         "data": ciudad,
 
         "columns": [
-            { "data": "id_ciudad" },
-            { "data": "nombre" },
-            { "data": "nom_dep" }, {
+            { "data": "cod_ciu" },
+            { "data": "desc_ciu" },
+            { "data": "desc_dep" }, {
                 "render": (data, type, row) => `
                         <div class="dropdown table-action">
                             <a href="#" class="action-icon btn btn-xs shadow btn-icon btn-outline-light" data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="ti ti-dots-vertical"></i>
                             </a>
                             <div class="dropdown-menu dropdown-menu-right">
-                                <a class="dropdown-item" href="#" onclick="editarCiudad(${row.id_ciudad})">
+                                <a class="dropdown-item" href="#" onclick="editarCiudad(${row.cod_ciu})">
                                     <i class="ti ti-edit text-blue"></i> Edit
                                 </a>
                                 <a class="dropdown-item" 
                                 href="#" 
-                                onclick="eliminarCiudad(${row.id_ciudad})"
+                                onclick="eliminarCiudad(${row.cod_ciu})"
                                 data-bs-toggle="modal" 
                                 data-bs-target="#delete_campaign">
                                     <i class="ti ti-trash"></i> Delete
@@ -293,14 +293,14 @@ window.editarCiudad = (id) => {
         .then(res => res.json())
         .then(data => {
 
-            const ciudad = data.find(c => c.id_ciudad == id);
+            const ciudad = data.find(c => c.cod_ciu == id);
             if (!ciudad) return;
             // Cambiar título del OFFCANVAS
             document.getElementById("title-canvas-ciu").textContent = "Editar Ciudad";
             document.getElementById("btn-canvas-ciu").textContent = "Editar";
             // Llenar campos
-            document.getElementById("nom_ciu").value = ciudad.nombre;
-            document.getElementById("departamento").value = ciudad.id_departamento;
+            document.getElementById("nom_ciu").value = ciudad.desc_ciu;
+            document.getElementById("departamento").value = ciudad.dep_ciu;
             // Guardar ID oculto
             if (!document.getElementById("ciudad_id")) {
                 let hidden = document.createElement("input");
@@ -309,7 +309,7 @@ window.editarCiudad = (id) => {
                 hidden.name = "ciudad_id";
                 document.getElementById("formCiudad").appendChild(hidden);
             }
-            document.getElementById("ciudad_id").value = ciudad.id_ciudad;
+            document.getElementById("ciudad_id").value = ciudad.cod_ciu;
 
             // Abrir offcanvas manualmente
             let el = document.getElementById('offciudad_add');
@@ -407,9 +407,9 @@ function inicializarDataTableBarrio(barrio) {
 
         "columns": [
             { "data": "id_barrio" },
-            { "data": "barrio" },
-            { "data": "nombre" },
-            { "data": "nom_dep" }, {
+            { "data": "desc_brr" },
+            { "data": "desc_ciu" },
+            { "data": "desc_dep" }, {
                 "render": (data, type, row) => `
                         <div class="dropdown table-action">
                             <a href="#" class="action-icon btn btn-xs shadow btn-icon btn-outline-light" data-bs-toggle="dropdown" aria-expanded="false">
@@ -488,8 +488,8 @@ window.editarBarrio = (id) => {
             document.getElementById("title-canvas-brr").textContent = "Editar Ciudad";
             document.getElementById("btn-canvas-brr").textContent = "Editar";
             // Llenar campos
-            document.getElementById("nom_brr").value = barrio.nombre;
-            document.getElementById("ciudad").value = barrio.ciudad_id;
+            document.getElementById("nom_brr").value = barrio.desc_brr;
+            document.getElementById("ciudad").value = barrio.cod_ciu;
             // Guardar ID oculto
             if (!document.getElementById("barrio_id")) {
                 let hidden = document.createElement("input");
@@ -564,7 +564,7 @@ listarBarrioOption();
 
 //Carrera
 
-function inicializarDataTableCarrera(barrio) {
+function inicializarDataTableCarrera(carrera) {
 
     if ($.fn.DataTable.isDataTable('#info-carr')) {
         $('#info-carr').DataTable().clear().destroy();
@@ -592,7 +592,7 @@ function inicializarDataTableCarrera(barrio) {
         },
 
         // 🔥 AQUÍ SE CARGA TU DATA DINÁMICA
-        "data": barrio,
+        "data": carrera,
 
         "columns": [
             { "data": "id_carrera" },
@@ -1153,20 +1153,20 @@ function inicializarDataTableMedio(medio) {
         "data": medio,
 
         "columns": [
-            { "data": "id_medio" },
-            { "data": "nombre" }, {
+            { "data": "cod_med" },
+            { "data": "desc_med" }, {
                 "render": (data, type, row) => `
                         <div class="dropdown table-action">
                             <a href="#" class="action-icon btn btn-xs shadow btn-icon btn-outline-light" data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="ti ti-dots-vertical"></i>
                             </a>
                             <div class="dropdown-menu dropdown-menu-right">
-                                <a class="dropdown-item" href="#" onclick="editarMedio(${row.id_medio})">
+                                <a class="dropdown-item" href="#" onclick="editarMedio(${row.cod_med})">
                                     <i class="ti ti-edit text-blue"></i> Edit
                                 </a>
                                 <a class="dropdown-item" 
                                 href="#" 
-                                onclick="eliminarMedio(${row.id_medio})"
+                                onclick="eliminarMedio(${row.cod_med})"
                                 data-bs-toggle="modal" 
                                 data-bs-target="#delete_campaign">
                                     <i class="ti ti-trash"></i> Delete
@@ -1227,13 +1227,13 @@ window.editarMedio = (id) => {
         .then(res => res.json())
         .then(data => {
 
-            const ins = data.find(c => c.id_medio == id);
+            const ins = data.find(c => c.cod_med == id);
             if (!ins) return;
             // Cambiar título del OFFCANVAS
             document.getElementById("title-canvas-mdo").textContent = "Editar Medio";
             document.getElementById("btn-canvas-mdo").textContent = "Editar";
             // Llenar campos
-            document.getElementById("des_mdo").value = ins.nombre;
+            document.getElementById("des_mdo").value = ins.desc_med;
             // Guardar ID oculto
             if (!document.getElementById("medio_id")) {
                 let hidden = document.createElement("input");
@@ -1242,7 +1242,7 @@ window.editarMedio = (id) => {
                 hidden.name = "medio_id";
                 document.getElementById("formMdo").appendChild(hidden);
             }
-            document.getElementById("medio_id").value = ins.id_medio;
+            document.getElementById("medio_id").value = ins.cod_med;
 
             // Abrir offcanvas manualmente
             let el = document.getElementById('offmedio_add');
@@ -1339,15 +1339,16 @@ function inicializarDataTableFuente(fuente) {
         "data": fuente,
 
         "columns": [
-            { "data": "id_fuente" },
-            { "data": "nombre" }, {
+            { "data": "cod_fue" },
+            { "data": "desc_fue" },
+            { "data": "desc_med" }, {
                 "render": (data, type, row) => `
                         <div class="dropdown table-action">
                             <a href="#" class="action-icon btn btn-xs shadow btn-icon btn-outline-light" data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="ti ti-dots-vertical"></i>
                             </a>
                             <div class="dropdown-menu dropdown-menu-right">
-                                <a class="dropdown-item" href="#" onclick="editarFuente(${row.id_fuente})">
+                                <a class="dropdown-item" href="#" onclick="editarFuente(${row.cod_fue})">
                                     <i class="ti ti-edit text-blue"></i> Edit
                                 </a>
                                 <a class="dropdown-item" 
@@ -1413,13 +1414,14 @@ window.editarFuente = (id) => {
         .then(res => res.json())
         .then(data => {
 
-            const ins = data.find(c => c.id_medio == id);
+            const ins = data.find(c => c.cod_fue == id);
             if (!ins) return;
             // Cambiar título del OFFCANVAS
             document.getElementById("title-canvas-fnt").textContent = "Editar Fuente";
             document.getElementById("btn-canvas-fnt").textContent = "Editar";
             // Llenar campos
-            document.getElementById("des_fnt").value = ins.nombre;
+            document.getElementById("des_fnt").value = ins.desc_fue;
+            document.getElementById("medio").value = ins.med_fue;
             // Guardar ID oculto
             if (!document.getElementById("fuente_id")) {
                 let hidden = document.createElement("input");
@@ -1428,7 +1430,7 @@ window.editarFuente = (id) => {
                 hidden.name = "fuente_id";
                 document.getElementById("formFnt").appendChild(hidden);
             }
-            document.getElementById("fuente_id").value = ins.id_medio;
+            document.getElementById("fuente_id").value = ins.cod_fue;
 
             // Abrir offcanvas manualmente
             let el = document.getElementById('offfuente_add');
@@ -1913,5 +1915,23 @@ $('#ciudad').on('change', function() {
 
     } else {
         $("#contenedor_barrio").hide();
+    }
+});
+
+$('#medio').on('change', function() {
+    let id_med = $(this).val();
+
+    if (id_med !== "") {
+
+        $("#contenedor_fuente").show();
+
+        fetch("ajax/ajax.php?accion=listar_fuente_por_medio&id_med=" + id_med)
+            .then(res => res.json())
+            .then(data => {
+                $("#fuente").html(data.option).trigger("change.select2");
+            });
+
+    } else {
+        $("#contenedor_fuente").hide();
     }
 });

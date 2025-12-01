@@ -4,7 +4,7 @@ class CiudadModels
 {
     public static function listarCiudad()
     {
-        $sql = "SELECT * FROM ciudad c INNER JOIN departamento d ON c.id_departamento = d.id_dep";
+        $sql = "SELECT * FROM ciudad c INNER JOIN departamento d ON c.dep_ciu = d.cod_dep";
         $conn = new Conexion();
         $conectar = $conn->conectar();
         $stmt = $conectar->prepare($sql);
@@ -15,7 +15,7 @@ class CiudadModels
 
     public static function agregarCiudad($data)
     {
-        $sql = "INSERT INTO ciudad (nombre, id_departamento) VALUES (?,?)";
+        $sql = "INSERT INTO ciudad (desc_ciu, dep_ciu) VALUES (?,?)";
         $conn = new Conexion();
         $conectar = $conn->conectar();
         $stmt = $conectar->prepare($sql);
@@ -31,7 +31,7 @@ class CiudadModels
 
     public static function listarCiudadId($id)
     {
-        $sql = "SELECT * FROM ciudad WHERE id_ciudad = ?";
+        $sql = "SELECT * FROM ciudad WHERE cod_ciu = ?";
         $conn = new Conexion();
         $conectar = $conn->conectar();
         $stmt = $conectar->prepare($sql);
@@ -42,7 +42,7 @@ class CiudadModels
 
     public static function eliminarCiudad($id)
     {
-        $sql = "DELETE FROM ciudad WHERE id_ciudad = ?";
+        $sql = "DELETE FROM ciudad WHERE cod_ciu = ?";
         $conn = new Conexion();
         $conectar = $conn->conectar();
         $stmt = $conectar->prepare($sql);
@@ -53,7 +53,7 @@ class CiudadModels
 
     public static function listarCiudadPorDepartamento($id_dep)
     {
-        $sql = "SELECT * FROM ciudad WHERE id_departamento = ?";
+        $sql = "SELECT * FROM ciudad WHERE dep_ciu = ?";
         $conn = new Conexion();
         $conectar = $conn->conectar();
         $stmt = $conectar->prepare($sql);

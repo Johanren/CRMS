@@ -15,7 +15,7 @@ class DepartamentoModels
 
     public static function agregarDepartamento($data)
     {
-        $sql = "INSERT INTO departamento (nom_dep) VALUES (?)";
+        $sql = "INSERT INTO departamento (des_dep) VALUES (?)";
         $conn = new Conexion();
         $conectar = $conn->conectar();
         $stmt = $conectar->prepare($sql);
@@ -30,7 +30,7 @@ class DepartamentoModels
     }
 
     public static function listarDepartamentoId($id) {
-        $sql = "SELECT * FROM departamento WHERE id_dep = ?";
+        $sql = "SELECT * FROM departamento WHERE cod_dep = ?";
         $conn = new Conexion();
         $conectar = $conn->conectar();
         $stmt = $conectar->prepare($sql);
@@ -40,7 +40,7 @@ class DepartamentoModels
     }
 
     public static function eliminarDepartamento($id) {
-        $sql = "DELETE FROM departamento WHERE id_dep = ?";
+        $sql = "DELETE FROM departamento WHERE cod_dep = ?";
         $conn = new Conexion();
         $conectar = $conn->conectar();
         $stmt = $conectar->prepare($sql);

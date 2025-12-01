@@ -1,251 +1,235 @@
-$(document).ready(function() {
+/*LEADS*/
+function inicializarDataTableLeads(leads) {
 
-    if ($('#leads_list').length > 0) {
-        $('#leads_list').DataTable({
-            "bFilter": false,
-            "bInfo": false,
-            "ordering": true,
-            "autoWidth": true,
-            "autoWidth": true,
-            "language": {
-                search: ' ',
-                sLengthMenu: '_MENU_',
-                searchPlaceholder: "Search",
-                info: "_START_ - _END_ of _TOTAL_ items",
-                "lengthMenu": "Show _MENU_ entries",
-                paginate: {
-                    next: '<i class="ti ti-chevron-right"></i> ',
-                    previous: '<i class="ti ti-chevron-left"></i> '
-                },
-            },
-            initComplete: (settings, json) => {
-                $('.dataTables_paginate').appendTo('.datatable-paginate');
-                $('.dataTables_length').appendTo('.datatable-length');
-            },
-            "data": [{
-                    "id": 1,
-                    "si_no": "",
-                    "select": "",
-                    "customer_name": "Darlee Robertson",
-                    "customer_image": "assets/img/profiles/avatar-19.jpg",
-                    "company_name": "NovaWave LLC",
-                    "company_image": "assets/img/icons/company-icon-01.svg",
-                    "company_address": "Newyork, USA",
-                    "phone": "+1 875455453",
-                    "email": "robertson@example.com",
-                    "created_date": "25 Sep 2025, 01:22 pm",
-                    "owner": "Jami Carlile",
-                    "owner_image": "assets/img/profiles/avatar-13.jpg",
-                    "source": "Paid Social",
-                    "status": "0",
-                    "Action": ""
-                },
-                {
-                    "id": 2,
-                    "si_no": "",
-                    "select": "",
-                    "customer_name": "Sharon Roy",
-                    "customer_image": "assets/img/profiles/avatar-20.jpg",
-                    "company_name": "BlueSky Industries",
-                    "company_image": "assets/img/icons/company-icon-02.svg",
-                    "company_address": "Winchester, KY",
-                    "phone": "+1 989757485",
-                    "email": "sharon@example.com",
-                    "created_date": "29 Sep 2025, 04:15 pm",
-                    "owner": "Theresa Nelson",
-                    "owner_image": "assets/img/profiles/avatar-17.jpg",
-                    "source": "Referrals",
-                    "status": "2",
-                    "Action": ""
-                },
-                {
-                    "id": 3,
-                    "si_no": "",
-                    "select": "",
-                    "customer_name": "Vaughan Lewis",
-                    "customer_image": "assets/img/profiles/avatar-21.jpg",
-                    "company_name": "SilverHawk",
-                    "company_image": "assets/img/icons/company-icon-03.svg",
-                    "company_address": "Jametown, NY",
-                    "phone": "+1 546555455",
-                    "email": "vaughan12@example.com",
-                    "created_date": "04 Oct 2025, 10:18 am",
-                    "owner": "Smith Cooper",
-                    "owner_image": "assets/img/profiles/avatar-14.jpg",
-                    "source": "Campaigns",
-                    "status": "0",
-                    "Action": ""
-                },
-                {
-                    "id": 4,
-                    "si_no": "",
-                    "select": "",
-                    "customer_name": "Jessica Louise",
-                    "customer_image": "assets/img/profiles/avatar-23.jpg",
-                    "company_name": "SummitPeak",
-                    "company_image": "assets/img/icons/company-icon-04.svg",
-                    "company_address": "Compton, RI",
-                    "phone": "+1 454478787",
-                    "email": "jessica13@example.com",
-                    "created_date": "17 Oct 2025, 03:31 pm",
-                    "owner": "Martin Lewis",
-                    "owner_image": "assets/img/profiles/avatar-20.jpg",
-                    "source": "Google",
-                    "status": "3",
-                    "Action": ""
-                },
-                {
-                    "id": 5,
-                    "si_no": "",
-                    "select": "",
-                    "customer_name": "Carol Thomas",
-                    "customer_image": "assets/img/profiles/avatar-16.jpg",
-                    "company_name": "RiverStone Ventur",
-                    "company_image": "assets/img/icons/company-icon-05.svg",
-                    "company_address": "Dayton, OH",
-                    "phone": "+1 124547845",
-                    "email": "caroltho3@example.com",
-                    "created_date": "24 Oct 2025, 09:14 pm",
-                    "owner": "Newell Egan",
-                    "owner_image": "assets/img/profiles/avatar-15.jpg",
-                    "source": "Paid Social",
-                    "status": "0",
-                    "Action": ""
-                },
-                {
-                    "id": 6,
-                    "si_no": "",
-                    "select": "",
-                    "customer_name": "Dawn Mercha",
-                    "customer_image": "assets/img/profiles/avatar-22.jpg",
-                    "company_name": "Bright Bridge Grp",
-                    "company_image": "assets/img/icons/company-icon-06.svg",
-                    "company_address": "Lafayette, LA",
-                    "phone": "+1 478845447",
-                    "email": "dawnmercha@example.com",
-                    "created_date": "08 Nov 2025, 09:56 am",
-                    "owner": "Janet Carlson",
-                    "owner_image": "assets/img/profiles/avatar-04.jpg",
-                    "source": "Referrals",
-                    "status": "0",
-                    "Action": ""
-                },
-                {
-                    "id": 7,
-                    "si_no": "",
-                    "select": "",
-                    "customer_name": "Rachel Hampton",
-                    "customer_image": "assets/img/profiles/avatar-24.jpg",
-                    "company_name": "CoastalStar Co.",
-                    "company_image": "assets/img/icons/company-icon-07.svg",
-                    "company_address": "Centerville, VA",
-                    "phone": "+1 215544845",
-                    "email": "rachel@example.com",
-                    "created_date": "14 Nov 2025, 04:19 pm",
-                    "owner": "Craig Brown",
-                    "owner_image": "assets/img/profiles/avatar-21.jpg",
-                    "source": "Campaigns",
-                    "status": "0",
-                    "Action": ""
-                },
-                {
-                    "id": 8,
-                    "si_no": "",
-                    "select": "",
-                    "customer_name": "Jonelle Curtiss",
-                    "customer_image": "assets/img/profiles/avatar-25.jpg",
-                    "company_name": "HarborView",
-                    "company_image": "assets/img/icons/company-icon-08.svg",
-                    "company_address": "Providence, RI",
-                    "phone": "+1 121145471",
-                    "email": "jonelle@example.com",
-                    "created_date": "23 Nov 2025, 11:14 pm",
-                    "owner": "Daniel Byrne",
-                    "owner_image": "assets/img/profiles/avatar-23.jpg",
-                    "source": "Google",
-                    "status": "0",
-                    "Action": ""
-                },
-                {
-                    "id": 9,
-                    "si_no": "",
-                    "select": "",
-                    "customer_name": "Jonathan Smith",
-                    "customer_image": "assets/img/profiles/avatar-26.jpg",
-                    "company_name": "Golden Gate Ltd",
-                    "company_image": "assets/img/icons/company-icon-09.svg",
-                    "company_address": "Swayzee, IN",
-                    "phone": "+1 321454789",
-                    "email": "jonathan@example.com",
-                    "created_date": "10 Dec 2025, 06:43 am",
-                    "owner": "Jami Carlile",
-                    "owner_image": "assets/img/profiles/avatar-25.jpg",
-                    "source": "Paid Social",
-                    "status": "0",
-                    "Action": ""
-                },
-                {
-                    "id": 10,
-                    "si_no": "",
-                    "select": "",
-                    "customer_name": "Richard Cooper",
-                    "customer_image": "assets/img/profiles/avatar-05.jpg",
-                    "company_name": "Redwood Inc",
-                    "company_image": "assets/img/icons/company-icon-10.svg",
-                    "company_address": "Florida City, FL",
-                    "phone": "+1 278907145",
-                    "email": "brook@example.com",
-                    "created_date": "25 Dec 2025, 08:17 pm",
-                    "owner": "Theresa Nelson",
-                    "owner_image": "assets/img/profiles/avatar-26.jpg",
-                    "source": "Referrals",
-                    "status": "1",
-                    "Action": ""
-                }
-            ],
-            "columns": [{
-                    "render": function(data, type, row) {
-                        return '<div class="form-check form-check-md"><input class="form-check-input" type="checkbox"></div>';
-                    }
-                },
-                {
-                    "render": function(data, type, row) {
-                        return '<div class="set-star rating-select"><i class="ti ti-star-filled fs-16"></i></div>';
-                    }
-                },
-                {
-                    "render": function(data, type, row) {
-                        return '<h6 class="d-flex align-items-center fs-14 fw-medium mb-0"><a href="leads-details.php" class="avatar me-2"><img class="img-fluid rounded-circle" src="' + row['customer_image'] + '" alt="User Image"></a><a href="leads-details.php" class="d-flex flex-column">' + row['customer_name'] + ' </span></a></h6>';
-                    }
-                },
-                {
-                    "render": function(data, type, row) {
-                        return '<h6 class="d-flex align-items-center fs-14 fw-medium mb-0"><a href="company-details.php" class="avatar border rounded p-1 me-2 rounded-circle"><img class="w-auto h-auto" src="' + row['company_image'] + '" alt="User Image"></a><a href="company-details.php" class="d-flex flex-column">' + row['company_name'] + '<span class="text-body fs-13 mt-1 fw-normal">' + row['company_address'] + ' </span></a></h6>';
-                    }
-                },
-                { "data": "phone" },
-                {
-                    "render": function(data, type, row) {
-                        if (row['status'] == "0") { var class_name = "bg-success"; var status_name = "Closed" } else if (row['status'] == "1") { var class_name = "bg-danger"; var status_name = "Lost" } else if (row['status'] == "2") { var class_name = "bg-info"; var status_name = "Not Contacted" } else { var class_name = "bg-warning"; var status_name = "Contacted" }
-                        return '<span class="badge badge-pill badge-status ' + class_name + '" >' + status_name + '</span>';
-                    }
-                },
-                {
-                    "render": function(data, type, row) {
-                        return '<div class="d-flex align-items-center mb-0"><a href="javascript:void(0);" class="avatar avatar-xs me-2"><img class="img-fluid rounded-circle" src="' + row['owner_image'] + '" alt="User Image"></a>' + row['owner'] + '</div>';
-                    }
-                },
-                { "data": "created_date" },
-                {
-                    "render": function(data, type, row) {
-                        return '<div class="dropdown table-action"><a href="#" class="action-icon btn btn-xs shadow btn-icon btn-outline-light" data-bs-toggle="dropdown" aria-expanded="false"><i class="ti ti-dots-vertical"></i></a><div class="dropdown-menu dropdown-menu-right"><a class="dropdown-item" data-bs-toggle="offcanvas" data-bs-target="#offcanvas_edit" href="#"><i class="ti ti-edit text-blue"></i> Edit</a><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#delete_lead"><i class="ti ti-trash"></i> Delete</a><a class="dropdown-item" href="#"><i class="ti ti-clipboard-copy text-blue-light"></i> Clone</a></div></div>';
-                    }
-                }
-            ]
-        });
+    if ($.fn.DataTable.isDataTable('#leads_list')) {
+        $('#leads_list').DataTable().clear().destroy();
     }
 
-});
+    $('#leads_list').DataTable({
+        "bFilter": false,
+        "bInfo": false,
+        "ordering": true,
+        "autoWidth": true,
+        "language": {
+            search: ' ',
+            sLengthMenu: '_MENU_',
+            searchPlaceholder: "Search",
+            info: "_START_ - _END_ of _TOTAL_ items",
+            lengthMenu: "Show _MENU_ entries",
+            paginate: {
+                next: '<i class="ti ti-chevron-right"></i> ',
+                previous: '<i class="ti ti-chevron-left"></i> '
+            },
+        },
+        initComplete: (settings, json) => {
+            $('#leads_list .dataTables_paginate').appendTo('.datatable-paginate');
+            $('#leads_list .dataTables_length').appendTo('.datatable-length');
+        },
+
+        // 🔥 AQUÍ SE CARGA TU DATA DINÁMICA
+        "data": leads,
+
+        "columns": [{
+                data: null,
+                render: function(row) {
+                    return row.nombres + " " + row.apellidos;
+                }
+            },
+            { "data": "programa" },
+            { "data": "telefono_principal" },
+            {
+                "render": function(data, type, row) {
+                    let class_name = "";
+                    let status_name = "";
+
+                    switch (row.estado_leads_id) {
+                        case "1":
+                            class_name = "warning";
+                            status_name = "No contactado";
+                            break;
+                        case "2":
+                            class_name = "success";
+                            status_name = "Contactado";
+                            break;
+                        case "3":
+                            class_name = "Paused";
+                            status_name = "Pendiente";
+                            break;
+                        case "4":
+                            class_name = "danger";
+                            status_name = "Perdido";
+                            break;
+                        default:
+                            class_name = "info";
+                            status_name = "Paused";
+                            break;
+                    }
+
+                    return `<span class="badge badge-pill badge-status bg-${class_name}">${status_name}</span>`;
+                }
+            },
+            {
+                data: "asesor",
+                render: function(asesor) {
+                    if (!asesor || asesor === null || asesor === "") {
+                        return "<span class='text-muted'>No hay asesor asignado</span>";
+                    }
+                    return asesor;
+                }
+            },
+            { "data": "fecha_creacion" },
+            {
+                "render": (data, type, row) => `
+                        <div class="dropdown table-action">
+                            <a href="#" class="action-icon btn btn-xs shadow btn-icon btn-outline-light" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="ti ti-dots-vertical"></i>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <a class="dropdown-item" href="#" onclick="editarLeads(${row.id_estado_leads})">
+                                    <i class="ti ti-edit text-blue"></i> Edit
+                                </a>
+                                <a class="dropdown-item" 
+                                href="#" 
+                                onclick="eliminarLeads(${row.cod_dep})"
+                                data-bs-toggle="modal" 
+                                data-bs-target="#delete_campaign">
+                                    <i class="ti ti-trash"></i> Delete
+                                </a>
+                            </div>
+                        </div>
+                    `
+            }
+        ]
+    });
+}
+
+if (document.getElementById("formLeads")) {
+    document.getElementById("formLeads").addEventListener("submit", function(e) {
+        e.preventDefault();
+
+        let datos = new FormData(this);
+        datos.append("accion", "registrar_leads");
+
+        fetch("ajax/ajax.php", {
+                method: "POST",
+                body: datos
+            })
+            .then(res => res.json())
+            .then(data => {
+
+                if (data.status === "success") {
+                    Swal.fire("Éxito", data.message, "success");
+                    listarLeads();
+                    this.reset();
+                    document.getElementById("offcanvas").click();
+                } else {
+                    Swal.fire("Error", data.message, "error");
+                }
+            });
+    });
+}
+
+function listarLeads() {
+    fetch("ajax/ajax.php?accion=listar_leads")
+        .then(res => res.json())
+        .then(data => {
+            inicializarDataTableLeads(data);
+        })
+        .catch(err => console.error("Error al listar leads:", err));
+}
+
+window.editarLeads = (id) => {
+
+    let datos = new FormData();
+    datos.append("accion", "consultar_leads");
+    datos.append("id", id);
+
+    fetch("ajax/ajax.php", {
+            method: "POST",
+            body: datos
+        })
+        .then(res => res.json())
+        .then(data => {
+
+            const campana = data.find(c => c.cod_dep == id);
+            if (!campana) return;
+            // Cambiar título del OFFCANVAS
+            document.getElementById("title-canvas-depar").textContent = "Editar Departamento";
+            document.getElementById("btn-canvas-depar").textContent = "Editar";
+            // Llenar campos
+            document.getElementById("nom_dep").value = campana.desc_dep;
+
+            // Guardar ID oculto
+            if (!document.getElementById("departamento_id")) {
+                let hidden = document.createElement("input");
+                hidden.type = "hidden";
+                hidden.id = "departamento_id";
+                hidden.name = "departamento_id";
+                document.getElementById("formDepart").appendChild(hidden);
+            }
+            document.getElementById("departamento_id").value = campana.cod_dep;
+
+            // Abrir offcanvas manualmente
+            let el = document.getElementById('offdepartamento_add');
+            let offcanvas = bootstrap.Offcanvas.getOrCreateInstance(el);
+            offcanvas.show();
+
+        })
+        .catch(err => {
+            console.error(err);
+            Swal.fire("Error", "No se pudo cargar la información", "error");
+        });
+
+};
+
+if (document.getElementById("btnCerrarOffcanvas-depar")) {
+    document.getElementById("btnCerrarOffcanvas-depar").addEventListener("click", function() {
+        document.getElementById("formDepart").reset();
+        document.getElementById("title-canvas-depar").textContent = "Nueva Departamento";
+        document.getElementById("btn-canvas-depar").textContent = "Crear";
+    });
+}
+
+window.eliminarLeads = (id) => {
+
+    let datos = new FormData();
+    datos.append("accion", "eliminar_leads");
+    datos.append("id", id);
+
+    fetch("ajax/ajax.php", {
+            method: "POST",
+            body: datos
+        })
+        .then(res => res.json())
+        .then(data => {
+
+            if (data.status === "success") {
+                Swal.fire("Éxito", data.message, "success");
+                listarDepart();
+            } else {
+                Swal.fire("Error", data.message, "error");
+            }
+
+        })
+        .catch(err => {
+            console.error(err);
+            Swal.fire("Error", "No se pudo cargar la información", "error");
+        });
+
+};
+
+function listarLeadsOption() {
+    fetch("ajax/ajax.php?accion=listar_depar_option")
+        .then(res => res.json())
+        .then(data => {
+            if (document.getElementById("leads")) {
+                document.getElementById("leads").innerHTML = data.option;
+            }
+        });
+}
+
+listarLeadsOption();
+listarLeads();
 
 document.addEventListener("DOMContentLoaded", function() {
 
@@ -293,3 +277,256 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 });
+
+//Tarjetas leads.
+
+document.addEventListener("DOMContentLoaded", () => {
+    cargarKanban();
+});
+
+async function cargarKanban() {
+    const estados = await cargarEstados();
+    const leads = await cargarLeads();
+    renderKanban(estados, leads);
+}
+
+/* ================================
+   1. Cargar ESTADOS desde PHP
+================================ */
+async function cargarEstados() {
+    const res = await fetch("ajax/ajax.php?accion=getEstados");
+    return await res.json();
+}
+
+/* ================================
+   2. Cargar LEADS desde PHP
+================================ */
+async function cargarLeads() {
+    const res = await fetch("ajax/ajax.php?accion=getLeads");
+    return await res.json();
+}
+
+/* ================================
+   3. Renderizar tablero CON TU DISEÑO
+================================ */
+function renderKanban(estados, leads) {
+
+    const contenedor = document.getElementById("kanban-container");
+    contenedor.innerHTML = "";
+
+    estados.forEach(estado => {
+
+        const cantidad = leads.filter(l => l.estado_leads_id == estado.id_estado_leads).length;
+
+        // COLORES según estado (opcional, puedes personalizar)
+        const coloresEstado = {
+            1: "text-success",
+            2: "text-info",
+            3: "text-warning",
+            4: "text-danger"
+        };
+
+        let columna = document.createElement("div");
+        columna.className = "kanban-list-items p-2 rounded border";
+        columna.innerHTML = `
+            <div class="card mb-0 border-0 shadow">
+                <div class="card-body p-2">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="d-flex align-items-center mb-1">
+                                <i class="ti ti-circle-filled fs-10 ${coloresEstado[estado.id_estado_leads] || 'text-secondary'} me-1"></i>
+                                ${estado.nombre}
+                            </h6>
+                            <span class="fw-medium">${cantidad} Leads</span>
+                        </div>
+
+                        <div class="d-flex align-items-center">
+                            <a href="javascript:void(0);" class="text-info">
+                                <i class="ti ti-plus"></i>
+                            </a>
+
+                            <div class="dropdown table-action ms-2">
+                                <a href="#" class="action-icon btn btn-xs shadow btn-icon btn-outline-light" data-bs-toggle="dropdown">
+                                    <i class="ti ti-dots-vertical"></i>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-right">
+                                    <a class="dropdown-item" href="#" data-bs-toggle="offcanvas"
+                                        data-bs-target="#offcanvas_edit">
+                                        <i class="fa-solid fa-pencil text-blue"></i> Editar
+                                    </a>
+                                    <a class="dropdown-item" href="#" data-bs-toggle="modal"
+                                        data-bs-target="#delete_lead">
+                                        <i class="fa-regular fa-trash-can text-danger"></i> Eliminar
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="kanban-drag-wrap">
+                <div class="kanban-list" data-estado="${estado.id_estado_leads}"></div>
+            </div>
+        `;
+
+        contenedor.appendChild(columna);
+
+        // Insertar leads
+        let lista = columna.querySelector(".kanban-list");
+
+        leads.filter(l => l.estado_leads_id == estado.id_estado_leads)
+            .forEach(l => lista.appendChild(crearCardLead(l, estado.id_estado_leads)));
+    });
+
+    activarDragAndDrop();
+}
+
+/* ================================
+   4. Card del lead CON TU DISEÑO
+================================ */
+function crearCardLead(l, estadoId) {
+
+    if (!l || !l.id_lead) return document.createElement("div"); // evita undefined
+
+    const coloresTop = {
+        1: "text-success",
+        2: "text-info",
+        3: "text-warning",
+        4: "text-danger"
+    };
+
+    const nombre = l.nombres || "";
+    const apellido = l.apellidos || "";
+    const iniciales = (nombre.charAt(0) + apellido.charAt(0)).toUpperCase();
+
+    let card = document.createElement("div");
+    card.className = "card kanban-card border mb-0 mt-3 shadow ui-sortable-handle";
+    card.draggable = true;
+    card.dataset.id = l.id_lead;
+
+    card.innerHTML = `
+        <div class="card-body">
+
+            <div class="d-block">
+                <div class="card-topbar mb-3 pt-1 ${coloresTop[estadoId] || 'bg-secondary'}"></div>
+
+                <div class="d-flex align-items-center mb-3">
+                    <a href="leads-details.php?id=${l.id_lead}"
+                        class="avatar rounded-circle bg-soft-info flex-shrink-0 me-2">
+                        <span class="avatar-title text-info">${iniciales || "?"}</span>
+                    </a>
+                    <h6 class="fw-medium fs-14 mb-0">
+                        <a href="leads-details.php?id=${l.id_lead}">${nombre} ${apellido}</a>
+                    </h6>
+                </div>
+            </div>
+
+            <div class="d-flex flex-column">
+                <p class="text-default mb-2">
+                    <i class="ti ti-mail text-dark me-1"></i>${l.email || 'Sin email'}
+                </p>
+                <p class="text-default mb-2">
+                    <i class="ti ti-phone text-dark me-1"></i>${l.telefono_principal || 'Sin teléfono'}
+                </p>
+                <p class="text-default">
+                    <i class="ti ti-map-pin-pin text-dark me-1"></i>${l.ciudad || 'Sin ciudad'}
+                </p>
+            </div>
+
+        </div>
+    `;
+
+    return card;
+}
+
+/* ================================
+   5. Drag & Drop
+================================ */
+function activarDragAndDrop() {
+
+    // --- Asegura altura mínima a listas vacías ---
+    document.querySelectorAll(".kanban-list").forEach(lista => {
+        lista.style.minHeight = "50px";
+    });
+
+    // --- HABILITAR que las cards sean arrastrables ---
+    document.querySelectorAll(".kanban-card").forEach(card => {
+        card.addEventListener("dragstart", e => {
+            e.dataTransfer.setData("lead", e.target.dataset.id);
+
+            // Estilo visual al arrastrar
+            setTimeout(() => {
+                card.classList.add("dragging");
+            }, 0);
+        });
+
+        card.addEventListener("dragend", e => {
+            card.classList.remove("dragging");
+        });
+    });
+
+    // --- ÁREAS donde soltar ---
+    document.querySelectorAll(".kanban-list").forEach(lista => {
+
+        lista.addEventListener("dragenter", e => {
+            e.preventDefault();
+            lista.classList.add("kanban-hover");
+        });
+
+        lista.addEventListener("dragleave", e => {
+            lista.classList.remove("kanban-hover");
+        });
+
+        lista.addEventListener("dragover", e => {
+            e.preventDefault(); // NECESARIO para permitir drop
+        });
+
+        lista.addEventListener("drop", e => {
+            e.preventDefault();
+
+            let idLead = e.dataTransfer.getData("lead");
+            let idEstado = lista.dataset.estado;
+
+            let card = document.querySelector(`[data-id='${idLead}']`);
+
+            if (!card) return; // evita romper cuando es null
+
+            lista.appendChild(card);
+
+            lista.classList.remove("kanban-hover");
+
+            // Actualiza en BD
+            updateEstadoLead(idLead, idEstado);
+
+            // Actualiza contador
+            actualizarContadores();
+        });
+    });
+}
+
+
+function actualizarContadores() {
+    document.querySelectorAll(".kanban-list-items").forEach(col => {
+        const lista = col.querySelector(".kanban-list");
+        const count = lista.children.length;
+        col.querySelector(".fw-medium").textContent = count + " Leads";
+    });
+}
+
+
+/* ================================
+   6. Actualizar estado en DB
+================================ */
+async function updateEstadoLead(idLead, idEstado) {
+    const formData = new FormData();
+    formData.append("accion", "updateEstado");
+    formData.append("id_lead", idLead);
+    formData.append("id_estado", idEstado);
+
+    await fetch("ajax/ajax.php", {
+        method: "POST",
+        body: formData
+    });
+}

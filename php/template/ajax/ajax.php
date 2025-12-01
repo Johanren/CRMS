@@ -20,6 +20,8 @@ $medio = new MedioControllers();
 $fuente = new FuenteControllers();
 $accion = new AccionControllers();
 $esta_leads = new EstadoLeadsControllersControllers();
+$cliente = new ClienteControllers();
+$leads = new LeadsControllers();
 if (isset($_POST['accion'])) {
     switch ($_POST['accion']) {
         /*Campana*/
@@ -123,7 +125,7 @@ if (isset($_POST['accion'])) {
         case 'eliminar_acc':
             echo json_encode($accion->eliminarAccion($_POST['id']));
             break;
-        /*Accion*/
+        /*Estado leads*/
         case 'registrar_est_leads':
             echo json_encode($esta_leads->agregarEstadoLeads($_POST));
             break;
@@ -132,6 +134,14 @@ if (isset($_POST['accion'])) {
             break;
         case 'eliminar_est_leads':
             echo json_encode($esta_leads->eliminarEstadoLeads($_POST['id']));
+            break;
+        /* Cliente */
+        case 'registrar_leads':
+            echo json_encode($cliente->agregarCliente($_POST));
+            break;
+        /*LEADS */
+        case 'updateEstado':
+            echo json_encode($leads->updateEstado($_POST["id_lead"], $_POST["id_estado"]));
             break;
         default:
             # code...
@@ -176,7 +186,7 @@ if (isset($_GET['accion'])) {
             $option = "<option value=''>Seleccione Departamento</option>";
             foreach ($lista as $a) {
                 $option .= "
-                    <option value='{$a['id_dep']}'>{$a['nom_dep']}</option>
+                    <option value='{$a['cod_dep']}'>{$a['desc_dep']}</option>
                 ";
             }
             echo json_encode(["option" => $option]);
@@ -190,7 +200,7 @@ if (isset($_GET['accion'])) {
             $option = "<option value=''>Seleccione Ciudad</option>";
             foreach ($lista as $a) {
                 $option .= "
-                    <option value='{$a['id_ciudad']}'>{$a['nombre']}</option>
+                    <option value='{$a['cod_ciu']}'>{$a['desc_ciu']}</option>
                 ";
             }
             echo json_encode(["option" => $option]);
@@ -201,7 +211,7 @@ if (isset($_GET['accion'])) {
 
             $option = "<option value=''>Seleccione Ciudad</option>";
             foreach ($lista as $a) {
-                $option .= "<option value='{$a['id_ciudad']}'>{$a['nombre']}</option>";
+                $option .= "<option value='{$a['cod_ciu']}'>{$a['desc_ciu']}</option>";
             }
 
             echo json_encode(["option" => $option]);
@@ -216,7 +226,7 @@ if (isset($_GET['accion'])) {
             $option = "<option value=''>Seleccione Barrio</option>";
             foreach ($lista as $a) {
                 $option .= "
-                    <option value='{$a['id_barrio']}'>{$a['barrio']}</option>
+                    <option value='{$a['id_barrio']}'>{$a['desc_brr']}</option>
                 ";
             }
             echo json_encode(["option" => $option]);
@@ -227,7 +237,7 @@ if (isset($_GET['accion'])) {
 
             $option = "<option value=''>Seleccione Barrio</option>";
             foreach ($lista as $a) {
-                $option .= "<option value='{$a['id_barrio']}'>{$a['nombre']}</option>";
+                $option .= "<option value='{$a['id_barrio']}'>{$a['desc_brr']}</option>";
             }
 
             echo json_encode(["option" => $option]);
@@ -284,7 +294,7 @@ if (isset($_GET['accion'])) {
             $option = "<option value=''>Seleccione Medio</option>";
             foreach ($lista as $a) {
                 $option .= "
-                    <option value='{$a['id_medio']}'>{$a['nombre']}</option>
+                    <option value='{$a['cod_med']}'>{$a['desc_med']}</option>
                 ";
             }
             echo json_encode(["option" => $option]);
@@ -298,9 +308,20 @@ if (isset($_GET['accion'])) {
             $option = "<option value=''>Seleccione Fuente</option>";
             foreach ($lista as $a) {
                 $option .= "
-                    <option value='{$a['id_fuente']}'>{$a['nombre']}</option>
+                    <option value='{$a['cod_fue']}'>{$a['desc_fue']}</option>
                 ";
             }
+            echo json_encode(["option" => $option]);
+            break;
+        case 'listar_fuente_por_medio':
+            $id_med = $_GET['id_med'];
+            $lista = $fuente->listarFuentePorMedio($id_med);
+
+            $option = "<option value=''>Seleccione Fuento</option>";
+            foreach ($lista as $a) {
+                $option .= "<option value='{$a['cod_fue']}'>{$a['desc_fue']}</option>";
+            }
+
             echo json_encode(["option" => $option]);
             break;
         /*Accion*/
@@ -331,8 +352,16 @@ if (isset($_GET['accion'])) {
             }
             echo json_encode(["option" => $option]);
             break;
-        default:
-            # code...
+        case 'getEstados':
+            echo json_encode($esta_leads->getEstados());
             break;
+        /*LEADS */
+        case 'getLeads':
+            echo json_encode($leads->getLeads());
+            break;
+        case 'listar_leads':
+            echo json_encode($leads->listarLeads());
+            break;
+        default:
     }
 }

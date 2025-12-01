@@ -4,7 +4,7 @@ class BarrioModels
 {
     public static function listarBarrio()
     {
-        $sql = "SELECT *, b.nombre AS barrio FROM barrio b INNER JOIN ciudad c ON c.id_departamento = b.ciudad_id INNER JOIN departamento d ON c.id_departamento = d.id_dep";
+        $sql = "SELECT * FROM barrio b INNER JOIN ciudad c ON c.cod_ciu = b.cod_ciu INNER JOIN departamento d ON c.dep_ciu = d.cod_dep";
         $conn = new Conexion();
         $conectar = $conn->conectar();
         $stmt = $conectar->prepare($sql);
@@ -15,7 +15,7 @@ class BarrioModels
 
     public static function agregarBarrio($data)
     {
-        $sql = "INSERT INTO barrio (nombre, ciudad_id) VALUES (?,?)";
+        $sql = "INSERT INTO barrio (desc_brr, cod_ciu) VALUES (?,?)";
         $conn = new Conexion();
         $conectar = $conn->conectar();
         $stmt = $conectar->prepare($sql);
@@ -54,7 +54,7 @@ class BarrioModels
     public static function listarBarrioPorCiudad($id_ciudad)
     {
     
-        $sql = "SELECT * FROM barrio WHERE ciudad_id = ?";
+        $sql = "SELECT * FROM barrio WHERE cod_ciu = ?";
         $conn = new Conexion();
         $conectar = $conn->conectar();
         $stmt = $conectar->prepare($sql);

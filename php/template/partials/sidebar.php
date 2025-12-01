@@ -128,13 +128,13 @@
                                 <a href="companies.php"><i class="ti ti-building-community"></i><span>Companies</span></a>-->
                             </li>
                             <li class="<?php echo ($page =='deals.php' || $page =='deals-list.php' || $page =='deals-details.php') ? 'active' : '' ;?>">
-                                <a href="deals.php"><i class="ti ti-medal"></i><span>Ofertas</span></a>
+                                <a href="deals.php"><i class="ti ti-medal"></i><span>Deals</span></a>
                             </li>
                             <li class="<?php echo ($page =='leads.php' || $page =='leads-list.php' || $page =='leads-details.php') ? 'active' : '' ;?>">
-                                <a href="leads.php"><i class="ti ti-chart-arcs"></i><span>Dirige</span></a>
+                                <a href="leads.php"><i class="ti ti-chart-arcs"></i><span>Leads</span></a>
                             </li>
                             <li class="<?php echo ($page =='pipeline.php') ? 'active' : '' ;?>">
-                                <a href="pipeline.php"><i class="ti ti-timeline-event-exclamation"></i><span>Tubería</span></a>
+                                <a href="pipeline.php"><i class="ti ti-timeline-event-exclamation"></i><span>PipeLine</span></a>
                             </li>
                             <li class="<?php echo ($page =='campaign.php' || $page =='campaign-archieve.php' || $page =='campaign-complete.php') ? 'active' : '' ;?>">
                                 <a href="campaign.php"><i class="ti ti-brand-campaignmonitor"></i><span>Campaña</span></a>
