@@ -4,7 +4,7 @@ class DepartamentoModels
 {
     public static function listarDepartamento()
     {
-        $sql = "SELECT * FROM departamento";
+        $sql = "SELECT * FROM departamento WHERE desc_dep like '%Santander%'";
         $conn = new Conexion();
         $conectar = $conn->conectar();
         $stmt = $conectar->prepare($sql);

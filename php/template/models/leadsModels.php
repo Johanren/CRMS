@@ -32,9 +32,9 @@ class LeadsModels
 
     public static function getLeads()
     {
-        $sql = "SELECT l.*, c.nombres, c.apellidos, c.email, c.telefono_principal
+        $sql = "SELECT l.*, c.nombres, c.apellidos, c.email, c.telefono_principal, ci.desc_ciu AS ciudad
             FROM leads l
-            INNER JOIN cliente c ON c.id_cliente = l.cliente_id";
+            INNER JOIN cliente c ON c.id_cliente = l.cliente_id LEFT JOIN ciudad ci ON ci.cod_ciu = l.ciudad_id";
         $conn = new Conexion();
         $conectar = $conn->conectar();
         $stmt = $conectar->prepare($sql);
@@ -48,16 +48,26 @@ class LeadsModels
         $conn = new Conexion();
         $conectar = $conn->conectar();
         $stmt = $conectar->prepare($sql);
-        return $stmt->execute([$idEstado, $idLead]);
+        $stmt->execute([$idEstado, $idLead]);
+        return "ok";
     }
 
     public static function listarLeads()
     {
-        $sql = "SELECT l.*, c.nombres, c.apellidos, c.email, c.telefono_principal, p.nombre AS programa, l.fecha_creacion FROM leads l INNER JOIN cliente c ON c.id_cliente = l.cliente_id INNER JOIN carrera p ON p.id_carrera = l.carrera_id LEFT JOIN user u ON u.id_user = l.user_id";
+        $sql = "SELECT l.*, c.nombres, c.apellidos, c.email, c.telefono_principal, p.desc_pro, ci.desc_ciu AS ciudad, l.fecha_creacion FROM leads l INNER JOIN cliente c ON c.id_cliente = l.cliente_id INNER JOIN programa p ON p.cod_pro = l.carrera_id LEFT JOIN ciudad ci ON ci.cod_ciu = l.ciudad_id LEFT JOIN user u ON u.id_user = l.user_id";
         $conn = new Conexion();
         $conectar = $conn->conectar();
         $stmt = $conectar->prepare($sql);
         $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    public static function listarLeadsId($id)
+    {
+        $sql = "SELECT l.*, c.nombres, c.apellidos, c.email, c.telefono_principal, p.desc_pro, ci.desc_ciu AS ciudad, l.fecha_creacion, f.desc_fue, c.direccion, c.identificacion, el.nombre AS estado_leads, es.des_seguimiento, pro.desc_pro, pro.val_pro, em.nom_emp FROM leads l LEFT JOIN cliente c ON c.id_cliente = l.cliente_id LEFT JOIN programa p ON p.cod_pro = l.carrera_id LEFT JOIN ciudad ci ON ci.cod_ciu = l.ciudad_id LEFT JOIN user u ON u.id_user = l.user_id LEFT JOIN fuente1 f ON f.cod_fue = l.fuente_id LEFT JOIN estado_leads el ON el.id_estado_leads = l.estado_leads_id LEFT JOIN estado_seguimiento es ON es.id_seguimiento = l.estadoLeadsSeguimiento LEFT JOIN programa pro ON pro.cod_pro = l.carrera_id LEFT JOIN empresa em ON em.id_emp = pro.emp_pro WHERE l.id_lead = ?";
+        $conn = new Conexion();
+        $conectar = $conn->conectar();
+        $stmt = $conectar->prepare($sql);
+        $stmt->execute([$id]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }

@@ -10,10 +10,19 @@ class LeadsControllers{
     }
 
     public static function updateEstado($idLead, $idEstado) {
-        return LeadsModels::updateEstado($idLead, $idEstado);
+        $resp = LeadsModels::updateEstado($idLead, $idEstado);
+        if ($resp == "ok") {
+            return ["status" => "success", "message" => "Medio agregado correctamente"];
+        } else {
+            return ["status" => "error", "message" => "No se pudo registrar"];
+        }
     }
 
     public static function listarLeads() {
         return LeadsModels::listarLeads();
+    }
+
+    public static function listarLeadsId($id) {
+        return LeadsModels::listarLeadsId($id);
     }
 }

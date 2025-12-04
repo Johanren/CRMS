@@ -160,7 +160,8 @@
                                     <tr>
                                         <th>#</th>
                                         <th>Carrera</th>
-                                        <th>Activo</th>
+                                        <th>Valor</th>
+                                        <th>Empresa</th>
                                         <th>Acciones</th>
                                     </tr>
                                 </thead>
@@ -365,19 +366,19 @@
                 <div class="card flex-fill">
                     <div class="card-header">
                         <div class="d-flex align-items-center justify-content-between flex-wrap row-gap-3">
-                            <h6 class="mb-0">Estado leads</h6>
+                            <h6 class="mb-0">Rol</h6>
                             <div class="dropdown">
-                                <a href="javascript:void(0);" class="btn btn-primary" data-bs-toggle="offcanvas" data-bs-target="#offestadoleads_add"><i class="ti ti-square-rounded-plus-filled me-1"></i>Agregar Estado Leads</a>
+                                <a href="javascript:void(0);" class="btn btn-primary" data-bs-toggle="offcanvas" data-bs-target="#offrol_add"><i class="ti ti-square-rounded-plus-filled me-1"></i>Agregar Rol</a>
                             </div>
                         </div>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive custom-table">
-                            <table class="table dataTable table-nowrap" id="info-est_leads">
+                            <table class="table dataTable table-nowrap" id="info-rol">
                                 <thead class="table-light">
                                     <tr>
                                         <th>#</th>
-                                        <th>Estado leads</th>
+                                        <th>Rol</th>
                                         <th>Acciones</th>
                                     </tr>
                                 </thead>
@@ -387,10 +388,10 @@
                         </div>
                         <div class="row align-items-center">
                             <div class="col-md-6">
-                                <div class="datatable-length-est_leads"></div>
+                                <div class="datatable-length-rol"></div>
                             </div>
                             <div class="col-md-6">
-                                <div class="datatable-paginate-est_leads"></div>
+                                <div class="datatable-paginate-rol"></div>
                             </div>
                         </div>
                     </div> <!-- end card body -->
@@ -406,41 +407,39 @@
             <div class="col-md-12 d-flex">
                 <div class="card w-100">
                     <div class="card-header d-flex align-items-center justify-content-between flex-wrap row-gap-3">
-                        <h6 class="mb-0">Ofertas por año</h6>
+                        <h6 class="mb-0">Usuarios</h6>
                         <div class="d-flex align-items-center flex-wrap row-gap-3">
-                            <div class="dropdown me-2">
-                                <a class="dropdown-toggle btn btn-outline-light shadow" data-bs-toggle="dropdown" href="javascript:void(0);">
-                                    Canal de ventas
-                                </a>
-                                <div class="dropdown-menu dropdown-menu-end">
-                                    <a href="javascript:void(0);" class="dropdown-item">
-                                        Canal de marketing
-                                    </a>
-                                    <a href="javascript:void(0);" class="dropdown-item">
-                                        Canal de ventas
-                                    </a>
-                                </div>
-                            </div>
                             <div class="dropdown">
-                                <a class="dropdown-toggle btn btn-outline-light shadow" data-bs-toggle="dropdown" href="javascript:void(0);">
-                                    últimos 30 días
-                                </a>
-                                <div class="dropdown-menu dropdown-menu-end">
-                                    <a href="javascript:void(0);" class="dropdown-item">
-                                        últimos 3 meses
-                                    </a>
-                                    <a href="javascript:void(0);" class="dropdown-item">
-                                        últimos 6 meses
-                                    </a>
-                                    <a href="javascript:void(0);" class="dropdown-item">
-                                        últimos 12 meses
-                                    </a>
-                                </div>
+                                <a href="javascript:void(0);" class="btn btn-primary" data-bs-toggle="offcanvas" data-bs-target="#offUser_add"><i class="ti ti-square-rounded-plus-filled me-1"></i>Agregar Usuarios</a>
                             </div>
                         </div>
                     </div>
                     <div class="card-body py-0">
-                        <div id="deals-year"></div>
+                        <div class="table-responsive custom-table">
+                            <table class="table dataTable table-nowrap" id="info-user">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Codigo</th>
+                                        <th>Usuario</th>
+                                        <th>Email</th>
+                                        <th>Rol</th>
+                                        <th>Fecha Creación</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="row align-items-center">
+                            <div class="col-md-6">
+                                <div class="datatable-length-user"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="datatable-paginate-user"></div>
+                            </div>
+                        </div>
                     </div> <!-- end card body -->
                 </div> <!-- end card -->
             </div> <!-- end col -->

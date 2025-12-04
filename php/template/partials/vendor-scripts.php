@@ -3,7 +3,22 @@ $link = $_SERVER['PHP_SELF'];
 $link_array = explode('/', $link);
 $page = end($link_array);
 ?>
-
+<?php
+if($page != 'login.php'){
+?>
+<script>
+    fetch('ajax/ajax.php?accion=redireccionamiento')
+        .then(res => res.json())
+        .then(data => {
+            if (data.redirect && data.redirect !== false) {
+                window.location.href = data.redirect;
+            }
+        })
+        .catch(err => console.log("Error:", err));
+</script>
+<?php
+}
+?>
 <!-- jQuery -->
 <script src="assets/js/jquery-3.7.1.min.js"></script>
 
@@ -14,6 +29,11 @@ $page = end($link_array);
 <script src="assets/plugins/simplebar/simplebar.min.js"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<?php if ($page == 'login.php') {   ?>
+    <!-- Datatable JS -->
+    <script src="assets/json/login.js"></script>
+<?php } ?>
 
 <?php if ($page == 'activities.php' || $page == 'activity-calls.php' || $page == 'activity-mail.php' || $page == 'activity-meeting.php' || $page == 'activity-task.php' || $page == 'analytics.php' || $page == 'blog-categories.php' || $page == 'blog-comments.php' || $page == 'blog-tags.php' || $page == 'calls.php' || $page == 'campaign-archieve.php' || $page == 'campaign-complete.php' || $page == 'campaign.php' || $page == 'cities.php' || $page == 'companies-list.php' || $page == 'company-reports.php' || $page == 'company.php' || $page == 'contact-messages.php' || $page == 'contact-reports.php' || $page == 'contact-stage.php' || $page == 'contacts-list.php' || $page == 'contracts-list.php' || $page == 'countries.php' || $page == 'data-tables.php' || $page == 'deal-reports.php' || $page == 'deals-list.php' || $page == 'delete-request.php' || $page == 'domain.php' || $page == 'estimations-list.php' || $page == 'faq.php' || $page == 'index.php' || $page == 'industry.php' || $page == 'language-settings.php' || $page == 'langugae-web-edit.php' || $page == 'language-web.php' || $page == 'layout-dark.php' || $page == 'layout-fullwidth.php' || $page == 'layout-hidden.php' || $page == 'layout-hoverview.php' || $page == 'layout-mini.php' || $page == 'layout-rtl.php' || $page == 'lead-reports.php' || $page == 'leads-dashboard.php' || $page == 'leads-list.php' || $page == 'leads.php' || $page == 'lost-reason.php' || $page == 'manage-users.php' || $page == 'membership-transactions.php' || $page == 'packages.php' || $page == 'pages.php' || $page == 'payments.php' || $page == 'permission.php' || $page == 'pipeline.php' || $page == 'printers-settings.php' || $page == 'project-dashboard.php' || $page == 'project-reports.php' || $page == 'projects-list.php' || $page == 'projects.php' || $page == 'proposals-list.php' || $page == 'purchase-transaction.php' || $page == 'roles-permissions.php' || $page == 'sources.php' || $page == 'states.php' || $page == 'subscription.php' || $page == 'task-reports.php' || $page == 'testimonials.php' || $page == 'tickets.php' || $page == 'info_origen.php') {   ?>
     <!-- Datatable JS -->
@@ -317,7 +337,7 @@ $page = end($link_array);
     <script src="assets/json/language-web.js"></script>
 <?php } ?>
 
-<?php if ($page == 'leads-list.php' || $page == 'leads.php') {   ?>
+<?php if ($page == 'leads-list.php' || $page == 'leads.php' || $page == 'leads-details.php') {   ?>
     <script src="assets/json/leads-list.js"></script>
 <?php } ?>
 

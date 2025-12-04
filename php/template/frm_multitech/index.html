@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Programa Multitech - Inscripción</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        .form-container {
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            padding: 2.5rem;
+            max-width: 600px;
+            width: 100%;
+        }
+        
+        .logo {
+            max-width: 120px;
+            margin-bottom: 15px;
+        }
+        
+        h1 {
+            font-weight: 700;
+            color: #004085;
+        }
+        
+        .form-title {
+            color: #0062E6;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+        
+        .form-floating label {
+            color: #6c757d;
+        }
+        
+        .form-control,
+        .form-select {
+            border-radius: 12px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(90deg, #0062E6, #33AEFF);
+            border: none;
+            font-weight: 600;
+            padding: 12px 25px;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(90deg, #0046a1, #1f89da);
+            transform: scale(1.03);
+        }
+        
+        .footer {
+            text-align: center;
+            font-size: 0.9rem;
+            color: #024BA5;
+            margin-top: 20px;
+        }
+    </style>
+
+
+</head>
+
+<body>
+
+
+    <div class="form-container text-center">
+        <!-- Logo -->
+        <img src="img/logo.png" alt="Logo" class="logo">
+
+        <!-- Título -->
+        <h1>Escríbenos para más información</h1>
+        <p class="text-muted mb-4">¿Interesado en estudiar en Multitech? ¡Inscríbete!</p>
+
+        <!-- Formulario -->
+        <form id="mainForm">
+
+            <h3 class="h5 form-title">Complete sus datos:</h3>
+
+            <div class="mb-3 form-floating">
+                <input type="text" name="nombres" id="nombres" class="form-control" placeholder="Nombres" required>
+                <label for="nombres">Nombres</label>
+            </div>
+            <div class="mb-3 form-floating">
+                <input type="text" name="apellidos" id="apellidos" class="form-control" placeholder="Apellidos" required>
+                <label for="apellidos">Apellidos</label>
+            </div>
+
+            <div class="mb-3 form-floating">
+                <input type="number" name="cedula" id="cedula" class="form-control" placeholder="Número de Cédula">
+                <label for="cedula">Número de Cédula</label>
+            </div>
+
+            <div class="mb-3 form-floating">
+                <input type="email" name="email" id="email" class="form-control" placeholder="Correo Electrónico" required>
+                <label for="email">Correo Electrónico</label>
+            </div>
+
+            <div class="form-floating mb-4">
+                <input type="number" name="telefono" id="telefono" class="form-control" placeholder="Teléfono" required>
+                <label for="telefono">Teléfono</label>
+            </div>
+            <!-- anti spam-->
+            <div style="display:none;">
+                <label>Dejar este campo vacío</label>
+                <input type="text" name="website" autocomplete="off" tabindex="-1">
+            </div>
+
+            <!-- Url de Origen-->
+            <input type="hidden" name="origen_url" id="origen_url">
+
+
+            <!-- Campo select -->
+            <div class="form-floating mb-4">
+                <select class="form-select" id="curso" name="curso" required>
+          <option value="" selected disabled>Seleccione una opción</option>
+          <option value="Inteligencia Artificial">Inteligencia Artificial</option>
+          <option value="Diseña con capcut">Diseña con CapCut</option>
+          <option value="Inbound Marketing el mejor embudo de venta">Inbound Marketing: el mejor embudo de venta</option>
+          <option value="Cómo hacer tu hoja de vida estándar ATS">Cómo hacer tu hoja de vida estándar ATS</option>
+        </select>
+                <label for="curso">Curso</label>
+            </div>
+
+            <!-- Botón -->
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-primary w-100">🚀 Enviar </button>
+            </div>
+        </form>
+
+        <!-- Footer -->
+        <div class="footer mt-4">
+            <p>© 2025 Programa Multitech | Todos los derechos reservados</p>
+        </div>
+    </div>
+
+    <script>
+        // Recibir la URL real desde el padre
+        window.addEventListener("message", function(event) {
+            if (event.data && event.data.tipo === "url_padre") {
+                const campo = document.getElementById("origen_url");
+                if (campo) campo.value = event.data.url;
+            }
+        });
+        document.getElementById('origen_url').value
+    </script>
+
+
+
+    <script>
+        document.getElementById('mainForm').addEventListener('submit', function(event) {
+            if (!event.target.checkValidity()) {
+                event.preventDefault();
+                alert('Por favor complete todos los campos antes de enviar.');
+            }
+        });
+
+        if (document.getElementById("mainForm")) {
+
+            document.getElementById("mainForm").addEventListener("submit", function(e) {
+                e.preventDefault();
+
+                let datos = new FormData(this);
+                datos.append("accion", "registrar_leads");
+
+                fetch("ajax.php", {
+                        method: "POST",
+                        body: datos
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+
+                        if (data.status === "success") {
+
+                            Swal.fire("Éxito", data.message, "success");
+                            this.reset();
+
+                            // --- SEGUNDO FETCH (PHPMailer) ---
+                            fetch("phpmailer/wedding_phpmailer_template.php", {
+                                    method: "POST",
+                                    body: datos
+                                })
+                                .then(res => res.json())
+                                .then(resp => {
+                                    console.log("Correo:", resp);
+                                });
+                            // ----------------------------------
+
+                        } else {
+                            Swal.fire("Error", data.message, "error");
+                        }
+                    });
+
+            });
+
+        }
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

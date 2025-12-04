@@ -321,9 +321,9 @@
                         
                         <!-- Item-->
                         <div class="pt-2 mt-2 border-top">
-                            <a href="login.php" class="dropdown-item text-danger">
+                            <a href="salir.php" class="dropdown-item text-danger">
                                 <i class="ti ti-logout me-1 fs-17 align-middle"></i>
-                                <span class="align-middle">Sign Out</span>
+                                <span class="align-middle">Cerrar Sesion</span>
                             </a>
                         </div>
                     </div>

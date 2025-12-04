@@ -3,3 +3,24 @@ Felipe, en esta primera version lo que necesitamos es lo siguiente:
 1. Registro del LEAD: Pueden ser automatico que llegan por redes, o se registran en la aplicacion
 2. Gestion del LEAD: Si el lead llega por redes se debe registrar la gestion dinamicamente
 3. Informe de la Gestion.
+
+
+
+1.  Tabla gestion tipo
+
+notas, llamadas, archivos y correo
+
+2. agregar columna estado leads secundario 
+
+perdido y activo
+
+3. interes tabla 
+
+frio, medio y caliente
+
+4. agregar la columna empresa en user 
+
+5. que solo aparezca en departamento los de santander
+
+6. agregar en el formulario de jose juan lo de mi api para agregar
+

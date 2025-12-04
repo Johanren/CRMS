@@ -4,7 +4,7 @@ class CarreraModels
 {
     public static function listarCarrera()
     {
-        $sql = "SELECT * FROM carrera";
+        $sql = "SELECT * FROM programa p INNER JOIN empresa e ON p.emp_pro = id_emp";
         $conn = new Conexion();
         $conectar = $conn->conectar();
         $stmt = $conectar->prepare($sql);
@@ -15,12 +15,14 @@ class CarreraModels
 
     public static function agregarCarrera($data)
     {
-        $sql = "INSERT INTO carrera (nombre) VALUES (?)";
+        $sql = "INSERT INTO programa (desc_pro, val_pro, emp_pro) VALUES (?,?,?)";
         $conn = new Conexion();
         $conectar = $conn->conectar();
         $stmt = $conectar->prepare($sql);
 
         $stmt->bindParam(1, $data["nom_carr"]);
+        $stmt->bindParam(2, $data["val_carr"]);
+        $stmt->bindParam(3, $data["emp_carr"]);
         if ($stmt->execute()) {
             return "ok";
         }
@@ -30,7 +32,7 @@ class CarreraModels
 
     public static function listarCarreraId($id)
     {
-        $sql = "SELECT * FROM carrera WHERE id_carrera = ?";
+        $sql = "SELECT * FROM programa WHERE cod_pro = ?";
         $conn = new Conexion();
         $conectar = $conn->conectar();
         $stmt = $conectar->prepare($sql);
@@ -41,7 +43,7 @@ class CarreraModels
 
     public static function eliminarCarrera($id)
     {
-        $sql = "DELETE FROM carrera WHERE id_carrera = ?";
+        $sql = "DELETE FROM programa WHERE cod_pro = ?";
         $conn = new Conexion();
         $conectar = $conn->conectar();
         $stmt = $conectar->prepare($sql);

@@ -342,8 +342,6 @@
             <!-- Leads Kanban -->
             <div id="kanban-container" class="d-flex overflow-x-auto align-items-start gap-3"></div>
             <!-- /Leads Kanban -->
-
-        </div>
         <!-- End Content --> 
 
         <?php require_once '../partials/footer.php'; ?>

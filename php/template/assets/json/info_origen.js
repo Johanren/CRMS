@@ -595,20 +595,22 @@ function inicializarDataTableCarrera(carrera) {
         "data": carrera,
 
         "columns": [
-            { "data": "id_carrera" },
-            { "data": "nombre" }, {
+            { "data": "cod_pro" },
+            { "data": "desc_pro" },
+            { "data": "val_pro" },
+            { "data": "nom_emp" }, {
                 "render": (data, type, row) => `
                         <div class="dropdown table-action">
                             <a href="#" class="action-icon btn btn-xs shadow btn-icon btn-outline-light" data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="ti ti-dots-vertical"></i>
                             </a>
                             <div class="dropdown-menu dropdown-menu-right">
-                                <a class="dropdown-item" href="#" onclick="editarCarrera(${row.id_carrera})">
+                                <a class="dropdown-item" href="#" onclick="editarCarrera(${row.cod_pro})">
                                     <i class="ti ti-edit text-blue"></i> Edit
                                 </a>
                                 <a class="dropdown-item" 
                                 href="#" 
-                                onclick="eliminarCarrera(${row.id_carrera})"
+                                onclick="eliminarCarrera(${row.cod_pro})"
                                 data-bs-toggle="modal" 
                                 data-bs-target="#delete_campaign">
                                     <i class="ti ti-trash"></i> Delete
@@ -669,13 +671,15 @@ window.editarCarrera = (id) => {
         .then(res => res.json())
         .then(data => {
 
-            const carr = data.find(c => c.id_carrera == id);
+            const carr = data.find(c => c.cod_pro == id);
             if (!carr) return;
             // Cambiar título del OFFCANVAS
             document.getElementById("title-canvas-carr").textContent = "Editar Carrera";
             document.getElementById("btn-canvas-carr").textContent = "Editar";
             // Llenar campos
-            document.getElementById("nom_carr").value = carr.nombre;
+            document.getElementById("nom_carr").value = carr.desc_pro;
+            document.getElementById("val_carr").value = carr.val_pro;
+            document.getElementById("emp_carr").value = carr.emp_pro;
             // Guardar ID oculto
             if (!document.getElementById("carrera_id")) {
                 let hidden = document.createElement("input");
@@ -684,7 +688,7 @@ window.editarCarrera = (id) => {
                 hidden.name = "carrera_id";
                 document.getElementById("formCarr").appendChild(hidden);
             }
-            document.getElementById("carrera_id").value = carr.id_carrera;
+            document.getElementById("carrera_id").value = carr.cod_pro;
 
             // Abrir offcanvas manualmente
             let el = document.getElementById('offcarrera_add');
@@ -1492,7 +1496,7 @@ function listarFntOption() {
 }
 
 listarFnt();
-listarFntOption();
+//listarFntOption();
 
 //Accion
 
@@ -1935,3 +1939,387 @@ $('#medio').on('change', function() {
         $("#contenedor_fuente").hide();
     }
 });
+
+/*ROL*/
+function inicializarDataTableRol(rol) {
+
+    if ($.fn.DataTable.isDataTable('#info-rol')) {
+        $('#info-rol').DataTable().clear().destroy();
+    }
+
+    $('#info-rol').DataTable({
+        "bFilter": false,
+        "bInfo": false,
+        "ordering": true,
+        "autoWidth": true,
+        "language": {
+            search: ' ',
+            sLengthMenu: '_MENU_',
+            searchPlaceholder: "Search",
+            info: "_START_ - _END_ of _TOTAL_ items",
+            lengthMenu: "Show _MENU_ entries",
+            paginate: {
+                next: '<i class="ti ti-chevron-right"></i> ',
+                previous: '<i class="ti ti-chevron-left"></i> '
+            },
+        },
+        initComplete: (settings, json) => {
+            $('#info-rol .dataTables_paginate').appendTo('.datatable-paginate');
+            $('#info-rol .dataTables_length').appendTo('.datatable-length');
+        },
+
+        // 🔥 AQUÍ SE CARGA TU DATA DINÁMICA
+        "data": rol,
+
+        "columns": [
+            { "data": "id_rol" },
+            { "data": "nombre_rol" },
+            {
+                "render": (data, type, row) => `
+                        <div class="dropdown table-action">
+                            <a href="#" class="action-icon btn btn-xs shadow btn-icon btn-outline-light" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="ti ti-dots-vertical"></i>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <a class="dropdown-item" href="#" onclick="editarRol(${row.id_rol})">
+                                    <i class="ti ti-edit text-blue"></i> Edit
+                                </a>
+                                <a class="dropdown-item" 
+                                href="#" 
+                                onclick="eliminarRol(${row.id_rol})"
+                                data-bs-toggle="modal" 
+                                data-bs-target="#delete_campaign">
+                                    <i class="ti ti-trash"></i> Delete
+                                </a>
+                            </div>
+                        </div>
+                    `
+            }
+        ]
+    });
+}
+
+if (document.getElementById("formRol")) {
+    document.getElementById("formRol").addEventListener("submit", function(e) {
+        e.preventDefault();
+
+        let datos = new FormData(this);
+        datos.append("accion", "registrar_rol");
+
+        fetch("ajax/ajax.php", {
+                method: "POST",
+                body: datos
+            })
+            .then(res => res.json())
+            .then(data => {
+
+                if (data.status === "success") {
+                    Swal.fire("Éxito", data.message, "success");
+                    listarRol();
+                    this.reset();
+                    document.getElementById("btnCerrarOffcanvas-rol").click();
+                } else {
+                    Swal.fire("Error", data.message, "error");
+                }
+            });
+    });
+}
+
+function listarRol() {
+    fetch("ajax/ajax.php?accion=listar_rol")
+        .then(res => res.json())
+        .then(data => {
+            inicializarDataTableRol(data);
+        })
+        .catch(err => console.error("Error al listar rol:", err));
+}
+
+window.editarRol = (id) => {
+
+    let datos = new FormData();
+    datos.append("accion", "consultar_rol");
+    datos.append("id", id);
+
+    fetch("ajax/ajax.php", {
+            method: "POST",
+            body: datos
+        })
+        .then(res => res.json())
+        .then(data => {
+
+            const rol = data.find(c => c.id_rol == id);
+            if (!rol) return;
+            // Cambiar título del OFFCANVAS
+            document.getElementById("title-canvas-rol").textContent = "Editar Rol";
+            document.getElementById("btn-canvas-rol").textContent = "Editar";
+            // Llenar campos
+            document.getElementById("rol").value = rol.nombre_rol;
+
+            // Guardar ID oculto
+            if (!document.getElementById("rol_id")) {
+                let hidden = document.createElement("input");
+                hidden.type = "hidden";
+                hidden.id = "rol_id";
+                hidden.name = "rol_id";
+                document.getElementById("formRol").appendChild(hidden);
+            }
+            document.getElementById("rol_id").value = rol.id_rol;
+
+            // Abrir offcanvas manualmente
+            let el = document.getElementById('offrol_add');
+            let offcanvas = bootstrap.Offcanvas.getOrCreateInstance(el);
+            offcanvas.show();
+
+        })
+        .catch(err => {
+            console.error(err);
+            Swal.fire("Error", "No se pudo cargar la información", "error");
+        });
+
+};
+
+if (document.getElementById("btnCerrarOffcanvas-rol")) {
+    document.getElementById("btnCerrarOffcanvas-rol").addEventListener("click", function() {
+        document.getElementById("formRol").reset();
+        document.getElementById("title-canvas-rol").textContent = "Nuevo Rol";
+        document.getElementById("btn-canvas-rol").textContent = "Crear";
+    });
+}
+
+window.eliminarRol = (id) => {
+
+    let datos = new FormData();
+    datos.append("accion", "eliminar_rol");
+    datos.append("id", id);
+
+    fetch("ajax/ajax.php", {
+            method: "POST",
+            body: datos
+        })
+        .then(res => res.json())
+        .then(data => {
+
+            if (data.status === "success") {
+                Swal.fire("Éxito", data.message, "success");
+                listarDepart();
+            } else {
+                Swal.fire("Error", data.message, "error");
+            }
+
+        })
+        .catch(err => {
+            console.error(err);
+            Swal.fire("Error", "No se pudo cargar la información", "error");
+        });
+
+};
+
+function listarRolOption() {
+    fetch("ajax/ajax.php?accion=listar_rol_option")
+        .then(res => res.json())
+        .then(data => {
+            if (document.getElementById("rolS")) {
+                document.getElementById("rolS").innerHTML = data.option;
+            }
+        });
+}
+
+listarRolOption();
+listarRol();
+
+/*USER*/
+function inicializarDataTableUser(rol) {
+
+    if ($.fn.DataTable.isDataTable('#info-user')) {
+        $('#info-user').DataTable().clear().destroy();
+    }
+
+    $('#info-user').DataTable({
+        "bFilter": false,
+        "bInfo": false,
+        "ordering": true,
+        "autoWidth": true,
+        "language": {
+            search: ' ',
+            sLengthMenu: '_MENU_',
+            searchPlaceholder: "Search",
+            info: "_START_ - _END_ of _TOTAL_ items",
+            lengthMenu: "Show _MENU_ entries",
+            paginate: {
+                next: '<i class="ti ti-chevron-right"></i> ',
+                previous: '<i class="ti ti-chevron-left"></i> '
+            },
+        },
+        initComplete: (settings, json) => {
+            $('#info-user .dataTables_paginate').appendTo('.datatable-paginate');
+            $('#info-user .dataTables_length').appendTo('.datatable-length');
+        },
+
+        // 🔥 AQUÍ SE CARGA TU DATA DINÁMICA
+        "data": rol,
+
+        "columns": [
+            { "data": "id_user" },
+            { "data": "codigo" },
+            { "data": "usuario" },
+            { "data": "email" },
+            { "data": "nombre_rol" },
+            { "data": "fecha_creacion" },
+            {
+                "render": (data, type, row) => `
+                        <div class="dropdown table-action">
+                            <a href="#" class="action-icon btn btn-xs shadow btn-icon btn-outline-light" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="ti ti-dots-vertical"></i>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <a class="dropdown-item" href="#" onclick="editarUser(${row.id_user})">
+                                    <i class="ti ti-edit text-blue"></i> Edit
+                                </a>
+                                <a class="dropdown-item" 
+                                href="#" 
+                                onclick="eliminarUser(${row.id_user})"
+                                data-bs-toggle="modal" 
+                                data-bs-target="#delete_campaign">
+                                    <i class="ti ti-trash"></i> Delete
+                                </a>
+                            </div>
+                        </div>
+                    `
+            }
+        ]
+    });
+}
+
+if (document.getElementById("formUser")) {
+    document.getElementById("formUser").addEventListener("submit", function(e) {
+        e.preventDefault();
+
+        let datos = new FormData(this);
+        datos.append("accion", "registrar_user");
+
+        fetch("ajax/ajax.php", {
+                method: "POST",
+                body: datos
+            })
+            .then(res => res.json())
+            .then(data => {
+
+                if (data.status === "success") {
+                    Swal.fire("Éxito", data.message, "success");
+                    listarUser();
+                    this.reset();
+                    document.getElementById("btnCerrarOffcanvas-user").click();
+                } else {
+                    Swal.fire("Error", data.message, "error");
+                }
+            });
+    });
+}
+
+function listarUser() {
+    fetch("ajax/ajax.php?accion=listar_user")
+        .then(res => res.json())
+        .then(data => {
+            inicializarDataTableUser(data);
+        })
+        .catch(err => console.error("Error al listar user:", err));
+}
+
+window.editarUser = (id) => {
+
+    let datos = new FormData();
+    datos.append("accion", "consultar_user");
+    datos.append("id", id);
+
+    fetch("ajax/ajax.php", {
+            method: "POST",
+            body: datos
+        })
+        .then(res => res.json())
+        .then(data => {
+
+            const user = data.find(c => c.id_user == id);
+            if (!user) return;
+            // Cambiar título del OFFCANVAS
+            document.getElementById("title-canvas-user").textContent = "Editar Usuario";
+            document.getElementById("btn-canvas-user").textContent = "Editar";
+            // Llenar campos
+            document.getElementById("codigoUser").value = user.codigo;
+            document.getElementById("nombreUser").value = user.nombres;
+            document.getElementById("apellidoUser").value = user.apellidos;
+            document.getElementById("correoUser").value = user.email;
+            document.getElementById("telefonoUser").value = user.telefono;
+            document.getElementById("contrasenaUser").value = user.password;
+            document.getElementById("rolS").value = user.id_rol;
+
+            // Guardar ID oculto
+            if (!document.getElementById("user_id")) {
+                let hidden = document.createElement("input");
+                hidden.type = "hidden";
+                hidden.id = "rol_id";
+                hidden.name = "rol_id";
+                document.getElementById("formUser").appendChild(hidden);
+            }
+            document.getElementById("user_id").value = rol.id_user;
+
+            // Abrir offcanvas manualmente
+            let el = document.getElementById('offUser_add');
+            let offcanvas = bootstrap.Offcanvas.getOrCreateInstance(el);
+            offcanvas.show();
+
+        })
+        .catch(err => {
+            console.error(err);
+            Swal.fire("Error", "No se pudo cargar la información", "error");
+        });
+
+};
+
+if (document.getElementById("btnCerrarOffcanvas-user")) {
+    document.getElementById("btnCerrarOffcanvas-user").addEventListener("click", function() {
+        document.getElementById("formUser").reset();
+        document.getElementById("title-canvas-user").textContent = "Nuevo Usuario";
+        document.getElementById("btn-canvas-user").textContent = "Crear";
+    });
+}
+
+window.eliminarUser = (id) => {
+
+    let datos = new FormData();
+    datos.append("accion", "eliminar_user");
+    datos.append("id", id);
+
+    fetch("ajax/ajax.php", {
+            method: "POST",
+            body: datos
+        })
+        .then(res => res.json())
+        .then(data => {
+
+            if (data.status === "success") {
+                Swal.fire("Éxito", data.message, "success");
+                listarDepart();
+            } else {
+                Swal.fire("Error", data.message, "error");
+            }
+
+        })
+        .catch(err => {
+            console.error(err);
+            Swal.fire("Error", "No se pudo cargar la información", "error");
+        });
+
+};
+
+function listarUserOption() {
+    fetch("ajax/ajax.php?accion=listar_user_option")
+        .then(res => res.json())
+        .then(data => {
+            if (document.getElementById("user")) {
+                document.getElementById("user").innerHTML = data.option;
+            }
+        });
+}
+
+listarUserOption();
+listarUser();

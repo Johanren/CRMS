@@ -22,6 +22,13 @@ $accion = new AccionControllers();
 $esta_leads = new EstadoLeadsControllersControllers();
 $cliente = new ClienteControllers();
 $leads = new LeadsControllers();
+$notas = new NotasControllers();
+$comentario = new ComentarioControllers();
+$calls = new CallsControlellers();
+$proximaActividad = new ProximaActividadControllers();
+$rol = new RolControllers();
+$user = new UserControllers();
+$login = new LoginControllers();
 if (isset($_POST['accion'])) {
     switch ($_POST['accion']) {
         /*Campana*/
@@ -137,11 +144,77 @@ if (isset($_POST['accion'])) {
             break;
         /* Cliente */
         case 'registrar_leads':
-            echo json_encode($cliente->agregarCliente($_POST));
+            $data = [
+                "identificacionLeads" => $_POST["identificacionLeads"] ?? $_POST["cedula"] ?? null,
+                "nombresLeads"        => $_POST["nombresLeads"]        ?? $_POST["nombres"] ?? null,
+                "apellidosLeads"      => $_POST["apellidosLeads"]      ?? $_POST["apellidos"] ?? null,
+                "telefonoLeads"       => $_POST["telefonoLeads"]       ?? $_POST["telefono"] ?? null,
+                "correoLeads"         => $_POST["correoLeads"]         ?? $_POST["email"] ?? null,
+                "direLeads"           => $_POST["direLeads"]           ?? $_POST["direccion"] ?? null,
+                "barrio"              => $_POST["barrio"]              ?? null,
+                "ciudad"              => $_POST["ciudad"]              ?? null
+            ];
+
+            echo json_encode($cliente->agregarCliente($data));
             break;
         /*LEADS */
         case 'updateEstado':
             echo json_encode($leads->updateEstado($_POST["id_lead"], $_POST["id_estado"]));
+            break;
+        case 'listar_leads_id':
+            echo json_encode($leads->listarLeadsId($_POST['id']));
+            break;
+        /*Notas */
+        case 'registrar_notas':
+            echo json_encode($notas->agregarNotas($_POST));
+            break;
+        /*Comentario */
+        case 'agregar_comentario':
+            echo json_encode($comentario->agregarComentario($_POST));
+            break;
+        /*Calls */
+        case 'registrar_calls':
+            echo json_encode($calls->agregarCalls($_POST));
+            break;
+        case 'listar_llamadas':
+            echo json_encode($calls->listarCallsId($_POST['id_lead']));
+            break;
+        case 'actualizar_estado_call':
+            echo json_encode($calls->actualizarEstadoCall($_POST));
+            break;
+        /*Proxima Actividad */
+        case 'registrar_actividad_pro':
+            echo json_encode($proximaActividad->agregarProximaActividad($_POST));
+            break;
+        case 'listar_proximas_actividades':
+            echo json_encode($proximaActividad->listarProximaActividadId($_POST["id_lead"]));
+            break;
+        /*ROL */
+        case 'registrar_rol':
+            echo json_encode($rol->agregarRol($_POST));
+            break;
+        case 'consultar_rol':
+            echo json_encode($rol->listarRolId($_POST['id']));
+            break;
+        case 'eliminar_rol':
+            echo json_encode($rol->eliminarRol($_POST['id']));
+            break;
+        /*USER */
+        case 'registrar_user':
+            echo json_encode($user->agregarUser($_POST));
+            break;
+        case 'consultar_user':
+            echo json_encode($user->listarUserId($_POST['id']));
+            break;
+        case 'eliminar_user':
+            echo json_encode($user->eliminarUser($_POST['id']));
+            break;
+        /*LOGIN */
+        case "login":
+            $email = $_POST['email'];
+            $password = $_POST['password'];
+            $respuesta = $login->login($email, $password);
+            echo json_encode($respuesta);
             break;
         default:
             # code...
@@ -252,7 +325,7 @@ if (isset($_GET['accion'])) {
             $option = "<option value=''>Seleccione Carrera</option>";
             foreach ($lista as $a) {
                 $option .= "
-                    <option value='{$a['id_carrera']}'>{$a['nombre']}</option>
+                    <option value='{$a['cod_pro']}'>{$a['desc_pro']}</option>
                 ";
             }
             echo json_encode(["option" => $option]);
@@ -361,6 +434,42 @@ if (isset($_GET['accion'])) {
             break;
         case 'listar_leads':
             echo json_encode($leads->listarLeads());
+            break;
+        /*Notas */
+        case 'listarNotas':
+            echo json_encode($notas->listarNotasId($_GET['id']));
+            break;
+        /*ROL */
+        case 'listar_rol':
+            echo json_encode($rol->listarRol());
+            break;
+        case 'listar_rol_option':
+            $lista = $rol->listarRol();
+            $option = "<option value=''>Seleccione Rol</option>";
+            foreach ($lista as $a) {
+                $option .= "
+                    <option value='{$a['id_rol']}'>{$a['nombre_rol']}</option>
+                ";
+            }
+            echo json_encode(["option" => $option]);
+            break;
+        /*USER */
+        case 'listar_user':
+            echo json_encode($user->listarUser());
+            break;
+        case 'listar_user_option':
+            $lista = $user->listarUser();
+            $option = "<option value=''>Seleccione Usuerio</option>";
+            foreach ($lista as $a) {
+                $option .= "
+                    <option value='{$a['id_user']}'>{$a['nombres']} {$a['apellidos']}</option>
+                ";
+            }
+            echo json_encode(["option" => $option]);
+            break;
+        /*LOGIN */
+        case 'redireccionamiento':
+            echo json_encode(LoginControllers::redireccion());
             break;
         default:
     }

@@ -8273,54 +8273,35 @@ $page = end( $link_array );
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Add New Notes</h5>
+                <h5 class="modal-title">Añadir nueva nota</h5>
                 <button type="button" class="btn-close custom-btn-close border p-1 me-0 text-dark"
                     data-bs-dismiss="modal" aria-label="Close">
                 </button>
             </div>
-            <form action="company-details.php">
+            <form id="formNotas">
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label class="form-label">Title <span class="text-danger"> *</span></label>
-                        <input class="form-control" type="text">
+                        <label class="form-label">Titulo <span class="text-danger"> *</span></label>
+                        <input class="form-control" name="tit_not" id="tit_not" type="text">
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Note <span class="text-danger"> *</span></label>
-                        <textarea class="form-control" rows="4"></textarea>
+                        <label class="form-label">Nota <span class="text-danger"> *</span></label>
+                        <textarea class="form-control" name="desc_not" id="desc_not"  rows="4"></textarea>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Attachment <span class="text-danger">*</span></label>
+                        <label class="form-label">Adjunto <span class="text-danger">*</span></label>
                         <div
                             class="file-upload drag-file w-100 d-flex bg-light border shadow align-items-center justify-content-center flex-column">
                             <span class="upload-img d-block mb-1"><i
                                     class="ti ti-folder-open text-primary fs-16"></i></span>
                             <p class="mb-0 fs-14 text-dark">Drop your files here or <a href="javascript:void(0);"
                                     class="text-decoration-underline text-primary">browse</a></p>
-                            <input type="file" accept="video/image">
+                            <input type="file" name="desc_arch[]" id="desc_arch" multiple>
                             <p class="fs-13 mb-0">Maximum size : 50 MB</p>
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-7">
-                            <div class="card mb-0">
-                                <div class="card-body p-2">
-                                    <div class="d-flex align-items-center justify-content-between flex-wrap row-gap-3">
-                                        <div class="d-flex align-items-center me-3">
-                                            <span class="avatar bg-success me-2">
-                                                <i class="ti ti-file-spreadsheet fs-20"></i>
-                                            </span>
-                                            <div>
-                                                <h6 class="fw-medium fs-14 mb-1">Project Specs.xls</h6>
-                                                <p class="mb-0">365 KB</p>
-                                            </div>
-                                        </div>
-                                        <a href="javascript:void(0);"
-                                            class="avatar avatar-xs rounded-circle bg-light text-dark"><i
-                                                class="ti ti-arrow-down"></i></a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <div class="row" id="preview-archivos"></div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -22148,58 +22129,39 @@ $page = end( $link_array );
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Add New Notes</h5>
+                <h5 class="modal-title">Añadir nueva nota</h5>
                 <button type="button" class="btn-close custom-btn-close border p-1 me-0 text-dark"
                     data-bs-dismiss="modal" aria-label="Close">
                 </button>
             </div>
-            <form action="leads-details.php">
+            <form id="formNotas">
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label class="form-label">Title <span class="text-danger"> *</span></label>
-                        <input class="form-control" type="text">
+                        <label class="form-label">Titulo <span class="text-danger"> *</span></label>
+                        <input class="form-control" name="tit_not" id="tit_not" type="text">
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Note <span class="text-danger"> *</span></label>
-                        <textarea class="form-control" rows="4"></textarea>
+                        <label class="form-label">Nota <span class="text-danger"> *</span></label>
+                        <textarea class="form-control" name="desc_not" id="desc_not"  rows="4"></textarea>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Attachment <span class="text-danger">*</span></label>
+                        <label class="form-label">Adjunto <span class="text-danger">*</span></label>
                         <div
                             class="file-upload drag-file w-100 d-flex bg-light border shadow align-items-center justify-content-center flex-column">
                             <span class="upload-img d-block mb-1"><i
                                     class="ti ti-folder-open text-primary fs-16"></i></span>
                             <p class="mb-0 fs-14 text-dark">Drop your files here or <a href="javascript:void(0);"
                                     class="text-decoration-underline text-primary">browse</a></p>
-                            <input type="file" accept="video/image">
+                            <input type="file" name="desc_arch[]" id="desc_arch" multiple>
                             <p class="fs-13 mb-0">Maximum size : 50 MB</p>
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-7">
-                            <div class="card mb-0">
-                                <div class="card-body p-2">
-                                    <div class="d-flex align-items-center justify-content-between flex-wrap row-gap-3">
-                                        <div class="d-flex align-items-center me-3">
-                                            <span class="avatar bg-success me-2">
-                                                <i class="ti ti-file-spreadsheet fs-20"></i>
-                                            </span>
-                                            <div>
-                                                <h6 class="fw-medium fs-14 mb-1">Project Specs.xls</h6>
-                                                <p class="mb-0">365 KB</p>
-                                            </div>
-                                        </div>
-                                        <a href="javascript:void(0);"
-                                            class="avatar avatar-xs rounded-circle bg-light text-dark"><i
-                                                class="ti ti-arrow-down"></i></a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <div class="row" id="preview-archivos"></div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <a class="btn btn-light" data-bs-dismiss="modal">Cancel</a>
+                    <a class="btn btn-light" data-bs-dismiss="modal" id="cerrarModalNotas">Cancel</a>
                     <button class="btn btn-primary" type="submit">Confirm</button>
                 </div>
             </form>
@@ -22279,52 +22241,48 @@ $page = end( $link_array );
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Create Call Log</h5>
+                <h5 class="modal-title">Crear registro de llamadas</h5>
                 <button type="button" class="btn-close custom-btn-close border p-1 me-0 text-dark"
                     data-bs-dismiss="modal" aria-label="Close">
                 </button>
             </div>
-            <form action="leads-details.php">
+            <form id="formCalls">
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-md-12">
                             <div class="mb-3">
-                                <label class="form-label">Status <span class="text-danger"> *</span></label>
-                                <select class="select">
-                                    <option>Busy</option>
-                                    <option>Unavailable</option>
-                                    <option>No Answer</option>
-                                    <option>Wrong Number</option>
-                                    <option>Left Voice Message</option>
-                                    <option>Moving Forward</option>
+                                <label class="form-label">Estado <span class="text-danger"> *</span></label>
+                                <select class="select" id="estado_call" name="estado_call">
+                                    <option value="ocupado">Ocupado</option>
+                                    <option value="no disponible">No disponible</option>
+                                    <option value="sin respuesta">Sin Respuesta</option>
+                                    <option value="numero incorrecto">Número incorrecto</option>
+                                    <option value="mensaje de voz">Menzaje de voz izquierdo</option>
+                                    <option value="avanzado">Avanzado</option>
                                 </select>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label">Follow Up Date <span class="text-danger">*</span></label>
+                                <label class="form-label">Fecha de seguimiento <span class="text-danger">*</span></label>
                                 <div class="input-group w-auto input-group-flat">
-                                    <input type="text" class="form-control" data-provider="flatpickr"
-                                        data-date-format="d M, Y" value="23-05-2025">
-                                    <span class="input-group-text">
-                                        <i class="ti ti-calendar"></i>
-                                    </span>
+                                    <input type="date" class="form-control" id="fechaSeguimiento" name="fechaSeguimiento">
                                 </div>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label">Note <span class="text-danger"> *</span></label>
-                                <textarea class="form-control" rows="4"></textarea>
+                                <label class="form-label">Nota <span class="text-danger"> *</span></label>
+                                <textarea class="form-control" id="nota_call" name="nota_call" rows="4"></textarea>
                             </div>
-                            <div>
+                            <!--<div>
                                 <div class="form-check mb-1">
                                     <input type="checkbox" class="form-check-input" id="customCheck1">
                                     <label class="form-check-label" for="customCheck1">Create a follow up task</label>
                                 </div>
-                            </div>
+                            </div>-->
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <a class="btn btn-light" data-bs-dismiss="modal">Cancel</a>
-                    <button class="btn btn-primary" type="submit">Create New</button>
+                    <a class="btn btn-light" data-bs-dismiss="modal" id="cerrarModalCalls">Cancelar</a>
+                    <button class="btn btn-primary" type="submit">Crear Nuevo</button>
                 </div>
             </form>
         </div>
@@ -22846,6 +22804,71 @@ $page = end( $link_array );
     </div>
 </div>
 <!-- /Add Owner -->
+
+<!-- Create proxima actividad Log -->
+<div class="modal fade" id="create_actividad" role="dialog">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Crear proxima actividad</h5>
+                <button type="button" class="btn-close custom-btn-close border p-1 me-0 text-dark"
+                    data-bs-dismiss="modal" aria-label="Close">
+                </button>
+            </div>
+            <form id="formProActi">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="mb-3">
+                                <label class="form-label">Titutlo <span class="text-danger"> *</span></label>
+                                <input type="text" class="form-control" name="tituloProAct" id="tituloProAct">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Descripción <span class="text-danger"> *</span></label>
+                                <textarea class="form-control" name="descProAct" id="descProAct"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Recordatorio<span class="text-danger">*</span></label>
+                                <select class="select" name="recor_act" id="recor_act">
+                                                                        <option>Seleccionar</option>
+                                                                        <option value="1">1 hr</option>
+                                                                        <option value="10">10hr</option>
+                                                                    </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Prioridad<span class="text-danger">*</span></label>
+                                <select class="select" name="prio_act" id="prio_act">
+                                                                        <option>Seleccionar</option>
+                                                                        <option value="alto">Alto</option>
+                                                                        <option value="bajo">Bajo</option>
+                                                                    </select>
+                            </div>
+                            <!--<div class="mb-3">
+                                <label class="form-label">Asignado a<span class="text-danger">*</span></label>
+                                <select class="select" name="asesor">
+                                                                        <option>Seleccionar</option>
+                                                                        <option selected>Jerald Sen</option>
+                                                                        <option>Jackson Daniel</option>
+                                                                    </select>
+                            </div>-->
+                            <!--<div>
+                                <div class="form-check mb-1">
+                                    <input type="checkbox" class="form-check-input" id="customCheck1">
+                                    <label class="form-check-label" for="customCheck1">Create a follow up task</label>
+                                </div>
+                            </div>-->
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <a class="btn btn-light" data-bs-dismiss="modal" id="cerrarModalProAct">Cancelar</a>
+                    <button class="btn btn-primary" type="submit">Crear Nuevo</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- /Create proxima actividad Log -->
 <?php }?>
 
 <?php if ($page == 'leads-list.php') {   ?>
@@ -28006,7 +28029,7 @@ $page = end( $link_array );
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Add New Notes</h5>
+                <h5 class="modal-title">Add New No</h5>
                 <button type="button" class="btn-close custom-btn-close border p-1 me-0 text-dark"
                     data-bs-dismiss="modal" aria-label="Close">
                 </button>
@@ -33605,6 +33628,22 @@ $page = end( $link_array );
                             <input type="text" class="form-control" id="nom_carr" name="nom_carr">
                         </div>
                     </div>
+                    <div class="col-md-12">
+                        <div class="mb-3">
+                            <label class="form-label">Valor Carrera <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="val_carr" name="val_carr">
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="mb-3">
+                            <label class="form-label">Empresa Carrera <span class="text-danger">*</span></label>
+                            <select name="emp_carr" class="form-control" id="emp_carr">
+                                <option value="">Seleccionar Carrera</option>
+                                <option value="1">MULTITECH</option>
+                                <option value="2">MULTICOMPUTO</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="d-flex align-items-center justify-content-end">
@@ -33791,6 +33830,88 @@ $page = end( $link_array );
                 <button type="button" id="btnCerrarOffcanvas-est_leads" data-bs-dismiss="offcanvas"
                     class="btn btn-light me-2">Cancel</button>
                 <button type="submit" class="btn btn-primary" id="btn-canvas-est_leads">Crear</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="offcanvas offcanvas-end offcanvas-large" tabindex="-1" id="offrol_add">
+    <div class="offcanvas-header border-bottom">
+        <h5 class="mb-0" id="title-canvas-rol">Nueva Rol</h5>
+        <button type="button"
+            class="btn-close custom-btn-close border p-1 me-0 d-flex align-items-center justify-content-center rounded-circle"
+            data-bs-dismiss="offcanvas" aria-label="Close">
+        </button>
+    </div>
+    <div class="offcanvas-body">
+        <form id="formRol">
+            <div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="mb-3">
+                            <label class="form-label">Nombre Rol <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="rol" name="rol">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex align-items-center justify-content-end">
+                <button type="button" id="btnCerrarOffcanvas-rol" data-bs-dismiss="offcanvas"
+                    class="btn btn-light me-2">Cancel</button>
+                <button type="submit" class="btn btn-primary" id="btn-canvas-rol">Crear</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="offcanvas offcanvas-end offcanvas-large" tabindex="-1" id="offUser_add">
+    <div class="offcanvas-header border-bottom">
+        <h5 class="mb-0" id="title-canvas-user">Nueva Rol</h5>
+        <button type="button"
+            class="btn-close custom-btn-close border p-1 me-0 d-flex align-items-center justify-content-center rounded-circle"
+            data-bs-dismiss="offcanvas" aria-label="Close">
+        </button>
+    </div>
+    <div class="offcanvas-body">
+        <form id="formUser">
+            <div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="mb-3">
+                            <label class="form-label">Codigo <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="codigoUser" name="codigoUser">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Nombres <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="nombreUser" name="nombreUser">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Apellidos <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="apellidoUser" name="apellidoUser">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Correo <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="correoUser" name="correoUser">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Telefono <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="telefonoUser" name="telefonoUser">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Contraseña <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="contrasenaUser" name="contrasenaUser">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Rol <span class="text-danger">*</span></label>
+                            <select name="rolS" id="rolS" class="form-control"></select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex align-items-center justify-content-end">
+                <button type="button" id="btnCerrarOffcanvas-user" data-bs-dismiss="offcanvas"
+                    class="btn btn-light me-2">Cancel</button>
+                <button type="submit" class="btn btn-primary" id="btn-canvas-user">Crear</button>
             </div>
         </form>
     </div>
