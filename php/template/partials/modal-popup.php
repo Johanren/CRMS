@@ -23471,7 +23471,7 @@ $page = end( $link_array );
 <!-- Add lead-->
 <div class="offcanvas offcanvas-end offcanvas-large" tabindex="-1" id="offcanvas_add">
     <div class="offcanvas-header border-bottom">
-        <h5 class="mb-0">Agregar nuevo cliente potencial</h5>
+        <h5 class="mb-0" id="title-canvas-leads">Agregar nuevo cliente potencial</h5>
         <button type="button"
             class="btn-close custom-btn-close border p-1 me-0 d-flex align-items-center justify-content-center rounded-circle"
             data-bs-dismiss="offcanvas" aria-label="Close">
@@ -23526,16 +23526,8 @@ $page = end( $link_array );
                     <div class="mb-3">
                         <div class="d-flex align-items-center justify-content-between">
                             <label class="form-label">Carrera</label>
-                            <!--<a href="#" class="label-add link-primary mb-1" data-bs-toggle="offcanvas"
-                                data-bs-target="#offcanvas_add_2"><i class="ti ti-plus me-1"></i>Add New</a>-->
                         </div>
                         <select class="select2" id="carrera" name="carrera" data-toggle="select2">
-                            <option>Select</option>
-                            <option>NovaWave LLC</option>
-                            <option>BlueSky Industries</option>
-                            <option>Silver Hawk</option>
-                            <option>Summit Peak</option>
-                            <option>RiverStone Ventur</option>
                         </select>
                     </div>
                 </div>
@@ -23544,14 +23536,7 @@ $page = end( $link_array );
                         <div class="d-flex align-items-center justify-content-between">
                             <label class="form-label">Interés</label>
                         </div>
-                        <select class="select2" id="interes" name="interes" data-toggle="select2">
-                            <option>Select</option>
-                            <option>NovaWave LLC</option>
-                            <option>BlueSky Industries</option>
-                            <option>Silver Hawk</option>
-                            <option>Summit Peak</option>
-                            <option>RiverStone Ventur</option>
-                        </select>
+                        <select class="select2" id="interes" name="interes" data-toggle="select2"></select>
                     </div>
                 </div>
                 <div class="col-md-6">
@@ -23617,14 +23602,14 @@ $page = end( $link_array );
                 <div class="col-md-12">
                     <div class="mb-3">
                         <label class="form-label">Observación <span class="text-danger">*</span></label>
-                        <textarea class="form-control" rows="3" name="observacionLeads" placeholder="Description"></textarea>
+                        <textarea class="form-control" rows="3" id="observacionLeads" name="observacionLeads" placeholder="Description"></textarea>
                     </div>
                 </div>
             </div>
             <div class="d-flex align-items-center justify-content-end">
                 <button type="button" data-bs-dismiss="offcanvas" class="btn btn-light me-2">Cancel</button>
                 <button type="submit" class="btn btn-primary" data-bs-toggle="modal"
-                    data-bs-target="#create_success">Crear</button>
+                    data-bs-target="#create_success" id="btn-canvas-leads">Crear</button>
             </div>
         </form>
     </div>
@@ -33899,11 +33884,20 @@ $page = end( $link_array );
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Contraseña <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="contrasenaUser" name="contrasenaUser">
+                            <input type="text" class="form-control" name="contrasenaUser">
+                            <input type="hidden" id="contrasenaUser" name="contrasenaUserEdit">
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Rol <span class="text-danger">*</span></label>
                             <select name="rolS" id="rolS" class="form-control"></select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Empresa <span class="text-danger">*</span></label>
+                            <select name="empre" id="empre" class="form-control">
+                                <option value="">Seleccione empresa</option>
+                                <option value="1">MULTITECH</option>
+                                <option value="2">MULTICOMPUTO</option>
+                            </select>
                         </div>
                     </div>
                 </div>

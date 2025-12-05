@@ -14,6 +14,15 @@ class UserControllers{
         }
     }
 
+    public static function actualizarUser($data){
+        $resp = UserModels::actualizarUser($data);
+        if ($resp == "ok") {
+            return ["status" => "success", "message" => "User actualizado correctamente"];
+        } else {
+            return ["status" => "error", "message" => "No se pudo registrar"];
+        }
+    }
+
     public static function listarUserId($id){
         return UserModels::listarUserId($id);
     }

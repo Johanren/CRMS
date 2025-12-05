@@ -2164,6 +2164,7 @@ function inicializarDataTableUser(rol) {
             { "data": "usuario" },
             { "data": "email" },
             { "data": "nombre_rol" },
+            { "data": "nom_emp" },
             { "data": "fecha_creacion" },
             {
                 "render": (data, type, row) => `
@@ -2195,7 +2196,12 @@ if (document.getElementById("formUser")) {
         e.preventDefault();
 
         let datos = new FormData(this);
-        datos.append("accion", "registrar_user");
+        let userId = document.getElementById("user_id").value;
+        if (userId && parseInt(userId) > 0) {
+            datos.append("accion", "actualizar_user");
+        } else {
+            datos.append("accion", "registrar_user");
+        }
 
         fetch("ajax/ajax.php", {
                 method: "POST",
@@ -2251,16 +2257,17 @@ window.editarUser = (id) => {
             document.getElementById("telefonoUser").value = user.telefono;
             document.getElementById("contrasenaUser").value = user.password;
             document.getElementById("rolS").value = user.id_rol;
+            document.getElementById("empre").value = user.cod_emp;
 
             // Guardar ID oculto
             if (!document.getElementById("user_id")) {
                 let hidden = document.createElement("input");
                 hidden.type = "hidden";
-                hidden.id = "rol_id";
-                hidden.name = "rol_id";
+                hidden.id = "user_id";
+                hidden.name = "user_id";
                 document.getElementById("formUser").appendChild(hidden);
             }
-            document.getElementById("user_id").value = rol.id_user;
+            document.getElementById("user_id").value = user.id_user;
 
             // Abrir offcanvas manualmente
             let el = document.getElementById('offUser_add');

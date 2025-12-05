@@ -16,32 +16,32 @@
             max-width: 600px;
             width: 100%;
         }
-        
+
         .logo {
             max-width: 120px;
             margin-bottom: 15px;
         }
-        
+
         h1 {
             font-weight: 700;
             color: #004085;
         }
-        
+
         .form-title {
             color: #0062E6;
             margin-bottom: 1rem;
             font-weight: 600;
         }
-        
+
         .form-floating label {
             color: #6c757d;
         }
-        
+
         .form-control,
         .form-select {
             border-radius: 12px;
         }
-        
+
         .btn-primary {
             background: linear-gradient(90deg, #0062E6, #33AEFF);
             border: none;
@@ -50,12 +50,12 @@
             border-radius: 50px;
             transition: all 0.3s ease;
         }
-        
+
         .btn-primary:hover {
             background: linear-gradient(90deg, #0046a1, #1f89da);
             transform: scale(1.03);
         }
-        
+
         .footer {
             text-align: center;
             font-size: 0.9rem;
@@ -117,15 +117,29 @@
 
 
             <!-- Campo select -->
+            <?php
+            require_once "config/conexion.php";
+
+
+            // Consulta de programas
+            $query = "SELECT cod_pro, desc_pro FROM programa WHERE emp_pro = 1 ORDER BY desc_pro ASC";
+            $result = $conexion->query($query);
+
+            ?>
+
+            <!-- Campo select dinámico -->
             <div class="form-floating mb-4">
                 <select class="form-select" id="curso" name="curso" required>
-          <option value="" selected disabled>Seleccione una opción</option>
-          <option value="Inteligencia Artificial">Inteligencia Artificial</option>
-          <option value="Diseña con capcut">Diseña con CapCut</option>
-          <option value="Inbound Marketing el mejor embudo de venta">Inbound Marketing: el mejor embudo de venta</option>
-          <option value="Cómo hacer tu hoja de vida estándar ATS">Cómo hacer tu hoja de vida estándar ATS</option>
-        </select>
-                <label for="curso">Curso</label>
+                    <option value="" selected disabled>Seleccione una opción</option>
+
+                    <?php while ($row = mysqli_fetch_assoc($result)): ?>
+                        <option value="<?php echo $row['cod_pro']; ?>">
+                            <?php echo htmlspecialchars($row['desc_pro']); ?>
+                        </option>
+                    <?php endwhile; ?>
+
+                </select>
+                <label for="curso">Programa</label>
             </div>
 
             <!-- Botón -->
@@ -151,6 +165,40 @@
         document.getElementById('origen_url').value
     </script>
 
+    <script>
+        function enviarWhatsApp() {
+
+            let nombres = document.getElementById('nombres').value.trim();
+            let apellidos = document.getElementById('apellidos').value.trim();
+            let cedula = document.getElementById('cedula').value.trim();
+            let email = document.getElementById('email').value.trim();
+            let telefono = document.getElementById('telefono').value.trim();
+            let curso = document.getElementById('curso').value.trim();
+
+            // Validación rápida
+            if (!nombres || !apellidos || !email || !telefono || !curso) {
+                Swal.fire("Atención", "Por favor completa todos los campos antes de enviar.", "warning");
+                return;
+            }
+
+            let mensaje =
+                `¡Hola! Estoy interesado en el programa Multitech.
+            
+            🧑 Nombre: ${nombres} ${apellidos}
+            🪪 Cédula: ${cedula}
+            📧 Correo: ${email}
+            📱 Teléfono: ${telefono}
+            🎓 Curso: ${curso}
+            
+            Gracias por su atención.`;
+
+            let numero = "573158071474"; // CAMBIA ESTE NÚMERO
+
+            let url = "https://wa.me/" + numero + "?text=" + encodeURIComponent(mensaje);
+
+            window.open(url, "_blank");
+        }
+    </script>
 
 
     <script>
@@ -179,6 +227,8 @@
                         if (data.status === "success") {
 
                             Swal.fire("Éxito", data.message, "success");
+                            // Enviar a WhatsApp
+                            enviarWhatsApp();
                             this.reset();
 
                             // --- SEGUNDO FETCH (PHPMailer) ---

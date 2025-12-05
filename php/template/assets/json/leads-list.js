@@ -108,7 +108,16 @@ if (document.getElementById("formLeads")) {
         e.preventDefault();
 
         let datos = new FormData(this);
-        datos.append("accion", "registrar_leads");
+        if (document.getElementById("cliente_id")) {
+            let leadsId = document.getElementById("cliente_id").value;
+            if (leadsId && parseInt(leadsId) > 0) {
+                datos.append("accion", "actualizar_leads");
+            } else {
+                datos.append("accion", "registrar_leads");
+            }
+        } else {
+            datos.append("accion", "registrar_leads");
+        }
 
         fetch("ajax/ajax.php", {
                 method: "POST",
@@ -119,7 +128,7 @@ if (document.getElementById("formLeads")) {
 
                 if (data.status === "success") {
                     Swal.fire("Éxito", data.message, "success");
-                    listarLeads();
+                    cargarKanban();
                     this.reset();
                     document.getElementById("offcanvas").click();
                 } else {
@@ -153,26 +162,43 @@ window.editarLeads = (id) => {
         .then(res => res.json())
         .then(data => {
 
-            const campana = data.find(c => c.cod_dep == id);
-            if (!campana) return;
+            const leads = data.find(c => c.id_lead == id);
+            if (!leads) return;
             // Cambiar título del OFFCANVAS
-            document.getElementById("title-canvas-depar").textContent = "Editar Departamento";
-            document.getElementById("btn-canvas-depar").textContent = "Editar";
+            document.getElementById("title-canvas-leads").textContent = "Editar Cliente";
+            document.getElementById("btn-canvas-leads").textContent = "Editar";
             // Llenar campos
-            document.getElementById("nom_dep").value = campana.desc_dep;
+            document.getElementById("nombresLeads").value = leads.nombres;
+            document.getElementById("apellidosLeads").value = leads.apellidos;
+            document.getElementById("identificacionLeads").value = leads.identificacion;
+            document.getElementById("telefonoLeads").value = leads.telefono_principal;
+            document.getElementById("correoLeads").value = leads.email;
+            document.getElementById("direLeads").value = leads.direccion;
+            document.getElementById("infoLeads").value = leads.info_adicional;
+            document.getElementById("carrera").value = leads.carrera_id;
+            document.getElementById("interes").value = leads.interes_id;
+            document.getElementById("horario").value = leads.horario_id;
+            document.getElementById("medio").value = leads.medio_id;
+            document.getElementById("fuente").value = leads.fuente_id;
+            document.getElementById("campana").value = leads.campana_id;
+            document.getElementById("accion").value = leads.accion_id;
+            document.getElementById("departamento").value = leads.departamento_id;
+            document.getElementById("ciudad").value = leads.ciudad_id;
+            document.getElementById("barrio").value = leads.barrio_id;
+            document.getElementById("observacionLeads").value = leads.observaciones;
 
             // Guardar ID oculto
-            if (!document.getElementById("departamento_id")) {
+            if (!document.getElementById("cliente_id")) {
                 let hidden = document.createElement("input");
                 hidden.type = "hidden";
-                hidden.id = "departamento_id";
-                hidden.name = "departamento_id";
-                document.getElementById("formDepart").appendChild(hidden);
+                hidden.id = "cliente_id";
+                hidden.name = "cliente_id";
+                document.getElementById("formLeads").appendChild(hidden);
             }
-            document.getElementById("departamento_id").value = campana.cod_dep;
+            document.getElementById("cliente_id").value = leads.cliente_id;
 
             // Abrir offcanvas manualmente
-            let el = document.getElementById('offdepartamento_add');
+            let el = document.getElementById('offcanvas_add');
             let offcanvas = bootstrap.Offcanvas.getOrCreateInstance(el);
             offcanvas.show();
 
@@ -361,7 +387,7 @@ function renderKanban(estados, leads) {
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-right">
                                     <a class="dropdown-item" href="#" data-bs-toggle="offcanvas"
-                                        data-bs-target="#offcanvas_edit">
+                                        data-bs-target="#offcanvas_add">
                                         <i class="fa-solid fa-pencil text-blue"></i> Editar
                                     </a>
                                     <a class="dropdown-item" href="#" data-bs-toggle="modal"
@@ -423,8 +449,23 @@ function crearCardLead(l, estadoId) {
 
             <div class="d-block">
                 <div class="card-topbar mb-3 pt-1 ${coloresTop[estadoId] || 'bg-secondary'}"></div>
-
-                <div class="d-flex align-items-center mb-3">
+                    <div class="dropdown table-action ms-2">
+                                <a href="#" class="action-icon btn btn-xs shadow btn-icon btn-outline-light" data-bs-toggle="dropdown">
+                                    <i class="ti ti-dots-vertical"></i>
+                                </a>
+                                <div class="d-flex align-items-center">
+                                    <div class="dropdown-menu dropdown-menu-right">
+                                        <a class="dropdown-item" onclick="editarLeads(${l.id_lead})" href="#" data-bs-toggle="offcanvas">
+                                            <i class="fa-solid fa-pencil text-blue"></i> Editar
+                                        </a>
+                                        <a class="dropdown-item" href="#" data-bs-toggle="modal"
+                                            data-bs-target="#delete_lead">
+                                            <i class="fa-regular fa-trash-can text-danger"></i> Eliminar
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                    <div class="d-flex align-items-center mb-3">
                     <a href="leads-details.php?id=${l.id_lead}"
                         class="avatar rounded-circle bg-soft-info flex-shrink-0 me-2">
                         <span class="avatar-title text-info">${iniciales || "?"}</span>
@@ -821,7 +862,7 @@ function renderNotas(data) {
                                 <img src="assets/img/profiles/avatar-20.jpg" alt="img">
                             </span>
                             <div>
-                                <h6 class="fw-medium fs-14 mb-1">${n.nombre_usuario ?? "Usuario"}</h6>
+                                <h6 class="fw-medium fs-14 mb-1">${n.user_name ?? "Usuario"}</h6>
                                 <p class="mb-0">${n.fecha_creacion_nota}</p>
                             </div>
                         </div>
@@ -1492,5 +1533,7 @@ function agruparPorDia(lista) {
     });
     return grupos;
 }
+
+actualizarTimeline();
 
 actualizarTimeline();

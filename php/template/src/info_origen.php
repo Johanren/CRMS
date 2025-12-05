@@ -424,6 +424,7 @@
                                         <th>Usuario</th>
                                         <th>Email</th>
                                         <th>Rol</th>
+                                        <th>Empresa</th>
                                         <th>Fecha Creación</th>
                                         <th>Acciones</th>
                                     </tr>

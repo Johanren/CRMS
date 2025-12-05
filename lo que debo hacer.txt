@@ -24,3 +24,8 @@ frio, medio y caliente
 
 6. agregar en el formulario de jose juan lo de mi api para agregar
 
+7. exportar leads por excel
+
+8. agregar columan cod_emp para notas, archivos, comentario y calls
+
+9. terminar funcion actualizar.

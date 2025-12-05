@@ -24,6 +24,22 @@ class ClienteControllers
         }
     }
 
+    public static function actualizarCliente($dato)
+    {
+        $resp = ClienteModels::actualizarCliente($dato);
+        if ($resp == "ok") {
+            //Actualizar el leads
+            $resp_leads = LeadsControllers::actualizarLeads($dato, $dato['cliente_id']);
+            if ($resp_leads == "ok") {
+                return ["status" => "success", "message" => "Leads actualizado correctamente"];
+            } else {
+                return ["status" => "error", "message" => "No se pudo registrar"];
+            }
+        } else {
+            return ["status" => "error", "message" => "No se pudo registrar"];
+        }
+    }
+
     public static function listarClienteId($id)
     {
         return ClienteModels::listarClienteId($id);

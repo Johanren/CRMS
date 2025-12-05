@@ -1,4 +1,7 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 session_start();
 // Cargar controladores y modelos
 foreach (glob("../controllers/*.php") as $filename) {
@@ -157,11 +160,17 @@ if (isset($_POST['accion'])) {
 
             echo json_encode($cliente->agregarCliente($data));
             break;
+        case 'actualizar_leads':
+            echo json_encode($cliente->actualizarCliente($_POST));
+            break;
         /*LEADS */
         case 'updateEstado':
             echo json_encode($leads->updateEstado($_POST["id_lead"], $_POST["id_estado"]));
             break;
         case 'listar_leads_id':
+            echo json_encode($leads->listarLeadsId($_POST['id']));
+            break;
+        case 'consultar_leads':
             echo json_encode($leads->listarLeadsId($_POST['id']));
             break;
         /*Notas */
@@ -202,6 +211,9 @@ if (isset($_POST['accion'])) {
         /*USER */
         case 'registrar_user':
             echo json_encode($user->agregarUser($_POST));
+            break;
+        case 'actualizar_user':
+            echo json_encode($user->actualizarUser($_POST));
             break;
         case 'consultar_user':
             echo json_encode($user->listarUserId($_POST['id']));
