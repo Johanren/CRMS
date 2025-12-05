@@ -147,18 +147,7 @@ if (isset($_POST['accion'])) {
             break;
         /* Cliente */
         case 'registrar_leads':
-            $data = [
-                "identificacionLeads" => $_POST["identificacionLeads"] ?? $_POST["cedula"] ?? null,
-                "nombresLeads"        => $_POST["nombresLeads"]        ?? $_POST["nombres"] ?? null,
-                "apellidosLeads"      => $_POST["apellidosLeads"]      ?? $_POST["apellidos"] ?? null,
-                "telefonoLeads"       => $_POST["telefonoLeads"]       ?? $_POST["telefono"] ?? null,
-                "correoLeads"         => $_POST["correoLeads"]         ?? $_POST["email"] ?? null,
-                "direLeads"           => $_POST["direLeads"]           ?? $_POST["direccion"] ?? null,
-                "barrio"              => $_POST["barrio"]              ?? null,
-                "ciudad"              => $_POST["ciudad"]              ?? null
-            ];
-
-            echo json_encode($cliente->agregarCliente($data));
+            echo json_encode($cliente->agregarCliente($_POST));
             break;
         case 'actualizar_leads':
             echo json_encode($cliente->actualizarCliente($_POST));

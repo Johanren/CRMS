@@ -129,7 +129,7 @@
 
             <!-- Campo select dinámico -->
             <div class="form-floating mb-4">
-                <select class="form-select" id="curso" name="curso" required>
+                <select class="form-select" id="curso" name="carrera" required>
                     <option value="" selected disabled>Seleccione una opción</option>
 
                     <?php while ($row = mysqli_fetch_assoc($result)): ?>
@@ -173,10 +173,12 @@
             let cedula = document.getElementById('cedula').value.trim();
             let email = document.getElementById('email').value.trim();
             let telefono = document.getElementById('telefono').value.trim();
-            let curso = document.getElementById('curso').value.trim();
+            let cursoSelect = document.getElementById('curso');
+            let cursoId = cursoSelect.value;
+            let cursoNombre = cursoSelect.options[cursoSelect.selectedIndex].text;
 
             // Validación rápida
-            if (!nombres || !apellidos || !email || !telefono || !curso) {
+            if (!nombres || !apellidos || !email || !telefono || !cursoId) {
                 Swal.fire("Atención", "Por favor completa todos los campos antes de enviar.", "warning");
                 return;
             }
@@ -188,7 +190,7 @@
             🪪 Cédula: ${cedula}
             📧 Correo: ${email}
             📱 Teléfono: ${telefono}
-            🎓 Curso: ${curso}
+            🎓 Curso: ${cursoNombre}
             
             Gracias por su atención.`;
 
@@ -216,7 +218,7 @@
 
                 let datos = new FormData(this);
                 datos.append("accion", "registrar_leads");
-
+                datos.append("origen_url", "registrar_leads");
                 fetch("ajax.php", {
                         method: "POST",
                         body: datos

@@ -24,7 +24,8 @@ if (isset($_POST['accion'])) {
                 "correoLeads"         => $_POST["correoLeads"]         ?? $_POST["email"] ?? null,
                 "direLeads"           => $_POST["direLeads"]           ?? $_POST["direccion"] ?? null,
                 "barrio"              => $_POST["barrio"]              ?? null,
-                "ciudad"              => $_POST["ciudad"]              ?? null
+                "ciudad"              => $_POST["ciudad"]              ?? null,
+                "origen_url"          => $_POST['origen_url']          ?? null
             ];
 
             echo json_encode($cliente->agregarCliente($data));

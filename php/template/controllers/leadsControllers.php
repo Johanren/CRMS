@@ -2,7 +2,7 @@
 
 class LeadsControllers{
     public static function agregarLeads($data, $id_cliente) {
-        return LeadsModels::agregarLeads($data, $id_cliente, $_SESSION['user_id'], 1);
+        return LeadsModels::agregarLeads($data, $id_cliente, $_SESSION['user_id'] ?? 0, 1);
     }
     public static function actualizarLeads($data, $id_cliente) {
         return LeadsModels::actualizarLeads($data, $id_cliente, $_SESSION['user_id'], 1);

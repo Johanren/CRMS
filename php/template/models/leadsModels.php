@@ -4,10 +4,12 @@ class LeadsModels
 {
     public static function agregarLeads($data, $id, $id_user, $id_estado_leads)
     {
-        $sql = "INSERT INTO leads (user_id, cliente_id, info_adicional, carrera_id, horario_id, interes_id, medio_id, fuente_id, campana_id, accion_id, departamento_id, barrio_id, ciudad_id, estado_leads_id, observaciones, url_origen) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+        $sql = "INSERT INTO leads (user_id, cliente_id, info_adicional, carrera_id, horario_id, interes_id, medio_id, fuente_id, campana_id, accion_id, departamento_id, barrio_id, ciudad_id, estado_leads_id, observaciones, url_origen, cod_emp) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
         $conn = new Conexion();
         $conectar = $conn->conectar();
         $stmt = $conectar->prepare($sql);
+        
+        $url = $data['origen_url'] ?? null;
 
         $stmt->bindParam(1, $id_user);
         $stmt->bindParam(2, $id);
@@ -24,13 +26,15 @@ class LeadsModels
         $stmt->bindParam(13, $data["ciudad"]);
         $stmt->bindParam(14, $id_estado_leads);
         $stmt->bindParam(15, $data["observacionLeads"]);
-        $stmt->bindParam(16, $data["origen_url"]);
+        $stmt->bindParam(16, $url);
+        $stmt->bindParam(17, $_SESSION['cod_emp']);
         if ($stmt->execute()) {
             return "ok";
         }
 
         return "error";
     }
+    
     public static function actualizarLeads($data, $id, $id_user, $id_estado_leads)
     {
         $sql = "UPDATE leads SET user_id = ?, cliente_id = ?, info_adicional = ?, carrera_id = ?, horario_id = ?, interes_id = ?, medio_id = ?, fuente_id = ?, campana_id = ?, accion_id = ?, departamento_id = ?, barrio_id = ?, ciudad_id = ?, estado_leads_id = ?, observaciones = ?, cod_emp = ?, url_origen = ? WHERE cliente_id = ?";
