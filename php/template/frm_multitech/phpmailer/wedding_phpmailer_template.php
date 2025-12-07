@@ -39,8 +39,8 @@ $apellidos  = $_POST['apellidos'] ?? '';
 $cedula     = $_POST['cedula'] ?? '';
 $email      = $_POST['email'] ?? '';
 $telefono   = $_POST['telefono'] ?? '';
-$curso      = $_POST['curso'] ?? '';
-$origen     = "Página Web Multitech";
+$curso      = $_POST['cursoNombre'] ?? '';
+$origen     = $_POST['origen_url'] ?? '';
 
 // VARIABLES PARA LAS PLANTILLAS
 $vars = [

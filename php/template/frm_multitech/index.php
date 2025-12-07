@@ -114,6 +114,7 @@
 
             <!-- Url de Origen-->
             <input type="hidden" name="origen_url" id="origen_url">
+            <input type="hidden" name="cod_emp" id="cod_emp" value="1">
 
 
             <!-- Campo select -->
@@ -157,12 +158,15 @@
     <script>
         // Recibir la URL real desde el padre
         window.addEventListener("message", function(event) {
+            // Validar el mensaje recibido
             if (event.data && event.data.tipo === "url_padre") {
                 const campo = document.getElementById("origen_url");
-                if (campo) campo.value = event.data.url;
+                if (campo) {
+                    campo.value = event.data.url; // Asignar la URL recibida
+                    //console.log("URL recibida del padre:", event.data.url);
+                }
             }
         });
-        document.getElementById('origen_url').value
     </script>
 
     <script>
@@ -215,10 +219,12 @@
 
             document.getElementById("mainForm").addEventListener("submit", function(e) {
                 e.preventDefault();
-
+                let cursoSelect = document.getElementById('curso');
+                let cursoId = cursoSelect.value;
+                let cursoNombre = cursoSelect.options[cursoSelect.selectedIndex].text;
                 let datos = new FormData(this);
                 datos.append("accion", "registrar_leads");
-                datos.append("origen_url", "registrar_leads");
+                datos.append("cursoNombre", cursoNombre);
                 fetch("ajax.php", {
                         method: "POST",
                         body: datos

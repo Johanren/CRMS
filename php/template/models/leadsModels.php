@@ -10,7 +10,7 @@ class LeadsModels
         $stmt = $conectar->prepare($sql);
 
         $url = $data['origen_url'] ?? null;
-
+        $cod_emp = $data['cod_emp'] ?? $_SESSION['cod_emp'] ?? null;
         $stmt->bindParam(1, $id_user);
         $stmt->bindParam(2, $id);
         $stmt->bindParam(3, $data["infoLeads"]);
@@ -27,7 +27,7 @@ class LeadsModels
         $stmt->bindParam(14, $id_estado_leads);
         $stmt->bindParam(15, $data["observacionLeads"]);
         $stmt->bindParam(16, $url);
-        $stmt->bindParam(17, $_SESSION['cod_emp']);
+        $stmt->bindParam(17, $cod_emp);
         if ($stmt->execute()) {
             return "ok";
         }
@@ -57,7 +57,7 @@ class LeadsModels
         $stmt->bindParam(13, $data["ciudad"]);
         $stmt->bindParam(14, $id_estado_leads);
         $stmt->bindParam(15, $data["observacionLeads"]);
-        $stmt->bindParam(16, $_SESSION['cod_emp']);
+        $stmt->bindParam(16, $_SESSION['cod_emp'] ?? $data['cod_emp']);
         $stmt->bindParam(17, $data["origen_url"]);
         $stmt->bindParam(18, $id);
         if ($stmt->execute()) {
