@@ -749,8 +749,19 @@ function listarCarreraOption() {
         });
 }
 
+function listarCarreraLIi() {
+    fetch("ajax/ajax.php?accion=listar_carrera_ul")
+        .then(res => res.json())
+        .then(data => {
+            if (document.getElementById("listar_filtro_carrera")) {
+                document.getElementById("listar_filtro_carrera").innerHTML = data.option;
+            }
+        });
+}
+
 listarCarr();
 listarCarreraOption();
+listarCarreraLIi();
 
 //Horario
 
@@ -1867,8 +1878,19 @@ function listarEst_leadsOption() {
         });
 }
 
+function listarEst_leadsIl() {
+    fetch("ajax/ajax.php?accion=listar_est_leads_ul")
+        .then(res => res.json())
+        .then(data => {
+            if (document.getElementById("listar_filtro_estado")) {
+                document.getElementById("listar_filtro_estado").innerHTML = data.option;
+            }
+        });
+}
+
 listarEst_leads();
 listarEst_leadsOption();
+listarEst_leadsIl();
 
 //Campañas
 
@@ -2196,7 +2218,8 @@ if (document.getElementById("formUser")) {
         e.preventDefault();
 
         let datos = new FormData(this);
-        let userId = document.getElementById("user_id").value;
+        let userIdElement = document.getElementById("user_id");
+        let userId = userIdElement ? userIdElement.value : null;
         if (userId && parseInt(userId) > 0) {
             datos.append("accion", "actualizar_user");
         } else {

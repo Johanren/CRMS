@@ -4,11 +4,11 @@ class CarreraModels
 {
     public static function listarCarrera()
     {
-        $sql = "SELECT * FROM programa p INNER JOIN empresa e ON p.emp_pro = id_emp";
+        $sql = "SELECT * FROM programa p INNER JOIN empresa e ON p.emp_pro = id_emp WHERE p.emp_pro = ?";
         $conn = new Conexion();
         $conectar = $conn->conectar();
         $stmt = $conectar->prepare($sql);
-
+        $stmt->bindParam(1, $_SESSION['cod_emp']);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }

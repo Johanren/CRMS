@@ -56,126 +56,11 @@
                                 <div class="accordion" id="accordionExample">
                                     <div class="filter-set-content">
                                         <div class="filter-set-content-head">
-                                            <a href="#" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">Nombre</a>
-                                        </div>
-                                        <div class="filter-set-contents accordion-collapse collapse show" id="collapseTwo" data-bs-parent="#accordionExample">
-                                            <div class="filter-content-list bg-light rounded border p-2 shadow mt-2">
-                                                <div class="mb-2">
-                                                    <div class="input-icon-start input-icon position-relative">
-                                                        <span class="input-icon-addon fs-12">
-                                                            <i class="ti ti-search"></i>
-                                                        </span>
-                                                        <input type="text" class="form-control form-control-md" placeholder="Buscar">
-                                                    </div>
-                                                </div>
-                                                <ul class="mb-0">
-                                                    <li class="mb-1">
-                                                        <label class="dropdown-item px-2 d-flex align-items-center">
-                                                            <input class="form-check-input m-0 me-1" type="checkbox">
-                                                            <span class="avatar avatar-xs rounded-circle me-2"><img src="assets/img/users/user-06.jpg" class="flex-shrink-0 rounded-circle" alt="img"></span>c
-                                                        </label>
-                                                    </li>
-                                                    <li class="mb-1">
-                                                        <label class="dropdown-item px-2 d-flex align-items-center">
-                                                            <input class="form-check-input m-0 me-1" type="checkbox">
-                                                            <span class="avatar avatar-xs rounded-circle me-2"><img src="assets/img/users/user-40.jpg" class="flex-shrink-0 rounded-circle" alt="img"></span>Katherine Brooks
-                                                        </label>
-                                                    </li>
-                                                    <li class="mb-1">
-                                                        <label class="dropdown-item px-2 d-flex align-items-center">
-                                                            <input class="form-check-input m-0 me-1" type="checkbox">
-                                                            <span class="avatar avatar-xs rounded-circle me-2"><img src="assets/img/users/user-05.jpg" class="flex-shrink-0 rounded-circle" alt="img"></span>Sophia Lopez
-                                                        </label>
-                                                    </li>
-                                                    <li class="mb-1">
-                                                        <label class="dropdown-item px-2 d-flex align-items-center">
-                                                            <input class="form-check-input m-0 me-1" type="checkbox">
-                                                            <span class="avatar avatar-xs rounded-circle me-2"><img src="assets/img/users/user-10.jpg" class="flex-shrink-0 rounded-circle" alt="img"></span>John Michael
-                                                        </label>
-                                                    </li>
-                                                    <li class="mb-1">
-                                                        <label class="dropdown-item px-2 d-flex align-items-center">
-                                                            <input class="form-check-input m-0 me-1" type="checkbox">
-                                                            <span class="avatar avatar-xs rounded-circle me-2"><img src="assets/img/users/user-15.jpg" class="flex-shrink-0 rounded-circle" alt="img"></span>Natalie Brooks
-                                                        </label>
-                                                    </li>
-                                                    <li class="mb-1">
-                                                        <label class="dropdown-item px-2 d-flex align-items-center">
-                                                            <input class="form-check-input m-0 me-1" type="checkbox">
-                                                            <span class="avatar avatar-xs rounded-circle me-2"><img src="assets/img/users/user-01.jpg" class="flex-shrink-0 rounded-circle" alt="img"></span>William Turner
-                                                        </label>
-                                                    </li>
-                                                    <li class="mb-1">
-                                                        <label class="dropdown-item px-2 d-flex align-items-center">
-                                                            <input class="form-check-input m-0 me-1" type="checkbox">
-                                                            <span class="avatar avatar-xs rounded-circle me-2"><img src="assets/img/users/user-13.jpg" class="flex-shrink-0 rounded-circle" alt="img"></span>Ava Martinez
-                                                        </label>
-                                                    </li>
-                                                    <li class="mb-1">
-                                                        <label class="dropdown-item px-2 d-flex align-items-center">
-                                                            <input class="form-check-input m-0 me-1" type="checkbox">
-                                                            <span class="avatar avatar-xs rounded-circle me-2"><img src="assets/img/users/user-12.jpg" class="flex-shrink-0 rounded-circle" alt="img"></span>Nathan Reed
-                                                        </label>
-                                                    </li>
-                                                    <li class="mb-1">
-                                                        <label class="dropdown-item px-2 d-flex align-items-center">
-                                                            <input class="form-check-input m-0 me-1" type="checkbox">
-                                                            <span class="avatar avatar-xs rounded-circle me-2"><img src="assets/img/users/user-03.jpg" class="flex-shrink-0 rounded-circle" alt="img"></span>Lily Anderson
-                                                        </label>
-                                                    </li>
-                                                    <li class="mb-1">
-                                                        <label class="dropdown-item px-2 d-flex align-items-center">
-                                                            <input class="form-check-input m-0 me-1" type="checkbox">
-                                                            <span class="avatar avatar-xs rounded-circle me-2"><img src="assets/img/users/user-18.jpg" class="flex-shrink-0 rounded-circle" alt="img"></span>Ryan Coleman
-                                                        </label>
-                                                    </li>
-                                                    <li>
-                                                        <a href="javascript:void(0);" class="link-primary text-decoration-underline p-2 d-flex">Load More</a>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="filter-set-content">
-                                        <div class="filter-set-content-head">
                                             <a href="#" class="collapsed" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">Carrera</a>
                                         </div>
                                         <div class="filter-set-contents accordion-collapse collapse" id="collapseThree" data-bs-parent="#accordionExample">
                                             <div class="filter-content-list bg-light rounded border p-2 shadow mt-2">
-                                                <div class="mb-2">
-                                                    <div class="input-icon-start input-icon position-relative">
-                                                        <span class="input-icon-addon fs-12">
-                                                            <i class="ti ti-search"></i>
-                                                        </span>
-                                                        <input type="text" class="form-control form-control-md" placeholder="Buscar">
-                                                    </div>
-                                                </div>
-                                                <ul>
-                                                    <li>
-                                                            <label class="dropdown-item px-2 d-flex align-items-center">
-                                                            <input class="form-check-input m-0 me-1" type="checkbox">
-                                                            NovaWave LLC
-                                                        </label>
-                                                    </li>
-                                                        <li>
-                                                            <label class="dropdown-item px-2 d-flex align-items-center">
-                                                            <input class="form-check-input m-0 me-1" type="checkbox">
-                                                            BlueSky Industries
-                                                        </label>
-                                                    </li>
-                                                    <li>
-                                                            <label class="dropdown-item px-2 d-flex align-items-center">
-                                                            <input class="form-check-input m-0 me-1" type="checkbox">
-                                                            Silver Hawk
-                                                        </label>
-                                                    </li>
-                                                    <li>
-                                                            <label class="dropdown-item px-2 d-flex align-items-center">
-                                                            <input class="form-check-input m-0 me-1" type="checkbox">
-                                                            Summit  Peak
-                                                        </label>
-                                                    </li>
-                                                </ul>
+                                                <div id="listar_filtro_carrera" class="overflow-x-auto"></div>
                                             </div>
                                         </div>
                                     </div>
@@ -185,44 +70,12 @@
                                         </div>
                                         <div class="filter-set-contents accordion-collapse collapse" id="status" data-bs-parent="#accordionExample">
                                             <div class="filter-content-list bg-light rounded border p-2 shadow mt-2">
-                                                <div class="mb-1">
-                                                    <div class="input-icon-start input-icon position-relative">
-                                                        <span class="input-icon-addon fs-12">
-                                                            <i class="ti ti-search"></i>
-                                                        </span>
-                                                        <input type="text" class="form-control form-control-md" placeholder="Buscar">
-                                                    </div>
-                                                </div>
-                                                <ul class="mb-0">
-                                                    <li>
-                                                        <label class="dropdown-item px-2 d-flex align-items-center">
-                                                            <input class="form-check-input m-0 me-1" type="checkbox">
-                                                            Closed
-                                                        </label>
-                                                    </li>
-                                                    <li>
-                                                        <label class="dropdown-item px-2 d-flex align-items-center">
-                                                            <input class="form-check-input m-0 me-1" type="checkbox">
-                                                            Not Closed
-                                                        </label>
-                                                    </li>
-                                                    <li>
-                                                        <label class="dropdown-item px-2 d-flex align-items-center">
-                                                            <input class="form-check-input m-0 me-1" type="checkbox">
-                                                            Contacted
-                                                        </label>
-                                                    </li>
-                                                    <li>
-                                                        <label class="dropdown-item px-2 d-flex align-items-center">
-                                                            <input class="form-check-input m-0 me-1" type="checkbox">
-                                                            Lost
-                                                        </label>
-                                                    </li>
+                                                <div id="listar_filtro_estado"></div>
                                                 </ul>
                                             </div>
                                         </div>
                                     </div>   
-                                    <div class="filter-set-content">
+                                    <!--<div class="filter-set-content">
                                         <div class="filter-set-content-head">
                                             <a href="#" class="collapsed" data-bs-toggle="collapse" data-bs-target="#date2" aria-expanded="false" aria-controls="date2">Fecha Creación</a>
                                         </div>
@@ -237,7 +90,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <!--<div class="filter-set-content">
+                                    <div class="filter-set-content">
                                         <div class="filter-set-content-head">
                                             <a href="#" class="collapsed" data-bs-toggle="collapse" data-bs-target="#owner" aria-expanded="false" aria-controls="owner">Lead Owner</a>
                                         </div>
@@ -317,16 +170,16 @@
                                         </div>
                                     </div> -->                                             
                                 </div>
-                                <div class="d-flex align-items-center gap-2">
+                                <!--<div class="d-flex align-items-center gap-2">
                                     <a href="javascript:void(0);" class="btn btn-outline-light w-100">Reiniciar</a>
                                     <a href="javascript:void(0);" class="btn btn-primary w-100">Filtrar</a>
-                                </div>
+                                </div>-->
                             </div>
                         </div>
                     </div>
                     <div class="input-icon input-icon-start position-relative">
                         <span class="input-icon-addon text-dark"><i class="ti ti-search"></i></span>
-                        <input type="text" class="form-control" placeholder="Buscar">
+                        <input type="text" class="form-control" id="buscador" placeholder="Buscar">
                     </div>
                 </div>
                 <div class="d-flex align-items-center gap-2 flex-wrap">                                

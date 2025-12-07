@@ -26,7 +26,7 @@ class UserModels
         $stmtCheck->execute();
 
         if ($stmtCheck->rowCount() > 0) {
-            return "usuario_existente";  
+            return "usuario_existente";
         }
         $passwordHash = password_hash($data['contrasenaUser'], PASSWORD_BCRYPT);
         $sql = "INSERT INTO user 
@@ -52,11 +52,14 @@ class UserModels
 
     public static function actualizarUser($data)
     {
-        if ($_POST['contrasenaUserEdit'] != null) {
-            $passwordHash = password_hash($data['contrasenaUserEdit'], PASSWORD_BCRYPT);
-        }else{
+        if (!empty($_POST['contrasenaUser'])) {
+            // Si el usuario escribió una nueva contraseña
+            $passwordHash = password_hash($_POST['contrasenaUser'], PASSWORD_BCRYPT);
+        } else {
+            // Si NO escribió nada, usar la contraseña actual (contrasenaUserEdit)
             $passwordHash = $_POST['contrasenaUserEdit'];
         }
+
         $conn = new Conexion();
         $conectar = $conn->conectar();
         $sql = "UPDATE user SET codigo = ?, nombres = ?, apellidos = ?, email = ?, telefono = ?, password = ?, rol_id = ?, cod_emp = ? WHERE id_user = ?";

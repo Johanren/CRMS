@@ -413,7 +413,7 @@ if($page != 'login.php'){
     <script src="assets/json/deals-project.js"></script>
 <?php } ?>
 
-<?php if ($page == 'info_origen.php' || $page == 'leads.php' || $page == 'leads-list.php') {   ?>
+<?php if ($page == 'info_origen.php' || $page == 'leads.php' || $page == 'leads-list.php' || $page == 'leads-details.php') {   ?>
     <script src="assets/json/info_origen.js"></script>
 <?php } ?>
 

@@ -1,3 +1,19 @@
+// 3. Obtener valores de filtros
+window.Filtros = {
+    obtener: function() {
+        let texto = "";
+        let inputBuscador = document.getElementById("buscador");
+        if (inputBuscador) {
+            texto = inputBuscador.value.toLowerCase();
+        }
+
+        let carreras = [...document.querySelectorAll(".filtro-carrera:checked")].map(c => c.value);
+        let estados = [...document.querySelectorAll(".filtro-estado:checked")].map(c => c.value);
+
+        return { texto, carreras, estados };
+    }
+};
+
 /*LEADS*/
 function inicializarDataTableLeads(leads) {
 
@@ -35,7 +51,7 @@ function inicializarDataTableLeads(leads) {
                     return row.nombres + " " + row.apellidos;
                 }
             },
-            { "data": "programa" },
+            { "data": "desc_pro" },
             { "data": "telefono_principal" },
             {
                 "render": function(data, type, row) {
@@ -44,24 +60,32 @@ function inicializarDataTableLeads(leads) {
 
                     switch (row.estado_leads_id) {
                         case "1":
-                            class_name = "warning";
-                            status_name = "No contactado";
+                            class_name = "pause";
+                            status_name = "Nuevo Leads";
                             break;
                         case "2":
-                            class_name = "success";
-                            status_name = "Contactado";
+                            class_name = "pause";
+                            status_name = "Leads Activo";
                             break;
                         case "3":
-                            class_name = "Paused";
-                            status_name = "Pendiente";
+                            class_name = "warning";
+                            status_name = "Interesado";
                             break;
                         case "4":
-                            class_name = "danger";
-                            status_name = "Perdido";
+                            class_name = "warning";
+                            status_name = "En Desición";
+                            break;
+                        case "5":
+                            class_name = "success";
+                            status_name = "Matricula en proceso";
+                            break;
+                        case "6":
+                            class_name = "success";
+                            status_name = "Matriculado";
                             break;
                         default:
-                            class_name = "info";
-                            status_name = "Paused";
+                            class_name = "danger";
+                            status_name = "Perdido";
                             break;
                     }
 
@@ -69,12 +93,16 @@ function inicializarDataTableLeads(leads) {
                 }
             },
             {
-                data: "asesor",
-                render: function(asesor) {
-                    if (!asesor || asesor === null || asesor === "") {
+                data: null, // importante: recibir toda la fila
+                render: function(row) {
+                    let nombre = row.nombreAsesor || "";
+                    let apellido = row.apellidoAsesor || "";
+
+                    if (nombre === "" && apellido === "") {
                         return "<span class='text-muted'>No hay asesor asignado</span>";
                     }
-                    return asesor;
+
+                    return nombre + " " + apellido;
                 }
             },
             { "data": "fecha_creacion" },
@@ -85,16 +113,16 @@ function inicializarDataTableLeads(leads) {
                                 <i class="ti ti-dots-vertical"></i>
                             </a>
                             <div class="dropdown-menu dropdown-menu-right">
-                                <a class="dropdown-item" href="#" onclick="editarLeads(${row.id_estado_leads})">
+                                <a class="dropdown-item" href="#" onclick="editarLeads(${row.id_lead})">
                                     <i class="ti ti-edit text-blue"></i> Edit
                                 </a>
-                                <a class="dropdown-item" 
+                                <!--<a class="dropdown-item" 
                                 href="#" 
                                 onclick="eliminarLeads(${row.cod_dep})"
                                 data-bs-toggle="modal" 
                                 data-bs-target="#delete_campaign">
                                     <i class="ti ti-trash"></i> Delete
-                                </a>
+                                </a>-->
                             </div>
                         </div>
                     `
@@ -108,13 +136,10 @@ if (document.getElementById("formLeads")) {
         e.preventDefault();
 
         let datos = new FormData(this);
-        if (document.getElementById("cliente_id")) {
-            let leadsId = document.getElementById("cliente_id").value;
-            if (leadsId && parseInt(leadsId) > 0) {
-                datos.append("accion", "actualizar_leads");
-            } else {
-                datos.append("accion", "registrar_leads");
-            }
+        let leadsIdElement = document.getElementById("cliente_id");
+        let leadsId = leadsIdElement ? leadsIdElement.value : null;
+        if (leadsId && parseInt(leadsId) > 0) {
+            datos.append("accion", "actualizar_leads");
         } else {
             datos.append("accion", "registrar_leads");
         }
@@ -130,7 +155,7 @@ if (document.getElementById("formLeads")) {
                     Swal.fire("Éxito", data.message, "success");
                     cargarKanban();
                     this.reset();
-                    document.getElementById("offcanvas").click();
+                    //document.getElementById("btn-canvas-leads").click();
                 } else {
                     Swal.fire("Error", data.message, "error");
                 }
@@ -139,7 +164,19 @@ if (document.getElementById("formLeads")) {
 }
 
 function listarLeads() {
-    fetch("ajax/ajax.php?accion=listar_leads")
+
+    const f = Filtros.obtener();
+
+    // Enviar filtros solo si existen
+    const params = new URLSearchParams();
+
+    if (f.texto !== "") params.append("texto", f.texto);
+    if (f.carreras.length > 0) params.append("carreras", JSON.stringify(f.carreras));
+    if (f.estados.length > 0) params.append("estados", JSON.stringify(f.estados));
+
+    params.append("accion", "listar_leads");
+
+    fetch("ajax/ajax.php?" + params.toString())
         .then(res => res.json())
         .then(data => {
             if (document.getElementById("leads_list")) {
@@ -313,10 +350,33 @@ document.addEventListener("DOMContentLoaded", function() {
 //Tarjetas leads.
 
 document.addEventListener("DOMContentLoaded", () => {
-    if (document.getElementById("kanban-container")) {
+    cargarKanban();
+});
+
+// 1. Detectar cambios en filtros
+document.addEventListener("change", function(e) {
+    if (e.target.classList.contains("filtro")) {
+        listarLeads();
+        cargarKanban(); // recargar kanban filtrado
+    }
+});
+
+// 2. Buscar texto en tiempo real
+document.addEventListener("input", function(e) {
+    if (e.target.id === "buscador") {
+        listarLeads();
         cargarKanban();
     }
 });
+
+function normalizar(txt) {
+    if (!txt) return "";
+    return txt
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+}
+
 
 async function cargarKanban() {
     const estados = await cargarEstados();
@@ -336,7 +396,18 @@ async function cargarEstados() {
    2. Cargar LEADS desde PHP
 ================================ */
 async function cargarLeads() {
-    const res = await fetch("ajax/ajax.php?accion=getLeads");
+    const f = Filtros.obtener();
+
+    // Enviar filtros solo si existen
+    const params = new URLSearchParams();
+
+    if (f.texto !== "") params.append("texto", f.texto);
+    if (f.carreras.length > 0) params.append("carreras", JSON.stringify(f.carreras));
+    if (f.estados.length > 0) params.append("estados", JSON.stringify(f.estados));
+
+    params.append("accion", "getLeads");
+
+    const res = await fetch("ajax/ajax.php?" + params.toString());
     return await res.json();
 }
 
@@ -606,7 +677,19 @@ async function listarLeadsId() {
     document.getElementById("empresaCarrera").textContent = d.nom_emp;
     //document.getElementById("valorCarrera").textContent = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }).format(d.val_pro);
     document.getElementById("direccionClienteLeads").textContent = d.direccion;
+    document.getElementById("asesorLeads").textContent = `${d.nombreAsesor} ${d.apellidoAsesor}`;
+    cargarAsesoresDropdown();
+    document.getElementById("carreraLeads").textContent = d.desc_pro;
+    document.getElementById("horarioLeads").textContent = d.horario;
+    document.getElementById("interesLeads").textContent = d.interes;
+    document.getElementById("medioLeads").textContent = d.desc_med;
     document.getElementById("fuenteLeads").textContent = d.desc_fue;
+    document.getElementById("campanaLeads").textContent = d.campana;
+    document.getElementById("accionLeads").textContent = d.accion;
+    document.getElementById("depLeads").textContent = d.desc_dep;
+    document.getElementById("ciuLeads").textContent = d.ciudad;
+    document.getElementById("brrLeads").textContent = d.desc_brr;
+    document.getElementById("obsLeads").textContent = d.observaciones;
 
     [...document.getElementsByClassName("fechaLeads")].forEach(elem => {
         elem.textContent = d.fecha_creacion;
@@ -615,6 +698,67 @@ async function listarLeadsId() {
     // 🔥 Cargar estados y renderizar stepper dinámico
     const estados = await cargarEstados();
     renderEstadosLead(estados, d);
+}
+
+function cargarAsesoresDropdown() {
+
+    fetch("ajax/ajax.php?accion=listar_user_option_leads")
+        .then(res => res.json())
+        .then(data => {
+
+            let html = "";
+
+            data.forEach(user => {
+                html += `
+                    <a class="dropdown-item cambiar-asesor" 
+                       href="#" 
+                       data-id="${user.id_user}">
+                       ${user.nombres} ${user.apellidos}
+                    </a>`;
+            });
+
+            document.getElementById("userAsesor").innerHTML = html;
+
+            activarEventosCambioAsesor();
+        })
+        .catch(err => console.error("Error cargando asesores:", err));
+}
+
+function activarEventosCambioAsesor() {
+    document.querySelectorAll(".cambiar-asesor").forEach(item => {
+
+        item.addEventListener("click", function(e) {
+            e.preventDefault();
+
+            let nuevoId = this.getAttribute("data-id");
+            let datos = new FormData();
+            datos.append("accion", "cambiar_asesor");
+            datos.append("id_lead", idLead);
+            datos.append("nuevo_user_id", nuevoId);
+
+            fetch("ajax/ajax.php", {
+                    method: "POST",
+                    body: datos
+                })
+                .then(res => res.text())
+                .then(resp => {
+
+                    if (resp === "ok") {
+                        // Actualizar visualmente
+                        document.getElementById("asesorLeads").textContent = this.textContent;
+
+                        Swal.fire({
+                            icon: "success",
+                            title: "Asignado correctamente",
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+                    } else {
+                        Swal.fire("Error", "No se pudo cambiar el asesor", "error");
+                    }
+                });
+        });
+    });
 }
 
 function cambiarEstadoLead(elemento, id_lead) {

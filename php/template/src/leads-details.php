@@ -57,12 +57,16 @@
                                     <h6 class="mb-0 text-warning">HT</h6>
                                 </div>
                                 <div>
-                                    <h5 class="mb-1" id="nombreClienteLeads">Tremblay and Rath <i class="ti ti-star-filled text-warning"></i></h5>
+                                    <h5 class="mb-1" id="nombreClienteLeads"><i class="ti ti-star-filled text-warning"></i></h5>
                                     <p class="mb-1"><i class="ti ti-building-skyscraper me-1" id="empresaCarrera"></i></p>
                                     <p class="mb-0"><i class="ti ti-map-pin-pin me-1" id="direccionClienteLeads"></i></p>
                                 </div>
                             </div>
                             <div class="d-flex align-items-center flex-wrap gap-2">
+                                <div class="dropdown">
+                                    <a href="#" class="btn-info fs-12 py-1 px-2 fw-medium d-inline-flex align-items-center" data-bs-toggle="dropdown" aria-expanded="false"> <i class="ti ti-thumb-up me-1"></i><span id="asesorLeads"></span><i class="ti ti-chevron-down ms-1"></i> </a>
+                                    <div class="dropdown-menu dropdown-menu-right" id="userAsesor"></div>
+                                </div>
                                 <span class="py-1 px-2 fs-12 bg-soft-danger rounded text-danger fw-medium"><i class="ti ti-lock me-1"></i>Private</span>
                                 <div class="dropdown">
                                     <a href="#" class="btn btn-xs btn-success fs-12 py-1 px-2 fw-medium d-inline-flex align-items-center" data-bs-toggle="dropdown" aria-expanded="false"> <i class="ti ti-thumb-up me-1"></i>Closed<i class="ti ti-chevron-down ms-1"></i> </a>
@@ -86,7 +90,7 @@
                         <div class="border-bottom mb-3 pb-3">
                             <div class="d-flex align-items-center justify-content-between mb-2">
                                 <p class="mb-0">Fecha de creación</p>
-                                <p class="mb-0 text-dark fechaLeads"> 27 Sep 2025, 11:45 PM</p>
+                                <p class="mb-0 text-dark fechaLeads"> </p>
                             </div>
                             <!--<div class="d-flex align-items-center justify-content-between mb-2">
                                 <p class="mb-0">Valor</p>
@@ -94,15 +98,55 @@
                             </div>-->
                             <div class="d-flex align-items-center justify-content-between mb-2">
                                 <p class="mb-0">Fecha de vencimiento </p>
-                                <p class="mb-0 text-dark fechaLeads"> 27 Sep 2025, 11:45 PM </p>
+                                <p class="mb-0 text-dark fechaLeads">  </p>
                             </div>
                             <div class="d-flex align-items-center justify-content-between mb-2">
                                 <p class="mb-0">Seguimiento</p>
-                                <p class="mb-0 text-dark fechaLeads">27 Sep 2025</p>
+                                <p class="mb-0 text-dark fechaLeads"></p>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <p class="mb-0">Programa</p>
+                                <p class="mb-0 text-dark" id="carreraLeads"></p>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <p class="mb-0">Horario</p>
+                                <p class="mb-0 text-dark" id="horarioLeads"></p>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <p class="mb-0">Interes</p>
+                                <p class="mb-0 text-dark" id="interesLeads"></p>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <p class="mb-0">Medio</p>
+                                <p class="mb-0 text-dark" id="medioLeads"></p>
                             </div>
                             <div class="d-flex align-items-center justify-content-between mb-2">
                                 <p class="mb-0">Fuente</p>
-                                <p class="mb-0 text-dark" id="fuenteLeads">Google</p>
+                                <p class="mb-0 text-dark" id="fuenteLeads"></p>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <p class="mb-0">Campaña</p>
+                                <p class="mb-0 text-dark" id="campanaLeads"></p>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <p class="mb-0">Accion</p>
+                                <p class="mb-0 text-dark" id="accionLeads"></p>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <p class="mb-0">Departamento</p>
+                                <p class="mb-0 text-dark" id="depLeads"></p>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <p class="mb-0">Ciudad</p>
+                                <p class="mb-0 text-dark" id="ciuLeads"></p>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <p class="mb-0">Barrio</p>
+                                <p class="mb-0 text-dark" id="brrLeads"></p>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <p class="mb-0">Observaciones</p>
+                                <p class="mb-0 text-dark" id="obsLeads"></p>
                             </div>
                         </div>
                         <div class="d-flex align-items-center justify-content-between flex-wrap">

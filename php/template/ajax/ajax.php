@@ -162,6 +162,11 @@ if (isset($_POST['accion'])) {
         case 'consultar_leads':
             echo json_encode($leads->listarLeadsId($_POST['id']));
             break;
+        case 'cambiar_asesor':
+            $id_lead = $_POST["id_lead"];
+            $nuevo_user_id = $_POST["nuevo_user_id"];
+            echo $leads->cambiarAsesor($id_lead, $nuevo_user_id);
+            break;
         /*Notas */
         case 'registrar_notas':
             echo json_encode($notas->agregarNotas($_POST));
@@ -331,6 +336,22 @@ if (isset($_GET['accion'])) {
             }
             echo json_encode(["option" => $option]);
             break;
+        case 'listar_carrera_ul':
+            $lista = $carrera->listarCarrera();
+            $option = "<ul>";
+            foreach ($lista as $a) {
+                $option .= "
+                <li>
+                    <label class='dropdown-item px-2 d-flex align-items-center'>
+                    <input class='form-check-input m-0 me-1 filtro filtro-carrera' value='{$a['desc_pro']}' type='checkbox'>
+                        {$a['desc_pro']}
+                    </label>
+                </li>
+                ";
+            }
+            $option .= "</ul>";
+            echo json_encode(["option" => $option]);
+            break;
         /*Horario*/
         case 'listar_hrs':
             echo json_encode($horario->listarHorario());
@@ -426,15 +447,37 @@ if (isset($_GET['accion'])) {
             }
             echo json_encode(["option" => $option]);
             break;
+        case 'listar_est_leads_ul':
+            $lista = $esta_leads->listarEstadoLeads();
+            $option = "<ul>";
+            foreach ($lista as $a) {
+                $option .= "
+                    <li>
+                        <label class='dropdown-item px-2 d-flex align-items-center'>
+                        <input class='form-check-input m-0 me-1 filtro filtro-estado' value='{$a['nombre']}' type='checkbox'>
+                            {$a['nombre']}
+                        </label>
+                    </li>
+                ";
+            }
+            $option .= "</ul>";
+            echo json_encode(["option" => $option]);
+            break;
         case 'getEstados':
             echo json_encode($esta_leads->getEstados());
             break;
         /*LEADS */
         case 'getLeads':
-            echo json_encode($leads->getLeads());
+            $texto = $_GET['texto'] ?? '';
+            $carreras = isset($_GET['carreras']) ? json_decode($_GET['carreras']) : [];
+            $estados = isset($_GET['estados']) ? json_decode($_GET['estados']) : [];
+            echo json_encode($leads->getLeads($texto, $carreras, $estados));
             break;
         case 'listar_leads':
-            echo json_encode($leads->listarLeads());
+            $texto = $_GET['texto'] ?? '';
+            $carreras = isset($_GET['carreras']) ? json_decode($_GET['carreras']) : [];
+            $estados = isset($_GET['estados']) ? json_decode($_GET['estados']) : [];
+            echo json_encode($leads->listarLeads($texto, $carreras, $estados));
             break;
         /*Notas */
         case 'listarNotas':
@@ -467,6 +510,9 @@ if (isset($_GET['accion'])) {
                 ";
             }
             echo json_encode(["option" => $option]);
+            break;
+        case 'listar_user_option_leads':
+            echo json_encode($user->listarUser());
             break;
         /*LOGIN */
         case 'redireccionamiento':
