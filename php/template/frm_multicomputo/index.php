@@ -16,32 +16,32 @@
             max-width: 600px;
             width: 100%;
         }
-        
+
         .logo {
-            max-width: 120px;
+            max-width: 220px;
             margin-bottom: 15px;
         }
-        
+
         h1 {
             font-weight: 700;
             color: #004085;
         }
-        
+
         .form-title {
             color: #0062E6;
             margin-bottom: 1rem;
             font-weight: 600;
         }
-        
+
         .form-floating label {
             color: #6c757d;
         }
-        
+
         .form-control,
         .form-select {
             border-radius: 12px;
         }
-        
+
         .btn-primary {
             background: linear-gradient(90deg, #0062E6, #33AEFF);
             border: none;
@@ -50,12 +50,12 @@
             border-radius: 50px;
             transition: all 0.3s ease;
         }
-        
+
         .btn-primary:hover {
             background: linear-gradient(90deg, #0046a1, #1f89da);
             transform: scale(1.03);
         }
-        
+
         .footer {
             text-align: center;
             font-size: 0.9rem;
@@ -72,11 +72,11 @@
 
     <div class="form-container text-center">
         <!-- Logo -->
-        <img src="img/logo.png" alt="Logo" class="logo">
+        <img src="img/logo.png" alt="Logo" class="logo" >
 
         <!-- Título -->
         <h1>Escríbenos para más información</h1>
-        <p class="text-muted mb-4">¿Interesado en estudiar en Multitech? ¡Inscríbete!</p>
+        <p class="text-muted mb-4">¿Interesado en estudiar en Multicomputo? ¡Inscríbete!</p>
 
         <!-- Formulario -->
         <form id="mainForm">
@@ -114,18 +114,34 @@
 
             <!-- Url de Origen-->
             <input type="hidden" name="origen_url" id="origen_url">
+            <!-- Codigo Empresa-->
+            <input type="hidden" name="cod_emp" id="cod_emp" value="2">
 
 
             <!-- Campo select -->
+            <?php
+            require_once "config/conexion.php";
+
+
+            // Consulta de programas
+            $query = "SELECT cod_pro, desc_pro FROM programa WHERE emp_pro = 2 ORDER BY desc_pro ASC";
+            $result = $conexion->query($query);
+
+            ?>
+
+            <!-- Campo select dinámico -->
             <div class="form-floating mb-4">
-                <select class="form-select" id="curso" name="curso" required>
-          <option value="" selected disabled>Seleccione una opción</option>
-          <option value="Inteligencia Artificial">Inteligencia Artificial</option>
-          <option value="Diseña con capcut">Diseña con CapCut</option>
-          <option value="Inbound Marketing el mejor embudo de venta">Inbound Marketing: el mejor embudo de venta</option>
-          <option value="Cómo hacer tu hoja de vida estándar ATS">Cómo hacer tu hoja de vida estándar ATS</option>
-        </select>
-                <label for="curso">Curso</label>
+                <select class="form-select" id="curso" name="carrera" required>
+                    <option value="" selected disabled>Seleccione una opción</option>
+
+                    <?php while ($row = mysqli_fetch_assoc($result)): ?>
+                        <option value="<?php echo $row['cod_pro']; ?>">
+                            <?php echo htmlspecialchars($row['desc_pro']); ?>
+                        </option>
+                    <?php endwhile; ?>
+
+                </select>
+                <label for="curso">Programa</label>
             </div>
 
             <!-- Botón -->
@@ -136,21 +152,60 @@
 
         <!-- Footer -->
         <div class="footer mt-4">
-            <p>© 2025 Programa Multitech | Todos los derechos reservados</p>
+            <p>© 2025 Programa Multicomputo | Todos los derechos reservados</p>
         </div>
     </div>
 
     <script>
         // Recibir la URL real desde el padre
         window.addEventListener("message", function(event) {
+            // Validar el mensaje recibido
             if (event.data && event.data.tipo === "url_padre") {
                 const campo = document.getElementById("origen_url");
-                if (campo) campo.value = event.data.url;
+                if (campo) {
+                    campo.value = event.data.url; // Asignar la URL recibida
+                    //console.log("URL recibida del padre:", event.data.url);
+                }
             }
         });
-        document.getElementById('origen_url').value
     </script>
 
+    <script>
+        function enviarWhatsApp() {
+
+            let nombres = document.getElementById('nombres').value.trim();
+            let apellidos = document.getElementById('apellidos').value.trim();
+            let cedula = document.getElementById('cedula').value.trim();
+            let email = document.getElementById('email').value.trim();
+            let telefono = document.getElementById('telefono').value.trim();
+            let cursoSelect = document.getElementById('curso');
+            let cursoId = cursoSelect.value;
+            let cursoNombre = cursoSelect.options[cursoSelect.selectedIndex].text;
+
+            // Validación rápida
+            if (!nombres || !apellidos || !email || !telefono || !cursoId) {
+                Swal.fire("Atención", "Por favor completa todos los campos antes de enviar.", "warning");
+                return;
+            }
+
+            let mensaje =
+                `¡Hola! Estoy interesado en el programa Multitech.
+            
+            🧑 Nombre: ${nombres} ${apellidos}
+            🪪 Cédula: ${cedula}
+            📧 Correo: ${email}
+            📱 Teléfono: ${telefono}
+            🎓 Curso: ${cursoNombre}
+            
+            Gracias por su atención.`;
+
+            let numero = "573158071474"; // CAMBIA ESTE NÚMERO
+
+            let url = "https://wa.me/" + numero + "?text=" + encodeURIComponent(mensaje);
+
+            window.open(url, "_blank");
+        }
+    </script>
 
 
     <script>
@@ -165,10 +220,12 @@
 
             document.getElementById("mainForm").addEventListener("submit", function(e) {
                 e.preventDefault();
-
+                let cursoSelect = document.getElementById('curso');
+                let cursoId = cursoSelect.value;
+                let cursoNombre = cursoSelect.options[cursoSelect.selectedIndex].text;
                 let datos = new FormData(this);
                 datos.append("accion", "registrar_leads");
-
+                datos.append("cursoNombre", cursoNombre);
                 fetch("ajax.php", {
                         method: "POST",
                         body: datos
@@ -179,6 +236,8 @@
                         if (data.status === "success") {
 
                             Swal.fire("Éxito", data.message, "success");
+                            // Enviar a WhatsApp
+                            enviarWhatsApp();
                             this.reset();
 
                             // --- SEGUNDO FETCH (PHPMailer) ---
