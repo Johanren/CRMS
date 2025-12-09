@@ -114,6 +114,7 @@
 
             <!-- Url de Origen-->
             <input type="hidden" name="origen_url" id="origen_url">
+            <!-- Codigo Empresa-->
             <input type="hidden" name="cod_emp" id="cod_emp" value="1">
 
 
@@ -198,7 +199,7 @@
             
             Gracias por su atención.`;
 
-            let numero = "573158071474"; // CAMBIA ESTE NÚMERO
+            let numero = "573178939531"; // CAMBIA ESTE NÚMERO
 
             let url = "https://wa.me/" + numero + "?text=" + encodeURIComponent(mensaje);
 
