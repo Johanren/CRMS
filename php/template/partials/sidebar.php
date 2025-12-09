@@ -119,9 +119,11 @@
                     <li class="menu-title"><span>CRM</span></li>
                     <li>
                         <ul>
-                            <li class="<?php echo ($page == 'info_origen.php') ? 'active' : ''; ?>">
-                                <a href="info_origen.php"><i class="ti ti-user-up"></i><span>Información Origen</span></a>
-                            </li>
+                            <?php if ($_SESSION['rol'] == "Admin") { ?>
+                                <li class="<?php echo ($page == 'info_origen.php') ? 'active' : ''; ?>">
+                                    <a href="info_origen.php"><i class="ti ti-user-up"></i><span>Información Origen</span></a>
+                                </li>
+                            <?php } ?>
                             <li class="<?php echo ($page == 'contacts.php' || $page == 'contacts-list.php' || $page == 'contact-details.php') ? 'active' : ''; ?>">
                                 <a href="contacts.php"><i class="ti ti-user-up"></i><span>Contactos</span></a>
                             </li>

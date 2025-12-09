@@ -240,8 +240,10 @@ class LeadsModels
 
     public static function obtenerAsesorConMenosLeads()
     {
+        $cod_emp = $data['cod_emp'] ?? $_SESSION['cod_emp'] ?? null;
+
         $sql = "SELECT user_id, COUNT(*) AS total
-            FROM leads
+            FROM leads WHERE cod_emp = '$cod_emp'
             GROUP BY user_id
             ORDER BY total ASC
             LIMIT 1";
