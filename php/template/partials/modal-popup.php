@@ -33494,7 +33494,7 @@ $page = end( $link_array );
 <!-- End Modal  -->
 <?php }?>
 
-<?php if ($page == 'info_origen.php') {   ?>
+<?php if ($page == 'info_origen.php' || $page == 'manage-users.php' || $page == 'roles-permissions.php') {   ?>
 
 <div class="offcanvas offcanvas-end offcanvas-large" tabindex="-1" id="offdepartamento_add">
     <div class="offcanvas-header border-bottom">

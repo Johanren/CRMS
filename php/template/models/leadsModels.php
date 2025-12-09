@@ -67,7 +67,7 @@ class LeadsModels
         return "error";
     }
 
-    public static function getLeads($texto = "", $carreras = [], $estados = [])
+    public static function getLeads($texto = "", $asesor = [], $carreras = [], $horario = [], $interes = [], $medio = [], $fuente = [], $campana = [], $accion = [], $departamento = [], $ciudad = [], $barrio = [], $estados = [])
     {
         $sql = "SELECT 
                 l.*, 
@@ -76,12 +76,16 @@ class LeadsModels
                 c.email, 
                 c.telefono_principal, 
                 ci.desc_ciu AS ciudad, 
+                h.descripcion AS horario,
                 p.desc_pro, 
-                e.nombre
+                e.nombre,
+                u.nombres AS nombreAsesor
             FROM leads l
             INNER JOIN cliente c ON c.id_cliente = l.cliente_id 
             LEFT JOIN ciudad ci ON ci.cod_ciu = l.ciudad_id 
             LEFT JOIN programa p ON l.carrera_id = p.cod_pro 
+            LEFT JOIN horario h ON l.horario_id = h.id_horario
+            LEFT JOIN user u ON l.user_id = u.id_user
             LEFT JOIN estado_leads e ON e.id_estado_leads = l.estado_leads_id 
             WHERE l.cod_emp = ?";
 
@@ -112,12 +116,102 @@ class LeadsModels
         }
 
         /* ===========================
+        FILTRO POR Asesor
+    ============================ */
+        if (!empty($asesor)) {
+            $placeholders = implode(",", array_fill(0, count($asesor), "?"));
+            $sql .= " AND l.user_id IN ($placeholders)";
+            $params = array_merge($params, $asesor);
+        }
+
+        /* ===========================
         FILTRO POR CARRERAS
     ============================ */
         if (!empty($carreras)) {
             $placeholders = implode(",", array_fill(0, count($carreras), "?"));
             $sql .= " AND p.desc_pro IN ($placeholders)";
             $params = array_merge($params, $carreras);
+        }
+
+        /* ===========================
+        FILTRO POR Horario
+    ============================ */
+        if (!empty($horario)) {
+            $placeholders = implode(",", array_fill(0, count($horario), "?"));
+            $sql .= " AND l.horario_id IN ($placeholders)";
+            $params = array_merge($params, $horario);
+        }
+
+        /* ===========================
+        FILTRO POR Interes
+    ============================ */
+        if (!empty($interes)) {
+            $placeholders = implode(",", array_fill(0, count($interes), "?"));
+            $sql .= " AND l.interes_id IN ($placeholders)";
+            $params = array_merge($params, $interes);
+        }
+
+        /* ===========================
+        FILTRO POR medio
+    ============================ */
+        if (!empty($medio)) {
+            $placeholders = implode(",", array_fill(0, count($medio), "?"));
+            $sql .= " AND l.medio_id IN ($placeholders)";
+            $params = array_merge($params, $medio);
+        }
+
+        /* ===========================
+        FILTRO POR fuente
+    ============================ */
+        if (!empty($fuente)) {
+            $placeholders = implode(",", array_fill(0, count($fuente), "?"));
+            $sql .= " AND l.fuente_id IN ($placeholders)";
+            $params = array_merge($params, $fuente);
+        }
+
+        /* ===========================
+        FILTRO POR campana
+    ============================ */
+        if (!empty($campana)) {
+            $placeholders = implode(",", array_fill(0, count($campana), "?"));
+            $sql .= " AND l.campana_id IN ($placeholders)";
+            $params = array_merge($params, $campana);
+        }
+
+        /* ===========================
+        FILTRO POR Accion
+    ============================ */
+        if (!empty($accion)) {
+            $placeholders = implode(",", array_fill(0, count($accion), "?"));
+            $sql .= " AND l.accion_id IN ($placeholders)";
+            $params = array_merge($params, $accion);
+        }
+
+        /* ===========================
+        FILTRO POR departamento
+    ============================ */
+        if (!empty($departamento)) {
+            $placeholders = implode(",", array_fill(0, count($departamento), "?"));
+            $sql .= " AND l.departamento_id IN ($placeholders)";
+            $params = array_merge($params, $departamento);
+        }
+
+        /* ===========================
+        FILTRO POR ciudad
+    ============================ */
+        if (!empty($ciudad)) {
+            $placeholders = implode(",", array_fill(0, count($ciudad), "?"));
+            $sql .= " AND l.ciudad_id IN ($placeholders)";
+            $params = array_merge($params, $ciudad);
+        }
+
+        /* ===========================
+        FILTRO POR barrio
+    ============================ */
+        if (!empty($barrio)) {
+            $placeholders = implode(",", array_fill(0, count($barrio), "?"));
+            $sql .= " AND l.barrio_id IN ($placeholders)";
+            $params = array_merge($params, $barrio);
         }
 
         /* ===========================
@@ -152,7 +246,7 @@ class LeadsModels
         return "ok";
     }
 
-    public static function listarLeads($texto, $carreras, $estados)
+    public static function listarLeads($texto = "", $asesor = [], $carreras = [], $horario = [], $interes = [], $medio = [], $fuente = [], $campana = [], $accion = [], $departamento = [], $ciudad = [], $barrio = [], $estados = [])
     {
         $sql = "SELECT 
                 l.*, 
@@ -164,13 +258,16 @@ class LeadsModels
                 ci.desc_ciu AS ciudad, 
                 l.fecha_creacion, 
                 u.nombres AS nombreAsesor, 
-                u.apellidos AS apellidoAsesor 
+                u.apellidos AS apellidoAsesor,
+                h.descripcion AS horario,
+                e.nombre AS estado
             FROM leads l 
             INNER JOIN cliente c ON c.id_cliente = l.cliente_id 
             INNER JOIN programa p ON p.cod_pro = l.carrera_id 
             LEFT JOIN ciudad ci ON ci.cod_ciu = l.ciudad_id 
             LEFT JOIN user u ON u.id_user = l.user_id 
             LEFT JOIN estado_leads e ON e.id_estado_leads = l.estado_leads_id 
+            LEFT JOIN horario h ON l.horario_id = h.id_horario
             WHERE l.cod_emp = ?";
 
         $params = [$_SESSION['cod_emp']];
@@ -200,12 +297,102 @@ class LeadsModels
         }
 
         /* ===========================
+        FILTRO POR Asesor
+    ============================ */
+        if (!empty($asesor)) {
+            $placeholders = implode(",", array_fill(0, count($asesor), "?"));
+            $sql .= " AND l.user_id IN ($placeholders)";
+            $params = array_merge($params, $asesor);
+        }
+
+        /* ===========================
         FILTRO POR CARRERAS
     ============================ */
         if (!empty($carreras)) {
             $placeholders = implode(",", array_fill(0, count($carreras), "?"));
             $sql .= " AND p.desc_pro IN ($placeholders)";
             $params = array_merge($params, $carreras);
+        }
+
+        /* ===========================
+        FILTRO POR Horario
+    ============================ */
+        if (!empty($horario)) {
+            $placeholders = implode(",", array_fill(0, count($horario), "?"));
+            $sql .= " AND l.horario_id IN ($placeholders)";
+            $params = array_merge($params, $horario);
+        }
+
+        /* ===========================
+        FILTRO POR Interes
+    ============================ */
+        if (!empty($interes)) {
+            $placeholders = implode(",", array_fill(0, count($interes), "?"));
+            $sql .= " AND l.interes_id IN ($placeholders)";
+            $params = array_merge($params, $interes);
+        }
+
+        /* ===========================
+        FILTRO POR medio
+    ============================ */
+        if (!empty($medio)) {
+            $placeholders = implode(",", array_fill(0, count($medio), "?"));
+            $sql .= " AND l.medio_id IN ($placeholders)";
+            $params = array_merge($params, $medio);
+        }
+
+        /* ===========================
+        FILTRO POR fuente
+    ============================ */
+        if (!empty($fuente)) {
+            $placeholders = implode(",", array_fill(0, count($fuente), "?"));
+            $sql .= " AND l.fuente_id IN ($placeholders)";
+            $params = array_merge($params, $fuente);
+        }
+
+        /* ===========================
+        FILTRO POR campana
+    ============================ */
+        if (!empty($campana)) {
+            $placeholders = implode(",", array_fill(0, count($campana), "?"));
+            $sql .= " AND l.campana_id IN ($placeholders)";
+            $params = array_merge($params, $campana);
+        }
+
+        /* ===========================
+        FILTRO POR Accion
+    ============================ */
+        if (!empty($accion)) {
+            $placeholders = implode(",", array_fill(0, count($accion), "?"));
+            $sql .= " AND l.accion_id IN ($placeholders)";
+            $params = array_merge($params, $accion);
+        }
+
+        /* ===========================
+        FILTRO POR departamento
+    ============================ */
+        if (!empty($departamento)) {
+            $placeholders = implode(",", array_fill(0, count($departamento), "?"));
+            $sql .= " AND l.departamento_id IN ($placeholders)";
+            $params = array_merge($params, $departamento);
+        }
+
+        /* ===========================
+        FILTRO POR ciudad
+    ============================ */
+        if (!empty($ciudad)) {
+            $placeholders = implode(",", array_fill(0, count($ciudad), "?"));
+            $sql .= " AND l.ciudad_id IN ($placeholders)";
+            $params = array_merge($params, $ciudad);
+        }
+
+        /* ===========================
+        FILTRO POR barrio
+    ============================ */
+        if (!empty($barrio)) {
+            $placeholders = implode(",", array_fill(0, count($barrio), "?"));
+            $sql .= " AND l.barrio_id IN ($placeholders)";
+            $params = array_merge($params, $barrio);
         }
 
         /* ===========================
@@ -280,6 +467,23 @@ class LeadsModels
 
         $stmt->bindParam(1, $user_id);
         $stmt->bindParam(2, $id_lead);
+
+        if ($stmt->execute()) {
+            return "ok";
+        }
+
+        return "error";
+    }
+    
+    public static function actualizarColumnasLeads($leadId, $columna, $valor)
+    {
+        $sql = "UPDATE leads l LEFT JOIN cliente c ON c.id_cliente = l.cliente_id SET $columna = ? WHERE id_lead = ?";
+        $conn = new Conexion();
+        $conectar = $conn->conectar();
+        $stmt = $conectar->prepare($sql);
+
+        $stmt->bindParam(1, $valor);
+        $stmt->bindParam(2, $leadId);
 
         if ($stmt->execute()) {
             return "ok";

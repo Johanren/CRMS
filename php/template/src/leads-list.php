@@ -30,8 +30,9 @@
                                     PDF</a>
                             </li>
                             <li>
-                                <a href="javascript:void(0);" class="dropdown-item"><i class="ti ti-file-type-xls me-1"></i>Exportar por
-                                    Excel </a>
+                                <a href="javascript:void(0);" class="dropdown-item" onclick="exportarExcel('leads')">
+                                    <i class="ti ti-file-type-xls me-1"></i> Exportar como Excel
+                                </a>
                             </li>
                         </ul>
                     </div>
@@ -69,9 +70,9 @@
                             <i class="ti ti-calendar-due text-dark fs-14 me-1"></i><span class="reportrange-picker-field">9 Jun 25 - 9 Jun 25</span>
                         </div>-->
                         <div class="input-icon input-icon-start position-relative">
-                    <span class="input-icon-addon text-dark"><i class="ti ti-search"></i></span>
-                    <input type="text" class="form-control" id="buscador" placeholder="Buscar">
-                </div>
+                            <span class="input-icon-addon text-dark"><i class="ti ti-search"></i></span>
+                            <input type="text" class="form-control" id="buscador" placeholder="Buscar">
+                        </div>
                     </div>
                     <div class="d-flex align-items-center gap-2 flex-wrap">
                         <div class="dropdown">
@@ -85,11 +86,111 @@
                                     <div class="accordion" id="accordionExample">
                                         <div class="filter-set-content">
                                             <div class="filter-set-content-head">
-                                                <a href="#" class="collapsed" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">Carrera</a>
+                                                <a href="#" class="collapsed" data-bs-toggle="collapse" data-bs-target="#collapseAsesor" aria-expanded="false" aria-controls="collapseThree">Asesor</a>
                                             </div>
-                                            <div class="filter-set-contents accordion-collapse collapse" id="collapseThree" data-bs-parent="#accordionExample">
+                                            <div class="filter-set-contents accordion-collapse collapse" id="collapseAsesor" data-bs-parent="#accordionExample">
+                                                <div class="filter-content-list bg-light rounded border p-2 shadow mt-2">
+                                                    <div id="listar_filtro_user" class="overflow-x-auto"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="filter-set-content">
+                                            <div class="filter-set-content-head">
+                                                <a href="#" class="collapsed" data-bs-toggle="collapse" data-bs-target="#collapseCarrera" aria-expanded="false" aria-controls="collapseThree">Carrera</a>
+                                            </div>
+                                            <div class="filter-set-contents accordion-collapse collapse" id="collapseCarrera" data-bs-parent="#accordionExample">
                                                 <div class="filter-content-list bg-light rounded border p-2 shadow mt-2">
                                                     <div id="listar_filtro_carrera" class="overflow-x-auto"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="filter-set-content">
+                                            <div class="filter-set-content-head">
+                                                <a href="#" class="collapsed" data-bs-toggle="collapse" data-bs-target="#horarioCollapse" aria-expanded="false" aria-controls="collapseThree">Horario</a>
+                                            </div>
+                                            <div class="filter-set-contents accordion-collapse collapse" id="horarioCollapse" data-bs-parent="#accordionExample">
+                                                <div class="filter-content-list bg-light rounded border p-2 shadow mt-2">
+                                                    <div id="listar_filtro_horario" class="overflow-x-auto"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="filter-set-content">
+                                            <div class="filter-set-content-head">
+                                                <a href="#" class="collapsed" data-bs-toggle="collapse" data-bs-target="#collapseInteres" aria-expanded="false" aria-controls="collapseThree">Interes</a>
+                                            </div>
+                                            <div class="filter-set-contents accordion-collapse collapse" id="collapseInteres" data-bs-parent="#accordionExample">
+                                                <div class="filter-content-list bg-light rounded border p-2 shadow mt-2">
+                                                    <div id="listar_filtro_interes" class="overflow-x-auto"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="filter-set-content">
+                                            <div class="filter-set-content-head">
+                                                <a href="#" class="collapsed" data-bs-toggle="collapse" data-bs-target="#collapseMedio" aria-expanded="false" aria-controls="collapseThree">Medio</a>
+                                            </div>
+                                            <div class="filter-set-contents accordion-collapse collapse" id="collapseMedio" data-bs-parent="#accordionExample">
+                                                <div class="filter-content-list bg-light rounded border p-2 shadow mt-2">
+                                                    <div id="listar_filtro_medio" class="overflow-x-auto"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="filter-set-content">
+                                            <div class="filter-set-content-head">
+                                                <a href="#" class="collapsed" data-bs-toggle="collapse" data-bs-target="#collapseFuente" aria-expanded="false" aria-controls="collapseThree">Fuente</a>
+                                            </div>
+                                            <div class="filter-set-contents accordion-collapse collapse" id="collapseFuente" data-bs-parent="#accordionExample">
+                                                <div class="filter-content-list bg-light rounded border p-2 shadow mt-2">
+                                                    <div id="listar_filtro_fuente" class="overflow-x-auto"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="filter-set-content">
+                                            <div class="filter-set-content-head">
+                                                <a href="#" class="collapsed" data-bs-toggle="collapse" data-bs-target="#collapseCamp" aria-expanded="false" aria-controls="collapseThree">Campaña</a>
+                                            </div>
+                                            <div class="filter-set-contents accordion-collapse collapse" id="collapseCamp" data-bs-parent="#accordionExample">
+                                                <div class="filter-content-list bg-light rounded border p-2 shadow mt-2">
+                                                    <div id="listar_filtro_campana" class="overflow-x-auto"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="filter-set-content">
+                                            <div class="filter-set-content-head">
+                                                <a href="#" class="collapsed" data-bs-toggle="collapse" data-bs-target="#collapseAcc" aria-expanded="false" aria-controls="collapseThree">Acción</a>
+                                            </div>
+                                            <div class="filter-set-contents accordion-collapse collapse" id="collapseAcc" data-bs-parent="#accordionExample">
+                                                <div class="filter-content-list bg-light rounded border p-2 shadow mt-2">
+                                                    <div id="listar_filtro_accion" class="overflow-x-auto"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="filter-set-content">
+                                            <div class="filter-set-content-head">
+                                                <a href="#" class="collapsed" data-bs-toggle="collapse" data-bs-target="#collapseDep" aria-expanded="false" aria-controls="collapseThree">Departamento</a>
+                                            </div>
+                                            <div class="filter-set-contents accordion-collapse collapse" id="collapseDep" data-bs-parent="#accordionExample">
+                                                <div class="filter-content-list bg-light rounded border p-2 shadow mt-2">
+                                                    <div id="listar_filtro_dep" class="overflow-x-auto"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="filter-set-content">
+                                            <div class="filter-set-content-head">
+                                                <a href="#" class="collapsed" data-bs-toggle="collapse" data-bs-target="#collapseCiduad" aria-expanded="false" aria-controls="collapseThree">Ciudad</a>
+                                            </div>
+                                            <div class="filter-set-contents accordion-collapse collapse" id="collapseCiduad" data-bs-parent="#accordionExample">
+                                                <div class="filter-content-list bg-light rounded border p-2 shadow mt-2">
+                                                    <div id="listar_filtro_ciudad" class="overflow-x-auto"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="filter-set-content">
+                                            <div class="filter-set-content-head">
+                                                <a href="#" class="collapsed" data-bs-toggle="collapse" data-bs-target="#collapseBrr" aria-expanded="false" aria-controls="collapseThree">Barrio</a>
+                                            </div>
+                                            <div class="filter-set-contents accordion-collapse collapse" id="collapseBrr" data-bs-parent="#accordionExample">
+                                                <div class="filter-content-list bg-light rounded border p-2 shadow mt-2">
+                                                    <div id="listar_filtro_brr" class="overflow-x-auto"></div>
                                                 </div>
                                             </div>
                                         </div>
@@ -297,7 +398,7 @@
                                 <th>Carrera</th>
                                 <th>Telefono</th>
                                 <th>Estado</th>
-                                <th>Usuario</th>
+                                <th>Asesor</th>
                                 <th>Fecha creación</th>
                                 <th class="text-end no-sort">Acción</th>
                             </tr>

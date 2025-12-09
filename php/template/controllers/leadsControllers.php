@@ -23,9 +23,9 @@ class LeadsControllers
         return LeadsModels::actualizarLeads($data, $id_cliente, $_SESSION['user_id'], 1);
     }
 
-    public static function getLeads($texto, $carreras, $estados)
+    public static function getLeads($texto, $asesor, $carreras, $horario, $interes, $medio, $fuente, $campana, $accion, $departamento, $ciudad, $barrio, $estados)
     {
-        return LeadsModels::getLeads($texto, $carreras, $estados);
+        return LeadsModels::getLeads($texto, $asesor, $carreras, $horario, $interes, $medio, $fuente, $campana, $accion, $departamento, $ciudad, $barrio, $estados);
     }
 
     public static function updateEstado($idLead, $idEstado)
@@ -48,7 +48,13 @@ class LeadsControllers
         return LeadsModels::listarLeadsId($id);
     }
 
-    public static function cambiarAsesor($id_lead, $user_id) {
+    public static function cambiarAsesor($id_lead, $user_id)
+    {
         return LeadsModels::cambiarAsesor($id_lead, $user_id);
+    }
+
+    public static function actualizarColumnasLeads($leadId, $columna, $valor)
+    {
+        return LeadsModels::actualizarColumnasLeads($leadId, $columna, $valor);
     }
 }

@@ -351,6 +351,7 @@ if($page != 'login.php'){
 
 <?php if ($page == 'manage-users.php') {   ?>
     <script src="assets/json/manage-users-list.js"></script>
+    <script src="assets/json/roles-list.js"></script>
 <?php } ?>
 
 <?php if ($page == 'membership-transactions.php') {   ?>
@@ -415,6 +416,8 @@ if($page != 'login.php'){
 
 <?php if ($page == 'info_origen.php' || $page == 'leads.php' || $page == 'leads-list.php' || $page == 'leads-details.php') {   ?>
     <script src="assets/json/info_origen.js"></script>
+    <script src="assets/json/manage-users-list.js"></script>
+    <script src="assets/json/roles-list.js"></script>
 <?php } ?>
 
 <?php if ($page == 'chat.php' || $page == 'video-call.php') {   ?>

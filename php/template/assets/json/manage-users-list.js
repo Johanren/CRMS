@@ -1,201 +1,215 @@
-$(document).ready(function () {
-    if($('#manage-users-list').length > 0) {
-		$('#manage-users-list').DataTable({
-			"bFilter": false, 
-				"bInfo": false,
-					"ordering": true,
-				"autoWidth": true,
-				"language": {
-					search: ' ',
-					sLengthMenu: '_MENU_',
-					searchPlaceholder: "Search",
-					info: "_START_ - _END_ of _TOTAL_ items",
-					"lengthMenu":     "Show _MENU_ entries",
-					paginate: {
-					next: '<i class="ti ti-chevron-right"></i> ',
-					previous: '<i class="ti ti-chevron-left"></i> '
-				},
-					},
-				initComplete: (settings, json)=>{
-					$('.dataTables_paginate').appendTo('.datatable-paginate');
-					$('.dataTables_length').appendTo('.datatable-length');
-				},  
-				"data":[
-					{
-						"id" : 1,
-						"si_no" : "",
-						"select" : "",
-						"customer_name" : "Darlee Robertson",
-						"customer_image" : "assets/img/profiles/avatar-19.jpg",
-						"customer_no" : "Facility Manager",
-						"phone" : "1234567890",
-						"email" : "robertson@example.com",
-						"location" : "Germany",
-						"created" : "25 Sep 2025, 12:12 pm",
-						"last_activity": "2 mins ago",
-						"status" : "0",
-						"Action" : ""
-					},
-					{
-						"id" : 2,
-						"si_no" : "",
-						"select" : "",
-						"customer_name" : "Sharon Roy",
-						"customer_image" : "assets/img/profiles/avatar-20.jpg",
-						"customer_no" : "Installer",
-						"phone" : "+1 989757485",
-						"email" : "sharon@example.com",
-						"location" : "USA",
-						"created" : "27 Sep 2025, 07:40 am",
-						"last_activity": "5 mins ago",
-						"status" : "1",
-						"Action" : ""
-					},
-					{
-						"id" : 3,
-						"si_no" : "",
-						"select" : "",
-						"customer_name" : "Vaughan Lewis",
-						"customer_image" : "assets/img/profiles/avatar-21.jpg",
-						"customer_no" : "Senior  Manager",
-						"phone" : "+1 546555455",
-						"email" : "vaughan12@example.com",
-						"location" : "Canada",
-						"created" : "29 Sep 2025, 08:20 am",
-						"last_activity": "2 days ago",
-						"status" : "0",
-						"Action" : ""
-					},
-					{
-						"id" : 4,
-						"si_no" : "",
-						"select" : "",
-						"customer_name" : "Jessica Louise",
-						"customer_image" : "assets/img/profiles/avatar-23.jpg",
-						"customer_no" : "Test Engineer",
-						"phone" : "+1 454478787",
-						"email" : "jessica13@example.com",
-						"location" : "India",
-						"created" : "25 Sep 2025, 12:12 pm",
-						"last_activity": "2 mins ago",
-						"status" : "0",
-						"Action" : ""
-					},
-					{
-						"id" : 5,
-						"si_no" : "",
-						"select" : "",
-						"customer_name" : "Carol Thomas",
-						"customer_image" : "assets/img/profiles/avatar-16.jpg",
-						"customer_no" : "UI /UX Designer",
-						"phone" : "+1 124547845",
-						"email" : "caroltho3@example.com",
-						"location" : "China",
-						"created" : "02 Oct 2025, 10:10 am",
-						"last_activity": "Online",
-						"status" : "0",
-						"Action" : ""
-					},
-					{
-						"id" : 6,
-						"si_no" : "",
-						"select" : "",
-						"customer_name" : "Dawn Mercha",
-						"customer_image" : "assets/img/profiles/avatar-22.jpg",
-						"customer_no" : "Technician",
-						"phone" : "+1 478845447",
-						"email" : "dawnmercha@example.com",
-						"location" : "Martin Lewis",
-						"created" : "17 Oct 2025, 04:25 pm",
-						"last_activity": "3 days ago",
-						"status" : "0",
-						"Action" : ""
-					},
-					{
-						"id" : 7,
-						"si_no" : "",
-						"select" : "",
-						"customer_name" : "Rachel Hampton",
-						"customer_image" : "assets/img/profiles/avatar-24.jpg",
-						"customer_no" : "Software Developer",
-						"phone" : "+1 215544845",
-						"email" : "rachel@example.com",
-						"location" : "Indonesia",
-						"created" : "28 Oct 2025, 07:16 am",
-						"last_activity": "10 days ago",
-						"status" : "0",
-						"Action" : ""
-					},
-					{
-						"id" : 8,
-						"si_no" : "",
-						"select" : "",
-						"customer_name" : "Jonelle Curtiss",
-						"customer_image" : "assets/img/profiles/avatar-25.jpg",
-						"customer_no" : "Supervisor",
-						"phone" : "+1 121145471",
-						"email" : "jonelle@example.com",
-						"location" : "Cuba",
-						"created" : "08 Nov 2025, 06:10 am",
-						"last_activity": "1 week go",
-						"status" : "0",
-						"Action" : ""
-					},
-					{
-						"id" : 9,
-						"si_no" : "",
-						"select" : "",
-						"customer_name" : "Jonathan Smith",
-						"customer_image" : "assets/img/profiles/avatar-26.jpg",
-						"customer_no" : "Team Lead Dev",
-						"phone" : "+1 321454789",
-						"email" : "jonathan@example.com",
-						"location" : "Isreal",
-						"created" : "15 Nov 2025, 11:50 am",
-						"last_activity": "1 day ago",
-						"status" : "0",
-						"Action" : ""
-					}
-					,
-					{
-						"id" : 10,
-						"si_no" : "",
-						"select" : "",
-						"customer_name" : "Brook Carter",
-						"customer_image" : "assets/img/profiles/avatar-01.jpg",
-						"customer_no" : "Team Lead Dev ",
-						"phone" : "+1 278907145",
-						"email" : "brook@example.com",
-						"location" : "Colombia",
-						"created" : "25 Nov 2025, 06:34 pm",
-						"last_activity": "8 mins ago",
-						"status" : "0",
-						"Action" : ""
-					}
-					
-				],
-			"columns": [
-				{ "render": function ( data, type, row ){
-					return '<div class="form-check form-check-md"><input class="form-check-input" type="checkbox"></div>';
-				}},
-				{ "render": function ( data, type, row ){
-					return '<div class="set-star rating-select"><i class="ti ti-star-filled fs-16"></i></div>';
-				}},
-				{ "render": function ( data, type, row ){
-					return '<h6 class="d-flex align-items-center fs-14 fw-medium mb-0"><a href="javascript:void(0);" class="avatar avatar-rounded me-2"><img src="'+row['customer_image']+'" alt="User Image"></a><a href="javascript:void(0);" class="d-flex flex-column">'+row['customer_name']+' <span class="text-body fs-13 mt-1 d-inline-block fw-normal">'+row['customer_no']+' </span></a></h6>';
-				}},
-				{ "data": "phone" },
-				{ "data": "email" },
-				{ "data": "created" },
-				{ "data": "last_activity" },
-				{ "render": function ( data, type, row ){
-					if(row['status'] == "0") { var class_name = "bg-success";var status_name ="Active" } else { var class_name = "bg-danger";var status_name ="Inactive"}
-					return '<span class="badge badge-pill badge-status '+class_name+'" >'+status_name+'</span>';
-				}},
-				{ "render": function ( data, type, row ){
-					return '<div class="dropdown table-action"><a href="#" class="action-icon btn btn-xs shadow btn-icon btn-outline-light" data-bs-toggle="dropdown" aria-expanded="false"><i class="ti ti-dots-vertical"></i></a><div class="dropdown-menu dropdown-menu-right"><a class="dropdown-item" href="javascript:void(0);" data-bs-toggle="offcanvas" data-bs-target="#offcanvas_edit"><i class="ti ti-edit text-blue"></i> Edit</a><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#delete_contact"><i class="ti ti-trash"></i> Delete</a></div></div>';
-				}}
-			]
-		});
-	}
-});
+/*USER*/
+function inicializarDataTableUser(rol) {
+
+    if ($.fn.DataTable.isDataTable('#info-user')) {
+        $('#info-user').DataTable().clear().destroy();
+    }
+
+    $('#info-user').DataTable({
+        "bFilter": false,
+        "bInfo": false,
+        "ordering": true,
+        "autoWidth": true,
+        "language": {
+            search: ' ',
+            sLengthMenu: '_MENU_',
+            searchPlaceholder: "Search",
+            info: "_START_ - _END_ of _TOTAL_ items",
+            lengthMenu: "Show _MENU_ entries",
+            paginate: {
+                next: '<i class="ti ti-chevron-right"></i> ',
+                previous: '<i class="ti ti-chevron-left"></i> '
+            },
+        },
+        initComplete: (settings, json) => {
+            $('#info-user .dataTables_paginate').appendTo('.datatable-paginate');
+            $('#info-user .dataTables_length').appendTo('.datatable-length');
+        },
+
+        // 🔥 AQUÍ SE CARGA TU DATA DINÁMICA
+        "data": rol,
+
+        "columns": [
+            { "data": "codigo" },
+            { "data": "usuario" },
+            { "data": "email" },
+            { "data": "nombre_rol" },
+            { "data": "nom_emp" },
+            { "data": "fecha_creacion" },
+            {
+                "render": (data, type, row) => `
+                        <div class="dropdown table-action">
+                            <a href="#" class="action-icon btn btn-xs shadow btn-icon btn-outline-light" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="ti ti-dots-vertical"></i>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <a class="dropdown-item" href="#" onclick="editarUser(${row.id_user})">
+                                    <i class="ti ti-edit text-blue"></i> Edit
+                                </a>
+                                <a class="dropdown-item" 
+                                href="#" 
+                                onclick="eliminarUser(${row.id_user})"
+                                data-bs-toggle="modal" 
+                                data-bs-target="#delete_campaign">
+                                    <i class="ti ti-trash"></i> Delete
+                                </a>
+                            </div>
+                        </div>
+                    `
+            }
+        ]
+    });
+}
+
+if (document.getElementById("formUser")) {
+    document.getElementById("formUser").addEventListener("submit", function(e) {
+        e.preventDefault();
+
+        let datos = new FormData(this);
+        let userIdElement = document.getElementById("user_id");
+        let userId = userIdElement ? userIdElement.value : null;
+        if (userId && parseInt(userId) > 0) {
+            datos.append("accion", "actualizar_user");
+        } else {
+            datos.append("accion", "registrar_user");
+        }
+
+        fetch("ajax/ajax.php", {
+                method: "POST",
+                body: datos
+            })
+            .then(res => res.json())
+            .then(data => {
+
+                if (data.status === "success") {
+                    Swal.fire("Éxito", data.message, "success");
+                    listarUser();
+                    this.reset();
+                    document.getElementById("btnCerrarOffcanvas-user").click();
+                } else {
+                    Swal.fire("Error", data.message, "error");
+                }
+            });
+    });
+}
+
+function listarUser() {
+    fetch("ajax/ajax.php?accion=listar_user")
+        .then(res => res.json())
+        .then(data => {
+            inicializarDataTableUser(data);
+        })
+        .catch(err => console.error("Error al listar user:", err));
+}
+
+window.editarUser = (id) => {
+
+    let datos = new FormData();
+    datos.append("accion", "consultar_user");
+    datos.append("id", id);
+
+    fetch("ajax/ajax.php", {
+            method: "POST",
+            body: datos
+        })
+        .then(res => res.json())
+        .then(data => {
+
+            const user = data.find(c => c.id_user == id);
+            if (!user) return;
+            // Cambiar título del OFFCANVAS
+            document.getElementById("title-canvas-user").textContent = "Editar Usuario";
+            document.getElementById("btn-canvas-user").textContent = "Editar";
+            // Llenar campos
+            document.getElementById("codigoUser").value = user.codigo;
+            document.getElementById("nombreUser").value = user.nombres;
+            document.getElementById("apellidoUser").value = user.apellidos;
+            document.getElementById("correoUser").value = user.email;
+            document.getElementById("telefonoUser").value = user.telefono;
+            document.getElementById("contrasenaUser").value = user.password;
+            document.getElementById("rolS").value = user.id_rol;
+            document.getElementById("empre").value = user.cod_emp;
+
+            // Guardar ID oculto
+            if (!document.getElementById("user_id")) {
+                let hidden = document.createElement("input");
+                hidden.type = "hidden";
+                hidden.id = "user_id";
+                hidden.name = "user_id";
+                document.getElementById("formUser").appendChild(hidden);
+            }
+            document.getElementById("user_id").value = user.id_user;
+
+            // Abrir offcanvas manualmente
+            let el = document.getElementById('offUser_add');
+            let offcanvas = bootstrap.Offcanvas.getOrCreateInstance(el);
+            offcanvas.show();
+
+        })
+        .catch(err => {
+            console.error(err);
+            Swal.fire("Error", "No se pudo cargar la información", "error");
+        });
+
+};
+
+if (document.getElementById("btnCerrarOffcanvas-user")) {
+    document.getElementById("btnCerrarOffcanvas-user").addEventListener("click", function() {
+        document.getElementById("formUser").reset();
+        document.getElementById("title-canvas-user").textContent = "Nuevo Usuario";
+        document.getElementById("btn-canvas-user").textContent = "Crear";
+    });
+}
+
+window.eliminarUser = (id) => {
+
+    let datos = new FormData();
+    datos.append("accion", "eliminar_user");
+    datos.append("id", id);
+
+    fetch("ajax/ajax.php", {
+            method: "POST",
+            body: datos
+        })
+        .then(res => res.json())
+        .then(data => {
+
+            if (data.status === "success") {
+                Swal.fire("Éxito", data.message, "success");
+                listarDepart();
+            } else {
+                Swal.fire("Error", data.message, "error");
+            }
+
+        })
+        .catch(err => {
+            console.error(err);
+            Swal.fire("Error", "No se pudo cargar la información", "error");
+        });
+
+};
+
+function listarUserOption() {
+    fetch("ajax/ajax.php?accion=listar_user_option")
+        .then(res => res.json())
+        .then(data => {
+            if (document.getElementById("user")) {
+                document.getElementById("user").innerHTML = data.option;
+            }
+        });
+}
+
+function listarUserUl() {
+    fetch("ajax/ajax.php?accion=listar_user_ul")
+        .then(res => res.json())
+        .then(data => {
+            if (document.getElementById("listar_filtro_user")) {
+                document.getElementById("listar_filtro_user").innerHTML = data.option;
+            }
+        });
+}
+
+
+listarUserOption();
+listarUser();
+listarUserUl();

@@ -1,16 +1,26 @@
 // 3. Obtener valores de filtros
 window.Filtros = {
-    obtener: function() {
+    obtener: function () {
         let texto = "";
         let inputBuscador = document.getElementById("buscador");
         if (inputBuscador) {
             texto = inputBuscador.value.toLowerCase();
         }
 
+        let asesor = [...document.querySelectorAll(".filtro-asesor:checked")].map(c => c.value);
         let carreras = [...document.querySelectorAll(".filtro-carrera:checked")].map(c => c.value);
+        let horario = [...document.querySelectorAll(".filtro-horario:checked")].map(c => c.value);
+        let interes = [...document.querySelectorAll(".filtro-interes:checked")].map(c => c.value);
+        let medio = [...document.querySelectorAll(".filtro-medio:checked")].map(c => c.value);
+        let fuente = [...document.querySelectorAll(".filtro-fuente:checked")].map(c => c.value);
+        let campana = [...document.querySelectorAll(".filtro-campana:checked")].map(c => c.value);
+        let accion = [...document.querySelectorAll(".filtro-accion:checked")].map(c => c.value);
+        let departamento = [...document.querySelectorAll(".filtro-dep:checked")].map(c => c.value);
+        let ciudad = [...document.querySelectorAll(".filtro-ciu:checked")].map(c => c.value);
+        let barrio = [...document.querySelectorAll(".filtro-brr:checked")].map(c => c.value);
         let estados = [...document.querySelectorAll(".filtro-estado:checked")].map(c => c.value);
 
-        return { texto, carreras, estados };
+        return { texto, asesor, carreras, horario, interes, medio, fuente, campana, accion, departamento, ciudad, barrio, estados };
     }
 };
 
@@ -46,68 +56,68 @@ function inicializarDataTableLeads(leads) {
         "data": leads,
 
         "columns": [{
-                data: null,
-                render: function(row) {
-                    return row.nombres + " " + row.apellidos;
+            data: null,
+            render: function (row) {
+                return `<a href="leads-details.php?id=${row.id_lead}">${row.nombres} ${row.apellidos}</a>`;
+            }
+        },
+        { "data": "desc_pro" },
+        { "data": "telefono_principal" },
+        {
+            "render": function (data, type, row) {
+                let class_name = "";
+                let status_name = "";
+
+                switch (row.estado_leads_id) {
+                    case "1":
+                        class_name = "info";
+                        status_name = "Nuevo Leads";
+                        break;
+                    case "2":
+                        class_name = "info";
+                        status_name = "Leads Activo";
+                        break;
+                    case "3":
+                        class_name = "warning";
+                        status_name = "Interesado";
+                        break;
+                    case "4":
+                        class_name = "warning";
+                        status_name = "En Desición";
+                        break;
+                    case "5":
+                        class_name = "success";
+                        status_name = "Matricula en proceso";
+                        break;
+                    case "6":
+                        class_name = "success";
+                        status_name = "Matriculado";
+                        break;
+                    default:
+                        class_name = "danger";
+                        status_name = "Perdido";
+                        break;
                 }
-            },
-            { "data": "desc_pro" },
-            { "data": "telefono_principal" },
-            {
-                "render": function(data, type, row) {
-                    let class_name = "";
-                    let status_name = "";
 
-                    switch (row.estado_leads_id) {
-                        case "1":
-                            class_name = "pause";
-                            status_name = "Nuevo Leads";
-                            break;
-                        case "2":
-                            class_name = "pause";
-                            status_name = "Leads Activo";
-                            break;
-                        case "3":
-                            class_name = "warning";
-                            status_name = "Interesado";
-                            break;
-                        case "4":
-                            class_name = "warning";
-                            status_name = "En Desición";
-                            break;
-                        case "5":
-                            class_name = "success";
-                            status_name = "Matricula en proceso";
-                            break;
-                        case "6":
-                            class_name = "success";
-                            status_name = "Matriculado";
-                            break;
-                        default:
-                            class_name = "danger";
-                            status_name = "Perdido";
-                            break;
-                    }
+                return `<span class="badge badge-pill badge-status bg-${class_name}">${status_name}</span>`;
+            }
+        },
+        {
+            data: null, // importante: recibir toda la fila
+            render: function (row) {
+                let nombre = row.nombreAsesor || "";
+                let apellido = row.apellidoAsesor || "";
 
-                    return `<span class="badge badge-pill badge-status bg-${class_name}">${status_name}</span>`;
+                if (nombre === "" && apellido === "") {
+                    return "<span class='text-muted'>No hay asesor asignado</span>";
                 }
-            },
-            {
-                data: null, // importante: recibir toda la fila
-                render: function(row) {
-                    let nombre = row.nombreAsesor || "";
-                    let apellido = row.apellidoAsesor || "";
 
-                    if (nombre === "" && apellido === "") {
-                        return "<span class='text-muted'>No hay asesor asignado</span>";
-                    }
-
-                    return nombre + " " + apellido;
-                }
-            },
-            { "data": "fecha_creacion" },
-            {
-                "render": (data, type, row) => `
+                return nombre + " " + apellido;
+            }
+        },
+        { "data": "fecha_creacion" },
+        {
+            "render": (data, type, row) => `
                         <div class="dropdown table-action">
                             <a href="#" class="action-icon btn btn-xs shadow btn-icon btn-outline-light" data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="ti ti-dots-vertical"></i>
@@ -126,13 +136,13 @@ function inicializarDataTableLeads(leads) {
                             </div>
                         </div>
                     `
-            }
+        }
         ]
     });
 }
 
 if (document.getElementById("formLeads")) {
-    document.getElementById("formLeads").addEventListener("submit", function(e) {
+    document.getElementById("formLeads").addEventListener("submit", function (e) {
         e.preventDefault();
 
         let datos = new FormData(this);
@@ -145,9 +155,9 @@ if (document.getElementById("formLeads")) {
         }
 
         fetch("ajax/ajax.php", {
-                method: "POST",
-                body: datos
-            })
+            method: "POST",
+            body: datos
+        })
             .then(res => res.json())
             .then(data => {
 
@@ -163,6 +173,25 @@ if (document.getElementById("formLeads")) {
     });
 }
 
+function exportarExcel(tipo) {
+    const f = Filtros.obtener();
+    const params = new URLSearchParams();
+
+    // Tipo de reporte (ej: "leads", "asesores", "campanas", etc.)
+    params.append("tipo", tipo);
+
+    // Convertir filtros a parámetros GET
+    for (let k in f) {
+        if (Array.isArray(f[k]) && f[k].length > 0) {
+            params.append(k, JSON.stringify(f[k]));
+        } else if (f[k] !== "") {
+            params.append(k, f[k]);
+        }
+    }
+
+    window.location.href = "ajax/exportar_excel.php?" + params.toString();
+}
+
 function listarLeads() {
 
     const f = Filtros.obtener();
@@ -171,7 +200,17 @@ function listarLeads() {
     const params = new URLSearchParams();
 
     if (f.texto !== "") params.append("texto", f.texto);
+    if (f.asesor.length > 0) params.append("asesor", JSON.stringify(f.asesor));
     if (f.carreras.length > 0) params.append("carreras", JSON.stringify(f.carreras));
+    if (f.horario.length > 0) params.append("horario", JSON.stringify(f.horario));
+    if (f.interes.length > 0) params.append("interes", JSON.stringify(f.interes));
+    if (f.medio.length > 0) params.append("medio", JSON.stringify(f.medio));
+    if (f.fuente.length > 0) params.append("fuente", JSON.stringify(f.fuente));
+    if (f.campana.length > 0) params.append("campana", JSON.stringify(f.campana));
+    if (f.accion.length > 0) params.append("accion", JSON.stringify(f.accion));
+    if (f.departamento.length > 0) params.append("departamento", JSON.stringify(f.departamento));
+    if (f.ciudad.length > 0) params.append("ciudad", JSON.stringify(f.ciudad));
+    if (f.barrio.length > 0) params.append("barrio", JSON.stringify(f.barrio));
     if (f.estados.length > 0) params.append("estados", JSON.stringify(f.estados));
 
     params.append("accion", "listar_leads");
@@ -193,9 +232,9 @@ window.editarLeads = (id) => {
     datos.append("id", id);
 
     fetch("ajax/ajax.php", {
-            method: "POST",
-            body: datos
-        })
+        method: "POST",
+        body: datos
+    })
         .then(res => res.json())
         .then(data => {
 
@@ -248,7 +287,7 @@ window.editarLeads = (id) => {
 };
 
 if (document.getElementById("btnCerrarOffcanvas-depar")) {
-    document.getElementById("btnCerrarOffcanvas-depar").addEventListener("click", function() {
+    document.getElementById("btnCerrarOffcanvas-depar").addEventListener("click", function () {
         document.getElementById("formDepart").reset();
         document.getElementById("title-canvas-depar").textContent = "Nueva Departamento";
         document.getElementById("btn-canvas-depar").textContent = "Crear";
@@ -262,9 +301,9 @@ window.eliminarLeads = (id) => {
     datos.append("id", id);
 
     fetch("ajax/ajax.php", {
-            method: "POST",
-            body: datos
-        })
+        method: "POST",
+        body: datos
+    })
         .then(res => res.json())
         .then(data => {
 
@@ -296,10 +335,10 @@ function listarLeadsOption() {
 listarLeadsOption();
 listarLeads();
 
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
     if (document.getElementById("departamento")) {
         // Cuando seleccionas un departamento
-        document.getElementById("departamento").addEventListener("change", function() {
+        document.getElementById("departamento").addEventListener("change", function () {
             let id_dep = this.value;
 
             if (id_dep !== "") {
@@ -327,7 +366,7 @@ document.addEventListener("DOMContentLoaded", function() {
     if (document.getElementById("ciudad")) {
 
         // Cuando seleccionas una ciudad
-        document.getElementById("ciudad").addEventListener("change", function() {
+        document.getElementById("ciudad").addEventListener("change", function () {
             let id_ciudad = this.value;
 
             if (id_ciudad !== "") {
@@ -347,6 +386,123 @@ document.addEventListener("DOMContentLoaded", function() {
 
 });
 
+document.querySelectorAll(".editable").forEach(el => {
+
+    el.addEventListener("click", function () {
+
+        let id = this.id;
+        let storedId = this.dataset.id;
+        let value = this.textContent.trim();
+
+        // --------------------------
+        // 1️⃣ CAMPOS QUE USAN INPUT
+        // --------------------------
+        if (id === "nombreClienteLeads" || id === "direccionClienteLeads" || id === "apellidoClienteLeads") {
+
+            let input = document.getElementById("input_" + id);
+            console.log(input);
+            if (!input) return;
+
+            input.value = storedId || value;
+
+            input.classList.remove("d-none");
+            this.classList.add("d-none");
+            input.focus();
+
+            // Guardar al perder el foco
+            input.onblur = () => updateLeadField(id, input.value, this);
+
+            return;
+        }
+
+        // --------------------------
+        // 2️⃣ CAMPO ESPECIAL: OBSERVACIONES (TEXTAREA)
+        // --------------------------
+        if (id === "observacionesLead") {
+
+            let textarea = document.getElementById("textarea_observacionesLead");
+
+            textarea.value = storedId || value;
+            textarea.classList.remove("d-none");
+            this.classList.add("d-none");
+            textarea.focus();
+
+            textarea.onblur = () => updateLeadField(id, textarea.value, this);
+
+            return;
+        }
+
+        // --------------------------
+        // 3️⃣ CAMPOS QUE USAN SELECT
+        // --------------------------
+        let container = document.getElementById("select_" + id);
+        if (!container) return;
+
+        let select = container.querySelector("select");
+
+        if (storedId) {
+            select.value = storedId;
+        }
+
+        container.classList.remove("d-none");
+        this.classList.add("d-none");
+        select.focus();
+
+        select.onchange = () => updateLeadField(id, select.value, this);
+        select.onblur = () => updateLeadField(id, select.value, this);
+    });
+
+});
+
+
+function updateLeadField(fieldId, newValue, textElement) {
+
+    let leadId = new URLSearchParams(window.location.search).get("id");
+    let fieldName = fieldId.replace("Lead", "");
+
+    $.ajax({
+        url: "ajax/ajax.php",
+        type: "POST",
+        data: {
+            accion: "update_field",
+            lead_id: leadId,
+            column: fieldName + "_id",
+            value: newValue
+        },
+        success: function (response) {
+
+            let container = document.getElementById("select_" + fieldId);
+            let textarea = document.getElementById("textarea_" + fieldId);
+            let input = document.getElementById("input_" + fieldId);
+
+            textElement.textContent = respuestaNombreNuevo(fieldName, newValue);
+
+            textElement.dataset.id = newValue;
+
+            if (container) container.classList.add("d-none");
+            if (textarea) textarea.classList.add("d-none");
+            if (input) input.classList.add("d-none");
+
+            textElement.classList.remove("d-none");
+
+            console.log("Actualizado correctamente:", response);
+        },
+        error: function () {
+            alert("Error al actualizar el lead.");
+        }
+    });
+}
+
+function respuestaNombreNuevo(field, value) {
+    let select = document.getElementById(field);
+    if (select) {
+        let opt = select.querySelector(`option[value="${value}"]`);
+        return opt ? opt.textContent : value;
+    }
+    return value;
+}
+
+
 //Tarjetas leads.
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -354,7 +510,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // 1. Detectar cambios en filtros
-document.addEventListener("change", function(e) {
+document.addEventListener("change", function (e) {
     if (e.target.classList.contains("filtro")) {
         listarLeads();
         cargarKanban(); // recargar kanban filtrado
@@ -362,7 +518,7 @@ document.addEventListener("change", function(e) {
 });
 
 // 2. Buscar texto en tiempo real
-document.addEventListener("input", function(e) {
+document.addEventListener("input", function (e) {
     if (e.target.id === "buscador") {
         listarLeads();
         cargarKanban();
@@ -402,7 +558,17 @@ async function cargarLeads() {
     const params = new URLSearchParams();
 
     if (f.texto !== "") params.append("texto", f.texto);
+    if (f.asesor.length > 0) params.append("asesor", JSON.stringify(f.asesor));
     if (f.carreras.length > 0) params.append("carreras", JSON.stringify(f.carreras));
+    if (f.horario.length > 0) params.append("horario", JSON.stringify(f.horario));
+    if (f.interes.length > 0) params.append("interes", JSON.stringify(f.interes));
+    if (f.medio.length > 0) params.append("medio", JSON.stringify(f.medio));
+    if (f.fuente.length > 0) params.append("fuente", JSON.stringify(f.fuente));
+    if (f.campana.length > 0) params.append("campana", JSON.stringify(f.campana));
+    if (f.accion.length > 0) params.append("accion", JSON.stringify(f.accion));
+    if (f.departamento.length > 0) params.append("departamento", JSON.stringify(f.departamento));
+    if (f.ciudad.length > 0) params.append("ciudad", JSON.stringify(f.ciudad));
+    if (f.barrio.length > 0) params.append("barrio", JSON.stringify(f.barrio));
     if (f.estados.length > 0) params.append("estados", JSON.stringify(f.estados));
 
     params.append("accion", "getLeads");
@@ -520,7 +686,7 @@ function crearCardLead(l, estadoId) {
 
             <div class="d-block">
                 <div class="card-topbar mb-3 pt-1 ${coloresTop[estadoId] || 'bg-secondary'}"></div>
-                    <div class="dropdown table-action ms-2">
+                    <!--<div class="dropdown table-action ms-2">
                                 <a href="#" class="action-icon btn btn-xs shadow btn-icon btn-outline-light" data-bs-toggle="dropdown">
                                     <i class="ti ti-dots-vertical"></i>
                                 </a>
@@ -535,7 +701,7 @@ function crearCardLead(l, estadoId) {
                                         </a>
                                     </div>
                                 </div>
-                            </div>
+                            </div>-->
                     <div class="d-flex align-items-center mb-3">
                     <a href="leads-details.php?id=${l.id_lead}"
                         class="avatar rounded-circle bg-soft-info flex-shrink-0 me-2">
@@ -556,6 +722,12 @@ function crearCardLead(l, estadoId) {
                 </p>
                 <p class="text-default">
                     <i class="ti ti-map-pin-pin text-dark me-1"></i>${l.ciudad || 'Sin ciudad'}
+                </p>
+                <p class="text-default">
+                    <i class="ti ti-pencil text-dark me-1"></i>${l.desc_pro || 'Sin programa'}
+                </p>
+                <p class="text-default">
+                    <i class="ti ti-calendar text-dark me-1"></i>${l.horario || 'Sin horario'}
                 </p>
             </div>
 
@@ -673,23 +845,53 @@ async function listarLeadsId() {
     let d = data[0];
 
     // Asignación de datos básicos
-    document.getElementById("nombreClienteLeads").textContent = `${d.nombres} ${d.apellidos}`;
-    document.getElementById("empresaCarrera").textContent = d.nom_emp;
+    document.getElementById("nombreClienteLeads").textContent = `${d.nombres}`;
+    document.getElementById("nombreClienteLeads").dataset.id = `${d.nombres}`;
+
+    document.getElementById("apellidoClienteLeads").textContent = `${d.apellidos}` ?? 'Sin apellidos';
+    document.getElementById("apellidoClienteLeads").dataset.id = `${d.apellidos}`;
+
+    document.getElementById("empresaCarrera").textContent = d.nom_emp ?? 'Sin Empresa';
+    document.getElementById("empresaCarrera").dataset.id = d.cod_emp;
+
     //document.getElementById("valorCarrera").textContent = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }).format(d.val_pro);
-    document.getElementById("direccionClienteLeads").textContent = d.direccion;
+    document.getElementById("direccionClienteLeads").textContent = d.direccion ?? 'Sin dirección';
+    document.getElementById("direccionClienteLeads").dataset.id = d.direccion;
+
     document.getElementById("asesorLeads").textContent = `${d.nombreAsesor} ${d.apellidoAsesor}`;
     cargarAsesoresDropdown();
-    document.getElementById("carreraLeads").textContent = d.desc_pro;
-    document.getElementById("horarioLeads").textContent = d.horario;
-    document.getElementById("interesLeads").textContent = d.interes;
-    document.getElementById("medioLeads").textContent = d.desc_med;
-    document.getElementById("fuenteLeads").textContent = d.desc_fue;
-    document.getElementById("campanaLeads").textContent = d.campana;
-    document.getElementById("accionLeads").textContent = d.accion;
-    document.getElementById("depLeads").textContent = d.desc_dep;
-    document.getElementById("ciuLeads").textContent = d.ciudad;
-    document.getElementById("brrLeads").textContent = d.desc_brr;
-    document.getElementById("obsLeads").textContent = d.observaciones;
+    document.getElementById("carreraLead").textContent = d.desc_pro ?? 'Sin carrera';
+    document.getElementById("carreraLead").dataset.id = d.carrera_id;
+
+    document.getElementById("horarioLead").textContent = d.horario ?? 'Sin horario';
+    document.getElementById("horarioLead").dataset.id = d.horario_id;
+
+    document.getElementById("interesLead").textContent = d.interes ?? 'Sin interes';
+    document.getElementById("interesLead").dataset.id = d.interes_id;
+
+    document.getElementById("medioLead").textContent = d.desc_med ?? 'Sin medio';
+    document.getElementById("medioLead").dataset.id = d.medio_id;
+
+    document.getElementById("fuenteLead").textContent = d.desc_fue ?? 'Sin fuente';
+    document.getElementById("fuenteLead").dataset.id = d.fuente_id;
+
+    document.getElementById("campanaLead").textContent = d.campana ?? 'Sin campana';
+    document.getElementById("campanaLead").dataset.id = d.campana_id;
+
+    document.getElementById("accionLead").textContent = d.accion ?? 'Sin accion';
+    document.getElementById("accionLead").dataset.id = d.accion_id;
+
+    document.getElementById("departamentoLead").textContent = d.desc_dep ?? 'Sin departamento';
+    document.getElementById("departamentoLead").dataset.id = d.departamento_id;
+
+    document.getElementById("ciudadLead").textContent = d.ciudad ?? 'Sin ciudad';
+    document.getElementById("ciudadLead").dataset.id = d.ciudad_id;
+
+    document.getElementById("barrioLead").textContent = d.desc_brr ?? 'Sin barrio';
+    document.getElementById("barrioLead").dataset.id = d.barrio_id;
+
+    document.getElementById("observacionesLead").textContent = d.observaciones ?? 'Sin Observaciones';
+    document.getElementById("observacionesLead").dataset.id = d.observaciones;
 
     [...document.getElementsByClassName("fechaLeads")].forEach(elem => {
         elem.textContent = d.fecha_creacion;
@@ -699,6 +901,7 @@ async function listarLeadsId() {
     const estados = await cargarEstados();
     renderEstadosLead(estados, d);
 }
+
 
 function cargarAsesoresDropdown() {
 
@@ -727,7 +930,7 @@ function cargarAsesoresDropdown() {
 function activarEventosCambioAsesor() {
     document.querySelectorAll(".cambiar-asesor").forEach(item => {
 
-        item.addEventListener("click", function(e) {
+        item.addEventListener("click", function (e) {
             e.preventDefault();
 
             let nuevoId = this.getAttribute("data-id");
@@ -737,9 +940,9 @@ function activarEventosCambioAsesor() {
             datos.append("nuevo_user_id", nuevoId);
 
             fetch("ajax/ajax.php", {
-                    method: "POST",
-                    body: datos
-                })
+                method: "POST",
+                body: datos
+            })
                 .then(res => res.text())
                 .then(resp => {
 
@@ -771,9 +974,9 @@ function cambiarEstadoLead(elemento, id_lead) {
     form.append("id_estado", nuevoEstado);
 
     fetch("ajax/ajax.php", {
-            method: "POST",
-            body: form
-        })
+        method: "POST",
+        body: form
+    })
         .then(r => r.json())
         .then(res => {
 
@@ -811,8 +1014,8 @@ function renderEstadosLead(estados, lead) {
 
         wrapper.innerHTML += `
             <div 
-                class="step ${activo ? coloresEstado[est.id_estado_leads ] : 'bg-light text-black'} pointer estado-item"
-                data-id="${est.id_estado_leads }"
+                class="step ${activo ? coloresEstado[est.id_estado_leads] : 'bg-light text-black'} pointer estado-item"
+                data-id="${est.id_estado_leads}"
                 data-nombre="${est.nombre}">
                 
                 ${est.nombre}
@@ -838,7 +1041,7 @@ listarLeadsId();
 
 let archivosSeleccionados = [];
 
-document.getElementById("desc_arch").addEventListener("change", function() {
+document.getElementById("desc_arch").addEventListener("change", function () {
 
     // Convertir FileList a array y añadir al almacenamiento
     archivosSeleccionados = [...archivosSeleccionados, ...Array.from(this.files)];
@@ -907,7 +1110,7 @@ function eliminarArchivo(index) {
 
 
 if (document.getElementById("formNotas")) {
-    document.getElementById("formNotas").addEventListener("submit", function(e) {
+    document.getElementById("formNotas").addEventListener("submit", function (e) {
         e.preventDefault();
 
         const datos = new FormData(this);
@@ -920,9 +1123,9 @@ if (document.getElementById("formNotas")) {
         });
 
         fetch("ajax/ajax.php", {
-                method: "POST",
-                body: datos
-            })
+            method: "POST",
+            body: datos
+        })
             .then(res => res.json())
             .then(data => {
 
@@ -1130,9 +1333,9 @@ document.addEventListener("click", (e) => {
         f.append("comentario", comentario);
 
         fetch("ajax/ajax.php", {
-                method: "POST",
-                body: f
-            })
+            method: "POST",
+            body: f
+        })
             .then(r => r.json())
             .then(res => {
                 if (res.status === "success") {
@@ -1148,7 +1351,7 @@ document.addEventListener("click", (e) => {
 ================================ */
 
 if (document.getElementById("formCalls")) {
-    document.getElementById("formCalls").addEventListener("submit", function(e) {
+    document.getElementById("formCalls").addEventListener("submit", function (e) {
         e.preventDefault();
 
         const datos = new FormData(this);
@@ -1157,9 +1360,9 @@ if (document.getElementById("formCalls")) {
 
 
         fetch("ajax/ajax.php", {
-                method: "POST",
-                body: datos
-            })
+            method: "POST",
+            body: datos
+        })
             .then(res => res.json())
             .then(data => {
 
@@ -1181,9 +1384,9 @@ function listarLlamadas() {
     f.append("id_lead", idLead); // opcional si filtras por lead
 
     fetch("ajax/ajax.php", {
-            method: "POST",
-            body: f
-        })
+        method: "POST",
+        body: f
+    })
         .then(r => r.json())
         .then(data => {
             let cont = document.getElementById("listaLlamadas");
@@ -1311,9 +1514,9 @@ function actualizarEstadoLlamada(id, estado, btnRef) {
     f.append("estado_call", estado);
 
     fetch("ajax/ajax.php", {
-            method: "POST",
-            body: f
-        })
+        method: "POST",
+        body: f
+    })
         .then(r => r.json())
         .then(res => {
             if (res.status === "success") {
@@ -1336,7 +1539,7 @@ function actualizarEstadoLlamada(id, estado, btnRef) {
 ================================ */
 
 if (document.getElementById("formProActi")) {
-    document.getElementById("formProActi").addEventListener("submit", function(e) {
+    document.getElementById("formProActi").addEventListener("submit", function (e) {
         e.preventDefault();
 
         const datos = new FormData(this);
@@ -1345,9 +1548,9 @@ if (document.getElementById("formProActi")) {
 
 
         fetch("ajax/ajax.php", {
-                method: "POST",
-                body: datos
-            })
+            method: "POST",
+            body: datos
+        })
             .then(res => res.json())
             .then(data => {
 
@@ -1369,9 +1572,9 @@ function listarProximasActividades() {
     f.append("id_lead", idLead);
 
     fetch("ajax/ajax.php", {
-            method: "POST",
-            body: f
-        })
+        method: "POST",
+        body: f
+    })
         .then(r => r.json())
         .then(res => {
 
@@ -1586,9 +1789,9 @@ function tarjetaSimple(item) {
                     <div class="flex-grow-1">
                         <h6 class="fw-medium fs-14 mb-1">${item.titulo}</h6>
 
-                        ${item.descripcion 
-                            ? `<p class="mb-1 text-muted lh-sm">${item.descripcion}</p>` 
-                            : ""}
+                        ${item.descripcion
+            ? `<p class="mb-1 text-muted lh-sm">${item.descripcion}</p>`
+            : ""}
 
                         <p class="mb-0 fw-semibold text-dark">${item.fecha}, ${item.hora}</p>
                     </div>

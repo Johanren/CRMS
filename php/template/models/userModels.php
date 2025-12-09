@@ -15,6 +15,20 @@ class UserModels
         return "error";
     }
 
+    public static function listarUserDetails()
+    {
+        $sql = "SELECT u.*, r.*, GROUP_CONCAT(CONCAT(u.nombres, ' ', u.apellidos)) AS usuario, e.nom_emp FROM user u INNER JOIN user_role r ON r.id_rol = u.rol_id INNER JOIN empresa e ON e.id_emp = u.cod_emp WHERE u.cod_emp = ? GROUP BY u.id_user";
+        $conn = new Conexion();
+        $conectar = $conn->conectar();
+        $stmt = $conectar->prepare($sql);
+        $stmt->bindParam(1, $_SESSION['cod_emp']);
+        if ($stmt->execute()) {
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+        return "error";
+    }
+
     public static function agregarUser($data)
     {
         $conn = new Conexion();

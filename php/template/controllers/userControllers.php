@@ -5,6 +5,10 @@ class UserControllers{
         return UserModels::listarUser();
     }
 
+    public static function listarUserDetails(){
+        return UserModels::listarUserDetails();
+    }
+
     public static function agregarUser($data){
         $resp = UserModels::agregarUser($data);
         if ($resp == "ok") {

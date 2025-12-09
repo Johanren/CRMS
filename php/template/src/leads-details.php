@@ -57,9 +57,25 @@
                                     <h6 class="mb-0 text-warning">HT</h6>
                                 </div>
                                 <div>
-                                    <h5 class="mb-1" id="nombreClienteLeads"><i class="ti ti-star-filled text-warning"></i></h5>
-                                    <p class="mb-1"><i class="ti ti-building-skyscraper me-1" id="empresaCarrera"></i></p>
-                                    <p class="mb-0"><i class="ti ti-map-pin-pin me-1" id="direccionClienteLeads"></i></p>
+                                    <h5 class="mb-1">
+                                        <span class="editable" id="nombreClienteLeads"></span> <span class="editable" id="apellidoClienteLeads"></span>
+                                    </h5>
+                                    <input type="text" class="form-control d-none" id="input_nombreClienteLeads">
+                                    <input type="text" class="form-control d-none" id="input_apellidoClienteLeads">
+                                    <p class="mb-1">
+                                        <i class="ti ti-building-skyscraper me-1" id="empresaCarrera"></i>
+
+                                    <div class="col-sm-12 d-none" id="select_empresaCarrera">
+                                        <select class="form-control">
+                                            <option value="1">MULTITECH</option>
+                                            <option value="2">MULTICOMPUTO</option>
+                                        </select>
+                                    </div>
+                                    </p>
+                                    <p class="mb-0 editable" id="direccionClienteLeads">
+                                        <i class="ti ti-map-pin-pin me-1"></i>
+                                    </p>
+                                    <input type="text" class="form-control d-none" id="input_direccionClienteLeads">
                                 </div>
                             </div>
                             <div class="d-flex align-items-center flex-wrap gap-2">
@@ -98,7 +114,7 @@
                             </div>-->
                             <div class="d-flex align-items-center justify-content-between mb-2">
                                 <p class="mb-0">Fecha de vencimiento </p>
-                                <p class="mb-0 text-dark fechaLeads">  </p>
+                                <p class="mb-0 text-dark fechaLeads"> </p>
                             </div>
                             <div class="d-flex align-items-center justify-content-between mb-2">
                                 <p class="mb-0">Seguimiento</p>
@@ -106,49 +122,91 @@
                             </div>
                             <div class="d-flex align-items-center justify-content-between mb-2">
                                 <p class="mb-0">Programa</p>
-                                <p class="mb-0 text-dark" id="carreraLeads"></p>
+                                <p class="mb-0 text-dark editable" id="carreraLead"></p>
+                                <div class="col-sm-6 d-none" id="select_carreraLead">
+                                    <select class="form-control" id="carrera"></select>
+                                </div>
                             </div>
+
                             <div class="d-flex align-items-center justify-content-between mb-2">
                                 <p class="mb-0">Horario</p>
-                                <p class="mb-0 text-dark" id="horarioLeads"></p>
+                                <p class="mb-0 text-dark editable" id="horarioLead"></p>
+                                <div class="col-sm-6 d-none" id="select_horarioLead">
+                                    <select class="form-control" id="horario"></select>
+                                </div>
                             </div>
+
                             <div class="d-flex align-items-center justify-content-between mb-2">
-                                <p class="mb-0">Interes</p>
-                                <p class="mb-0 text-dark" id="interesLeads"></p>
+                                <p class="mb-0">Interés</p>
+                                <p class="mb-0 text-dark editable" id="interesLead"></p>
+                                <div class="col-sm-6 d-none" id="select_interesLead">
+                                    <select class="form-control" id="interes"></select>
+                                </div>
                             </div>
+
                             <div class="d-flex align-items-center justify-content-between mb-2">
                                 <p class="mb-0">Medio</p>
-                                <p class="mb-0 text-dark" id="medioLeads"></p>
+                                <p class="mb-0 text-dark editable" id="medioLead"></p>
+                                <div class="col-sm-6 d-none" id="select_medioLead">
+                                    <select class="form-control" id="medio"></select>
+                                </div>
                             </div>
+
                             <div class="d-flex align-items-center justify-content-between mb-2">
                                 <p class="mb-0">Fuente</p>
-                                <p class="mb-0 text-dark" id="fuenteLeads"></p>
+                                <p class="mb-0 text-dark editable" id="fuenteLead"></p>
+                                <div class="col-sm-6 d-none" id="select_fuenteLead">
+                                    <select class="form-control" id="fuente"></select>
+                                </div>
                             </div>
+
                             <div class="d-flex align-items-center justify-content-between mb-2">
                                 <p class="mb-0">Campaña</p>
-                                <p class="mb-0 text-dark" id="campanaLeads"></p>
+                                <p class="mb-0 text-dark editable" id="campanaLead"></p>
+                                <div class="col-sm-6 d-none" id="select_campanaLead">
+                                    <select class="form-control" id="campana"></select>
+                                </div>
                             </div>
+
                             <div class="d-flex align-items-center justify-content-between mb-2">
-                                <p class="mb-0">Accion</p>
-                                <p class="mb-0 text-dark" id="accionLeads"></p>
+                                <p class="mb-0">Acción</p>
+                                <p class="mb-0 text-dark editable" id="accionLead"></p>
+                                <div class="col-sm-6 d-none" id="select_accionLead">
+                                    <select class="form-control" id="accion"></select>
+                                </div>
                             </div>
+
                             <div class="d-flex align-items-center justify-content-between mb-2">
                                 <p class="mb-0">Departamento</p>
-                                <p class="mb-0 text-dark" id="depLeads"></p>
+                                <p class="mb-0 text-dark editable" id="departamentoLead"></p>
+                                <div class="col-sm-6 d-none" id="select_departamentoLead">
+                                    <select class="form-control" id="departamento"></select>
+                                </div>
                             </div>
+
                             <div class="d-flex align-items-center justify-content-between mb-2">
                                 <p class="mb-0">Ciudad</p>
-                                <p class="mb-0 text-dark" id="ciuLeads"></p>
+                                <p class="mb-0 text-dark editable" id="ciudadLead"></p>
+                                <div class="col-sm-6 d-none" id="select_ciudadLead">
+                                    <select id="ciudad" class="form-control"></select>
+                                </div>
                             </div>
+
                             <div class="d-flex align-items-center justify-content-between mb-2">
                                 <p class="mb-0">Barrio</p>
-                                <p class="mb-0 text-dark" id="brrLeads"></p>
+                                <p class="mb-0 text-dark editable" id="barrioLead"></p>
+                                <div class="col-sm-6 d-none" id="select_barrioLead">
+                                    <select id="barrio" class="form-control"></select>
+                                </div>
                             </div>
+
                             <div class="d-flex align-items-center justify-content-between mb-2">
                                 <p class="mb-0">Observaciones</p>
-                                <p class="mb-0 text-dark" id="obsLeads"></p>
+                                <p class="mb-0 text-dark editable" id="observacionesLead"></p>
+                                <textarea id="textarea_observacionesLead" cols="2" rows="2" class="form-control d-none"></textarea>
                             </div>
                         </div>
+
                         <div class="d-flex align-items-center justify-content-between flex-wrap">
                             <h6 class="mb-3 fw-semibold">Propietario</h6>
                         </div>

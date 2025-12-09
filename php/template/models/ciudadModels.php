@@ -4,7 +4,7 @@ class CiudadModels
 {
     public static function listarCiudad()
     {
-        $sql = "SELECT * FROM ciudad c INNER JOIN departamento d ON c.dep_ciu = d.cod_dep";
+        $sql = "SELECT * FROM ciudad c INNER JOIN departamento d ON c.dep_ciu = d.cod_dep WHERE c.dep_ciu = 68 OR c.dep_ciu = 54";
         $conn = new Conexion();
         $conectar = $conn->conectar();
         $stmt = $conectar->prepare($sql);

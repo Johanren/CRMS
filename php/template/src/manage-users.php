@@ -12,11 +12,11 @@
             <!-- Page Header -->
             <div class="d-flex align-items-center justify-content-between gap-2 mb-4 flex-wrap">
                 <div>
-                    <h4 class="mb-1">Manage Users<span class="badge badge-soft-primary ms-2">152</span></h4>
+                    <h4 class="mb-1">Administrar Usuarios<span class="badge badge-soft-primary ms-2">152</span></h4>
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb mb-0 p-0">
-                            <li class="breadcrumb-item"><a href="index.php">Home</a></li>
-                            <li class="breadcrumb-item active" aria-current="page">Manage Users</li>
+                            <li class="breadcrumb-item"><a href="index.php">Hogar</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Administrar Usuarios</li>
                         </ol>
                     </nav>
                 </div>
@@ -49,12 +49,12 @@
                         <span class="input-icon-addon text-dark"><i class="ti ti-search"></i></span>
                         <input type="text" class="form-control" placeholder="Search">
                     </div>
-                    <a href="javascript:void(0);" class="btn btn-primary" data-bs-toggle="offcanvas" data-bs-target="#offcanvas_add"><i class="ti ti-square-rounded-plus-filled me-1"></i>Add User</a>
+                    <a href="javascript:void(0);" class="btn btn-primary" data-bs-toggle="offcanvas" data-bs-target="#offUser_add"><i class="ti ti-square-rounded-plus-filled me-1"></i>Agregar Usuarios</a>
                 </div>
                 <div class="card-body">
 
                     <!-- table header -->
-                    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+                    <!--<div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
                         <div class="d-flex align-items-center gap-2 flex-wrap">
                             <div class="dropdown">
                                 <a href="javascript:void(0);" class="btn btn-outline-light shadow px-2" data-bs-toggle="dropdown" data-bs-auto-close="outside"><i class="ti ti-filter me-2"></i>Filter<i class="ti ti-chevron-down ms-2"></i></a>
@@ -335,27 +335,21 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div>-->
                     <!-- table header -->
 
                     <!-- Contact List -->
                     <div class="table-responsive custom-table">
-                        <table class="table table-nowrap" id="manage-users-list">
+                        <table class="table table-nowrap" id="info-user">
                             <thead class="table-light">
                                 <tr>
-                                    <th class="no-sort">
-                                        <div class="form-check form-check-md">
-                                            <input class="form-check-input" type="checkbox" id="select-all">
-                                        </div>
-                                    </th>
-                                    <th class="no-sort"></th>
-                                    <th>Name</th>
-                                    <th>Phone</th>
-                                    <th>Email</th>
-                                    <th>Created</th>
-                                    <th>Last Activity</th>
-                                    <th>Status</th>
-                                    <th class="text-end no-sort">Action</th>
+                                    <th>Codigo</th>
+                                    <th>Nombres</th>
+                                    <th>Correo</th>
+                                    <th>Rol</th>
+                                    <th>Empresa</th>
+                                    <th>Fecha Creacion</th>
+                                    <th class="text-end no-sort">Accion</th>
                                 </tr>
                             </thead>
                             <tbody>

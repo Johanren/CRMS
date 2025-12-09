@@ -167,6 +167,26 @@ if (isset($_POST['accion'])) {
             $nuevo_user_id = $_POST["nuevo_user_id"];
             echo $leads->cambiarAsesor($id_lead, $nuevo_user_id);
             break;
+        case "update_field":
+
+            $leadId = $_POST["lead_id"];
+            $columna = $_POST["column"];
+            $especiales = [
+                "observaciones_id" => "observaciones",
+                "empresaCarrera_id" => "cod_emp",
+                "nombreClientes_id" => "nombres",
+                "apellidoClientes_id" => "apellidos",
+                "direccionClientes_id" => "direccion"
+            ];
+            if (isset($especiales[$columna])) {
+                $columna = $especiales[$columna];
+            }
+            $valor  = $_POST["value"];
+
+            $response = $leads->actualizarColumnasLeads($leadId, $columna, $valor);
+
+            echo json_encode(["status" => "ok", "data" => $response]);
+            break;
         /*Notas */
         case 'registrar_notas':
             echo json_encode($notas->agregarNotas($_POST));
@@ -245,6 +265,22 @@ if (isset($_GET['accion'])) {
             }
             echo json_encode(["option" => $option]);
             break;
+        case 'listar_campana_li':
+            $lista = $campana->listarCampana();
+            $option = "<ul>";
+            foreach ($lista as $a) {
+                $option .= "
+                <li>
+                    <label class='dropdown-item px-2 d-flex align-items-center'>
+                    <input class='form-check-input m-0 me-1 filtro filtro-campana' value='{$a['id_campana']}' type='checkbox'>
+                        {$a['codigo']} {$a['nombre']}
+                    </label>
+                </li>
+                ";
+            }
+            $option .= "</ul>";
+            echo json_encode(["option" => $option]);
+            break;
         /*auditoria*/
         case 'listar_auditoria':
             $lista = $audiotira->listarAuditoria();
@@ -270,6 +306,22 @@ if (isset($_GET['accion'])) {
             }
             echo json_encode(["option" => $option]);
             break;
+        case 'listar_depar_ul':
+            $lista = $departamento->listarDepartamento();
+            $option = "<ul>";
+            foreach ($lista as $a) {
+                $option .= "
+                <li>
+                    <label class='dropdown-item px-2 d-flex align-items-center'>
+                    <input class='form-check-input m-0 me-1 filtro filtro-dep' value='{$a['cod_dep']}' type='checkbox'>
+                        {$a['desc_dep']}
+                    </label>
+                </li>
+                ";
+            }
+            $option .= "</ul>";
+            echo json_encode(["option" => $option]);
+            break;
         /*Ciudad*/
         case 'listar_ciudad':
             echo json_encode($ciudad->listarCiudad());
@@ -282,6 +334,22 @@ if (isset($_GET['accion'])) {
                     <option value='{$a['cod_ciu']}'>{$a['desc_ciu']}</option>
                 ";
             }
+            echo json_encode(["option" => $option]);
+            break;
+        case 'listar_ciudad_ul':
+            $lista = $ciudad->listarCiudad();
+            $option = "<ul>";
+            foreach ($lista as $a) {
+                $option .= "
+                <li>
+                    <label class='dropdown-item px-2 d-flex align-items-center'>
+                    <input class='form-check-input m-0 me-1 filtro filtro-ciu' value='{$a['cod_ciu']}' type='checkbox'>
+                        {$a['desc_ciu']}
+                    </label>
+                </li>
+                ";
+            }
+            $option .= "</ul>";
             echo json_encode(["option" => $option]);
             break;
         case 'listar_ciudad_por_departamento':
@@ -308,6 +376,22 @@ if (isset($_GET['accion'])) {
                     <option value='{$a['id_barrio']}'>{$a['desc_brr']}</option>
                 ";
             }
+            echo json_encode(["option" => $option]);
+            break;
+        case 'listar_barrio_ul':
+            $lista = $barrio->listarBarrio();
+            $option = "<ul>";
+            foreach ($lista as $a) {
+                $option .= "
+                <li>
+                    <label class='dropdown-item px-2 d-flex align-items-center'>
+                    <input class='form-check-input m-0 me-1 filtro filtro-brr' value='{$a['id_barrio']}' type='checkbox'>
+                        {$a['desc_brr']}
+                    </label>
+                </li>
+                ";
+            }
+            $option .= "</ul>";
             echo json_encode(["option" => $option]);
             break;
         case 'listar_barrio_por_ciudad':
@@ -366,6 +450,22 @@ if (isset($_GET['accion'])) {
             }
             echo json_encode(["option" => $option]);
             break;
+        case 'listar_hrs_ul':
+            $lista = $horario->listarHorario();
+            $option = "<ul>";
+            foreach ($lista as $a) {
+                $option .= "
+                <li>
+                    <label class='dropdown-item px-2 d-flex align-items-center'>
+                    <input class='form-check-input m-0 me-1 filtro filtro-horario' value='{$a['id_horario']}' type='checkbox'>
+                        {$a['descripcion']}
+                    </label>
+                </li>
+                ";
+            }
+            $option .= "</ul>";
+            echo json_encode(["option" => $option]);
+            break;
         /*Interes*/
         case 'listar_ins':
             echo json_encode($interes->listarInteres());
@@ -378,6 +478,22 @@ if (isset($_GET['accion'])) {
                     <option value='{$a['id_interes']}'>{$a['nombre']}</option>
                 ";
             }
+            echo json_encode(["option" => $option]);
+            break;
+        case 'listar_ins_ul':
+            $lista = $interes->listarInteres();
+            $option = "<ul>";
+            foreach ($lista as $a) {
+                $option .= "
+                <li>
+                    <label class='dropdown-item px-2 d-flex align-items-center'>
+                    <input class='form-check-input m-0 me-1 filtro filtro-interes' value='{$a['id_interes']}' type='checkbox'>
+                        {$a['nombre']}
+                    </label>
+                </li>
+                ";
+            }
+            $option .= "</ul>";
             echo json_encode(["option" => $option]);
             break;
         /*Medio*/
@@ -394,6 +510,22 @@ if (isset($_GET['accion'])) {
             }
             echo json_encode(["option" => $option]);
             break;
+        case 'listar_mdo_ul':
+            $lista = $medio->listarMedio();
+            $option = "<ul>";
+            foreach ($lista as $a) {
+                $option .= "
+                <li>
+                    <label class='dropdown-item px-2 d-flex align-items-center'>
+                    <input class='form-check-input m-0 me-1 filtro filtro-medio' value='{$a['cod_med']}' type='checkbox'>
+                        {$a['desc_med']}
+                    </label>
+                </li>
+                ";
+            }
+            $option .= "</ul>";
+            echo json_encode(["option" => $option]);
+            break;
         /*Fuente*/
         case 'listar_fnt':
             echo json_encode($fuente->listarFuente());
@@ -406,6 +538,22 @@ if (isset($_GET['accion'])) {
                     <option value='{$a['cod_fue']}'>{$a['desc_fue']}</option>
                 ";
             }
+            echo json_encode(["option" => $option]);
+            break;
+        case 'listar_fnt_ul':
+            $lista = $fuente->listarFuente();
+            $option = "<ul>";
+            foreach ($lista as $a) {
+                $option .= "
+                <li>
+                    <label class='dropdown-item px-2 d-flex align-items-center'>
+                    <input class='form-check-input m-0 me-1 filtro filtro-fuente' value='{$a['cod_fue']}' type='checkbox'>
+                        {$a['desc_fue']}
+                    </label>
+                </li>
+                ";
+            }
+            $option .= "</ul>";
             echo json_encode(["option" => $option]);
             break;
         case 'listar_fuente_por_medio':
@@ -425,12 +573,28 @@ if (isset($_GET['accion'])) {
             break;
         case 'listar_acc_option':
             $lista = $accion->listarAccion();
-            $option = "<option value=''>Seleccione Fuente</option>";
+            $option = "<option value=''>Seleccione Acción</option>";
             foreach ($lista as $a) {
                 $option .= "
                     <option value='{$a['id_accion']}'>{$a['nombre']}</option>
                 ";
             }
+            echo json_encode(["option" => $option]);
+            break;
+        case 'listar_acc_ul':
+            $lista = $accion->listarAccion();
+            $option = "<ul>";
+            foreach ($lista as $a) {
+                $option .= "
+                <li>
+                    <label class='dropdown-item px-2 d-flex align-items-center'>
+                    <input class='form-check-input m-0 me-1 filtro filtro-accion' value='{$a['id_accion']}' type='checkbox'>
+                        {$a['nombre']}
+                    </label>
+                </li>
+                ";
+            }
+            $option .= "</ul>";
             echo json_encode(["option" => $option]);
             break;
         /*Estado Leads*/
@@ -469,16 +633,37 @@ if (isset($_GET['accion'])) {
         /*LEADS */
         case 'getLeads':
             $texto = $_GET['texto'] ?? '';
+            $asesor = isset($_GET['asesor']) ? json_decode($_GET['asesor']) : [];
             $carreras = isset($_GET['carreras']) ? json_decode($_GET['carreras']) : [];
+            $horario = isset($_GET['horario']) ? json_decode($_GET['horario']) : [];
+            $interes = isset($_GET['interes']) ? json_decode($_GET['interes']) : [];
+            $medio = isset($_GET['medio']) ? json_decode($_GET['medio']) : [];
+            $fuente = isset($_GET['fuente']) ? json_decode($_GET['fuente']) : [];
+            $campana = isset($_GET['campana']) ? json_decode($_GET['campana']) : [];
+            $accion = isset($_GET['accion']) ? json_decode($_GET['accion']) : [];
+            $departamento = isset($_GET['departamento']) ? json_decode($_GET['departamento']) : [];
+            $ciudad = isset($_GET['ciudad']) ? json_decode($_GET['ciudad']) : [];
+            $barrio = isset($_GET['barrio']) ? json_decode($_GET['barrio']) : [];
             $estados = isset($_GET['estados']) ? json_decode($_GET['estados']) : [];
-            echo json_encode($leads->getLeads($texto, $carreras, $estados));
+            echo json_encode($leads->getLeads($texto, $asesor, $carreras, $horario, $interes, $medio, $fuente, $campana, $accion, $departamento, $ciudad, $barrio, $estados));
             break;
         case 'listar_leads':
             $texto = $_GET['texto'] ?? '';
+            $asesor = isset($_GET['asesor']) ? json_decode($_GET['asesor']) : [];
             $carreras = isset($_GET['carreras']) ? json_decode($_GET['carreras']) : [];
+            $horario = isset($_GET['horario']) ? json_decode($_GET['horario']) : [];
+            $interes = isset($_GET['interes']) ? json_decode($_GET['interes']) : [];
+            $medio = isset($_GET['medio']) ? json_decode($_GET['medio']) : [];
+            $fuente = isset($_GET['fuente']) ? json_decode($_GET['fuente']) : [];
+            $campana = isset($_GET['campana']) ? json_decode($_GET['campana']) : [];
+            $accion = isset($_GET['accion']) ? json_decode($_GET['accion']) : [];
+            $departamento = isset($_GET['departamento']) ? json_decode($_GET['departamento']) : [];
+            $ciudad = isset($_GET['ciudad']) ? json_decode($_GET['ciudad']) : [];
+            $barrio = isset($_GET['barrio']) ? json_decode($_GET['barrio']) : [];
             $estados = isset($_GET['estados']) ? json_decode($_GET['estados']) : [];
-            echo json_encode($leads->listarLeads($texto, $carreras, $estados));
+            echo json_encode($leads->listarLeads($texto, $asesor, $carreras, $horario, $interes, $medio, $fuente, $campana, $accion, $departamento, $ciudad, $barrio, $estados));
             break;
+
         /*Notas */
         case 'listarNotas':
             echo json_encode($notas->listarNotasId($_GET['id']));
@@ -511,8 +696,24 @@ if (isset($_GET['accion'])) {
             }
             echo json_encode(["option" => $option]);
             break;
+        case 'listar_user_ul':
+            $lista = $user->listarUser();
+            $option = "<ul>";
+            foreach ($lista as $a) {
+                $option .= "
+                    <li>
+                        <label class='dropdown-item px-2 d-flex align-items-center'>
+                        <input class='form-check-input m-0 me-1 filtro filtro-asesor' value='{$a['id_user']}' type='checkbox'>
+                            {$a['nombres']} {$a['apellidos']}
+                        </label>
+                    </li>
+                ";
+            }
+            $option .= "</ul>";
+            echo json_encode(["option" => $option]);
+            break;
         case 'listar_user_option_leads':
-            echo json_encode($user->listarUser());
+            echo json_encode($user->listarUserDetails());
             break;
         /*LOGIN */
         case 'redireccionamiento':

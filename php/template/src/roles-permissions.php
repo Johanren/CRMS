@@ -12,11 +12,11 @@
             <!-- Page Header -->
             <div class="d-flex align-items-center justify-content-between gap-2 mb-4 flex-wrap">
                 <div>
-                    <h4 class="mb-1">Roles & Permissions<span class="badge badge-soft-primary ms-2">152</span></h4>
+                    <h4 class="mb-1">Roles & Permisos<span class="badge badge-soft-primary ms-2">152</span></h4>
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb mb-0 p-0">
-                            <li class="breadcrumb-item"><a href="index.php">Home</a></li>
-                            <li class="breadcrumb-item active" aria-current="page">Roles & Permissions</li>
+                            <li class="breadcrumb-item"><a href="index.php">Hogar</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Roles & Permisos</li>
                         </ol>
                     </nav>
                 </div>
@@ -49,22 +49,16 @@
                         <span class="input-icon-addon text-dark"><i class="ti ti-search"></i></span>
                         <input type="text" class="form-control" placeholder="Search">
                     </div>
-                    <a href="javascript:void(0);" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#add_role"><i class="ti ti-square-rounded-plus-filled me-1"></i>Add New Role</a>
+                    <a href="javascript:void(0);" class="btn btn-primary" data-bs-toggle="offcanvas" data-bs-target="#offrol_add"><i class="ti ti-square-rounded-plus-filled me-1"></i>Agregar Rol</a>
                 </div>
                 <div class="card-body">
 
                     <!-- Contact List -->
                     <div class="table-responsive custom-table">
-                        <table class="table table-nowrap" id="roles_list">
+                        <table class="table table-nowrap" id="info-rol">
                             <thead class="table-light">
                                 <tr>
-                                    <th class="no-sort">
-                                        <div class="form-check form-check-md">
-                                            <input class="form-check-input" type="checkbox" id="select-all">
-                                        </div>
-                                    </th>
-                                    <th>Role Name</th>
-                                    <th>Created</th>
+                                    <th>Nombre Rol</th>
                                     <th class="no-sort">Action</th>
                                 </tr>
                             </thead>
