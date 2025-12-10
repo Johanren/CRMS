@@ -397,7 +397,7 @@ document.querySelectorAll(".editable").forEach(el => {
         // --------------------------
         // 1️⃣ CAMPOS QUE USAN INPUT
         // --------------------------
-        if (id === "nombreClienteLeads" || id === "direccionClienteLeads" || id === "apellidoClienteLeads") {
+        if (id === "nombreClienteLeads" || id === "direccionClienteLeads" || id === "apellidoClienteLeads" || id === "identificacionLeads" || id === "correoLeads" || id === "telefonoLeads") {
 
             let input = document.getElementById("input_" + id);
             console.log(input);
@@ -844,20 +844,29 @@ async function listarLeadsId() {
 
     let d = data[0];
 
-    // Asignación de datos básicos
-    document.getElementById("nombreClienteLeads").textContent = `${d.nombres}`;
-    document.getElementById("nombreClienteLeads").dataset.id = `${d.nombres}`;
+    //Info cliente
 
-    document.getElementById("apellidoClienteLeads").textContent = `${d.apellidos}` ?? 'Sin apellidos';
-    document.getElementById("apellidoClienteLeads").dataset.id = `${d.apellidos}`;
+    function mostrarCampo(idElemento, valor, textoVacio) {
+        const finalValue = valor && valor.trim() !== "" ? valor : textoVacio;
+        const el = document.getElementById(idElemento);
+        el.textContent = finalValue;
+        el.dataset.id = finalValue;
+    }
+
+    mostrarCampo("identificacionLeads", d.identificacion, "Sin identificacion");
+    mostrarCampo("correoLeads", d.email, "Sin correo");
+    mostrarCampo("telefonoLeads", d.telefono_principal, "Sin telefono");
+    mostrarCampo("nombreClienteLeads", d.nombres, "Sin nombres");
+    mostrarCampo("apellidoClienteLeads", d.apellidos, "Sin apellidos");
+    mostrarCampo("direccionClienteLeads", d.direccion, "Sin dirección");
+
+    // Asignación de datos básicos
 
     document.getElementById("empresaCarrera").textContent = d.nom_emp ?? 'Sin Empresa';
     document.getElementById("empresaCarrera").dataset.id = d.cod_emp;
 
     //document.getElementById("valorCarrera").textContent = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }).format(d.val_pro);
-    document.getElementById("direccionClienteLeads").textContent = d.direccion ?? 'Sin dirección';
-    document.getElementById("direccionClienteLeads").dataset.id = d.direccion;
-
+    
     document.getElementById("asesorLeads").textContent = `${d.nombreAsesor} ${d.apellidoAsesor}`;
     cargarAsesoresDropdown();
     document.getElementById("carreraLead").textContent = d.desc_pro ?? 'Sin carrera';
@@ -890,8 +899,7 @@ async function listarLeadsId() {
     document.getElementById("barrioLead").textContent = d.desc_brr ?? 'Sin barrio';
     document.getElementById("barrioLead").dataset.id = d.barrio_id;
 
-    document.getElementById("observacionesLead").textContent = d.observaciones ?? 'Sin Observaciones';
-    document.getElementById("observacionesLead").dataset.id = d.observaciones;
+    mostrarCampo("observacionesLead", d.observaciones, "Sin Observaciones");
 
     [...document.getElementsByClassName("fechaLeads")].forEach(elem => {
         elem.textContent = d.fecha_creacion;

@@ -64,7 +64,6 @@
                                     <input type="text" class="form-control d-none" id="input_apellidoClienteLeads">
                                     <p class="mb-1">
                                         <i class="ti ti-building-skyscraper me-1" id="empresaCarrera"></i>
-
                                     <div class="col-sm-12 d-none" id="select_empresaCarrera">
                                         <select class="form-control">
                                             <option value="1">MULTITECH</option>
@@ -102,6 +101,26 @@
             <div class="col-xl-4">
                 <div class="card">
                     <div class="card-body p-3">
+                        <div class="d-flex align-items-center justify-content-between flex-wrap">
+                            <h6 class="mb-3 fw-semibold">Información Cliente</h6>
+                        </div>
+                        <div class="border-bottom mb-3 pb-3">
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <p class="mb-0">Identificación </p>
+                                <p class="mb-0 text-dark editable" id="identificacionLeads"> </p>
+                                <input type="text" class="form-control d-none" id="input_identificacionLeads">
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <p class="mb-0">Correo </p>
+                                <p class="mb-0 text-dark editable" id="correoLeads"> </p>
+                                <input type="text" class="form-control d-none" id="input_correoLeads">
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <p class="mb-0">Telefono </p>
+                                <p class="mb-0 text-dark editable" id="telefonoLeads"> </p>
+                                <input type="text" class="form-control d-none" id="input_telefonoLeads">
+                            </div>
+                        </div>
                         <h6 class="mb-3 fw-semibold">Información Lead</h6>
                         <div class="border-bottom mb-3 pb-3">
                             <div class="d-flex align-items-center justify-content-between mb-2">
@@ -207,7 +226,7 @@
                             </div>
                         </div>
 
-                        <div class="d-flex align-items-center justify-content-between flex-wrap">
+                        <!--<div class="d-flex align-items-center justify-content-between flex-wrap">
                             <h6 class="mb-3 fw-semibold">Propietario</h6>
                         </div>
                         <div class="border-bottom mb-3 pb-3">
@@ -220,7 +239,7 @@
                                 </div>
                             </div>
                         </div>
-                        <!--<h6 class="mb-3 fw-semibold">Tags</h6>
+                        <h6 class="mb-3 fw-semibold">Tags</h6>
                             <div class="border-bottom mb-3 pb-3">
                                 <a href="javascript:void(0);" class="badge badge-soft-success fw-medium me-2">Collab</a>
                                 <a href="javascript:void(0);" class="badge badge-soft-warning fw-medium mb-0">VIP</a>

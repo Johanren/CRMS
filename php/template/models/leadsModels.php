@@ -4,13 +4,17 @@ class LeadsModels
 {
     public static function agregarLeads($data, $id, $id_user, $id_estado_leads)
     {
-        $sql = "INSERT INTO leads (user_id, cliente_id, info_adicional, carrera_id, horario_id, interes_id, medio_id, fuente_id, campana_id, accion_id, departamento_id, barrio_id, ciudad_id, estado_leads_id, observaciones, url_origen, cod_emp) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+        $sql = "INSERT INTO leads (user_id, cliente_id, info_adicional, carrera_id, horario_id, interes_id, medio_id, fuente_id, campana_id, accion_id, departamento_id, barrio_id, ciudad_id, estado_leads_id, observaciones, url_origen, cod_emp, utm_source, utm_medium, utm_campaign) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
         $conn = new Conexion();
         $conectar = $conn->conectar();
         $stmt = $conectar->prepare($sql);
 
         $url = $data['origen_url'] ?? null;
         $cod_emp = $data['cod_emp'] ?? $_SESSION['cod_emp'] ?? null;
+        $sourceField = $data['sourceField'] ?? null;
+        $mediumField = $data['mediumField'] ?? null;
+        $campaignField = $data['campaignField'] ?? null;
+
         $stmt->bindParam(1, $id_user);
         $stmt->bindParam(2, $id);
         $stmt->bindParam(3, $data["infoLeads"]);
@@ -28,6 +32,10 @@ class LeadsModels
         $stmt->bindParam(15, $data["observacionLeads"]);
         $stmt->bindParam(16, $url);
         $stmt->bindParam(17, $cod_emp);
+        $stmt->bindParam(18, $sourceField);
+        $stmt->bindParam(19, $mediumField);
+        $stmt->bindParam(20, $campaignField);
+
         if ($stmt->execute()) {
             return "ok";
         }
@@ -92,16 +100,35 @@ class LeadsModels
         $params = [$_SESSION['cod_emp']];
 
         /* ===========================
-       FILTRO POR ROL
-    ============================ */
-        if ($_SESSION['rol'] !== 'Admin') {
+        FILTRO POR ROL (solo si NO hay filtros)
+        ============================ */
+        $todosVacios = (
+            $texto === "" &&
+            empty($asesor) &&
+            empty($carreras) &&
+            empty($horario) &&
+            empty($interes) &&
+            empty($medio) &&
+            empty($fuente) &&
+            empty($campana) &&
+            empty($accion) &&
+            empty($departamento) &&
+            empty($ciudad) &&
+            empty($barrio) &&
+            empty($estados)
+        );
+
+        /* ===========================
+        FILTRO POR ROL
+        ============================ */
+        if ($_SESSION['rol'] !== 'Admin'  && $todosVacios) {
             $sql .= " AND l.user_id = ?";
             $params[] = $_SESSION['user_id'];
         }
 
         /* ===========================
-        FILTRO POR TEXTO
-    ============================ */
+            FILTRO POR TEXTO
+        ============================ */
         if ($texto !== "") {
             $sql .= " AND (
             c.nombres LIKE ? OR 
@@ -116,8 +143,8 @@ class LeadsModels
         }
 
         /* ===========================
-        FILTRO POR Asesor
-    ============================ */
+            FILTRO POR Asesor
+        ============================ */
         if (!empty($asesor)) {
             $placeholders = implode(",", array_fill(0, count($asesor), "?"));
             $sql .= " AND l.user_id IN ($placeholders)";
@@ -125,8 +152,8 @@ class LeadsModels
         }
 
         /* ===========================
-        FILTRO POR CARRERAS
-    ============================ */
+            FILTRO POR CARRERAS
+        ============================ */
         if (!empty($carreras)) {
             $placeholders = implode(",", array_fill(0, count($carreras), "?"));
             $sql .= " AND p.desc_pro IN ($placeholders)";
@@ -134,8 +161,8 @@ class LeadsModels
         }
 
         /* ===========================
-        FILTRO POR Horario
-    ============================ */
+            FILTRO POR Horario
+        ============================ */
         if (!empty($horario)) {
             $placeholders = implode(",", array_fill(0, count($horario), "?"));
             $sql .= " AND l.horario_id IN ($placeholders)";
@@ -143,8 +170,8 @@ class LeadsModels
         }
 
         /* ===========================
-        FILTRO POR Interes
-    ============================ */
+            FILTRO POR Interes
+        ============================ */
         if (!empty($interes)) {
             $placeholders = implode(",", array_fill(0, count($interes), "?"));
             $sql .= " AND l.interes_id IN ($placeholders)";
@@ -152,8 +179,8 @@ class LeadsModels
         }
 
         /* ===========================
-        FILTRO POR medio
-    ============================ */
+            FILTRO POR medio
+        ============================ */
         if (!empty($medio)) {
             $placeholders = implode(",", array_fill(0, count($medio), "?"));
             $sql .= " AND l.medio_id IN ($placeholders)";
@@ -161,8 +188,8 @@ class LeadsModels
         }
 
         /* ===========================
-        FILTRO POR fuente
-    ============================ */
+            FILTRO POR fuente
+        ============================ */
         if (!empty($fuente)) {
             $placeholders = implode(",", array_fill(0, count($fuente), "?"));
             $sql .= " AND l.fuente_id IN ($placeholders)";
@@ -170,8 +197,8 @@ class LeadsModels
         }
 
         /* ===========================
-        FILTRO POR campana
-    ============================ */
+            FILTRO POR campana
+        ============================ */
         if (!empty($campana)) {
             $placeholders = implode(",", array_fill(0, count($campana), "?"));
             $sql .= " AND l.campana_id IN ($placeholders)";
@@ -179,8 +206,8 @@ class LeadsModels
         }
 
         /* ===========================
-        FILTRO POR Accion
-    ============================ */
+            FILTRO POR Accion
+        ============================ */
         if (!empty($accion)) {
             $placeholders = implode(",", array_fill(0, count($accion), "?"));
             $sql .= " AND l.accion_id IN ($placeholders)";
@@ -188,8 +215,8 @@ class LeadsModels
         }
 
         /* ===========================
-        FILTRO POR departamento
-    ============================ */
+            FILTRO POR departamento
+        ============================ */
         if (!empty($departamento)) {
             $placeholders = implode(",", array_fill(0, count($departamento), "?"));
             $sql .= " AND l.departamento_id IN ($placeholders)";
@@ -197,8 +224,8 @@ class LeadsModels
         }
 
         /* ===========================
-        FILTRO POR ciudad
-    ============================ */
+            FILTRO POR ciudad
+        ============================ */
         if (!empty($ciudad)) {
             $placeholders = implode(",", array_fill(0, count($ciudad), "?"));
             $sql .= " AND l.ciudad_id IN ($placeholders)";
@@ -206,8 +233,8 @@ class LeadsModels
         }
 
         /* ===========================
-        FILTRO POR barrio
-    ============================ */
+            FILTRO POR barrio
+        ============================ */
         if (!empty($barrio)) {
             $placeholders = implode(",", array_fill(0, count($barrio), "?"));
             $sql .= " AND l.barrio_id IN ($placeholders)";
@@ -215,8 +242,8 @@ class LeadsModels
         }
 
         /* ===========================
-        FILTRO POR ESTADOS
-    ============================ */
+            FILTRO POR ESTADOS
+        ============================ */
         if (!empty($estados)) {
             $placeholders = implode(",", array_fill(0, count($estados), "?"));
             $sql .= " AND e.nombre IN ($placeholders)";
@@ -224,8 +251,8 @@ class LeadsModels
         }
 
         /* ===========================
-        EJECUCIÓN
-    ============================ */
+            EJECUCIÓN
+        ============================ */
         $conn = new Conexion();
         $conectar = $conn->conectar();
         $stmt = $conectar->prepare($sql);
@@ -273,16 +300,35 @@ class LeadsModels
         $params = [$_SESSION['cod_emp']];
 
         /* ===========================
-       FILTRO POR ROL
-    ============================ */
-        if ($_SESSION['rol'] !== 'Admin') {
+        FILTRO POR ROL (solo si NO hay filtros)
+        ============================ */
+        $todosVacios = (
+            $texto === "" &&
+            empty($asesor) &&
+            empty($carreras) &&
+            empty($horario) &&
+            empty($interes) &&
+            empty($medio) &&
+            empty($fuente) &&
+            empty($campana) &&
+            empty($accion) &&
+            empty($departamento) &&
+            empty($ciudad) &&
+            empty($barrio) &&
+            empty($estados)
+        );
+
+        /* ===========================
+        FILTRO POR ROL
+        ============================ */
+        if ($_SESSION['rol'] !== 'Admin' && $todosVacios) {
             $sql .= " AND l.user_id = ?";
             $params[] = $_SESSION['user_id'];
         }
 
         /* ===========================
-        FILTRO POR TEXTO
-    ============================ */
+            FILTRO POR TEXTO
+        ============================ */
         if ($texto !== "") {
             $sql .= " AND (
             c.nombres LIKE ? OR 
@@ -297,8 +343,8 @@ class LeadsModels
         }
 
         /* ===========================
-        FILTRO POR Asesor
-    ============================ */
+            FILTRO POR Asesor
+        ============================ */
         if (!empty($asesor)) {
             $placeholders = implode(",", array_fill(0, count($asesor), "?"));
             $sql .= " AND l.user_id IN ($placeholders)";
@@ -306,8 +352,8 @@ class LeadsModels
         }
 
         /* ===========================
-        FILTRO POR CARRERAS
-    ============================ */
+            FILTRO POR CARRERAS
+        ============================ */
         if (!empty($carreras)) {
             $placeholders = implode(",", array_fill(0, count($carreras), "?"));
             $sql .= " AND p.desc_pro IN ($placeholders)";
@@ -315,8 +361,8 @@ class LeadsModels
         }
 
         /* ===========================
-        FILTRO POR Horario
-    ============================ */
+            FILTRO POR Horario
+        ============================ */
         if (!empty($horario)) {
             $placeholders = implode(",", array_fill(0, count($horario), "?"));
             $sql .= " AND l.horario_id IN ($placeholders)";
@@ -324,8 +370,8 @@ class LeadsModels
         }
 
         /* ===========================
-        FILTRO POR Interes
-    ============================ */
+            FILTRO POR Interes
+        ============================ */
         if (!empty($interes)) {
             $placeholders = implode(",", array_fill(0, count($interes), "?"));
             $sql .= " AND l.interes_id IN ($placeholders)";
@@ -333,8 +379,8 @@ class LeadsModels
         }
 
         /* ===========================
-        FILTRO POR medio
-    ============================ */
+            FILTRO POR medio
+        ============================ */
         if (!empty($medio)) {
             $placeholders = implode(",", array_fill(0, count($medio), "?"));
             $sql .= " AND l.medio_id IN ($placeholders)";
@@ -342,8 +388,8 @@ class LeadsModels
         }
 
         /* ===========================
-        FILTRO POR fuente
-    ============================ */
+            FILTRO POR fuente
+        ============================ */
         if (!empty($fuente)) {
             $placeholders = implode(",", array_fill(0, count($fuente), "?"));
             $sql .= " AND l.fuente_id IN ($placeholders)";
@@ -351,8 +397,8 @@ class LeadsModels
         }
 
         /* ===========================
-        FILTRO POR campana
-    ============================ */
+            FILTRO POR campana
+        ============================ */
         if (!empty($campana)) {
             $placeholders = implode(",", array_fill(0, count($campana), "?"));
             $sql .= " AND l.campana_id IN ($placeholders)";
@@ -360,8 +406,8 @@ class LeadsModels
         }
 
         /* ===========================
-        FILTRO POR Accion
-    ============================ */
+            FILTRO POR Accion
+        ============================ */
         if (!empty($accion)) {
             $placeholders = implode(",", array_fill(0, count($accion), "?"));
             $sql .= " AND l.accion_id IN ($placeholders)";
@@ -369,8 +415,8 @@ class LeadsModels
         }
 
         /* ===========================
-        FILTRO POR departamento
-    ============================ */
+            FILTRO POR departamento
+        ============================ */
         if (!empty($departamento)) {
             $placeholders = implode(",", array_fill(0, count($departamento), "?"));
             $sql .= " AND l.departamento_id IN ($placeholders)";
@@ -378,8 +424,8 @@ class LeadsModels
         }
 
         /* ===========================
-        FILTRO POR ciudad
-    ============================ */
+            FILTRO POR ciudad
+        ============================ */
         if (!empty($ciudad)) {
             $placeholders = implode(",", array_fill(0, count($ciudad), "?"));
             $sql .= " AND l.ciudad_id IN ($placeholders)";
@@ -387,8 +433,8 @@ class LeadsModels
         }
 
         /* ===========================
-        FILTRO POR barrio
-    ============================ */
+            FILTRO POR barrio
+        ============================ */
         if (!empty($barrio)) {
             $placeholders = implode(",", array_fill(0, count($barrio), "?"));
             $sql .= " AND l.barrio_id IN ($placeholders)";
@@ -396,8 +442,8 @@ class LeadsModels
         }
 
         /* ===========================
-        FILTRO POR ESTADOS
-    ============================ */
+            FILTRO POR ESTADOS
+        ============================ */
         if (!empty($estados)) {
             $placeholders = implode(",", array_fill(0, count($estados), "?"));
             $sql .= " AND e.nombre IN ($placeholders)";
@@ -405,8 +451,8 @@ class LeadsModels
         }
 
         /* ===========================
-        EJECUCIÓN
-    ============================ */
+            EJECUCIÓN
+        ============================ */
         $conn = new Conexion();
         $conectar = $conn->conectar();
         $stmt = $conectar->prepare($sql);
@@ -445,10 +491,11 @@ class LeadsModels
 
         // Si NO hay leads aún, tomar cualquier usuario asesor
         if (!$res) {
-            $sql2 = "SELECT id AS user_id 
-                 FROM users 
-                 WHERE rol like '%asesor%'
-                 ORDER BY id ASC
+            $sql2 = "SELECT u.id_user AS user_id 
+                 FROM user u
+                 INNER JOIN user_role r ON u.rol_id = r.id_rol
+                 WHERE r.nombre_rol like '%asesor%'
+                 ORDER BY u.id_user ASC
                  LIMIT 1";
             $stmt2 = $conectar->prepare($sql2);
             $stmt2->execute();
@@ -474,7 +521,7 @@ class LeadsModels
 
         return "error";
     }
-    
+
     public static function actualizarColumnasLeads($leadId, $columna, $valor)
     {
         $sql = "UPDATE leads l LEFT JOIN cliente c ON c.id_cliente = l.cliente_id SET $columna = ? WHERE id_lead = ?";

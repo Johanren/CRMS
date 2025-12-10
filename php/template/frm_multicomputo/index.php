@@ -216,6 +216,23 @@
             }
         });
 
+        let sourceField = '';
+        let mediumField = '';
+        let campaignField = '';
+
+        window.addEventListener("message", function(event) {
+            // Validar el mensaje recibido
+            if (event.data && event.data.tipo === "url_padre") {
+                const queryString = event.data.url.split("?")[1] || "";
+
+                const params = new URLSearchParams(queryString);
+
+                sourceField = params.get('utm_source') || 'directo';
+                mediumField = params.get('utm_medium') || 'ninguno';
+                campaignField = params.get('utm_campaign') || 'general';
+            }
+        });
+
         if (document.getElementById("mainForm")) {
 
             document.getElementById("mainForm").addEventListener("submit", function(e) {
@@ -226,6 +243,9 @@
                 let datos = new FormData(this);
                 datos.append("accion", "registrar_leads");
                 datos.append("cursoNombre", cursoNombre);
+                datos.append("sourceField", sourceField);
+                datos.append("mediumField", mediumField);
+                datos.append("campaignField", campaignField);
                 fetch("ajax.php", {
                         method: "POST",
                         body: datos

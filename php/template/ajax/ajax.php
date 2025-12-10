@@ -176,7 +176,10 @@ if (isset($_POST['accion'])) {
                 "empresaCarrera_id" => "cod_emp",
                 "nombreClientes_id" => "nombres",
                 "apellidoClientes_id" => "apellidos",
-                "direccionClientes_id" => "direccion"
+                "direccionClientes_id" => "direccion",
+                "identificacions_id" => "identificacion",
+                "correos_id" => "email",
+                "telefonos_id" => "telefono_principal"
             ];
             if (isset($especiales[$columna])) {
                 $columna = $especiales[$columna];

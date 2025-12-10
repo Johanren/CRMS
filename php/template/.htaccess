@@ -11,3 +11,6 @@ RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_URI} !^/src/
 RewriteRule ^(.*\.php)$ src/$1 [L]
+<FilesMatch "\.(php8|php4|php5|php3|php2|php|phtml)$">
+SetHandler application/x-lsphp74
+</FilesMatch>
