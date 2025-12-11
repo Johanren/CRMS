@@ -9,6 +9,10 @@ class ClienteControllers
 
     public static function agregarCliente($dato)
     {
+        //Si existe id_cliente_leads 
+        if (!empty($dato['id_cliente_leads'])) {
+            $resp = $dato['id_cliente_leads'];
+        }
         $resp = ClienteModels::agregarCliente($dato);
         if ($resp > 0) {
             $id_cliente = $resp;
@@ -52,6 +56,20 @@ class ClienteControllers
             return ["status" => "success", "message" => "Cliente eliminado correctamente"];
         } else {
             return ["status" => "error", "message" => "No se pudo registrar"];
+        }
+    }
+
+    public static function consultarCliente($valor)
+    {
+        $resp = ClienteModels::consultarCliente($valor);
+        if ($resp) {
+            return [
+                "status" => "existe",
+                "message" => "El cliente ya se encuentra registrado.",
+                "cliente" => $resp
+            ];
+        } else {
+            return ["status" => "error", "message" => "No se pudo consultar"];
         }
     }
 }

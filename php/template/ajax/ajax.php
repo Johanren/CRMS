@@ -152,6 +152,10 @@ if (isset($_POST['accion'])) {
         case 'actualizar_leads':
             echo json_encode($cliente->actualizarCliente($_POST));
             break;
+        case 'buscar_cliente':
+            $valor = trim($_POST["valor"]);
+            echo json_encode($cliente->consultarCliente($valor));
+            break;
         /*LEADS */
         case 'updateEstado':
             echo json_encode($leads->updateEstado($_POST["id_lead"], $_POST["id_estado"]));
@@ -648,7 +652,10 @@ if (isset($_GET['accion'])) {
             $ciudad = isset($_GET['ciudad']) ? json_decode($_GET['ciudad']) : [];
             $barrio = isset($_GET['barrio']) ? json_decode($_GET['barrio']) : [];
             $estados = isset($_GET['estados']) ? json_decode($_GET['estados']) : [];
-            echo json_encode($leads->getLeads($texto, $asesor, $carreras, $horario, $interes, $medio, $fuente, $campana, $accion, $departamento, $ciudad, $barrio, $estados));
+            $fecha_inicio = $_GET['fecha_inicio'] ?? null;
+            $fecha_fin = $_GET['fecha_fin'] ?? null;
+
+            echo json_encode($leads->getLeads($texto, $asesor, $carreras, $horario, $interes, $medio, $fuente, $campana, $accion, $departamento, $ciudad, $barrio, $estados, $fecha_inicio, $fecha_fin));
             break;
         case 'listar_leads':
             $texto = $_GET['texto'] ?? '';
@@ -664,7 +671,9 @@ if (isset($_GET['accion'])) {
             $ciudad = isset($_GET['ciudad']) ? json_decode($_GET['ciudad']) : [];
             $barrio = isset($_GET['barrio']) ? json_decode($_GET['barrio']) : [];
             $estados = isset($_GET['estados']) ? json_decode($_GET['estados']) : [];
-            echo json_encode($leads->listarLeads($texto, $asesor, $carreras, $horario, $interes, $medio, $fuente, $campana, $accion, $departamento, $ciudad, $barrio, $estados));
+            $fecha_inicio = $_GET['fecha_inicio'] ?? null;
+            $fecha_fin = $_GET['fecha_fin'] ?? null;
+            echo json_encode($leads->listarLeads($texto, $asesor, $carreras, $horario, $interes, $medio, $fuente, $campana, $accion, $departamento, $ciudad, $barrio, $estados, $fecha_inicio, $fecha_fin));
             break;
 
         /*Notas */

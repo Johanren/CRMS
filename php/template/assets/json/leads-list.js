@@ -1,3 +1,114 @@
+/*agregar en modal registro cliente notas*/
+if (document.getElementById("btnMostrarNota")) {
+    const btnMostrarNota = document.getElementById("btnMostrarNota");
+    const contenedorNota = document.getElementById("contenedorNota");
+    const btnCancelarNota = document.getElementById("cancelarNota");
+
+    btnMostrarNota.addEventListener("click", () => {
+        contenedorNota.style.display = "block";
+        btnMostrarNota.style.display = "none"; // Oculta el botón
+    });
+
+    btnCancelarNota.addEventListener("click", () => {
+        contenedorNota.style.display = "none";
+        btnMostrarNota.style.display = "inline-block"; // Muestra el botón de nuevo
+
+        // Limpiar campos
+        document.getElementById("tit_not").value = "";
+        document.getElementById("desc_not").value = "";
+        document.getElementById("desc_arch").value = "";
+        document.getElementById("preview-archivos").innerHTML = "";
+    });
+}
+
+/*Busqueda existencia cliente */
+
+if (document.getElementById("identificacionLeads")) {
+    ["identificacionLeads", "telefonoLeads"].forEach(id => {
+        const campo = document.getElementById(id);
+
+        campo.addEventListener("blur", async function () {
+            let valor = this.value.trim();
+            if (valor === "") return;
+
+            const datos = new FormData();
+            datos.append("accion", "buscar_cliente");
+            datos.append("valor", valor);
+
+            try {
+                let response = await fetch("ajax/ajax.php", {
+                    method: "POST",
+                    body: datos
+                });
+
+                let data = await response.json();
+
+                if (data.status === "existe") {
+
+                    Swal.fire("Cliente ya creado", data.message, "warning");
+
+                    if (data.cliente && data.cliente.length > 0) {
+
+                        let c = data.cliente[0];
+
+                        if (document.getElementById("id_cliente_leads")) {
+                            document.getElementById("id_cliente_leads").value = c.id_cliente;
+                        }
+
+                        document.getElementById("nombresLeads").value = c.nombres || "";
+                        document.getElementById("apellidosLeads").value = c.apellidos || "";
+                        document.getElementById("telefonoLeads").value = c.telefono_principal || "";
+                        document.getElementById("correoLeads").value = c.email || "";
+                        document.getElementById("direLeads").value = c.direccion || "";
+                    }
+
+                }
+
+            } catch (error) {
+                console.error("Error en la validación:", error);
+            }
+        });
+    });
+}
+
+/*Fecha inicio fin */
+
+$(function () {
+
+    $('#reportrange').daterangepicker(
+        {
+            opens: "left",
+            autoUpdateInput: false,
+            locale: {
+                format: "YYYY-MM-DD",
+                applyLabel: "Aplicar",
+                cancelLabel: "Cancelar",
+                daysOfWeek: ["Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sa"],
+                monthNames: [
+                    "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+                    "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+                ]
+            }
+        },
+        function (start, end) {
+
+            // Guardar fechas globales
+            window.fecha_inicio = start.format("YYYY-MM-DD");
+            window.fecha_fin = end.format("YYYY-MM-DD");
+
+            // Mostrar en el span
+            document.querySelector(".reportrange-picker-field").innerHTML =
+                start.format("DD MMM YY") + " - " + end.format("DD MMM YY");
+
+            // Llamar a función principal
+            cargarKanban()
+            listarLeads();
+            cargarContactGrid();
+        }
+    );
+});
+
+
 // 3. Obtener valores de filtros
 window.Filtros = {
     obtener: function () {
@@ -19,8 +130,10 @@ window.Filtros = {
         let ciudad = [...document.querySelectorAll(".filtro-ciu:checked")].map(c => c.value);
         let barrio = [...document.querySelectorAll(".filtro-brr:checked")].map(c => c.value);
         let estados = [...document.querySelectorAll(".filtro-estado:checked")].map(c => c.value);
+        let fecha_inicio = window.fecha_inicio || "";
+        let fecha_fin = window.fecha_fin || "";
 
-        return { texto, asesor, carreras, horario, interes, medio, fuente, campana, accion, departamento, ciudad, barrio, estados };
+        return { texto, asesor, carreras, horario, interes, medio, fuente, campana, accion, departamento, ciudad, barrio, estados, fecha_inicio, fecha_fin };
     }
 };
 
@@ -212,6 +325,9 @@ function listarLeads() {
     if (f.ciudad.length > 0) params.append("ciudad", JSON.stringify(f.ciudad));
     if (f.barrio.length > 0) params.append("barrio", JSON.stringify(f.barrio));
     if (f.estados.length > 0) params.append("estados", JSON.stringify(f.estados));
+    if (f.fecha_inicio !== "") params.append("fecha_inicio", f.fecha_inicio);
+    if (f.fecha_fin !== "") params.append("fecha_fin", f.fecha_fin);
+
 
     params.append("accion", "listar_leads");
 
@@ -506,6 +622,10 @@ function respuestaNombreNuevo(field, value) {
 //Tarjetas leads.
 
 document.addEventListener("DOMContentLoaded", () => {
+    cargarContactGrid();
+});
+
+document.addEventListener("DOMContentLoaded", () => {
     cargarKanban();
 });
 
@@ -513,7 +633,8 @@ document.addEventListener("DOMContentLoaded", () => {
 document.addEventListener("change", function (e) {
     if (e.target.classList.contains("filtro")) {
         listarLeads();
-        cargarKanban(); // recargar kanban filtrado
+        cargarKanban();
+        cargarContactGrid();
     }
 });
 
@@ -522,6 +643,7 @@ document.addEventListener("input", function (e) {
     if (e.target.id === "buscador") {
         listarLeads();
         cargarKanban();
+        cargarContactGrid();
     }
 });
 
@@ -538,6 +660,11 @@ async function cargarKanban() {
     const estados = await cargarEstados();
     const leads = await cargarLeads();
     renderKanban(estados, leads);
+}
+
+async function cargarContactGrid() {
+    const leads = await cargarLeads();
+    renderContactGrid(leads);
 }
 
 /* ================================
@@ -570,6 +697,8 @@ async function cargarLeads() {
     if (f.ciudad.length > 0) params.append("ciudad", JSON.stringify(f.ciudad));
     if (f.barrio.length > 0) params.append("barrio", JSON.stringify(f.barrio));
     if (f.estados.length > 0) params.append("estados", JSON.stringify(f.estados));
+    if (f.fecha_inicio !== "") params.append("fecha_inicio", f.fecha_inicio);
+    if (f.fecha_fin !== "") params.append("fecha_fin", f.fecha_fin);
 
     params.append("accion", "getLeads");
 
@@ -828,6 +957,145 @@ async function updateEstadoLead(idLead, idEstado) {
 }
 
 /* ================================
+   Card del lead cliente CON TU DISEÑO
+================================ */
+
+function renderContactGrid(leads) {
+    const cont = document.getElementById("contact-grid");
+    cont.innerHTML = ""; // limpiar
+
+    leads.forEach(l => {
+        const nombre = l.nombres || "";
+        const apellido = l.apellidos || "";
+        const iniciales = (nombre.charAt(0) + apellido.charAt(0)).toUpperCase();
+
+        // COLORES POR ESTADO
+        const coloresEstado = {
+            1: "badge-soft-info",
+            2: "badge-soft-info",
+            3: "badge-soft-warning",
+            4: "badge-soft-info",
+            5: "badge-soft-info",
+            6: "badge-soft-success"
+        };
+
+        // Estado del lead: si no existe, usa “Sin estado”
+        const estadoNombre = l.nombre || "Sin estado";
+        const estadoID = l.estado_leads_id || 0;
+        const colorBadge = coloresEstado[estadoID] || "badge-soft-secondary";
+
+        const card = document.createElement("div");
+        card.className = "col-xxl-3 col-xl-4 col-md-6";
+
+        card.innerHTML = `
+            <div class="card border shadow">
+                <div class="card-body">
+
+                    <!-- Top usuario -->
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div class="d-flex align-items-center">
+
+                            <a href="leads-details.php?id=${l.id_lead}"
+                                class="avatar avatar-md flex-shrink-0 me-2">
+                                <span class="avatar-title rounded-circle bg-soft-info text-info fs-5">
+                                    ${iniciales}
+                                </span>
+                            </a>
+
+                            <div>
+                                <h6 class="fs-14"><a href="leads-details.php?id=${l.id_lead}" class="fw-medium">
+                                    ${nombre} ${apellido}
+                                </a></h6>
+                                <p class="text-default mb-0">${l.desc_pro || "Sin programa"}</p>
+                            </div>
+                        </div>
+
+                        <div class="dropdown table-action">
+                            <a href="#" class="action-icon btn btn-icon btn-sm btn-outline-light shadow"
+                                data-bs-toggle="dropdown">
+                                <i class="ti ti-dots-vertical"></i>
+                            </a>
+
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <a class="dropdown-item" onclick="editarLeads(${l.id_lead})" href="#"
+                                    data-bs-toggle="offcanvas" data-bs-target="#offcanvas_edit">
+                                    <i class="ti ti-edit text-blue"></i> Editar
+                                </a>
+
+                                <a class="dropdown-item" href="#" data-bs-toggle="modal"
+                                    data-bs-target="#delete_contact">
+                                    <i class="ti ti-trash"></i> Eliminar
+                                </a>
+
+                                <a class="dropdown-item" href="leads-details.php?id=${l.id_lead}">
+                                    <i class="ti ti-eye text-blue-light"></i> Ver
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Datos -->
+                    <div class="d-block">
+                        <div class="d-flex flex-column">
+                            <p class="text-default d-inline-flex align-items-center mb-2">
+                                <i class="ti ti-mail text-dark me-1"></i>${l.email || "Sin email"}
+                            </p>
+
+                            <p class="text-default d-inline-flex align-items-center mb-2">
+                                <i class="ti ti-phone text-dark me-1"></i>${l.telefono_principal || "Sin teléfono"}
+                            </p>
+
+                            <p class="text-default d-inline-flex align-items-center">
+                                <i class="ti ti-map-pin-pin text-dark me-1"></i>${l.ciudad || "Sin ciudad"}
+                            </p>
+                        </div>
+
+                        <!-- BADGE DE ESTADO DINÁMICO -->
+                        <div class="d-flex align-items-center mt-2">
+                            <span class="badge badge-tag ${colorBadge} me-2">
+                                ${estadoNombre}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
+                        <div class="d-flex align-items-center grid-social-links">
+
+                            <a href="mailto:${l.email}" class="avatar avatar-xs text-dark rounded-circle me-1">
+                                <i class="ti ti-mail fs-14"></i>
+                            </a>
+
+                            <a href="tel:${l.telefono_principal}" class="avatar avatar-xs text-dark rounded-circle me-1">
+                                <i class="ti ti-phone-check fs-14"></i>
+                            </a>
+
+                            <a href="#" class="avatar avatar-xs text-dark rounded-circle me-1">
+                                <i class="ti ti-message-circle-share fs-14"></i>
+                            </a>
+
+                            <a href="#" class="avatar avatar-xs text-dark rounded-circle">
+                                <i class="ti ti-brand-facebook fs-14"></i>
+                            </a>
+
+                        </div>
+
+                        <div class="d-flex align-items-center">
+                            <div class="avatar avatar-xs bg-info rounded-circle text-white">
+                                <i class="ti ti-user fs-14"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        `;
+
+        cont.appendChild(card);
+    });
+}
+
+/* ================================
    Leads Details
 ================================ */
 
@@ -866,7 +1134,7 @@ async function listarLeadsId() {
     document.getElementById("empresaCarrera").dataset.id = d.cod_emp;
 
     //document.getElementById("valorCarrera").textContent = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }).format(d.val_pro);
-    
+
     document.getElementById("asesorLeads").textContent = `${d.nombreAsesor} ${d.apellidoAsesor}`;
     cargarAsesoresDropdown();
     document.getElementById("carreraLead").textContent = d.desc_pro ?? 'Sin carrera';
@@ -1005,8 +1273,10 @@ function renderEstadosLead(estados, lead) {
         2: "bg-indigo",
         3: "bg-warning",
         4: "bg-warning",
-        5: "bg-primary",
-        6: "bg-success"
+        5: "bg-success",
+        6: "bg-success",
+        7: "bg-primary",
+        8: "bg-indigo"
     };
 
     // Contenedor en tu HTML
@@ -1035,11 +1305,45 @@ function renderEstadosLead(estados, lead) {
 
     // Agregar eventos de clic para cambiar estado
     document.querySelectorAll(".estado-item").forEach(btn => {
-        btn.addEventListener("click", () => cambiarEstadoLead(btn, lead.id_lead));
+        btn.addEventListener("click", () => {
+
+            let idEstado = parseInt(btn.dataset.id);
+            let nombreEstado = btn.dataset.nombre;
+
+            if (idEstado === 7) {
+                abrirModalPerdido(nombreEstado);
+            }
+
+            if (idEstado === 8) {
+                abrirModalAplazado(nombreEstado);
+            }
+
+            // Otros estados → cambiar normal
+            cambiarEstadoLead(btn, lead.id_lead);
+        });
     });
 }
 
+function abrirModalPerdido(nombreEstado) {
+    document.getElementById("tit_not").value = nombreEstado;
 
+    let modal = new bootstrap.Modal(document.getElementById("add_notes"));
+    modal.show();
+}
+
+function abrirModalAplazado(nombreEstado) {
+
+    // Llenar título automáticamente
+    document.getElementById("tituloProAct").value = "Aplazado";
+
+    // Resetear los demás campos si quieres
+    document.getElementById("descProAct").value = "";
+    document.getElementById("recor_act").selectedIndex = 0;
+    document.getElementById("prio_act").selectedIndex = 0;
+
+    let modal = new bootstrap.Modal(document.getElementById("create_actividad"));
+    modal.show();
+}
 
 listarLeadsId();
 
@@ -1143,6 +1447,7 @@ if (document.getElementById("formNotas")) {
                     archivosSeleccionados = [];
                     document.getElementById("cerrarModalNotas").click();
                     listarNotas();
+                    actualizarTimeline();
                 } else {
                     Swal.fire("Error", data.message, "error");
                 }
@@ -1379,6 +1684,7 @@ if (document.getElementById("formCalls")) {
                     this.reset();
                     document.getElementById("cerrarModalCalls").click();
                     listarLlamadas();
+                    actualizarTimeline();
                 } else {
                     Swal.fire("Error", data.message, "error");
                 }
@@ -1567,6 +1873,7 @@ if (document.getElementById("formProActi")) {
                     this.reset();
                     document.getElementById("cerrarModalProAct").click();
                     listarProximasActividades();
+                    actualizarTimeline();
                 } else {
                     Swal.fire("Error", data.message, "error");
                 }

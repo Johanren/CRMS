@@ -11,9 +11,9 @@ class LeadsModels
 
         $url = $data['origen_url'] ?? null;
         $cod_emp = $data['cod_emp'] ?? $_SESSION['cod_emp'] ?? null;
-        $sourceField = $data['sourceField'] ?? null;
-        $mediumField = $data['mediumField'] ?? null;
-        $campaignField = $data['campaignField'] ?? null;
+        $sourceField   = !empty($data['sourceField'])   ? $data['sourceField']   : "directo";
+        $mediumField   = !empty($data['mediumField'])   ? $data['mediumField']   : "ninguno";
+        $campaignField = !empty($data['campaignField']) ? $data['campaignField'] : "general";
 
         $stmt->bindParam(1, $id_user);
         $stmt->bindParam(2, $id);
@@ -37,6 +37,10 @@ class LeadsModels
         $stmt->bindParam(20, $campaignField);
 
         if ($stmt->execute()) {
+            if (!empty($data['tit_not']) || !empty($data['desc_not']) || !empty($data['desc_arch'])) {
+                $ultimoId = $conectar->lastInsertId();
+                return $ultimoId;
+            }
             return "ok";
         }
 
@@ -75,7 +79,7 @@ class LeadsModels
         return "error";
     }
 
-    public static function getLeads($texto = "", $asesor = [], $carreras = [], $horario = [], $interes = [], $medio = [], $fuente = [], $campana = [], $accion = [], $departamento = [], $ciudad = [], $barrio = [], $estados = [])
+    public static function getLeads($texto = "", $asesor = [], $carreras = [], $horario = [], $interes = [], $medio = [], $fuente = [], $campana = [], $accion = [], $departamento = [], $ciudad = [], $barrio = [], $estados = [], $fecha_inicio = [], $fecha_fin = [])
     {
         $sql = "SELECT 
                 l.*, 
@@ -245,10 +249,25 @@ class LeadsModels
             FILTRO POR ESTADOS
         ============================ */
         if (!empty($estados)) {
+
             $placeholders = implode(",", array_fill(0, count($estados), "?"));
             $sql .= " AND e.nombre IN ($placeholders)";
             $params = array_merge($params, $estados);
         }
+
+        /* ===========================
+            FILTRO POR FECHA
+        ============================ */
+        if (!empty($fecha_inicio) && !empty($fecha_fin)) {
+            $sql .= " AND DATE(l.fecha_creacion) BETWEEN ? AND ?";
+            $params[] = $fecha_inicio;
+            $params[] = $fecha_fin;
+        }
+
+        /* ===========================
+            ORDENAR POR FECHA DESCENDENTE
+        ============================ */
+        $sql .= " ORDER BY l.fecha_creacion DESC";
 
         /* ===========================
             EJECUCIÓN
@@ -273,7 +292,7 @@ class LeadsModels
         return "ok";
     }
 
-    public static function listarLeads($texto = "", $asesor = [], $carreras = [], $horario = [], $interes = [], $medio = [], $fuente = [], $campana = [], $accion = [], $departamento = [], $ciudad = [], $barrio = [], $estados = [])
+    public static function listarLeads($texto = "", $asesor = [], $carreras = [], $horario = [], $interes = [], $medio = [], $fuente = [], $campana = [], $accion = [], $departamento = [], $ciudad = [], $barrio = [], $estados = [], $fecha_inicio = [], $fecha_fin = [])
     {
         $sql = "SELECT 
                 l.*, 
@@ -315,7 +334,9 @@ class LeadsModels
             empty($departamento) &&
             empty($ciudad) &&
             empty($barrio) &&
-            empty($estados)
+            empty($estados) &&
+            empty($fecha_inicio) &&
+            empty($fecha_fin)
         );
 
         /* ===========================
@@ -449,6 +470,22 @@ class LeadsModels
             $sql .= " AND e.nombre IN ($placeholders)";
             $params = array_merge($params, $estados);
         }
+
+        /* ===========================
+            FILTRO POR FECHA
+        ============================ */
+        if (!empty($fecha_inicio) && !empty($fecha_fin)) {
+
+            $sql .= " AND DATE(l.fecha_creacion) BETWEEN ? AND ?";
+            $params[] = $fecha_inicio;
+            $params[] = $fecha_fin;
+        }
+
+        /* ====================
+        =======
+            ORDENAR POR FECHA DESCENDENTE
+        ============================ */
+        $sql .= " ORDER BY l.fecha_creacion DESC";
 
         /* ===========================
             EJECUCIÓN

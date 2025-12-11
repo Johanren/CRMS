@@ -8,7 +8,6 @@ class NotasControllers
         $resp = NotasModels::agregarNotas($dato);
 
         if ($resp > 0) {
-
             // Guardar archivos si existen
             if (!empty($_FILES["desc_arch"]["name"][0])) {
                 ArchivoControllers::agregarArchivo($_FILES["desc_arch"], $resp, "nota");

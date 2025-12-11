@@ -65,10 +65,11 @@
                                     </li>
                                 </ul>
                             </div>
-                        </div>
-                        <div id="reportrange" class="reportrange-picker d-flex align-items-center shadow">
-                            <i class="ti ti-calendar-due text-dark fs-14 me-1"></i><span class="reportrange-picker-field">9 Jun 25 - 9 Jun 25</span>
                         </div>-->
+                        <div id="reportrange" class="reportrange-picker d-flex align-items-center shadow">
+                            <i class="ti ti-calendar-due text-dark fs-14 me-1"></i>
+                            <span class="reportrange-picker-field">Seleccione fechas</span>
+                        </div>
                         <div class="input-icon input-icon-start position-relative">
                             <span class="input-icon-addon text-dark"><i class="ti ti-search"></i></span>
                             <input type="text" class="form-control" id="buscador" placeholder="Buscar">

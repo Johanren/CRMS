@@ -80,4 +80,16 @@ class ClienteModels
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public static function consultarCliente($valor)
+    {
+        $sql = "SELECT * FROM cliente WHERE identificacion = ? OR telefono_principal = ?";
+        $conn = new Conexion();
+        $conectar = $conn->conectar();
+        $stmt = $conectar->prepare($sql);
+        $stmt->bindParam(1, $valor);
+        $stmt->bindParam(2, $valor);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

@@ -22868,6 +22868,41 @@ $page = end( $link_array );
         </div>
     </div>
 </div>
+<!-- Create modal perido Log -->
+<div class="modal fade" id="modal_perdido" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+        
+            <div class="modal-header">
+                <h5 class="modal-title">Estado Perdido</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <form id="formEstadoPerdido">
+                <div class="modal-body">
+
+                    <div class="mb-3">
+                        <label class="form-label">Estado</label>
+                        <input type="text" class="form-control" id="estadoPerdidoNombre" disabled>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Motivo</label>
+                        <textarea class="form-control" name="motivoPerdido" id="motivoPerdido" required></textarea>
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-danger">Guardar</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
 <!-- /Create proxima actividad Log -->
 <?php }?>
 
@@ -23482,6 +23517,7 @@ $page = end( $link_array );
             <div class="row">
                 <div class="col-md-6">
                     <div class="mb-3">
+                        <input type="hidden" id="id_cliente_leads" name="id_cliente_leads">
                         <label class="form-label">Nombres<span class="text-danger">*</span></label>
                         <input type="text" name="nombresLeads" id="nombresLeads" class="form-control">
                     </div>
@@ -23520,6 +23556,47 @@ $page = end( $link_array );
                     <div class="mb-3">
                         <label class="form-label">Información Adicional<span class="text-danger">*</span></label>
                         <textarea name="infoLeads" id="infoLeads" class="form-control"></textarea>
+                    </div>
+                </div>
+                <div class="col-md-12 mb-3 d-flex justify-content-start">
+                    <button type="button" id="btnMostrarNota" class="btn btn-outline-primary">
+                        <i class="ti ti-note me-1"></i> Agregar nota
+                    </button>
+                </div>
+                <div id="contenedorNota" class="col-md-12" style="display:none;">
+                    <div class="card border p-3">
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label">Título <span class="text-danger">*</span></label>
+                                <input class="form-control" name="tit_not" id="tit_not" type="text">
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label">Nota <span class="text-danger">*</span></label>
+                                <textarea class="form-control" name="desc_not" id="desc_not" rows="3"></textarea>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label">Adjunto <span class="text-danger">*</span></label>
+
+                                <div class="file-upload drag-file w-100 d-flex bg-light border shadow align-items-center justify-content-center flex-column">
+                                    <span class="upload-img d-block mb-1">
+                                        <i class="ti ti-folder-open text-primary fs-16"></i>
+                                    </span>
+                                    <p class="mb-0 fs-14 text-dark">
+                                        Drop your files here or 
+                                        <a href="javascript:void(0);" class="text-decoration-underline text-primary">browse</a>
+                                    </p>
+
+                                    <input type="file" name="desc_arch[]" id="desc_arch" multiple>
+                                    <p class="fs-13 mb-0">Maximum size: 50 MB</p>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="row" id="preview-archivos"></div>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-end mt-3">
+                            <button type="button" id="cancelarNota" class="btn btn-light me-2">Cancelar</button>
+                        </div>
                     </div>
                 </div>
                 <div class="col-md-6">
