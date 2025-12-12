@@ -76,6 +76,10 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="d-flex align-items-center gap-2 mt-2">
+                                <a href="#" id="btnGuardarFiltros" class="btn btn-outline-primary w-100">Guardar filtros</a>
+                                <a href="#" id="btnCargarFiltros" class="btn btn-primary w-100">Aplicar filtros guardados</a>
+                            </div>
                         </div>
                     </div>
                 </div>

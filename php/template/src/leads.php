@@ -177,95 +177,9 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <!--<div class="filter-set-content">
-                                                <div class="filter-set-content-head">
-                                                    <a href="#" class="collapsed" data-bs-toggle="collapse" data-bs-target="#owner" aria-expanded="false" aria-controls="owner">Lead Owner</a>
-                                                </div>
-                                                <div class="filter-set-contents accordion-collapse collapse" id="owner" data-bs-parent="#accordionExample">
-                                                    <div class="filter-content-list bg-light rounded border p-2 shadow mt-2">
-                                                        <div class="mb-2">
-                                                            <div class="input-icon-start input-icon position-relative">
-                                                                <span class="input-icon-addon fs-12">
-                                                                    <i class="ti ti-search"></i>
-                                                                </span>
-                                                                <input type="text" class="form-control form-control-md" placeholder="Buscar">
-                                                            </div>
-                                                        </div>
-                                                        <ul class="mb-0">
-                                                            <li class="mb-1">
-                                                                <label class="dropdown-item px-2 d-flex align-items-center">
-                                                                    <input class="form-check-input m-0 me-1" type="checkbox">
-                                                                    <span class="avatar avatar-xs rounded-circle me-2"><img src="assets/img/users/user-17.jpg" class="flex-shrink-0 rounded-circle" alt="img"></span>Robert Johnson
-                                                                </label>
-                                                            </li>
-                                                            <li class="mb-1">
-                                                                <label class="dropdown-item px-2 d-flex align-items-center">
-                                                                    <input class="form-check-input m-0 me-1" type="checkbox">
-                                                                    <span class="avatar avatar-xs rounded-circle me-2"><img src="assets/img/users/user-16.jpg" class="flex-shrink-0 rounded-circle" alt="img"></span>Isabella Cooper
-                                                                </label>
-                                                            </li>
-                                                            <li class="mb-1">
-                                                                <label class="dropdown-item px-2 d-flex align-items-center">
-                                                                    <input class="form-check-input m-0 me-1" type="checkbox">
-                                                                    <span class="avatar avatar-xs rounded-circle me-2"><img src="assets/img/users/user-14.jpg" class="flex-shrink-0 rounded-circle" alt="img"></span>John Smith
-                                                                </label>
-                                                            </li>
-                                                            <li class="mb-1">
-                                                                <label class="dropdown-item px-2 d-flex align-items-center">
-                                                                    <input class="form-check-input m-0 me-1" type="checkbox">
-                                                                    <span class="avatar avatar-xs rounded-circle me-2"><img src="assets/img/users/user-22.jpg" class="flex-shrink-0 rounded-circle" alt="img"></span>Sophia Parker
-                                                                </label>
-                                                            </li>
-                                                            <li class="mb-1">
-                                                                <label class="dropdown-item px-2 d-flex align-items-center">
-                                                                    <input class="form-check-input m-0 me-1" type="checkbox">
-                                                                    <span class="avatar avatar-xs rounded-circle me-2"><img src="assets/img/users/user-25.jpg" class="flex-shrink-0 rounded-circle" alt="img"></span>Emma Reynolds
-                                                                </label>
-                                                            </li>
-                                                            <li class="mb-1">
-                                                                <label class="dropdown-item px-2 d-flex align-items-center">
-                                                                    <input class="form-check-input m-0 me-1" type="checkbox">
-                                                                    <span class="avatar avatar-xs rounded-circle me-2"><img src="assets/img/users/user-24.jpg" class="flex-shrink-0 rounded-circle" alt="img"></span>Liam Carter
-                                                                </label>
-                                                            </li>
-                                                            <li class="mb-1">
-                                                                <label class="dropdown-item px-2 d-flex align-items-center">
-                                                                    <input class="form-check-input m-0 me-1" type="checkbox">
-                                                                    <span class="avatar avatar-xs rounded-circle me-2"><img src="assets/img/users/user-39.jpg" class="flex-shrink-0 rounded-circle" alt="img"></span>Noah Mitchell
-                                                                </label>
-                                                            </li>
-                                                            <li class="mb-1">
-                                                                <label class="dropdown-item px-2 d-flex align-items-center">
-                                                                    <input class="form-check-input m-0 me-1" type="checkbox">
-                                                                    <span class="avatar avatar-xs rounded-circle me-2"><img src="assets/img/users/user-31.jpg" class="flex-shrink-0 rounded-circle" alt="img"></span>Mason Hayes
-                                                                </label>
-                                                            </li>
-                                                            <li class="mb-1">
-                                                                <label class="dropdown-item px-2 d-flex align-items-center">
-                                                                    <input class="form-check-input m-0 me-1" type="checkbox">
-                                                                    <span class="avatar avatar-xs rounded-circle me-2"><img src="assets/img/users/user-21.jpg" class="flex-shrink-0 rounded-circle" alt="img"></span>Ron Thompson
-                                                                </label>
-                                                            </li>
-                                                            <li class="mb-1">
-                                                                <label class="dropdown-item px-2 d-flex align-items-center">
-                                                                    <input class="form-check-input m-0 me-1" type="checkbox">
-                                                                    <span class="avatar avatar-xs rounded-circle me-2"><img src="assets/img/users/user-10.jpg" class="flex-shrink-0 rounded-circle" alt="img"></span>Laura Bennett
-                                                                </label>
-                                                            </li>
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                            </div>-->
                                 </div>
-                                <!--<div class="d-flex align-items-center gap-2">
-                                        <a href="javascript:void(0);" class="btn btn-outline-light w-100">Reiniciar</a>
-                                        <a href="javascript:void(0);" class="btn btn-primary w-100">Filtrar</a>
-                                    </div>-->
                             </div>
-                            <!--<div class="d-flex align-items-center gap-2">
-                                    <a href="javascript:void(0);" class="btn btn-outline-light w-100">Reiniciar</a>
-                                    <a href="javascript:void(0);" class="btn btn-primary w-100">Filtrar</a>
-                                </div>-->
+                            <div id="contenedor-botones"></div>
                         </div>
                     </div>
                 </div>

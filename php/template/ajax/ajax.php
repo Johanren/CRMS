@@ -33,6 +33,7 @@ $rol = new RolControllers();
 $user = new UserControllers();
 $login = new LoginControllers();
 $motivo = new MotivoControllers();
+$filtro = new FiltroControllers();
 if (isset($_POST['accion'])) {
     switch ($_POST['accion']) {
         /*Campana*/
@@ -256,6 +257,13 @@ if (isset($_POST['accion'])) {
             break;
         case 'listar_motivos':
             echo json_encode($motivo->listarMotivos($_POST['id_lead']));
+            break;
+        /*Filtros */
+        case 'guardar_filtros':
+            $usuario_id = $_SESSION['user_id'] ?? null;
+            $nombre = $_POST['nombre'] ?? 'default';
+            $filtros_json = json_encode($_POST['filtros']);
+            echo json_encode($filtro->agregarFiltro($usuario_id, $nombre, $filtros_json));
             break;
         default:
             # code...
@@ -687,8 +695,14 @@ if (isset($_GET['accion'])) {
 
             $empresa = $_SESSION['cod_emp'];
 
+            if ($_SESSION['rol'] !== "Admin") {
+                $user_id = [$_SESSION['user_id']];
+            } else {
+                $user_id = [];
+            }
+
             // SIEMPRE convertir a array aunque sea número, string o null
-            $asesor   = isset($_GET['asesor'])   ? json_decode($_GET['asesor'], true) : $_SESSION['user_id'];
+            $asesor   = isset($_GET['asesor'])   ? json_decode($_GET['asesor'], true) : $user_id;
             $carreras = isset($_GET['carreras']) ? json_decode($_GET['carreras'], true) : [];
             $horario  = isset($_GET['horario'])  ? json_decode($_GET['horario'], true) : [];
             $estados  = isset($_GET['estados'])  ? json_decode($_GET['estados'], true) : [];
@@ -737,8 +751,6 @@ if (isset($_GET['accion'])) {
             );
 
             break;
-
-
         /*Notas */
         case 'listarNotas':
             echo json_encode($notas->listarNotasId($_GET['id']));
@@ -794,6 +806,21 @@ if (isset($_GET['accion'])) {
         case 'redireccionamiento':
             echo json_encode(LoginControllers::redireccion());
             break;
+        /*Filtros */
+        case 'cargar_filtro':
+            $usuario_id = $_SESSION['user_id'] ?? null;
+            $nombre = $_GET['nombre'] ?? 'default';
+            $filtros_json = $filtro->cargarFiltro($usuario_id, $nombre);
+
+            if ($filtros_json) {
+                // Decodificamos primero antes de enviar
+                $filtros_array = json_decode($filtros_json, true);
+                echo json_encode($filtros_array);
+            } else {
+                echo json_encode(null);
+            }
+            break;
+
         default:
     }
 }

@@ -151,10 +151,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="d-flex align-items-center gap-2">
-                                        <a href="javascript:void(0);" class="btn btn-outline-light w-100">Reset</a>
-                                        <a href="lead-reports.php" class="btn btn-primary w-100">Filter</a>
-                                    </div>
+                                    <div id="contenedor-botones"></div>
                                 </div>
                             </div>
                         </div>

@@ -297,7 +297,7 @@ class LeadsModels
                 e.nombre AS estado
             FROM leads l 
             INNER JOIN cliente c ON c.id_cliente = l.cliente_id 
-            INNER JOIN programa p ON p.cod_pro = l.carrera_id 
+            LEFT JOIN programa p ON p.cod_pro = l.carrera_id 
             LEFT JOIN ciudad ci ON ci.cod_ciu = l.ciudad_id 
             LEFT JOIN user u ON u.id_user = l.user_id 
             LEFT JOIN estado_leads e ON e.id_estado_leads = l.estado_leads_id 

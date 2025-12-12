@@ -68,168 +68,141 @@ if (document.getElementById("btnMostrarAtividadLlamada")) {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-    const btnAgregarNumero = document.getElementById("btnAgregarNumero");
-    const contenedorNumeros = document.getElementById("contenedorNumeros");
-    const listaNumeros = document.getElementById("listaNumeros");
-    const template = document.getElementById("template-numero");
-    const btnNuevoNumero = document.getElementById("btnNuevoNumero");
+    if (document.getElementById("btnAgregarNumero")) {
+        const btnAgregarNumero = document.getElementById("btnAgregarNumero");
+        const contenedorNumeros = document.getElementById("contenedorNumeros");
+        const listaNumeros = document.getElementById("listaNumeros");
+        const template = document.getElementById("template-numero");
+        const btnNuevoNumero = document.getElementById("btnNuevoNumero");
 
-    let indicativos = [];
 
-    // 1️⃣ Cargar API de indicativos internacionales
-    async function cargarIndicativos() {
-        const response = await fetch("https://restcountries.com/v3.1/all");
-        const data = await response.json();
-
-        indicativos = data
-            .filter(c => c.idd?.root)
-            .map(c => ({
-                name: c.name.common,
-                code: `${c.idd.root}${c.idd.suffixes ? c.idd.suffixes[0] : ""}`
-            }))
-            .sort((a, b) => a.name.localeCompare(b.name));
-    }
-
-    // 2️⃣ Llenar select de cada número
-    function llenarSelectIndicativos(select) {
-        select.innerHTML = "";
-        indicativos.forEach(p => {
-            const opt = document.createElement("option");
-            opt.value = p.code;
-            opt.textContent = `${p.name} (${p.code})`;
-            select.appendChild(opt);
-        });
-    }
-
-    // 3️⃣ Mostrar contenedor de números adicionales
-    btnAgregarNumero.addEventListener("click", () => {
-        contenedorNumeros.style.display = "block";
-
-        if (listaNumeros.children.length === 0) {
-            agregarNumero();
-        }
-    });
-
-    // 4️⃣ Crear un número adicional nuevo
-    function agregarNumero() {
-        const clone = template.content.cloneNode(true);
-        const selectIndicativo = clone.querySelector(".indicativo");
-
-        // Llenar select
-        llenarSelectIndicativos(selectIndicativo);
-
-        // Botón eliminar
-        clone.querySelector(".btnEliminarNumero").addEventListener("click", function () {
-            this.closest(".numeroItem").remove();
+        // 3️⃣ Mostrar contenedor de números adicionales
+        btnAgregarNumero.addEventListener("click", () => {
+            contenedorNumeros.style.display = "block";
 
             if (listaNumeros.children.length === 0) {
-                contenedorNumeros.style.display = "none";
+                agregarNumero();
             }
         });
 
-        listaNumeros.appendChild(clone);
-    }
+        // 4️⃣ Crear un número adicional nuevo
+        function agregarNumero() {
+            const clone = template.content.cloneNode(true);
+            const selectIndicativo = clone.querySelector(".indicativo");
 
-    function agregarNumeroAdicional(data) {
-        const clone = template.content.cloneNode(true);
+            // Llenar select
+            llenarSelectIndicativos(selectIndicativo);
 
-        const selectIndicativo = clone.querySelector(".indicativo");
-        const inputNumero = clone.querySelector(".numeroTel");
-        const inputDescripcion = clone.querySelector(".descNumero");
+            // Botón eliminar
+            clone.querySelector(".btnEliminarNumero").addEventListener("click", function () {
+                this.closest(".numeroItem").remove();
 
-        // Llenar select de indicativos
-        llenarSelectIndicativos(selectIndicativo);
-
-        // Seleccionar el indicativo que viene de la BD
-        if (data.indicativo) {
-            selectIndicativo.value = data.indicativo;
-        }
-
-        // Rellenar datos
-        inputNumero.value = data.numero || "";
-        inputDescripcion.value = data.descripcion || "";
-
-        // Botón eliminar
-        clone.querySelector(".btnEliminarNumero").addEventListener("click", function () {
-            this.closest(".numeroItem").remove();
-
-            if (listaNumeros.children.length === 0) {
-                contenedorNumeros.style.display = "none";
-            }
-        });
-
-        // Mostrar contenedor si estaba oculto
-        contenedorNumeros.style.display = "block";
-
-        listaNumeros.appendChild(clone);
-    }
-
-    function agregarNumeroAdicionalDesdeBD(num) {
-        agregarNumeroAdicional({
-            indicativo: num.indicativo,
-            numero: num.telefono,
-            descripcion: num.descripcion
-        });
-    }
-
-    /*Busqueda existencia cliente */
-
-    if (document.getElementById("identificacionLeads")) {
-        ["identificacionLeads", "telefonoLeads"].forEach(id => {
-            const campo = document.getElementById(id);
-
-            campo.addEventListener("blur", async function () {
-                let valor = this.value.trim();
-                if (valor === "") return;
-
-                const datos = new FormData();
-                datos.append("accion", "buscar_cliente");
-                datos.append("valor", valor);
-
-                try {
-                    let response = await fetch("ajax/ajax.php", {
-                        method: "POST",
-                        body: datos
-                    });
-
-                    let data = await response.json();
-
-                    if (data.status === "existe") {
-
-                        Swal.fire("Cliente ya creado", data.message, "warning");
-
-                        if (data.cliente) {
-                            let c = data.cliente;
-
-                            document.getElementById("id_cliente_leads").value = c.id_cliente;
-                            document.getElementById("nombresLeads").value = c.nombres || "";
-                            document.getElementById("apellidosLeads").value = c.apellidos || "";
-                            document.getElementById("telefonoLeads").value = c.telefono_principal || "";
-                            document.getElementById("correoLeads").value = c.email || "";
-                            document.getElementById("direLeads").value = c.direccion || "";
-                        }
-
-                        //  🔥  NUEVO: cargar números adicionales
-                        if (data.numeros_adicionales && data.numeros_adicionales.length > 0) {
-
-                            // Si ya tienes un contenedor dinámico lo llenas aquí
-                            data.numeros_adicionales.forEach(num => {
-                                agregarNumeroAdicionalDesdeBD(num);
-                            });
-                        }
-                    }
-
-                } catch (error) {
-                    console.error("Error en la validación:", error);
+                if (listaNumeros.children.length === 0) {
+                    contenedorNumeros.style.display = "none";
                 }
             });
-        });
+
+            listaNumeros.appendChild(clone);
+        }
+
+        function agregarNumeroAdicional(data) {
+            const clone = template.content.cloneNode(true);
+
+            const selectIndicativo = clone.querySelector(".indicativo");
+            const inputNumero = clone.querySelector(".numeroTel");
+            const inputDescripcion = clone.querySelector(".descNumero");
+
+            // Llenar select de indicativos
+            llenarSelectIndicativos(selectIndicativo);
+
+            // Seleccionar el indicativo que viene de la BD
+            if (data.indicativo) {
+                selectIndicativo.value = data.indicativo;
+            }
+
+            // Rellenar datos
+            inputNumero.value = data.numero || "";
+            inputDescripcion.value = data.descripcion || "";
+
+            // Botón eliminar
+            clone.querySelector(".btnEliminarNumero").addEventListener("click", function () {
+                this.closest(".numeroItem").remove();
+
+                if (listaNumeros.children.length === 0) {
+                    contenedorNumeros.style.display = "none";
+                }
+            });
+
+            // Mostrar contenedor si estaba oculto
+            contenedorNumeros.style.display = "block";
+
+            listaNumeros.appendChild(clone);
+        }
+
+        function agregarNumeroAdicionalDesdeBD(num) {
+            agregarNumeroAdicional({
+                indicativo: num.indicativo,
+                numero: num.telefono,
+                descripcion: num.descripcion
+            });
+        }
+
+        /*Busqueda existencia cliente */
+
+        if (document.getElementById("identificacionLeads")) {
+            ["identificacionLeads", "telefonoLeads"].forEach(id => {
+                const campo = document.getElementById(id);
+
+                campo.addEventListener("blur", async function () {
+                    let valor = this.value.trim();
+                    if (valor === "") return;
+
+                    const datos = new FormData();
+                    datos.append("accion", "buscar_cliente");
+                    datos.append("valor", valor);
+
+                    try {
+                        let response = await fetch("ajax/ajax.php", {
+                            method: "POST",
+                            body: datos
+                        });
+
+                        let data = await response.json();
+
+                        if (data.status === "existe") {
+
+                            Swal.fire("Cliente ya creado", data.message, "warning");
+
+                            if (data.cliente) {
+                                let c = data.cliente;
+
+                                document.getElementById("id_cliente_leads").value = c.id_cliente;
+                                document.getElementById("nombresLeads").value = c.nombres || "";
+                                document.getElementById("apellidosLeads").value = c.apellidos || "";
+                                document.getElementById("telefonoLeads").value = c.telefono_principal || "";
+                                document.getElementById("correoLeads").value = c.email || "";
+                                document.getElementById("direLeads").value = c.direccion || "";
+                            }
+
+                            //  🔥  NUEVO: cargar números adicionales
+                            if (data.numeros_adicionales && data.numeros_adicionales.length > 0) {
+
+                                // Si ya tienes un contenedor dinámico lo llenas aquí
+                                data.numeros_adicionales.forEach(num => {
+                                    agregarNumeroAdicionalDesdeBD(num);
+                                });
+                            }
+                        }
+
+                    } catch (error) {
+                        console.error("Error en la validación:", error);
+                    }
+                });
+            });
+        }
+
+        btnNuevoNumero.addEventListener("click", () => agregarNumero());
     }
-
-    btnNuevoNumero.addEventListener("click", () => agregarNumero());
-
-    // Inicializar API
-    cargarIndicativos();
 });
 
 
@@ -271,7 +244,10 @@ $(function () {
 });
 
 
-// 3. Obtener valores de filtros
+/*=============
+FILTROS
+=============*/
+
 window.Filtros = {
     obtener: function () {
         let texto = "";
@@ -2452,7 +2428,5 @@ function agruparPorDia(lista) {
     });
     return grupos;
 }
-
-actualizarTimeline();
 
 actualizarTimeline();
