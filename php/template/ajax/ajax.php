@@ -32,6 +32,7 @@ $proximaActividad = new ProximaActividadControllers();
 $rol = new RolControllers();
 $user = new UserControllers();
 $login = new LoginControllers();
+$motivo = new MotivoControllers();
 if (isset($_POST['accion'])) {
     switch ($_POST['accion']) {
         /*Campana*/
@@ -248,6 +249,13 @@ if (isset($_POST['accion'])) {
             $password = $_POST['password'];
             $respuesta = $login->login($email, $password);
             echo json_encode($respuesta);
+            break;
+        /*MOTIVO */
+        case "registrar_motivo":
+            echo json_encode($motivo->registrarMotivo($_POST));
+            break;
+        case 'listar_motivos':
+            echo json_encode($motivo->listarMotivos($_POST['id_lead']));
             break;
         default:
             # code...

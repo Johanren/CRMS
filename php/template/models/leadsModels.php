@@ -107,19 +107,7 @@ class LeadsModels
         FILTRO POR ROL (solo si NO hay filtros)
         ============================ */
         $todosVacios = (
-            $texto === "" &&
-            empty($asesor) &&
-            empty($carreras) &&
-            empty($horario) &&
-            empty($interes) &&
-            empty($medio) &&
-            empty($fuente) &&
-            empty($campana) &&
-            empty($accion) &&
-            empty($departamento) &&
-            empty($ciudad) &&
-            empty($barrio) &&
-            empty($estados)
+            $texto === ""
         );
 
         /* ===========================
@@ -322,21 +310,7 @@ class LeadsModels
         FILTRO POR ROL (solo si NO hay filtros)
         ============================ */
         $todosVacios = (
-            $texto === "" &&
-            empty($asesor) &&
-            empty($carreras) &&
-            empty($horario) &&
-            empty($interes) &&
-            empty($medio) &&
-            empty($fuente) &&
-            empty($campana) &&
-            empty($accion) &&
-            empty($departamento) &&
-            empty($ciudad) &&
-            empty($barrio) &&
-            empty($estados) &&
-            empty($fecha_inicio) &&
-            empty($fecha_fin)
+            $texto === ""
         );
 
         /* ===========================
@@ -508,7 +482,7 @@ class LeadsModels
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public static function obtenerAsesorConMenosLeads()
+    public static function obtenerAsesorConMenosLeads($data)
     {
         $cod_emp = $data['cod_emp'] ?? $_SESSION['cod_emp'] ?? null;
 

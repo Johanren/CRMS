@@ -12,10 +12,19 @@ class ClienteControllers
         //Si existe id_cliente_leads 
         if (!empty($dato['id_cliente_leads'])) {
             $resp = $dato['id_cliente_leads'];
+            $dato['cliente_id'] = $resp;
+            ClienteModels::actualizarCliente($dato);
+        }else{
+            $resp = ClienteModels::agregarCliente($dato);
         }
-        $resp = ClienteModels::agregarCliente($dato);
+        
         if ($resp > 0) {
             $id_cliente = $resp;
+            if (isset($dato['ip_usuario']) && !empty($dato['ip_usuario'])) {
+                $marketing = new Marketing_trackingControllers();
+                $id_marketing = $marketing->consultarClickExistete($dato);
+                $marketing->updateClickMarketing($id_marketing['id'], $id_cliente);
+            }
             //Agregar el leads
             $resp_leads = LeadsControllers::agregarLeads($dato, $id_cliente);
             if ($resp_leads == "ok") {

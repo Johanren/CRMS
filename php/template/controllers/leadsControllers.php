@@ -10,7 +10,7 @@ class LeadsControllers
 
         // Si NO existe → buscar asesor con menos leads
         if (!$user_id) {
-            $asesor = LeadsModels::obtenerAsesorConMenosLeads();
+            $asesor = LeadsModels::obtenerAsesorConMenosLeads($data);
             $user_id = $asesor['user_id'];
         }
         if (!empty($data['tit_not']) || !empty($data['desc_not']) || !empty($data['desc_arch'])) {

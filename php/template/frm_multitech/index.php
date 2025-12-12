@@ -155,7 +155,7 @@
             <p>© 2025 Programa Multitech | Todos los derechos reservados</p>
         </div>
     </div>
-
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         // Recibir la URL real desde el padre
         window.addEventListener("message", function(event) {
@@ -219,6 +219,7 @@
         let sourceField = '';
         let mediumField = '';
         let campaignField = '';
+        let ip_usuario = '';
 
         window.addEventListener("message", function(event) {
             // Validar el mensaje recibido
@@ -231,6 +232,62 @@
                 mediumField = params.get('utm_medium') || 'ninguno';
                 campaignField = params.get('utm_campaign') || 'general';
             }
+        });
+
+        async function obtenerIP() {
+            try {
+                let res = await fetch("https://api.ipify.org?format=json");
+                let data = await res.json();
+                return data.ip;
+            } catch (e) {
+                console.log(e);
+                return null;
+            }
+        }
+
+        $(document).ready(async function() {
+
+            ip_usuario = await obtenerIP();
+
+            // 1️⃣ Primero consultar si la IP existe en la base de datos
+            $.ajax({
+                url: "ajax.php",
+                type: "POST",
+                data: {
+                    accion: "buscar_ip_tracking",
+                    ip_usuario: ip_usuario
+                },
+                dataType: "json",
+                success: function(data) {
+
+                    // 2️⃣ Si la IP existe, NO hacer nada
+                    if (data.status === "existe") {
+                        console.log("La IP ya existe, no se registra:", ip_usuario);
+                        return;
+                    }
+
+                    // 3️⃣ Si no existe → registrar
+                    if (data.status === "no_existe") {
+
+                        $.ajax({
+                            url: "ajax.php",
+                            type: "POST",
+                            data: {
+                                accion: "marketing_tracking",
+                                ip_usuario: ip_usuario,
+                                sourceField: sourceField || 'directo',
+                                mediumField: mediumField || 'ninguno',
+                                campaignField: campaignField || 'general'
+                            },
+                            success: function(r) {
+                                console.log("Nueva IP registrada:", ip_usuario);
+                            }
+                        });
+
+                    }
+                }
+            });
+
         });
 
         if (document.getElementById("mainForm")) {
@@ -246,7 +303,7 @@
                 datos.append("sourceField", sourceField);
                 datos.append("mediumField", mediumField);
                 datos.append("campaignField", campaignField);
-
+                datos.append("ip_usuario", ip_usuario);
 
                 fetch("ajax.php", {
                         method: "POST",

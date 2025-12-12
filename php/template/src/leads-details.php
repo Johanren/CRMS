@@ -294,7 +294,7 @@
             <!-- Contact Details -->
             <div class="col-xl-8">
                 <div class="mb-3 pb-3 border-bottom">
-                    <h5 class="mb-3">Estado del oleoducto principal</h5>
+                    <h5 class="mb-3">Estado del leads principal</h5>
                     <div id="estadoLeadsSecundarioSeguimiento"></div>
                     <!--<div class="step bg-indigo">Not Contacted</div>
                             <div class="step bg-cyan">Contacted</div>

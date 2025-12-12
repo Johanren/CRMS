@@ -1325,11 +1325,47 @@ function renderEstadosLead(estados, lead) {
 }
 
 function abrirModalPerdido(nombreEstado) {
+    window.abriendoPerdido = true;
     document.getElementById("tit_not").value = nombreEstado;
+
+    // Cambiar ID del formulario
+    const form = document.getElementById("formNotas");
+    form.id = "formMotivo";
+
+    // Ocultar adjunto
+    document.querySelector('[name="desc_arch[]"]').closest('.mb-3').style.display = "none";
+
+    // Limpiar input file
+    document.getElementById("desc_arch").value = "";
+    document.getElementById("preview-archivos").innerHTML = "";
 
     let modal = new bootstrap.Modal(document.getElementById("add_notes"));
     modal.show();
 }
+
+document.getElementById("add_notes").addEventListener("show.bs.modal", function () {
+    // Si el form tiene el ID cambiado, restaurarlo
+    const form = document.getElementById("formMotivo") || document.getElementById("formNotas");
+
+    // Detectar si NO se abrió desde abrirModalPerdido()
+    // (porque esa función siempre cambia el ID)
+    if (form.id === "formMotivo" && !window.abriendoPerdido) {
+        form.id = "formNotas";
+
+        // Mostrar adjunto
+        document.querySelector('[name="desc_arch[]"]').closest('.mb-3').style.display = "block";
+
+        // Limpiar
+        document.getElementById("tit_not").value = "";
+        document.getElementById("desc_not").value = "";
+        document.getElementById("desc_arch").value = "";
+        document.getElementById("preview-archivos").innerHTML = "";
+    }
+
+    // Reset flag
+    window.abriendoPerdido = false;
+});
+
 
 function abrirModalAplazado(nombreEstado) {
 
@@ -1421,18 +1457,32 @@ function eliminarArchivo(index) {
 }
 
 
-if (document.getElementById("formNotas")) {
-    document.getElementById("formNotas").addEventListener("submit", function (e) {
+if (document.getElementById("add_notes")) {
+    document.getElementById("add_notes").addEventListener("submit", function (e) {
+        const formMotivo = document.getElementById("formMotivo");
+        const formNotas = document.getElementById("formNotas");
+
+        let form = formMotivo || formNotas; // el que exista
+        if (!form) return;
+
         e.preventDefault();
 
-        const datos = new FormData(this);
+        const datos = new FormData(form);
         datos.append("id", idLead);
-        datos.append("accion", "registrar_notas");
 
-        // Añadir archivos desde array
-        archivosSeleccionados.forEach(file => {
-            datos.append("desc_arch[]", file);
-        });
+        // Detectar qué acción enviar
+        let accion = (form.id === "formMotivo")
+            ? "registrar_motivo"
+            : "registrar_notas";
+
+        datos.append("accion", accion);
+        datos.append("column", "est_motivo");
+        // Si es NOTAS, agregamos archivos
+        if (accion === "registrar_notas") {
+            archivosSeleccionados.forEach(file => {
+                datos.append("desc_arch[]", file);
+            });
+        }
 
         fetch("ajax/ajax.php", {
             method: "POST",
@@ -1440,19 +1490,26 @@ if (document.getElementById("formNotas")) {
         })
             .then(res => res.json())
             .then(data => {
-
                 if (data.status === "success") {
+
                     Swal.fire("Éxito", data.message, "success");
-                    this.reset();
+
+                    form.reset();
                     archivosSeleccionados = [];
                     document.getElementById("cerrarModalNotas").click();
-                    listarNotas();
+
+                    if (accion === "registrar_notas") {
+                        listarNotas();
+                    }
+
                     actualizarTimeline();
+
                 } else {
                     Swal.fire("Error", data.message, "error");
                 }
             });
     });
+
 }
 
 function listarNotas() {
@@ -2012,17 +2069,32 @@ async function listarProximasActividade() {
     return data; // <-- clave
 }
 
+async function listarMotivos() {
+    let f = new FormData();
+    f.append("accion", "listar_motivos");
+    f.append("id_lead", idLead);
+
+    const res = await fetch("ajax/ajax.php", {
+        method: "POST",
+        body: f
+    });
+
+    const data = await res.json();
+    return data; // <-- clave
+}
+
 
 async function actualizarTimeline() {
     // 🔥 Tus funciones ya devuelven datos, solo las llamamos
     const notas = await listarNota();
     const calls = await listarLlamada();
     const actividades = await listarProximasActividade();
+    const motivos = await listarMotivos();
 
-    renderTimeline({ notas, calls, actividades });
+    renderTimeline({ notas, calls, actividades, motivos });
 }
 
-function renderTimeline({ notas = [], calls = [], actividades = [] }) {
+function renderTimeline({ notas = [], calls = [], actividades = [], motivos = [] }) {
 
     const container = document.getElementById("timeline-container");
     container.innerHTML = "";
@@ -2061,8 +2133,18 @@ function renderTimeline({ notas = [], calls = [], actividades = [] }) {
         asignado: a.nombre_user || "Sin asignar"
     }));
 
+    const formattedMotivo = motivos.map(m => ({
+        tipo: "motivo",
+        fecha: m.fecha_creacion_motivo,
+        titulo: `Motivo agregado por ${m.autor || "Usuario"}`,
+        descripcion: m.descripcion || m.desc_mot,
+        hora: formatearHora(m.fecha_creacion_motivo),
+        icono: "ti ti-notes",
+        color: "bg-danger"
+    }));
+
     // Unir todo
-    let timeline = [...formattedNotas, ...formattedCalls, ...formattedActs];
+    let timeline = [...formattedNotas, ...formattedCalls, ...formattedActs, ...formattedMotivo];
 
     // Orden descendente
     timeline.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));

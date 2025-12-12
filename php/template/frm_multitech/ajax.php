@@ -12,6 +12,7 @@ foreach (glob("../models/*.php") as $filename) {
 }
 
 $cliente = new ClienteControllers();
+$marketing = new Marketing_trackingControllers();
 if (isset($_POST['accion'])) {
     switch ($_POST['accion']) {
         /* Cliente */
@@ -29,10 +30,17 @@ if (isset($_POST['accion'])) {
                 "cod_emp"             => $_POST['cod_emp']             ?? null,
                 "sourceField"         => $_POST['sourceField']         ?? null,
                 "mediumField"         => $_POST['mediumField']         ?? null,
-                "campaignField"       => $_POST['campaignField']       ?? null
+                "campaignField"       => $_POST['campaignField']       ?? null,
+                "ip_usuario"          => $_POST['ip_usuario']          ?? null
             ];
 
             echo json_encode($cliente->agregarCliente($data));
+            break;
+        case 'marketing_tracking':
+            echo json_encode($marketing->agregarClick($_POST));
+            break;
+        case 'buscar_ip_tracking':
+            echo json_encode($marketing->consultarClickExistete($_POST));
             break;
         default:
             # code...
