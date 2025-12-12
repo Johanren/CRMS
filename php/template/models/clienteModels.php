@@ -83,13 +83,34 @@ class ClienteModels
 
     public static function consultarCliente($valor)
     {
-        $sql = "SELECT * FROM cliente WHERE identificacion = ? OR telefono_principal = ?";
         $conn = new Conexion();
         $conectar = $conn->conectar();
-        $stmt = $conectar->prepare($sql);
+
+        // 1️⃣ Buscar datos del cliente
+        $sqlCliente = "SELECT * FROM cliente WHERE identificacion = ? OR telefono_principal = ?";
+        $stmt = $conectar->prepare($sqlCliente);
         $stmt->bindParam(1, $valor);
         $stmt->bindParam(2, $valor);
         $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $cliente = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$cliente) {
+            return false;
+        }
+
+        // 2️⃣ Buscar teléfonos adicionales del cliente
+        $sqlTelefonos = "SELECT id_numero_adicional, indicativo, telefono, descripcion 
+                     FROM telefono_adicional 
+                     WHERE cliente_id = ?";
+        $stmtT = $conectar->prepare($sqlTelefonos);
+        $stmtT->bindParam(1, $cliente['id_cliente']);
+        $stmtT->execute();
+        $telefonos = $stmtT->fetchAll(PDO::FETCH_ASSOC);
+
+        // 3️⃣ Retornar estructura combinada
+        return [
+            "datos" => $cliente,
+            "numeros_adicionales" => $telefonos
+        ];
     }
 }

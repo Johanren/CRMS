@@ -13,7 +13,7 @@ class LeadsControllers
             $asesor = LeadsModels::obtenerAsesorConMenosLeads($data);
             $user_id = $asesor['user_id'];
         }
-        if (!empty($data['tit_not']) || !empty($data['desc_not']) || !empty($data['desc_arch'])) {
+        if (!empty($data['desc_not']) || !empty($data['desc_arch'])) {
             $id_leads = LeadsModels::agregarLeads($data, $id_cliente, $user_id, 2);
             $data['id'] = $id_leads;
             NotasControllers::agregarNotas($data);

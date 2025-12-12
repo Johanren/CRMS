@@ -7,6 +7,10 @@ class NotasControllers
     {
         $resp = NotasModels::agregarNotas($dato);
 
+        if(!empty($dato['descProAct'])){
+            ProximaActividadControllers::agregarProximaActividad($dato);
+        }
+
         if ($resp > 0) {
             // Guardar archivos si existen
             if (!empty($_FILES["desc_arch"]["name"][0])) {

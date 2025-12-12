@@ -486,11 +486,7 @@ class LeadsModels
     {
         $cod_emp = $data['cod_emp'] ?? $_SESSION['cod_emp'] ?? null;
 
-        $sql = "SELECT user_id, COUNT(*) AS total
-            FROM leads WHERE cod_emp = '$cod_emp'
-            GROUP BY user_id
-            ORDER BY total ASC
-            LIMIT 1";
+        $sql = "SELECT l.user_id, COUNT(*) AS total FROM leads l INNER JOIN user u ON u.id_user = l.user_id INNER JOIN user_role ur ON ur.id_rol = u.rol_id WHERE l.cod_emp = '$cod_emp' AND ur.activo = 1 GROUP BY l.user_id ORDER BY total ASC LIMIT 1";
 
         $conn = new Conexion();
         $conectar = $conn->conectar();
@@ -505,7 +501,7 @@ class LeadsModels
             $sql2 = "SELECT u.id_user AS user_id 
                  FROM user u
                  INNER JOIN user_role r ON u.rol_id = r.id_rol
-                 WHERE r.nombre_rol like '%asesor%'
+                 WHERE r.nombre_rol like '%asesor%' AND r.activo = 1
                  ORDER BY u.id_user ASC
                  LIMIT 1";
             $stmt2 = $conectar->prepare($sql2);

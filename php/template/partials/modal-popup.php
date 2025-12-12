@@ -8280,14 +8280,51 @@ $page = end( $link_array );
             </div>
             <form id="formNotas">
                 <div class="modal-body">
-                    <div class="mb-3">
+                    <!--<div class="mb-3">
                         <label class="form-label">Titulo <span class="text-danger"> *</span></label>
                         <input class="form-control" name="tit_not" id="tit_not" type="text">
-                    </div>
+                    </div>-->
                     <div class="mb-3">
                         <label class="form-label">Nota <span class="text-danger"> *</span></label>
                         <textarea class="form-control" name="desc_not" id="desc_not"  rows="4"></textarea>
                     </div>
+                    <div class="col-md-12 mb-3 d-flex justify-content-start">
+                </div>
+                <button type="button" id="btnMostrarNota" class="btn btn-outline-primary">
+                        <i class="ti ti-note me-1"></i> Agregar nota
+                    </button>
+                <div id="contenedorNota" class="col-md-12" style="display:none;">
+                    <div class="card border p-3">
+                        <div class="row">
+                            <!--<div class="col-md-12 mb-3">
+                                <label class="form-label">Título <span class="text-danger">*</span></label>
+                                <input class="form-control" name="tit_not" id="tit_not" type="text">
+                            </div>-->
+                            <div class="mb-3">
+                                <label class="form-label">Descripción <span class="text-danger"> *</span></label>
+                                <textarea class="form-control" name="descProAct" id="descProAct"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Recordatorio<span class="text-danger">*</span></label>
+                                <input type="datetime-local" name="recor_act" id="recor_act" class="form-control">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Prioridad<span class="text-danger">*</span></label>
+                                <select class="select" name="prio_act" id="prio_act">
+                                                                        <option>Seleccionar</option>
+                                                                        <option value="alto">Alto</option>
+                                                                        <option value="bajo">Bajo</option>
+                                                                    </select>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="row" id="preview-archivos"></div>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-end mt-3">
+                            <button type="button" id="cancelarNota" class="btn btn-light me-2">Cancelar</button>
+                        </div>
+                    </div>
+                </div>
                     <div class="mb-3">
                         <label class="form-label">Adjunto <span class="text-danger">*</span></label>
                         <div
@@ -22136,15 +22173,49 @@ $page = end( $link_array );
             </div>
             <form id="formNotas">
                 <div class="modal-body">
-                    <div class="mb-3">
+                    <!--<div class="mb-3">
                         <label class="form-label">Titulo <span class="text-danger"> *</span></label>
-                        <input class="form-control" name="tit_not" id="tit_not" type="text">
-                    </div>
+                        
+                    </div>-->
+                    <input class="form-control" name="tit_not" id="tit_not" type="hidden">
                     <div class="mb-3">
                         <label class="form-label">Nota <span class="text-danger"> *</span></label>
                         <textarea class="form-control" name="desc_not" id="desc_not"  rows="4"></textarea>
                     </div>
-                    <div class="mb-3">
+                    <button type="button" id="btnMostrarAtividad" class="btn btn-outline-primary">
+                        <i class="ti ti-note me-1"></i> Agregar Proxima actividad
+                    </button>
+                <div id="contenedorActividad" class="col-md-12" style="display:none;">
+                    <div class="card border p-3">
+                        <div class="row">
+                            <!--<div class="col-md-12 mb-3">
+                                <label class="form-label">Título <span class="text-danger">*</span></label>
+                                
+                            </div>-->
+                            <input class="form-control" name="tit_not" id="tit_not" type="hidden">
+                            <div class="mb-3">
+                                <label class="form-label">Descripción <span class="text-danger"> *</span></label>
+                                <textarea class="form-control" name="descProAct" id="descProAct"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Recordatorio<span class="text-danger">*</span></label>
+                                <input type="datetime-local" name="recor_act" id="recor_act" class="form-control">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Prioridad<span class="text-danger">*</span></label>
+                                <select class="form-control" name="prio_act" id="prio_act">
+                                                                        <option>Seleccionar</option>
+                                                                        <option value="alto">Alto</option>
+                                                                        <option value="bajo">Bajo</option>
+                                                                    </select>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-end mt-3">
+                            <button type="button" id="cancelarActividad" class="btn btn-light me-2">Cancelar</button>
+                        </div>
+                    </div>
+                </div>
+                    <div class="mb-3 mt-1">
                         <label class="form-label">Adjunto <span class="text-danger">*</span></label>
                         <div
                             class="file-upload drag-file w-100 d-flex bg-light border shadow align-items-center justify-content-center flex-column">
@@ -22271,6 +22342,39 @@ $page = end( $link_array );
                                 <label class="form-label">Nota <span class="text-danger"> *</span></label>
                                 <textarea class="form-control" id="nota_call" name="nota_call" rows="4"></textarea>
                             </div>
+                            <button type="button" id="btnMostrarAtividadLlamada" class="btn btn-outline-primary">
+                        <i class="ti ti-note me-1"></i> Agregar Proxima actividad
+                    </button>
+                <div id="contenedorActividadLlamada" class="col-md-12" style="display:none;">
+                    <div class="card border p-3">
+                        <div class="row">
+                            <!--<div class="col-md-12 mb-3">
+                                <label class="form-label">Título <span class="text-danger">*</span></label>
+                                
+                            </div>-->
+                            <input class="form-control" name="tit_not" id="tit_not" type="hidden">
+                            <div class="mb-3">
+                                <label class="form-label">Descripción <span class="text-danger"> *</span></label>
+                                <textarea class="form-control" name="descProAct" id="descProAct"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Recordatorio<span class="text-danger">*</span></label>
+                                <input type="datetime-local" name="recor_act" id="recor_act" class="form-control">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Prioridad<span class="text-danger">*</span></label>
+                                <select class="form-control" name="prio_act" id="prio_act">
+                                                                        <option>Seleccionar</option>
+                                                                        <option value="alto">Alto</option>
+                                                                        <option value="bajo">Bajo</option>
+                                                                    </select>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-end mt-3">
+                            <button type="button" id="cancelarActividadLlamada" class="btn btn-light me-2">Cancelar</button>
+                        </div>
+                    </div>
+                </div>
                             <!--<div>
                                 <div class="form-check mb-1">
                                     <input type="checkbox" class="form-check-input" id="customCheck1">
@@ -22819,21 +22923,18 @@ $page = end( $link_array );
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-md-12">
-                            <div class="mb-3">
+                            <!--<div class="mb-3">
                                 <label class="form-label">Titutlo <span class="text-danger"> *</span></label>
-                                <input type="text" class="form-control" name="tituloProAct" id="tituloProAct">
-                            </div>
+                                
+                            </div>-->
+                            <input type="hidden" class="form-control" name="tituloProAct" id="tituloProAct">
                             <div class="mb-3">
                                 <label class="form-label">Descripción <span class="text-danger"> *</span></label>
                                 <textarea class="form-control" name="descProAct" id="descProAct"></textarea>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Recordatorio<span class="text-danger">*</span></label>
-                                <select class="select" name="recor_act" id="recor_act">
-                                                                        <option>Seleccionar</option>
-                                                                        <option value="1">1 hr</option>
-                                                                        <option value="10">10hr</option>
-                                                                    </select>
+                                <input type="datetime-local" name="recor_act" id="recor_act" class="form-control">
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Prioridad<span class="text-danger">*</span></label>
@@ -23552,28 +23653,81 @@ $page = end( $link_array );
                         <input type="text" name="direLeads" id="direLeads" class="form-control">
                     </div>
                 </div>
-                <div class="col-md-12">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Medio <span class="text-danger">*</span></label>
+                        <select class="select" id="medio" name="medio"></select>
+                    </div>
+                </div>
+                <div class="col-md-6" id="contenedor_fuente" style="display:none;">
+                    <div class="mb-3">
+                        <label class="form-label">Fuente <span class="text-danger">*</span></label>
+                        <select class="select" id="fuente" name="fuente"></select>
+                    </div>
+                </div>
+                <!--<div class="col-md-12">
                     <div class="mb-3">
                         <label class="form-label">Información Adicional<span class="text-danger">*</span></label>
                         <textarea name="infoLeads" id="infoLeads" class="form-control"></textarea>
                     </div>
-                </div>
+                </div>-->
                 <div class="col-md-12 mb-3 d-flex justify-content-start">
                     <button type="button" id="btnMostrarNota" class="btn btn-outline-primary">
                         <i class="ti ti-note me-1"></i> Agregar nota
                     </button>
+
+                    <!-- NUEVO BOTÓN -->
+                    <button type="button" id="btnAgregarNumero" class="btn btn-outline-success ms-2">
+                        <i class="ti ti-phone me-1"></i> Agregar número adicional
+                    </button>
                 </div>
-                <div id="contenedorNota" class="col-md-12" style="display:none;">
-                    <div class="card border p-3">
-                        <div class="row">
-                            <div class="col-md-12 mb-3">
-                                <label class="form-label">Título <span class="text-danger">*</span></label>
-                                <input class="form-control" name="tit_not" id="tit_not" type="text">
+
+                            <div id="contenedorNota" class="col-md-12" style="display:none;">
+                                <div class="card border p-3">
+                                    <div class="row">
+                                        <!--<div class="col-md-12 mb-3">
+                                            <label class="form-label">Título <span class="text-danger">*</span></label>
+                                            
+                                        </div>-->
+                                        <input class="form-control" name="tit_not" id="tit_not" type="hidden">
+                                        <div class="col-md-12 mb-3">
+                                            <label class="form-label">Nota <span class="text-danger">*</span></label>
+                                            <textarea class="form-control" name="desc_not" id="desc_not" rows="3"></textarea>
+                                        </div>
+                                        <button type="button" id="btnMostrarAtividad" class="btn btn-outline-primary">
+                                    <i class="ti ti-note me-1"></i> Agregar Proxima actividad
+                                </button>
+                            <div id="contenedorActividad" class="col-md-12" style="display:none;">
+                                <div class="card border p-3">
+                                    <div class="row">
+                                        <!--<div class="col-md-12 mb-3">
+                                            <label class="form-label">Título <span class="text-danger">*</span></label>
+                                            
+                                        </div>-->
+                                        <input class="form-control" name="tit_not" id="tit_not" type="hidden">
+                                        <div class="mb-3">
+                                            <label class="form-label">Descripción <span class="text-danger"> *</span></label>
+                                            <textarea class="form-control" name="descProAct" id="descProAct"></textarea>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Recordatorio<span class="text-danger">*</span></label>
+                                            <input type="datetime-local" name="recor_act" id="recor_act" class="form-control">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Prioridad<span class="text-danger">*</span></label>
+                                            <select class="form-control" name="prio_act" id="prio_act">
+                                                                                    <option>Seleccionar</option>
+                                                                                    <option value="alto">Alto</option>
+                                                                                    <option value="bajo">Bajo</option>
+                                                                                </select>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex justify-content-end mt-3">
+                                        <button type="button" id="cancelarActividad" class="btn btn-light me-2">Cancelar</button>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="col-md-12 mb-3">
-                                <label class="form-label">Nota <span class="text-danger">*</span></label>
-                                <textarea class="form-control" name="desc_not" id="desc_not" rows="3"></textarea>
-                            </div>
+                            <br/>
                             <div class="col-md-12 mb-3">
                                 <label class="form-label">Adjunto <span class="text-danger">*</span></label>
 
@@ -23599,6 +23753,38 @@ $page = end( $link_array );
                         </div>
                     </div>
                 </div>
+                <div id="contenedorNumeros" class="col-md-12 mt-3" style="display:none;">
+                                <div class="card border p-3">
+                                    <h5 class="mb-3">Números adicionales</h5>
+
+                                    <div id="listaNumeros"></div>
+
+                                    <button type="button" id="btnNuevoNumero" class="btn btn-secondary mt-2">
+                                        <i class="ti ti-plus me-1"></i> Añadir otro número
+                                    </button>
+                                </div>
+                            </div>
+                            <template id="template-numero">
+                                <div class="row g-3 mb-2 numeroItem">
+                                    <div class="col-md-4">
+                                        <label class="form-label">Indicativo país</label>
+                                        <input type="text" class="form-control indicativo">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">Número</label>
+                                        <input type="text" class="form-control numeroTel" placeholder="Número">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">Descripción</label>
+                                        <input type="text" class="form-control descNumero" placeholder="Ej: WhatsApp, Casa, Trabajo">
+                                    </div>
+                                    <div class="col-md-1 d-flex align-items-end">
+                                        <button class="btn btn-danger btnEliminarNumero">
+                                            <i class="ti ti-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </template>
                 <div class="col-md-6">
                     <div class="mb-3">
                         <div class="d-flex align-items-center justify-content-between">
@@ -23623,18 +23809,6 @@ $page = end( $link_array );
                         </div>
                         <select class="select2" id="horario" name="horario" data-toggle="select2">
                             <option>Select</option></select>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        <label class="form-label">Medio <span class="text-danger">*</span></label>
-                        <select class="select" id="medio" name="medio"></select>
-                    </div>
-                </div>
-                <div class="col-md-6" id="contenedor_fuente" style="display:none;">
-                    <div class="mb-3">
-                        <label class="form-label">Fuente <span class="text-danger">*</span></label>
-                        <select class="select" id="fuente" name="fuente"></select>
                     </div>
                 </div>
                 <div class="col-md-6">
@@ -23676,12 +23850,12 @@ $page = end( $link_array );
                     </div>
                 </div>
 
-                <div class="col-md-12">
+                <!--<div class="col-md-12">
                     <div class="mb-3">
                         <label class="form-label">Observación <span class="text-danger">*</span></label>
                         <textarea class="form-control" rows="3" id="observacionLeads" name="observacionLeads" placeholder="Description"></textarea>
                     </div>
-                </div>
+                </div>-->
             </div>
             <div class="d-flex align-items-center justify-content-end">
                 <button type="button" data-bs-dismiss="offcanvas" class="btn btn-light me-2">Cancel</button>

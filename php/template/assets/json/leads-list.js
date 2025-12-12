@@ -14,62 +14,224 @@ if (document.getElementById("btnMostrarNota")) {
         btnMostrarNota.style.display = "inline-block"; // Muestra el botón de nuevo
 
         // Limpiar campos
-        document.getElementById("tit_not").value = "";
+        //document.getElementById("tit_not").value = "";
         document.getElementById("desc_not").value = "";
         document.getElementById("desc_arch").value = "";
         document.getElementById("preview-archivos").innerHTML = "";
     });
 }
 
-/*Busqueda existencia cliente */
+/*agregar en modal registro cliente actividad notas*/
+if (document.getElementById("btnMostrarAtividad")) {
+    const btnMostrarNota = document.getElementById("btnMostrarAtividad");
+    const contenedorNota = document.getElementById("contenedorActividad");
+    const btnCancelarNota = document.getElementById("cancelarActividad");
 
-if (document.getElementById("identificacionLeads")) {
-    ["identificacionLeads", "telefonoLeads"].forEach(id => {
-        const campo = document.getElementById(id);
+    btnMostrarNota.addEventListener("click", () => {
+        contenedorNota.style.display = "block";
+        btnMostrarNota.style.display = "none"; // Oculta el botón
+    });
 
-        campo.addEventListener("blur", async function () {
-            let valor = this.value.trim();
-            if (valor === "") return;
+    btnCancelarNota.addEventListener("click", () => {
+        contenedorNota.style.display = "none";
+        btnMostrarNota.style.display = "inline-block"; // Muestra el botón de nuevo
 
-            const datos = new FormData();
-            datos.append("accion", "buscar_cliente");
-            datos.append("valor", valor);
-
-            try {
-                let response = await fetch("ajax/ajax.php", {
-                    method: "POST",
-                    body: datos
-                });
-
-                let data = await response.json();
-
-                if (data.status === "existe") {
-
-                    Swal.fire("Cliente ya creado", data.message, "warning");
-
-                    if (data.cliente && data.cliente.length > 0) {
-
-                        let c = data.cliente[0];
-
-                        if (document.getElementById("id_cliente_leads")) {
-                            document.getElementById("id_cliente_leads").value = c.id_cliente;
-                        }
-
-                        document.getElementById("nombresLeads").value = c.nombres || "";
-                        document.getElementById("apellidosLeads").value = c.apellidos || "";
-                        document.getElementById("telefonoLeads").value = c.telefono_principal || "";
-                        document.getElementById("correoLeads").value = c.email || "";
-                        document.getElementById("direLeads").value = c.direccion || "";
-                    }
-
-                }
-
-            } catch (error) {
-                console.error("Error en la validación:", error);
-            }
-        });
+        // Limpiar campos
+        //document.getElementById("tit_not").value = "";
+        document.getElementById("descProAct").value = "";
+        document.getElementById("recor_act").value = "";
+        document.getElementById("prio_act").innerHTML = "";
     });
 }
+
+/*agregar en modal registro cliente actividad llamadas*/
+if (document.getElementById("btnMostrarAtividadLlamada")) {
+    const btnMostrarNota = document.getElementById("btnMostrarAtividadLlamada");
+    const contenedorNota = document.getElementById("contenedorActividadLlamada");
+    const btnCancelarNota = document.getElementById("cancelarActividadLlamada");
+
+    btnMostrarNota.addEventListener("click", () => {
+        contenedorNota.style.display = "block";
+        btnMostrarNota.style.display = "none"; // Oculta el botón
+    });
+
+    btnCancelarNota.addEventListener("click", () => {
+        contenedorNota.style.display = "none";
+        btnMostrarNota.style.display = "inline-block"; // Muestra el botón de nuevo
+
+        // Limpiar campos
+        //document.getElementById("tit_not").value = "";
+        document.getElementById("descProAct").value = "";
+        document.getElementById("recor_act").value = "";
+        document.getElementById("prio_act").innerHTML = "";
+    });
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    const btnAgregarNumero = document.getElementById("btnAgregarNumero");
+    const contenedorNumeros = document.getElementById("contenedorNumeros");
+    const listaNumeros = document.getElementById("listaNumeros");
+    const template = document.getElementById("template-numero");
+    const btnNuevoNumero = document.getElementById("btnNuevoNumero");
+
+    let indicativos = [];
+
+    // 1️⃣ Cargar API de indicativos internacionales
+    async function cargarIndicativos() {
+        const response = await fetch("https://restcountries.com/v3.1/all");
+        const data = await response.json();
+
+        indicativos = data
+            .filter(c => c.idd?.root)
+            .map(c => ({
+                name: c.name.common,
+                code: `${c.idd.root}${c.idd.suffixes ? c.idd.suffixes[0] : ""}`
+            }))
+            .sort((a, b) => a.name.localeCompare(b.name));
+    }
+
+    // 2️⃣ Llenar select de cada número
+    function llenarSelectIndicativos(select) {
+        select.innerHTML = "";
+        indicativos.forEach(p => {
+            const opt = document.createElement("option");
+            opt.value = p.code;
+            opt.textContent = `${p.name} (${p.code})`;
+            select.appendChild(opt);
+        });
+    }
+
+    // 3️⃣ Mostrar contenedor de números adicionales
+    btnAgregarNumero.addEventListener("click", () => {
+        contenedorNumeros.style.display = "block";
+
+        if (listaNumeros.children.length === 0) {
+            agregarNumero();
+        }
+    });
+
+    // 4️⃣ Crear un número adicional nuevo
+    function agregarNumero() {
+        const clone = template.content.cloneNode(true);
+        const selectIndicativo = clone.querySelector(".indicativo");
+
+        // Llenar select
+        llenarSelectIndicativos(selectIndicativo);
+
+        // Botón eliminar
+        clone.querySelector(".btnEliminarNumero").addEventListener("click", function () {
+            this.closest(".numeroItem").remove();
+
+            if (listaNumeros.children.length === 0) {
+                contenedorNumeros.style.display = "none";
+            }
+        });
+
+        listaNumeros.appendChild(clone);
+    }
+
+    function agregarNumeroAdicional(data) {
+        const clone = template.content.cloneNode(true);
+
+        const selectIndicativo = clone.querySelector(".indicativo");
+        const inputNumero = clone.querySelector(".numeroTel");
+        const inputDescripcion = clone.querySelector(".descNumero");
+
+        // Llenar select de indicativos
+        llenarSelectIndicativos(selectIndicativo);
+
+        // Seleccionar el indicativo que viene de la BD
+        if (data.indicativo) {
+            selectIndicativo.value = data.indicativo;
+        }
+
+        // Rellenar datos
+        inputNumero.value = data.numero || "";
+        inputDescripcion.value = data.descripcion || "";
+
+        // Botón eliminar
+        clone.querySelector(".btnEliminarNumero").addEventListener("click", function () {
+            this.closest(".numeroItem").remove();
+
+            if (listaNumeros.children.length === 0) {
+                contenedorNumeros.style.display = "none";
+            }
+        });
+
+        // Mostrar contenedor si estaba oculto
+        contenedorNumeros.style.display = "block";
+
+        listaNumeros.appendChild(clone);
+    }
+
+    function agregarNumeroAdicionalDesdeBD(num) {
+        agregarNumeroAdicional({
+            indicativo: num.indicativo,
+            numero: num.telefono,
+            descripcion: num.descripcion
+        });
+    }
+
+    /*Busqueda existencia cliente */
+
+    if (document.getElementById("identificacionLeads")) {
+        ["identificacionLeads", "telefonoLeads"].forEach(id => {
+            const campo = document.getElementById(id);
+
+            campo.addEventListener("blur", async function () {
+                let valor = this.value.trim();
+                if (valor === "") return;
+
+                const datos = new FormData();
+                datos.append("accion", "buscar_cliente");
+                datos.append("valor", valor);
+
+                try {
+                    let response = await fetch("ajax/ajax.php", {
+                        method: "POST",
+                        body: datos
+                    });
+
+                    let data = await response.json();
+
+                    if (data.status === "existe") {
+
+                        Swal.fire("Cliente ya creado", data.message, "warning");
+
+                        if (data.cliente) {
+                            let c = data.cliente;
+
+                            document.getElementById("id_cliente_leads").value = c.id_cliente;
+                            document.getElementById("nombresLeads").value = c.nombres || "";
+                            document.getElementById("apellidosLeads").value = c.apellidos || "";
+                            document.getElementById("telefonoLeads").value = c.telefono_principal || "";
+                            document.getElementById("correoLeads").value = c.email || "";
+                            document.getElementById("direLeads").value = c.direccion || "";
+                        }
+
+                        //  🔥  NUEVO: cargar números adicionales
+                        if (data.numeros_adicionales && data.numeros_adicionales.length > 0) {
+
+                            // Si ya tienes un contenedor dinámico lo llenas aquí
+                            data.numeros_adicionales.forEach(num => {
+                                agregarNumeroAdicionalDesdeBD(num);
+                            });
+                        }
+                    }
+
+                } catch (error) {
+                    console.error("Error en la validación:", error);
+                }
+            });
+        });
+    }
+
+    btnNuevoNumero.addEventListener("click", () => agregarNumero());
+
+    // Inicializar API
+    cargarIndicativos();
+});
+
 
 /*Fecha inicio fin */
 
@@ -258,6 +420,16 @@ if (document.getElementById("formLeads")) {
     document.getElementById("formLeads").addEventListener("submit", function (e) {
         e.preventDefault();
 
+        let numeros = [];
+
+        document.querySelectorAll(".numeroItem").forEach(item => {
+            let indicativo = item.querySelector(".indicativo").value;
+            let numero = item.querySelector(".numeroTel").value;
+            let descripcion = item.querySelector(".descNumero").value;
+
+            numeros.push({ indicativo, numero, descripcion });
+        });
+
         let datos = new FormData(this);
         let leadsIdElement = document.getElementById("cliente_id");
         let leadsId = leadsIdElement ? leadsIdElement.value : null;
@@ -265,6 +437,7 @@ if (document.getElementById("formLeads")) {
             datos.append("accion", "actualizar_leads");
         } else {
             datos.append("accion", "registrar_leads");
+            datos.append("numerosAdicionales", JSON.stringify(numeros));
         }
 
         fetch("ajax/ajax.php", {
@@ -1356,7 +1529,7 @@ document.getElementById("add_notes").addEventListener("show.bs.modal", function 
         document.querySelector('[name="desc_arch[]"]').closest('.mb-3').style.display = "block";
 
         // Limpiar
-        document.getElementById("tit_not").value = "";
+        //document.getElementById("tit_not").value = "";
         document.getElementById("desc_not").value = "";
         document.getElementById("desc_arch").value = "";
         document.getElementById("preview-archivos").innerHTML = "";
@@ -1500,6 +1673,7 @@ if (document.getElementById("add_notes")) {
 
                     if (accion === "registrar_notas") {
                         listarNotas();
+                        listarProximasActividades();
                     }
 
                     actualizarTimeline();
@@ -1741,6 +1915,7 @@ if (document.getElementById("formCalls")) {
                     this.reset();
                     document.getElementById("cerrarModalCalls").click();
                     listarLlamadas();
+                    listarProximasActividades();
                     actualizarTimeline();
                 } else {
                     Swal.fire("Error", data.message, "error");
@@ -1988,7 +2163,7 @@ function renderActividad(a) {
             </span>
 
             <div>
-                <h6 class="fw-medium fs-14 mb-1">${a.tit_act}</h6>
+                <h6 class="fw-medium fs-14 mb-1">${a.tit_act ?? "Actividad"}</h6>
 
                 <p class="mb-1">${a.desc_act}</p>
 
@@ -2215,7 +2390,7 @@ function tarjetaActividad(item) {
                     <!-- CONTENIDO -->
                     <div class="flex-grow-1">
 
-                        <h6 class="fw-medium fs-14 mb-1">${item.titulo}</h6>
+                        <h6 class="fw-medium fs-14 mb-1">${item.titulo ?? "Actividad"}</h6>
 
                         <p class="mb-1 text-muted lh-sm">${item.descripcion}</p>
 

@@ -3,6 +3,10 @@
 class CallsControlellers{
     public static function agregarCalls($data){
         $resp = CallsModels::agregarCalls($data);
+        if(!empty($data['descProAct'])){
+            print "hola";
+            ProximaActividadControllers::agregarProximaActividad($data);
+        }
         if ($resp == "ok") {
             return ["status" => "success", "message" => "Llamada agregado correctamente"];
         } else {

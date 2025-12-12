@@ -14,12 +14,12 @@ class ClienteControllers
             $resp = $dato['id_cliente_leads'];
             $dato['cliente_id'] = $resp;
             ClienteModels::actualizarCliente($dato);
-        }else{
+        } else {
             $resp = ClienteModels::agregarCliente($dato);
         }
-        
         if ($resp > 0) {
             $id_cliente = $resp;
+            TelefonoAdicionalControllers::agregarNumeroAdicional($dato, $id_cliente);
             if (isset($dato['ip_usuario']) && !empty($dato['ip_usuario'])) {
                 $marketing = new Marketing_trackingControllers();
                 $id_marketing = $marketing->consultarClickExistete($dato);
@@ -71,14 +71,19 @@ class ClienteControllers
     public static function consultarCliente($valor)
     {
         $resp = ClienteModels::consultarCliente($valor);
+
         if ($resp) {
             return [
                 "status" => "existe",
                 "message" => "El cliente ya se encuentra registrado.",
-                "cliente" => $resp
+                "cliente" => $resp["datos"],
+                "numeros_adicionales" => $resp["numeros_adicionales"]
             ];
         } else {
-            return ["status" => "error", "message" => "No se pudo consultar"];
+            return [
+                "status" => "no_existe",
+                "message" => "Cliente no encontrado."
+            ];
         }
     }
 }
