@@ -683,6 +683,61 @@ if (isset($_GET['accion'])) {
             $fecha_fin = $_GET['fecha_fin'] ?? null;
             echo json_encode($leads->listarLeads($texto, $asesor, $carreras, $horario, $interes, $medio, $fuente, $campana, $accion, $departamento, $ciudad, $barrio, $estados, $fecha_inicio, $fecha_fin));
             break;
+        case 'listar_leads_reporte':
+
+            $empresa = $_SESSION['cod_emp'];
+
+            // SIEMPRE convertir a array aunque sea número, string o null
+            $asesor   = isset($_GET['asesor'])   ? json_decode($_GET['asesor'], true) : $_SESSION['user_id'];
+            $carreras = isset($_GET['carreras']) ? json_decode($_GET['carreras'], true) : [];
+            $horario  = isset($_GET['horario'])  ? json_decode($_GET['horario'], true) : [];
+            $estados  = isset($_GET['estados'])  ? json_decode($_GET['estados'], true) : [];
+
+            // Si json_decode falla, fuerza array vacío
+            if (!is_array($asesor))   $asesor = [];
+            if (!is_array($carreras)) $carreras = [];
+            if (!is_array($horario))  $horario = [];
+            if (!is_array($estados))  $estados = [];
+
+
+            function toSQLList($arr)
+            {
+                // Asegurar que sea array
+                if (!is_array($arr)) {
+                    return null;
+                }
+
+                // Filtrar valores inválidos del array
+                $arr = array_filter($arr, function ($v) {
+                    return !is_array($v) && $v !== "" && $v !== null;
+                });
+
+                return !empty($arr) ? implode(",", $arr) : null;
+            }
+
+
+            $asesorSQL   = toSQLList($asesor);
+            $carrerasSQL = toSQLList($carreras);
+            $horarioSQL  = toSQLList($horario);
+            $estadosSQL  = toSQLList($estados);
+
+            $fecha_inicio = !empty($_GET['fecha_inicio']) ? $_GET['fecha_inicio'] : null;
+            $fecha_fin    = !empty($_GET['fecha_fin'])    ? $_GET['fecha_fin']    : null;
+
+            echo json_encode(
+                $leads->obtenerResumenHorarios(
+                    $empresa,
+                    $asesorSQL,
+                    $carrerasSQL,
+                    $horarioSQL,
+                    $estadosSQL,
+                    $fecha_inicio,
+                    $fecha_fin
+                )
+            );
+
+            break;
+
 
         /*Notas */
         case 'listarNotas':

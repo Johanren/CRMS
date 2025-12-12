@@ -24,16 +24,24 @@ function exportarExcel($nombreArchivo, $data, $columnas = [])
     $spreadsheet = new Spreadsheet();
     $sheet = $spreadsheet->getActiveSheet();
 
-    // Encabezados
-    $headers = !empty($columnas) ? $columnas : array_keys($data[0]);
+    // Encabezados: si no se envían columnas, usar keys del resultado
+    if (empty($columnas)) {
+        $headers = [];
+        foreach ($data[0] as $key => $v) {
+            $headers[$key] = ucfirst(str_replace("_", " ", $key));
+        }
+    } else {
+        $headers = $columnas;
+    }
 
+    // === ENCABEZADOS ===
     $col = 1;
-    foreach ($headers as $titulo) {
+    foreach ($headers as $campo => $titulo) {
         $sheet->setCellValueByColumnAndRow($col, 1, $titulo);
         $col++;
     }
 
-    // Filas
+    // === CONTENIDO ===
     $fila = 2;
     foreach ($data as $row) {
         $col = 1;
@@ -44,7 +52,7 @@ function exportarExcel($nombreArchivo, $data, $columnas = [])
         $fila++;
     }
 
-    // Headers correctos
+    // === DESCARGA ===
     header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     header("Content-Disposition: attachment; filename=\"$nombreArchivo.xlsx\"");
     header('Cache-Control: max-age=0');
@@ -52,7 +60,6 @@ function exportarExcel($nombreArchivo, $data, $columnas = [])
     $writer = new Xlsx($spreadsheet);
     $writer->save("php://output");
 
-    ob_end_flush();
     exit;
 }
 
@@ -105,6 +112,29 @@ switch ($tipo) {
         ];
 
         exportarExcel("Leads_Filtrados", $data, $columnas);
+        break;
+
+    case "leads_reporte":
+
+        $data = LeadsModels::obtenerResumenHorarios(
+            $_SESSION["cod_emp"],
+            json_decode($_GET["asesor"] ?? "[]"),
+            json_decode($_GET["carreras"] ?? "[]"),
+            json_decode($_GET["horario"] ?? "[]"),
+            json_decode($_GET["estados"] ?? "[]"),
+            $_GET["fecha_inicio"] ?? null,
+            $_GET["fecha_fin"] ?? null
+        );
+
+        // Columnas dinámicas → usar keys del JSON
+        $columnas = [];
+        if (!empty($data)) {
+            foreach (array_keys($data[0]) as $campo) {
+                $columnas[$campo] = ucfirst(str_replace("_", " ", $campo));
+            }
+        }
+
+        exportarExcel("Reporte_Leads", $data, $columnas);
         break;
 
     default:

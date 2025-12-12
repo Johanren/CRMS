@@ -549,4 +549,34 @@ class LeadsModels
 
         return "error";
     }
+
+    public static function obtenerResumenHorarios($empresa = null, $asesor = null, $programa = null, $horario = null, $estado = null, $fecha_inicio = null, $fecha_fin = null)
+    {
+        try {
+            $sql = "CALL obtener_resumen_horarios(?,?,?,?,?,?,?)";
+
+            $conn = new Conexion();
+            $conectar = $conn->conectar();
+            $stmt = $conectar->prepare($sql);
+
+            $stmt->bindParam(1, $empresa);
+            $stmt->bindParam(2, $asesor);
+            $stmt->bindParam(3, $programa);
+            $stmt->bindParam(4, $horario);
+            $stmt->bindParam(5, $estado);
+            $stmt->bindParam(6, $fecha_inicio);
+            $stmt->bindParam(7, $fecha_fin);
+
+            $stmt->execute();
+
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            while ($stmt->nextRowset()) {;
+            }
+
+            return $result;
+        } catch (PDOException $e) {
+            return ["error" => $e->getMessage()];
+        }
+    }
 }

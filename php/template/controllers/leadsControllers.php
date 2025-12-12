@@ -62,4 +62,9 @@ class LeadsControllers
     {
         return LeadsModels::actualizarColumnasLeads($leadId, $columna, $valor);
     }
+
+    public static function obtenerResumenHorarios($empresa, $asesor, $carreras, $horario, $estados, $fecha_inicio, $fecha_fin)
+    {
+        return LeadsModels::obtenerResumenHorarios($empresa, $asesor, $carreras, $horario, $estados, $fecha_inicio, $fecha_fin);
+    }
 }
