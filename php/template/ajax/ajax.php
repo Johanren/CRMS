@@ -34,6 +34,9 @@ $user = new UserControllers();
 $login = new LoginControllers();
 $motivo = new MotivoControllers();
 $filtro = new FiltroControllers();
+$foco = new focoControllers();
+$numeroAdicional = new TelefonoAdicionalControllers();
+$login = new LoginControllers();
 if (isset($_POST['accion'])) {
     switch ($_POST['accion']) {
         /*Campana*/
@@ -264,6 +267,26 @@ if (isset($_POST['accion'])) {
             $nombre = $_POST['nombre'] ?? 'default';
             $filtros_json = json_encode($_POST['filtros']);
             echo json_encode($filtro->agregarFiltro($usuario_id, $nombre, $filtros_json));
+            break;
+        /*Foco */
+        case 'registrar_foco':
+            echo json_encode($foco->agregarFoco($_POST));
+            break;
+        /*Telefono adicioales */
+        case "listar_telefonos_adicionales":
+            $cliente_id = $_POST["cliente_id"];
+            $respuesta = $numeroAdicional->mdlListarTelefonosAdicionales($cliente_id);
+            echo json_encode($respuesta);
+            break;
+        case "guardar_telefono_adicional":
+            echo json_encode($numeroAdicional->agregarNumeroAdicional($_POST, $_POST['cliente_id']));
+            break;
+
+        case "actualizar_telefono_adicional":
+            echo json_encode($numeroAdicional->actualiarnumeroAdicional($_POST, $_POST['cliente_id']));
+            break;
+        case "eliminar_telefono_adicional":
+            echo json_encode($numeroAdicional->eliminarnumeroAdicional($_POST['telefono']));
             break;
         default:
             # code...
@@ -804,7 +827,7 @@ if (isset($_GET['accion'])) {
             break;
         /*LOGIN */
         case 'redireccionamiento':
-            echo json_encode(LoginControllers::redireccion());
+            echo json_encode($login->redireccion());
             break;
         /*Filtros */
         case 'cargar_filtro':
@@ -820,7 +843,10 @@ if (isset($_GET['accion'])) {
                 echo json_encode(null);
             }
             break;
-
+        /*FOCO */
+        case 'listar_foco':
+            echo json_encode($foco->listarFoco());
+            break;
         default:
     }
 }

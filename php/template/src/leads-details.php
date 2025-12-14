@@ -120,6 +120,62 @@
                                 <p class="mb-0 text-dark editable" id="telefonoLeads"> </p>
                                 <input type="text" class="form-control d-none" id="input_telefonoLeads">
                             </div>
+                            <div class="d-flex align-items-center justify-content-between flex-wrap">
+                                <h6 class="mb-3 fw-semibold">Números Adicionales</h6>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <div class="mt-2 ps-3">
+                                    <button id="btnAgregarNumero"
+                                        class="btn btn-outline-primary btn-sm mb-2 none" style="display:none;">
+                                        + Agregar número adicional
+                                    </button>
+                                    <div id="contenedorNumeros" style="display:none;">
+                                        <div id="listaNumeros">
+                                            <template id="template-numero">
+                                                <div class="row g-3 mb-2 numeroItem">
+
+                                                    <!-- TEXTO -->
+                                                    <div class="col-md-12 telefonoTexto d-none">
+                                                        <span class="fw-semibold indicativoTxt"></span>
+                                                        <span class="numeroTxt"></span>
+                                                        <span class="text-muted ms-2 descTxt"></span>
+
+                                                        <button class="btn btn-sm btn-link editarNumero">
+                                                            <i class="ti ti-pencil"></i>
+                                                        </button>
+                                                    </div>
+
+                                                    <!-- INPUTS -->
+                                                    <div class="col-md-4 telefonoInput">
+                                                        <label class="form-label">Indicativo</label>
+                                                        <input type="text" class="form-control indicativo">
+                                                    </div>
+
+                                                    <div class="col-md-4 telefonoInput">
+                                                        <label class="form-label">Número</label>
+                                                        <input type="text" class="form-control numeroTel">
+                                                    </div>
+
+                                                    <div class="col-md-3 telefonoInput">
+                                                        <label class="form-label">Descripción</label>
+                                                        <input type="text" class="form-control descNumero">
+                                                    </div>
+
+                                                    <div class="col-md-1 d-flex align-items-end telefonoInput">
+                                                        <a class="btn btn-danger btnEliminarNumero">
+                                                            <i class="ti ti-trash"></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </template>
+                                        </div>
+                                        <button id="btnNuevoNumero"
+                                            class="btn btn-success btn-sm mt-2">
+                                            + Nuevo número
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <h6 class="mb-3 fw-semibold">Información Lead</h6>
                         <div class="border-bottom mb-3 pb-3">
@@ -225,67 +281,6 @@
                                 <textarea id="textarea_observacionesLead" cols="2" rows="2" class="form-control d-none"></textarea>
                             </div>
                         </div>
-
-                        <!--<div class="d-flex align-items-center justify-content-between flex-wrap">
-                            <h6 class="mb-3 fw-semibold">Propietario</h6>
-                        </div>
-                        <div class="border-bottom mb-3 pb-3">
-                            <div class="d-flex align-items-center">
-                                <span class="avatar avatar-xs rounded-circle me-2">
-                                    <img src="assets/img/users/avatar-3.jpg" alt="Img" class="img-fluid rounded-circle w-auto h-auto">
-                                </span>
-                                <div>
-                                    <p class="mb-0">Steve Vaughan</p>
-                                </div>
-                            </div>
-                        </div>
-                        <h6 class="mb-3 fw-semibold">Tags</h6>
-                            <div class="border-bottom mb-3 pb-3">
-                                <a href="javascript:void(0);" class="badge badge-soft-success fw-medium me-2">Collab</a>
-                                <a href="javascript:void(0);" class="badge badge-soft-warning fw-medium mb-0">VIP</a>
-                            </div>
-                            <h6 class="mb-3 fw-semibold">Priority</h6>
-                            <div class="border-bottom mb-3 pb-3">
-                                <select class="select">
-                                    <option>High</option>
-                                    <option>Medium</option>
-                                    <option>Low</option>
-                                </select>
-                            </div>
-                            <h6 class="mb-3 fw-semibold">Projects</h6>
-                            <div class="d-flex align-items-center border-bottom mb-3 pb-3">
-                                <span class="badge bg-white text-body fw-medium border me-2">Devops Design</span>
-                                <span class="badge bg-white text-body fw-medium border me-2">Margrate Design</span>
-                            </div>
-                            <div class="d-flex align-items-center justify-content-between flex-wrap">
-                                <h6 class="mb-3 fw-semibold">Conracts</h6>
-                                <a href="javascript:void(0);" class="link-primary mb-3" data-bs-toggle="modal" data-bs-target="#add_contact"><i class="ti ti-plus me-1"></i>Add New</a>
-                            </div>
-                            <div class="mb-3">
-                                <div class="d-flex align-items-center">
-                                    <span class="avatar avatar-xs rounded-circle me-2">
-                                        <img src="assets/img/users/avatar-4.jpg" alt="Img" class="img-fluid rounded-circle w-auto h-auto">
-                                    </span>
-                                    <div>
-                                        <p class="mb-0">Jessica Sen</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="d-flex align-items-center justify-content-between mb-2">
-                                <p class="mb-0">Last Modified </p>
-                                <p class="mb-0 text-dark"> 27 Sep 2025, 11:45 PM  </p>
-                            </div>
-                            <div class="d-flex align-items-center justify-content-between mb-0">
-                                <p class="mb-0">Modified By</p>
-                                <div class="d-flex align-items-center">
-                                    <span class="avatar avatar-xs rounded-circle me-2">
-                                        <img src="assets/img/users/avatar-2.jpg" alt="Img" class="img-fluid rounded-circle w-auto h-auto">
-                                    </span>
-                                    <div>
-                                        <p class="mb-0">Darlee Robertson</p>
-                                    </div>
-                                </div>
-                            </div>-->
                     </div>
                 </div>
             </div>

@@ -1,3 +1,4 @@
+const params = new URLSearchParams(window.location.search);
 /*agregar en modal registro cliente notas*/
 if (document.getElementById("btnMostrarNota")) {
     const btnMostrarNota = document.getElementById("btnMostrarNota");
@@ -67,143 +68,245 @@ if (document.getElementById("btnMostrarAtividadLlamada")) {
     });
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-    if (document.getElementById("btnAgregarNumero")) {
-        const btnAgregarNumero = document.getElementById("btnAgregarNumero");
-        const contenedorNumeros = document.getElementById("contenedorNumeros");
-        const listaNumeros = document.getElementById("listaNumeros");
-        const template = document.getElementById("template-numero");
-        const btnNuevoNumero = document.getElementById("btnNuevoNumero");
+if (document.getElementById("btnAgregarNumero")) {
+    const btnAgregarNumero = document.getElementById("btnAgregarNumero");
+    const contenedorNumeros = document.getElementById("contenedorNumeros");
+    const listaNumeros = document.getElementById("listaNumeros");
+    const template = document.getElementById("template-numero");
+    const btnNuevoNumero = document.getElementById("btnNuevoNumero");
+    let clienteIdGlobal = params.get("id_cliente") || 0;
 
+    // 3️⃣ Mostrar contenedor de números adicionales
+    btnAgregarNumero.addEventListener("click", () => {
+        contenedorNumeros.style.display = "block";
 
-        // 3️⃣ Mostrar contenedor de números adicionales
-        btnAgregarNumero.addEventListener("click", () => {
-            contenedorNumeros.style.display = "block";
+        if (listaNumeros.children.length === 0) {
+            if (document.querySelector(".editarNumero")) {
+                agregarNumeroAdicional({}, false, clienteIdGlobal);
+            } else {
+                agregarNumero();
+            }
+
+        }
+    });
+
+    // 4️⃣ Crear un número adicional nuevo
+    function agregarNumero() {
+        const clone = template.content.cloneNode(true);
+        const selectIndicativo = clone.querySelector(".indicativo");
+
+        // Botón eliminar
+        clone.querySelector(".btnEliminarNumero").addEventListener("click", function () {
+            this.closest(".numeroItem").remove();
 
             if (listaNumeros.children.length === 0) {
-                agregarNumero();
+                contenedorNumeros.style.display = "none";
             }
         });
 
-        // 4️⃣ Crear un número adicional nuevo
-        function agregarNumero() {
-            const clone = template.content.cloneNode(true);
-            const selectIndicativo = clone.querySelector(".indicativo");
+        listaNumeros.appendChild(clone);
+    }
 
-            // Llenar select
-            llenarSelectIndicativos(selectIndicativo);
+    function agregarNumeroAdicional(data = {}, desdeBD = false, id_cliente = 0) {
 
-            // Botón eliminar
-            clone.querySelector(".btnEliminarNumero").addEventListener("click", function () {
-                this.closest(".numeroItem").remove();
+        const clone = template.content.cloneNode(true);
+        const item = clone.querySelector(".numeroItem");
 
-                if (listaNumeros.children.length === 0) {
-                    contenedorNumeros.style.display = "none";
-                }
-            });
+        const indicativo = clone.querySelector(".indicativo");
+        const numero = clone.querySelector(".numeroTel");
+        const desc = clone.querySelector(".descNumero");
 
-            listaNumeros.appendChild(clone);
+        const indicativoTxt = clone.querySelector(".indicativoTxt");
+        const numeroTxt = clone.querySelector(".numeroTxt");
+        const descTxt = clone.querySelector(".descTxt");
+
+        const bloqueTexto = clone.querySelector(".telefonoTexto");
+        const bloqueInputs = clone.querySelectorAll(".telefonoInput");
+
+        // Valores
+        indicativo.value = data.indicativo || "";
+        numero.value = data.numero || data.telefono || "";
+        desc.value = data.descripcion || "";
+
+        // ID BD
+        if (data.id_numero_adicional) {
+            item.dataset.id = data.id_numero_adicional;
         }
 
-        function agregarNumeroAdicional(data) {
-            const clone = template.content.cloneNode(true);
+        // 👉 SI VIENE DE BD → TEXTO
+        if (desdeBD) {
+            indicativoTxt.textContent = data.indicativo;
+            numeroTxt.textContent = data.telefono;
+            descTxt.textContent = data.descripcion || "";
 
-            const selectIndicativo = clone.querySelector(".indicativo");
-            const inputNumero = clone.querySelector(".numeroTel");
-            const inputDescripcion = clone.querySelector(".descNumero");
-
-            // Llenar select de indicativos
-            llenarSelectIndicativos(selectIndicativo);
-
-            // Seleccionar el indicativo que viene de la BD
-            if (data.indicativo) {
-                selectIndicativo.value = data.indicativo;
-            }
-
-            // Rellenar datos
-            inputNumero.value = data.numero || "";
-            inputDescripcion.value = data.descripcion || "";
-
-            // Botón eliminar
-            clone.querySelector(".btnEliminarNumero").addEventListener("click", function () {
-                this.closest(".numeroItem").remove();
-
-                if (listaNumeros.children.length === 0) {
-                    contenedorNumeros.style.display = "none";
-                }
-            });
-
-            // Mostrar contenedor si estaba oculto
-            contenedorNumeros.style.display = "block";
-
-            listaNumeros.appendChild(clone);
+            bloqueTexto.classList.remove("d-none");
+            bloqueInputs.forEach(i => i.classList.add("d-none"));
         }
-
-        function agregarNumeroAdicionalDesdeBD(num) {
-            agregarNumeroAdicional({
-                indicativo: num.indicativo,
-                numero: num.telefono,
-                descripcion: num.descripcion
-            });
-        }
-
-        /*Busqueda existencia cliente */
-
-        if (document.getElementById("identificacionLeads")) {
-            ["identificacionLeads", "telefonoLeads"].forEach(id => {
-                const campo = document.getElementById(id);
-
-                campo.addEventListener("blur", async function () {
-                    let valor = this.value.trim();
-                    if (valor === "") return;
-
-                    const datos = new FormData();
-                    datos.append("accion", "buscar_cliente");
-                    datos.append("valor", valor);
-
-                    try {
-                        let response = await fetch("ajax/ajax.php", {
-                            method: "POST",
-                            body: datos
-                        });
-
-                        let data = await response.json();
-
-                        if (data.status === "existe") {
-
-                            Swal.fire("Cliente ya creado", data.message, "warning");
-
-                            if (data.cliente) {
-                                let c = data.cliente;
-
-                                document.getElementById("id_cliente_leads").value = c.id_cliente;
-                                document.getElementById("nombresLeads").value = c.nombres || "";
-                                document.getElementById("apellidosLeads").value = c.apellidos || "";
-                                document.getElementById("telefonoLeads").value = c.telefono_principal || "";
-                                document.getElementById("correoLeads").value = c.email || "";
-                                document.getElementById("direLeads").value = c.direccion || "";
-                            }
-
-                            //  🔥  NUEVO: cargar números adicionales
-                            if (data.numeros_adicionales && data.numeros_adicionales.length > 0) {
-
-                                // Si ya tienes un contenedor dinámico lo llenas aquí
-                                data.numeros_adicionales.forEach(num => {
-                                    agregarNumeroAdicionalDesdeBD(num);
-                                });
-                            }
-                        }
-
-                    } catch (error) {
-                        console.error("Error en la validación:", error);
+        if (clone.querySelector(".editarNumero")) {
+            // 👉 GUARDAR AL PERDER FOCO
+            [indicativo, numero, desc].forEach(input => {
+                input.addEventListener("keydown", e => {
+                    if (e.key === "Enter") {
+                        e.preventDefault();
+                        guardarTelefono(item, id_cliente);
                     }
                 });
             });
         }
 
+        if (clone.querySelector(".editarNumero")) {
+            // 👉 EDITAR
+            clone.querySelector(".editarNumero").addEventListener("click", () => {
+                bloqueTexto.classList.add("d-none");
+                bloqueInputs.forEach(i => i.classList.remove("d-none"));
+                indicativo.focus();
+            });
+        }
+
+        // 👉 ELIMINAR
+        clone.querySelector(".btnEliminarNumero").addEventListener("click", () => {
+            item.remove();
+            eliminarTelefono(item);
+        });
+
+        contenedorNumeros.style.display = "block";
+        listaNumeros.appendChild(clone);
+    }
+
+    function eliminarTelefono(item) {
+        const numero = item.querySelector(".numeroTel").value.trim();
+        const datos = new FormData();
+        datos.append("accion", "eliminar_telefono_adicional");
+        datos.append("telefono", numero);
+
+
+        fetch("ajax/ajax.php", {
+            method: "POST",
+            body: datos
+        })
+            .then(res => res.json())
+            .then(resp => {
+
+                if (!resp.status) {
+                    console.error("Error al eliminar teléfono", resp);
+                    return;
+                } else {
+                    Swal.fire("Eliminado", "Número eliminado", "success");
+                }
+
+            })
+            .catch(err => console.error("Error AJAX:", err));
+    }
+
+    function guardarTelefono(item, id_cliente) {
+
+        const indicativo = item.querySelector(".indicativo").value.trim();
+        const numero = item.querySelector(".numeroTel").value.trim();
+        const descripcion = item.querySelector(".descNumero").value.trim();
+
+        if (!numero) return;
+
+        const esUpdate = !!item.dataset.id; // 🔥 clave
+
+        const datos = new FormData();
+        datos.append("accion", esUpdate ? "actualizar_telefono_adicional" : "guardar_telefono_adicional");
+        datos.append("cliente_id", id_cliente);
+        datos.append("indicativo", indicativo);
+        datos.append("telefono", numero);
+        datos.append("descripcion", descripcion);
+        datos.append("id", item.dataset.id);
+
+
+        fetch("ajax/ajax.php", {
+            method: "POST",
+            body: datos
+        })
+            .then(res => res.json())
+            .then(resp => {
+
+                if (!resp.status) {
+                    console.error("Error al guardar teléfono", resp);
+                    return;
+                }
+
+                // 🆔 Si fue INSERT, asignar nuevo ID
+                if (!esUpdate) {
+                    item.dataset.id = resp.id;
+                }
+
+                // 📝 Pasar a texto
+                item.querySelector(".indicativoTxt").textContent = indicativo;
+                item.querySelector(".numeroTxt").textContent = numero;
+                item.querySelector(".descTxt").textContent = descripcion || "";
+
+                item.querySelector(".telefonoTexto").classList.remove("d-none");
+                item.querySelectorAll(".telefonoInput").forEach(i => i.classList.add("d-none"));
+            })
+            .catch(err => console.error("Error AJAX:", err));
+    }
+
+    /*Busqueda existencia cliente */
+
+    if (document.getElementById("identificacionLeads")) {
+        ["identificacionLeads", "telefonoLeads"].forEach(id => {
+            const campo = document.getElementById(id);
+
+            campo.addEventListener("blur", async function () {
+                let valor = this.value.trim();
+                if (valor === "") return;
+
+                const datos = new FormData();
+                datos.append("accion", "buscar_cliente");
+                datos.append("valor", valor);
+
+                try {
+                    let response = await fetch("ajax/ajax.php", {
+                        method: "POST",
+                        body: datos
+                    });
+
+                    let data = await response.json();
+
+                    if (data.status === "existe") {
+
+                        Swal.fire("Cliente ya creado", data.message, "warning");
+
+                        if (data.cliente) {
+                            let c = data.cliente;
+
+                            document.getElementById("id_cliente_leads").value = c.id_cliente;
+                            document.getElementById("nombresLeads").value = c.nombres || "";
+                            document.getElementById("apellidosLeads").value = c.apellidos || "";
+                            document.getElementById("telefonoLeads").value = c.telefono_principal || "";
+                            document.getElementById("correoLeads").value = c.email || "";
+                            document.getElementById("direLeads").value = c.direccion || "";
+                        }
+
+                        //  🔥  NUEVO: cargar números adicionales
+                        if (data.numeros_adicionales && data.numeros_adicionales.length > 0) {
+
+                            // Si ya tienes un contenedor dinámico lo llenas aquí
+                            data.numeros_adicionales.forEach(num => {
+                                agregarNumeroAdicional(num, false, 0);
+                            });
+                        }
+                    }
+
+                } catch (error) {
+                    console.error("Error en la validación:", error);
+                }
+            });
+        });
+    }
+
+    if (document.querySelector(".editarNumero")) {
+        btnNuevoNumero.addEventListener("click", () => agregarNumeroAdicional({}, false, clienteIdGlobal));
+    } else {
         btnNuevoNumero.addEventListener("click", () => agregarNumero());
     }
-});
+
+
+}
 
 
 /*Fecha inicio fin */
@@ -981,12 +1084,12 @@ function crearCardLead(l, estadoId) {
                                 </div>
                             </div>-->
                     <div class="d-flex align-items-center mb-3">
-                    <a href="leads-details.php?id=${l.id_lead}"
+                    <a href="leads-details.php?id=${l.id_lead}&id_cliente=${l.cliente_id}"
                         class="avatar rounded-circle bg-soft-info flex-shrink-0 me-2">
                         <span class="avatar-title text-info">${iniciales || "?"}</span>
                     </a>
                     <h6 class="fw-medium fs-14 mb-0">
-                        <a href="leads-details.php?id=${l.id_lead}">${nombre} ${apellido}</a>
+                        <a href="leads-details.php?id=${l.id_lead}&id_cliente=${l.cliente_id}">${nombre} ${apellido}</a>
                     </h6>
                 </div>
             </div>
@@ -1248,7 +1351,6 @@ function renderContactGrid(leads) {
    Leads Details
 ================================ */
 
-const params = new URLSearchParams(window.location.search);
 const idLead = params.get("id");
 
 async function listarLeadsId() {
@@ -1276,6 +1378,11 @@ async function listarLeadsId() {
     mostrarCampo("nombreClienteLeads", d.nombres, "Sin nombres");
     mostrarCampo("apellidoClienteLeads", d.apellidos, "Sin apellidos");
     mostrarCampo("direccionClienteLeads", d.direccion, "Sin dirección");
+
+    // 🔥 Cargar teléfonos adicionales
+    if (d.cliente_id) {
+        cargarTelefonosAdicionales(d.cliente_id);
+    }
 
     // Asignación de datos básicos
 
@@ -1325,6 +1432,29 @@ async function listarLeadsId() {
     // 🔥 Cargar estados y renderizar stepper dinámico
     const estados = await cargarEstados();
     renderEstadosLead(estados, d);
+}
+
+async function cargarTelefonosAdicionales(cliente_id) {
+
+    const datos = new FormData();
+    datos.append("accion", "listar_telefonos_adicionales");
+    datos.append("cliente_id", cliente_id);
+
+    const res = await fetch("ajax/ajax.php", {
+        method: "POST",
+        body: datos
+    });
+
+    const telefonos = await res.json();
+
+    if (telefonos.length > 0) {
+        telefonos.forEach(tel => {
+            agregarNumeroAdicional(tel, true, cliente_id);
+        });
+    } else {
+        contenedorNumeros.style.display = "block";
+        agregarNumeroAdicional({}, false, cliente_id);
+    }
 }
 
 

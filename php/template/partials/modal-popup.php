@@ -23779,9 +23779,9 @@ $page = end( $link_array );
                                         <input type="text" class="form-control descNumero" placeholder="Ej: WhatsApp, Casa, Trabajo">
                                     </div>
                                     <div class="col-md-1 d-flex align-items-end">
-                                        <button class="btn btn-danger btnEliminarNumero">
+                                        <a class="btn btn-danger btnEliminarNumero">
                                             <i class="ti ti-trash"></i>
-                                        </button>
+                                        </a>
                                     </div>
                                 </div>
                             </template>
@@ -33745,7 +33745,7 @@ $page = end( $link_array );
 <!-- End Modal  -->
 <?php }?>
 
-<?php if ($page == 'info_origen.php' || $page == 'manage-users.php' || $page == 'roles-permissions.php') {   ?>
+<?php if ($page == 'info_origen.php' || $page == 'venta.php' || $page == 'manage-users.php' || $page == 'roles-permissions.php') {   ?>
 
 <div class="offcanvas offcanvas-end offcanvas-large" tabindex="-1" id="offdepartamento_add">
     <div class="offcanvas-header border-bottom">
@@ -34157,6 +34157,83 @@ $page = end( $link_array );
                 <button type="button" id="btnCerrarOffcanvas-user" data-bs-dismiss="offcanvas"
                     class="btn btn-light me-2">Cancel</button>
                 <button type="submit" class="btn btn-primary" id="btn-canvas-user">Crear</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="offcanvas offcanvas-end offcanvas-large" tabindex="-1" id="offfoco_add">
+    <div class="offcanvas-header border-bottom">
+        <h5 class="mb-0" id="title-canvas-foco">Nuevo foco</h5>
+        <button type="button"
+            class="btn-close custom-btn-close border p-1 me-0 d-flex align-items-center justify-content-center rounded-circle"
+            data-bs-dismiss="offcanvas" aria-label="Close">
+        </button>
+    </div>
+    <div class="offcanvas-body">
+        <form id="formFoco">
+            <div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Codigo <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="codigoFoco" name="codigoFoco">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Nombre <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="nombreFoco" name="nombreFoco">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Fecha inicial <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" id="fechaInicioFoco" name="fechaInicioFoco">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Fecha fin <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" id="fechaFinFoco" name="fechaFinFoco">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Programa <span class="text-danger">*</span></label>
+                            <select class="form-control" id="carrera" name="carrera"></select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Jornada <span class="text-danger">*</span></label>
+                            <select class="form-control" id="horario" name="horario"></select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Cupo ventas <span class="text-danger">*</span></label>
+                            <input class="form-control" id="cupoVentaFoco" name="cupoVentaFoco"/>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Cupo Reintegros <span class="text-danger">*</span></label>
+                            <input class="form-control" id="cupoReintegroFoco" name="cupoReintegroFoco"/>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Total Cupos <span class="text-danger">*</span></label>
+                            <input class="form-control" disabled id="totalCupoFoco" name="totalCupoFoco"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex align-items-center justify-content-end">
+                <button type="button" id="btnCerrarOffcanvas-foco" data-bs-dismiss="offcanvas"
+                    class="btn btn-light me-2">Cancel</button>
+                <button type="submit" class="btn btn-primary" id="btn-canvas-foco">Crear</button>
             </div>
         </form>
     </div>
