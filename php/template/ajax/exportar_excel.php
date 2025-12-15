@@ -180,6 +180,21 @@ switch ($tipo) {
         $sheet->setCellValueByColumnAndRow($col + 2, 2, "Reintegros");
 
         // ================= BODY =================
+
+        // 🔹 acumuladores por programa
+        $totalesPrograma = [];
+        foreach ($programas as $programa) {
+            $totalesPrograma[$programa] = [
+                "c" => 0,
+                "v" => 0,
+                "r" => 0
+            ];
+        }
+
+        $totalGeneralC = 0;
+        $totalGeneralV = 0;
+        $totalGeneralR = 0;
+
         $fila = 3;
 
         foreach ($jornadas as $jornada) {
@@ -191,17 +206,24 @@ switch ($tipo) {
 
             foreach ($programas as $programa) {
 
-                $c = $data[$jornada][$programa]["cupos"] ?? 0;
-                $v = $data[$jornada][$programa]["ventas"] ?? 0;
+                // 🔁 swap cupos / ventas
+                $v = $data[$jornada][$programa]["cupos"] ?? 0;
+                $c = $data[$jornada][$programa]["ventas"] ?? 0;
                 $r = $data[$jornada][$programa]["reintegros"] ?? 0;
 
                 $sheet->setCellValueByColumnAndRow($col, $fila, $c);
                 $sheet->setCellValueByColumnAndRow($col + 1, $fila, $v);
                 $sheet->setCellValueByColumnAndRow($col + 2, $fila, $r);
 
+                // 🔹 totales por jornada
                 $tC += $c;
                 $tV += $v;
                 $tR += $r;
+
+                // 🔹 totales por programa (vertical)
+                $totalesPrograma[$programa]["c"] += $c;
+                $totalesPrograma[$programa]["v"] += $v;
+                $totalesPrograma[$programa]["r"] += $r;
 
                 $col += 3;
             }
@@ -211,8 +233,32 @@ switch ($tipo) {
             $sheet->setCellValueByColumnAndRow($col + 1, $fila, $tV);
             $sheet->setCellValueByColumnAndRow($col + 2, $fila, $tR);
 
+            // 🔹 totales generales
+            $totalGeneralC += $tC;
+            $totalGeneralV += $tV;
+            $totalGeneralR += $tR;
+
             $fila++;
         }
+
+        // ================= FILA TOTALES =================
+        $sheet->setCellValue("A{$fila}", "Totales");
+
+        $col = 2;
+
+        foreach ($programas as $programa) {
+
+            $sheet->setCellValueByColumnAndRow($col, $fila, $totalesPrograma[$programa]["c"]);
+            $sheet->setCellValueByColumnAndRow($col + 1, $fila, $totalesPrograma[$programa]["v"]);
+            $sheet->setCellValueByColumnAndRow($col + 2, $fila, $totalesPrograma[$programa]["r"]);
+
+            $col += 3;
+        }
+
+        // Totales generales
+        $sheet->setCellValueByColumnAndRow($col, $fila, $totalGeneralC);
+        $sheet->setCellValueByColumnAndRow($col + 1, $fila, $totalGeneralV);
+        $sheet->setCellValueByColumnAndRow($col + 2, $fila, $totalGeneralR);
 
         // ================= ESTILOS =================
         $lastCol = $sheet->getHighestColumn();
@@ -227,6 +273,16 @@ switch ($tipo) {
             ->getAlignment()
             ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER)
             ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
+
+        $sheet->getStyle("A{$fila}:{$lastCol}{$fila}")
+            ->getFont()
+            ->setBold(true);
+
+        $sheet->getStyle("A{$fila}:{$lastCol}{$fila}")
+            ->getFill()
+            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+            ->getStartColor()
+            ->setARGB('FFEFEFEF');
 
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment; filename="Reporte_Foco_Matriz.xlsx"');

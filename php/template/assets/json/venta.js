@@ -16,7 +16,7 @@ async function cargarTablaFoco() {
     const thead = document.querySelector("#tablaFoco thead");
     const tbody = document.querySelector("#tablaFoco tbody");
 
-    // 🔹 HEADER
+    // ================= HEADER =================
     let h1 = `<tr><th rowspan="2">Jornada</th>`;
     programas.forEach(p => {
         h1 += `<th colspan="3">${p}</th>`;
@@ -31,8 +31,18 @@ async function cargarTablaFoco() {
 
     thead.innerHTML = h1 + h2;
 
-    // 🔹 BODY
+    // ================= BODY =================
     tbody.innerHTML = "";
+
+    // 🔹 acumuladores por programa
+    const totalesPrograma = {};
+    programas.forEach(p => {
+        totalesPrograma[p] = { c: 0, v: 0, r: 0 };
+    });
+
+    let totalGeneralC = 0;
+    let totalGeneralV = 0;
+    let totalGeneralR = 0;
 
     jornadas.forEach(jornada => {
 
@@ -44,21 +54,51 @@ async function cargarTablaFoco() {
 
             const filaData = data.find(d => d.jornada === jornada && d.programa === programa);
 
-            const c = filaData ? parseInt(filaData.cupos) : 0;
-            const v = filaData ? parseInt(filaData.ventas) : 0;
+            const c = filaData ? parseInt(filaData.ventas) : 0;
+            const v = filaData ? parseInt(filaData.cupos) : 0;
             const r = filaData ? parseInt(filaData.reintegros) : 0;
 
             totalC += c;
             totalV += v;
             totalR += r;
 
+            // 🔹 acumular por programa
+            totalesPrograma[programa].c += c;
+            totalesPrograma[programa].v += v;
+            totalesPrograma[programa].r += r;
+
             fila += `<td>${c}</td><td>${v}</td><td>${r}</td>`;
         });
 
         fila += `<td><b>${totalC}</b></td><td><b>${totalV}</b></td><td><b>${totalR}</b></td></tr>`;
+
+        totalGeneralC += totalC;
+        totalGeneralV += totalV;
+        totalGeneralR += totalR;
+
         tbody.innerHTML += fila;
     });
+
+    // ================= FILA FINAL TOTALES =================
+    let filaTotales = `<tr class="table-secondary fw-bold"><td>Totales</td>`;
+
+    programas.forEach(p => {
+        filaTotales += `
+            <td>${totalesPrograma[p].c}</td>
+            <td>${totalesPrograma[p].v}</td>
+            <td>${totalesPrograma[p].r}</td>
+        `;
+    });
+
+    filaTotales += `
+        <td>${totalGeneralC}</td>
+        <td>${totalGeneralV}</td>
+        <td>${totalGeneralR}</td>
+    </tr>`;
+
+    tbody.innerHTML += filaTotales;
 }
+
 
 cargarTablaFoco();
 
