@@ -126,7 +126,7 @@
                             <?php } ?>
                             <?php if ($_SESSION['rol'] == "Admin") { ?>
                                 <li class="<?php echo ($page == 'venta.php') ? 'active' : ''; ?>">
-                                    <a href="venta.php"><i class="ti ti-moneybag"></i><span>Información Venta</span></a>
+                                    <a href="venta.php"><i class="ti ti-moneybag"></i><span>Foco</span></a>
                                 </li>
                             <?php } ?>
                             <li class="<?php echo ($page == 'contacts.php' || $page == 'contacts-list.php' || $page == 'contact-details.php') ? 'active' : ''; ?>">

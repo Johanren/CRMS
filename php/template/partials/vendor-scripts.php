@@ -416,10 +416,10 @@ if($page != 'login.php'){
 <?php } ?>
 
 <?php if ($page == 'info_origen.php' || $page == 'leads.php' || $page == 'venta.php' || $page == 'leads-list.php' || $page == 'leads-details.php' || $page == 'contacts.php' || $page == 'lead-reports.php'){   ?>
+    <script src="assets/json/venta.js"></script>
     <script src="assets/json/info_origen.js"></script>
     <script src="assets/json/manage-users-list.js"></script>
     <script src="assets/json/roles-list.js"></script>
-    <script src="assets/json/venta-list.js"></script>
 <?php } ?>
 
 <?php if ($page == 'chat.php' || $page == 'video-call.php') {   ?>

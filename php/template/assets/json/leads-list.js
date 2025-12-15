@@ -1446,6 +1446,7 @@ async function cargarTelefonosAdicionales(cliente_id) {
     });
 
     const telefonos = await res.json();
+    
 
     if (telefonos.length > 0) {
         telefonos.forEach(tel => {

@@ -269,8 +269,14 @@ if (isset($_POST['accion'])) {
             echo json_encode($filtro->agregarFiltro($usuario_id, $nombre, $filtros_json));
             break;
         /*Foco */
-        case 'registrar_foco':
-            echo json_encode($foco->agregarFoco($_POST));
+        case "registrar_foco":
+        case "registrar_foco_detalle":
+
+            $respuesta = $foco->agregarFoco($_POST);
+            echo json_encode($respuesta);
+            break;
+        case 'tabla_foco':
+            echo json_encode($foco->listarFoco());
             break;
         /*Telefono adicioales */
         case "listar_telefonos_adicionales":
@@ -844,9 +850,7 @@ if (isset($_GET['accion'])) {
             }
             break;
         /*FOCO */
-        case 'listar_foco':
-            echo json_encode($foco->listarFoco());
-            break;
+
         default:
     }
 }
