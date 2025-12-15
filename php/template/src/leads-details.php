@@ -177,6 +177,25 @@
                                 </div>
                             </div>
                         </div>
+                        <div id="contenedor_matricula" style="display:none;">
+                            <div class="d-flex align-items-center justify-content-between flex-wrap">
+                                <h6 class="mb-3 fw-semibold">Información Matricula</h6>
+                            </div>
+                            <div class="border-bottom mb-3 pb-3">
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <p class="mb-0">N° Factura</p>
+                                    <p class="mb-0 text-dark" id="Nfactura"> </p>
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <p class="mb-0">Valor</p>
+                                    <p class="mb-0 text-dark" id="valorF"> </p>
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <p class="mb-0">Metodo pago</p>
+                                    <p class="mb-0 text-dark" id="metodoF"> </p>
+                                </div>
+                            </div>
+                        </div>
                         <h6 class="mb-3 fw-semibold">Información Lead</h6>
                         <div class="border-bottom mb-3 pb-3">
                             <div class="d-flex align-items-center justify-content-between mb-2">

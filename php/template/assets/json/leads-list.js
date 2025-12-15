@@ -81,12 +81,7 @@ if (document.getElementById("btnAgregarNumero")) {
         contenedorNumeros.style.display = "block";
 
         if (listaNumeros.children.length === 0) {
-            if (document.querySelector(".editarNumero")) {
-                agregarNumeroAdicional({}, false, clienteIdGlobal);
-            } else {
-                agregarNumero();
-            }
-
+            agregarNumeroAdicional({}, false, clienteIdGlobal);
         }
     });
 
@@ -107,7 +102,37 @@ if (document.getElementById("btnAgregarNumero")) {
         listaNumeros.appendChild(clone);
     }
 
+    function existeNumeroEnLista(data) {
+        const items = listaNumeros.querySelectorAll(".numeroItem");
+
+        for (let item of items) {
+
+            // 🔹 Si viene de BD → comparar por ID
+            if (data.id_numero_adicional && item.dataset.id) {
+                if (item.dataset.id == data.id_numero_adicional) {
+                    return true;
+                }
+            }
+
+            // 🔹 Si no tiene ID → comparar por número + indicativo
+            const numeroTxt = item.querySelector(".numeroTxt")?.textContent.trim();
+
+            if (
+                numeroTxt === (data.telefono || data.numero)
+            ) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     function agregarNumeroAdicional(data = {}, desdeBD = false, id_cliente = 0) {
+
+        // 🚫 EVITAR DUPLICADOS
+        if (desdeBD && existeNumeroEnLista(data)) {
+            return;
+        }
 
         const clone = template.content.cloneNode(true);
         const item = clone.querySelector(".numeroItem");
@@ -142,17 +167,15 @@ if (document.getElementById("btnAgregarNumero")) {
             bloqueTexto.classList.remove("d-none");
             bloqueInputs.forEach(i => i.classList.add("d-none"));
         }
-        if (clone.querySelector(".editarNumero")) {
-            // 👉 GUARDAR AL PERDER FOCO
-            [indicativo, numero, desc].forEach(input => {
-                input.addEventListener("keydown", e => {
-                    if (e.key === "Enter") {
-                        e.preventDefault();
-                        guardarTelefono(item, id_cliente);
-                    }
-                });
+        // 👉 GUARDAR AL PERDER FOCO
+        [indicativo, numero, desc].forEach(input => {
+            input.addEventListener("keydown", e => {
+                if (e.key === "Enter") {
+                    e.preventDefault();
+                    guardarTelefono(item, id_cliente);
+                }
             });
-        }
+        });
 
         if (clone.querySelector(".editarNumero")) {
             // 👉 EDITAR
@@ -298,12 +321,7 @@ if (document.getElementById("btnAgregarNumero")) {
             });
         });
     }
-
-    if (document.querySelector(".editarNumero")) {
-        btnNuevoNumero.addEventListener("click", () => agregarNumeroAdicional({}, false, clienteIdGlobal));
-    } else {
-        btnNuevoNumero.addEventListener("click", () => agregarNumero());
-    }
+    btnNuevoNumero.addEventListener("click", () => agregarNumeroAdicional({}, false, clienteIdGlobal));
 
 
 }
@@ -1384,6 +1402,14 @@ async function listarLeadsId() {
         cargarTelefonosAdicionales(d.cliente_id);
     }
 
+    if (d.Nfactura !== null) {
+        contenedorMatricula = document.getElementById("contenedor_matricula");
+        contenedorMatricula.style.display = "block";
+        document.getElementById("Nfactura").textContent = d.Nfactura ?? '#';
+        document.getElementById("valorF").textContent = d.valorF ?? '#';
+        document.getElementById("metodoF").textContent = d.metodoF ?? '#';
+    }
+
     // Asignación de datos básicos
 
     document.getElementById("empresaCarrera").textContent = d.nom_emp ?? 'Sin Empresa';
@@ -1446,7 +1472,7 @@ async function cargarTelefonosAdicionales(cliente_id) {
     });
 
     const telefonos = await res.json();
-    
+
 
     if (telefonos.length > 0) {
         telefonos.forEach(tel => {
@@ -1590,6 +1616,10 @@ function renderEstadosLead(estados, lead) {
             let idEstado = parseInt(btn.dataset.id);
             let nombreEstado = btn.dataset.nombre;
 
+            if (idEstado === 6) {
+                abrirModalMatriculado(nombreEstado);
+            }
+
             if (idEstado === 7) {
                 abrirModalPerdido(nombreEstado);
             }
@@ -1602,6 +1632,42 @@ function renderEstadosLead(estados, lead) {
             cambiarEstadoLead(btn, lead.id_lead);
         });
     });
+}
+
+function abrirModalMatriculado(nombreEstado) {
+    window.abriendoMatricula = true;
+    let modal = new bootstrap.Modal(document.getElementById("add_matricula"));
+    modal.show();
+}
+
+if (document.getElementById("formMatricula")) {
+    document.getElementById("formMatricula").addEventListener("submit", function (e) {
+
+        e.preventDefault();
+
+        const datos = new FormData(this);
+        datos.append("id", idLead);
+        datos.append("accion", "registrar_matricula");
+
+        fetch("ajax/ajax.php", {
+            method: "POST",
+            body: datos
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === "success") {
+
+                    Swal.fire("Éxito", data.message, "success");
+                    this.reset();
+                    archivosSeleccionados = [];
+                    document.getElementById("cerrarModalMatricula").click();
+                    listarLeadsId();
+                } else {
+                    Swal.fire("Error", data.message, "error");
+                }
+            });
+    });
+
 }
 
 function abrirModalPerdido(nombreEstado) {

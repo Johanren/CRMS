@@ -22240,7 +22240,44 @@ $page = end( $link_array );
     </div>
 </div>
 <!-- /Add Note -->
-
+<div class="modal fade" id="add_matricula" role="dialog">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Añadir factura matricula</h5>
+                <button type="button" class="btn-close custom-btn-close border p-1 me-0 text-dark"
+                    data-bs-dismiss="modal" aria-label="Close">
+                </button>
+            </div>
+            <form id="formMatricula">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">N° Factura <span class="text-danger"> *</span></label>
+                        <input type="text" name="facturaN" id="facturaN" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Valor <span class="text-danger"> *</span></label>
+                        <input type="text" name="valorF" id="valorF" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Metodo de pago <span class="text-danger"> *</span></label>
+                        <select name="metodoP" id="metodoP" class="form-control">
+                            <option value="">Seleccione metodo de pago</option>
+                            <option value="contado">Contado</option>
+                            <option value="credicontado">Credicontado</option>
+                            <option value="credito_directo">Credito directo</option>
+                            <option value="convenio">Convenio</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <a class="btn btn-light" data-bs-dismiss="modal" id="cerrarModalMatricula">Cancel</a>
+                    <button class="btn btn-primary" type="submit">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 <!-- Edit Note -->
 <div class="modal fade" id="edit_notes" role="dialog">
     <div class="modal-dialog modal-dialog-centered">

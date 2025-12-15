@@ -42,6 +42,16 @@ class LeadsControllers
             return ["status" => "error", "message" => "No se pudo registrar"];
         }
     }
+    
+    public static function ingresarMatricula($idLead, $datos)
+    {
+        $resp = LeadsModels::ingresarMatricula($idLead, $datos);
+        if ($resp == "ok") {
+            return ["status" => "success", "message" => "Matricula agregado correctamente"];
+        } else {
+            return ["status" => "error", "message" => "No se pudo registrar"];
+        }
+    }
 
     public static function listarLeads($texto, $asesor, $carreras, $horario, $interes, $medio, $fuente, $campana, $accion, $departamento, $ciudad, $barrio, $estados, $fecha_inicio, $fecha_fin)
     {

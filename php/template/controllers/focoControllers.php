@@ -7,6 +7,16 @@ class focoControllers
         return focoModels::agregarFoco($data);
     }
 
+    public static function actulizarFocoDetalle($data)
+    {
+        return focoModels::actulizarFocoDetalle($data);
+    }
+
+    public static function eliminarFocoDetalle($data)
+    {
+        return focoModels::eliminarFocoDetalle($data);
+    }
+
     public static function listarFoco(){
         return focoModels::listarFocoDetalle();
     }

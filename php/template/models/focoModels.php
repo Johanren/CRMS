@@ -114,6 +114,40 @@ class focoModels
         return $resultado;
     }
 
+    public static function actulizarFocoDetalle($data)
+    {
+        $sql = "UPDATE foco_detalle fd INNER JOIN programa p ON p.cod_pro = fd.prog_fde INNER JOIN horario h ON h.id_horario = fd.jorn_fde SET fd.cup_fde = ?, fd.rein_fde = ?, fd.ven_fde = ? WHERE h.descripcion = ? AND p.desc_pro = ?";
+        $conn = new Conexion();
+        $conectar = $conn->conectar();
+        $stmt = $conectar->prepare($sql);
+
+        $stmt->bindParam(1, $data['ventas']);
+        $stmt->bindParam(2, $data['reintegros']);
+        $stmt->bindParam(3, $data['cupos']);
+        $stmt->bindParam(4, $data['jornada']);
+        $stmt->bindParam(5, $data['programa']);
+        if ($stmt->execute()) {
+            return ['status' => 'success', 'message' => 'Foco detalle actualizado'];
+        }
+
+        return "error";
+    }
+
+    public static function eliminarFocoDetalle($data)
+    {
+        $sql = "DELETE fd FROM foco_detalle fd INNER JOIN programa p ON p.cod_pro = fd.prog_fde INNER JOIN horario h ON h.id_horario = fd.jorn_fde WHERE h.descripcion = ? AND p.desc_pro = ?";
+        $conn = new Conexion();
+        $conectar = $conn->conectar();
+        $stmt = $conectar->prepare($sql);
+        $stmt->bindParam(1, $data['jornada']);
+        $stmt->bindParam(2, $data['programa']);
+        if ($stmt->execute()) {
+            return ['status' => 'success', 'message' => 'Foco detalle actualizado'];
+        }
+
+        return "error";
+    }
+
     public static function reporteFocoActivoMatriz()
     {
         $sql = "SELECT 

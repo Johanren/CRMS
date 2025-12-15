@@ -199,6 +199,9 @@ if (isset($_POST['accion'])) {
 
             echo json_encode(["status" => "ok", "data" => $response]);
             break;
+        case 'registrar_matricula':
+            echo json_encode($leads->ingresarMatricula($_POST["id"], $_POST));
+            break;
         /*Notas */
         case 'registrar_notas':
             echo json_encode($notas->agregarNotas($_POST));
@@ -274,6 +277,12 @@ if (isset($_POST['accion'])) {
 
             $respuesta = $foco->agregarFoco($_POST);
             echo json_encode($respuesta);
+            break;
+        case "editar_foco_detalle":
+            echo json_encode($foco->actulizarFocoDetalle($_POST));
+            break;
+        case "eliminar_foco_programa":
+            echo json_encode($foco->eliminarFocoDetalle($_POST));
             break;
         case 'tabla_foco':
             echo json_encode($foco->listarFoco());
