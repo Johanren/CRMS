@@ -23904,6 +23904,53 @@ $page = end( $link_array );
 </div>
 <!-- /Add lead -->
 
+<!-- Add lead-->
+<div class="offcanvas offcanvas-end offcanvas-large" tabindex="-1" id="offproximaActividad">
+    <div class="offcanvas-header border-bottom">
+        <h5 class="mb-0" id="title-canvas-leads">Ver proxima actividad</h5>
+        <button type="button"
+            class="btn-close custom-btn-close border p-1 me-0 d-flex align-items-center justify-content-center rounded-circle"
+            data-bs-dismiss="offcanvas" aria-label="Close">
+        </button>
+    </div>
+    <div class="offcanvas-body">
+        <form id="formLeads">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Fecha inicio<span class="text-danger">*</span></label>
+                        <input type="date" name="fechaActividadInicio" id="fechaActividadInicio" class="form-control">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Fecha fin<span class="text-danger">*</span></label>
+                        <input type="date" name="fechaActividadFin" id="fechaActividadFin" class="form-control">
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="table-responsive mt-3">
+                        <table class="table table-sm table-hover" id="tablaProximaActividad">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Descripción</th>
+                                    <th>Prioridad</th>
+                                    <th>Fecha</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex align-items-center justify-content-end">
+                <button type="button" data-bs-dismiss="offcanvas" class="btn btn-light me-2">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+<!-- /Add lead -->
+
 <!-- Add offcanvas -->
 <div class="offcanvas offcanvas-end offcanvas-large" tabindex="-1" id="offcanvas_add_2">
     <div class="offcanvas-header border-bottom">

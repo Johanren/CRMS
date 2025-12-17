@@ -37,6 +37,7 @@ $filtro = new FiltroControllers();
 $foco = new focoControllers();
 $numeroAdicional = new TelefonoAdicionalControllers();
 $login = new LoginControllers();
+$notificaciones = new NotifiacionesControllers();
 if (isset($_POST['accion'])) {
     switch ($_POST['accion']) {
         /*Campana*/
@@ -227,6 +228,15 @@ if (isset($_POST['accion'])) {
         case 'listar_proximas_actividades':
             echo json_encode($proximaActividad->listarProximaActividadId($_POST["id_lead"]));
             break;
+        case 'listar_proxima_actividad':
+            $id_user = $_SESSION['user_id'];
+
+            $inicio = $_POST['fecha_inicio'] ?? null;
+            $fin = $_POST['fecha_fin'] ?? null;
+
+            echo json_encode($proximaActividad->listarProximaActividad($id_user, $inicio, $fin)
+            );
+            break;
         /*ROL */
         case 'registrar_rol':
             echo json_encode($rol->agregarRol($_POST));
@@ -302,6 +312,42 @@ if (isset($_POST['accion'])) {
             break;
         case "eliminar_telefono_adicional":
             echo json_encode($numeroAdicional->eliminarnumeroAdicional($_POST['telefono']));
+            break;
+        /*NOTIFICACIONES */
+        case 'listar':
+            $rol = $_SESSION['rol'];
+            $user_id = $_SESSION['user_id'];
+
+            if ($rol === 'Admin') {
+                $data = $notificaciones->listarTodas();
+            } else {
+                $data = $notificaciones->listarPorUsuario($user_id, null);
+            }
+
+            echo json_encode($data);
+            break;
+
+        case 'listar_limit':
+            $user_id = $_SESSION['user_id'];
+            echo json_encode($notificaciones->listarPorUsuario($user_id, 3));
+            break;
+
+        case 'marcar_leida':
+            $id = $_POST['id'];
+            echo json_encode([
+                'ok' => $notificaciones->marcarLeida($id)
+            ]);
+            break;
+
+        case 'contador':
+            $rol = $_SESSION['rol'];
+            $user_id = $_SESSION['user_id'];
+
+            if ($rol === 'Admin') {
+                echo json_encode($notificaciones->contarNoLeidas(null));
+            } else {
+                echo json_encode($notificaciones->contarNoLeidas($user_id));
+            }
             break;
         default:
             # code...
@@ -858,7 +904,6 @@ if (isset($_GET['accion'])) {
                 echo json_encode(null);
             }
             break;
-        /*FOCO */
 
         default:
     }

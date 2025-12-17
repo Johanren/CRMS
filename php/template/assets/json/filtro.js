@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
     const contenedor = document.getElementById("contenedor-botones");
 
     if (contenedor) {
@@ -9,14 +9,17 @@ document.addEventListener("DOMContentLoaded", function() {
             </div>
         `;
 
-        // Asignar eventos después de crear los botones
         document.getElementById("btnGuardarFiltros").addEventListener("click", btnGuardarFiltros);
         document.getElementById("btnCargarFiltros").addEventListener("click", btnCargarFiltros);
+
+        // 🔥 AUTO APLICAR FILTROS AL CARGAR
+        setTimeout(() => {
+            document.getElementById("btnCargarFiltros").click();
+        }, 300);
     }
 });
 
-
-function btnGuardarFiltros(){
+function btnGuardarFiltros() {
     let filtros = window.Filtros.obtener();
 
     fetch("ajax/ajax.php", {
@@ -80,8 +83,8 @@ function btnCargarFiltros() {
             if (typeof window.listarLeads === "function") window.listarLeads();
             if (typeof window.cargarKanban === "function") window.cargarKanban();
             if (typeof window.cargarContactGrid === "function") window.cargarContactGrid();
-
-            Swal.fire("Filtros aplicados", "Se aplicaron los filtros guardados.", "success");
+            mostrarResumenFiltros(filtros);
+            //Swal.fire("Filtros aplicados", "Se aplicaron los filtros guardados.", "success");
         });
 }
 
@@ -90,4 +93,45 @@ function marcarCheckboxes(selector, valores = []) {
     document.querySelectorAll(selector).forEach(chk => {
         chk.checked = valores.includes(chk.value);
     });
+}
+
+function mostrarResumenFiltros(filtros) {
+    const resumen = [];
+
+    const map = {
+        texto: "Texto",
+        asesor: "Asesor",
+        carreras: "Carrera",
+        horario: "Horario",
+        interes: "Interés",
+        medio: "Medio",
+        fuente: "Fuente",
+        campana: "Campaña",
+        accion: "Acción",
+        departamento: "Departamento",
+        ciudad: "Ciudad",
+        barrio: "Barrio",
+        estados: "Estado",
+        fecha_inicio: "Desde",
+        fecha_fin: "Hasta"
+    };
+
+    for (const key in map) {
+        if (!filtros[key]) continue;
+
+        // Arrays
+        if (Array.isArray(filtros[key]) && filtros[key].length > 0) {
+            resumen.push(`${map[key]}: ${filtros[key].join(", ")}`);
+        }
+
+        // Strings
+        if (typeof filtros[key] === "string" && filtros[key].trim() !== "") {
+            resumen.push(`${map[key]}: ${filtros[key]}`);
+        }
+    }
+
+    const span = document.getElementById("resumen-filtros");
+    span.innerText = resumen.length
+        ? "Filtros aplicados: " + resumen.join(" | ")
+        : "Sin filtros aplicados";
 }

@@ -1,4 +1,72 @@
 const params = new URLSearchParams(window.location.search);
+
+/* ==================
+Cargar proxima actividad LEADS
+====================*/
+
+const offcanvasActividad = document.getElementById("offproximaActividad");
+
+offcanvasActividad.addEventListener("shown.bs.offcanvas", () => {
+    cargarProximaActividad();
+});
+
+document.getElementById("fechaActividadInicio").addEventListener("change", cargarProximaActividad);
+document.getElementById("fechaActividadFin").addEventListener("change", cargarProximaActividad);
+
+function cargarProximaActividad() {
+    const inicio = document.getElementById("fechaActividadInicio").value;
+    const fin = document.getElementById("fechaActividadFin").value;
+
+    const datos = new FormData();
+    datos.append("accion", "listar_proxima_actividad");
+    datos.append("fecha_inicio", inicio);
+    datos.append("fecha_fin", fin);
+
+    fetch("ajax/ajax.php", {
+        method: "POST",
+        body: datos
+    })
+        .then(res => res.json())
+        .then(data => {
+            const tbody = document.querySelector("#tablaProximaActividad tbody");
+            tbody.innerHTML = "";
+
+            if (!data.length) {
+                tbody.innerHTML = `
+                <tr>
+                    <td colspan="4" class="text-center text-muted">
+                        No hay actividades registradas
+                    </td>
+                </tr>`;
+                return;
+            }
+
+            data.forEach(act => {
+                tbody.innerHTML += `
+                <tr>
+                    <td>${act.desc_act || "-"}</td>
+                    <td>
+                        <span class="badge bg-${colorPrioridad(act.prio_act)}">
+                            ${act.prio_act}
+                        </span>
+                    </td>
+                    <td>${act.fecha}</td>
+                </tr>
+            `;
+            });
+        });
+}
+
+function colorPrioridad(prioridad) {
+    switch (prioridad) {
+        case "alto": return "danger";
+        case "medio": return "warning";
+        case "bajo": return "success";
+        default: return "secondary";
+    }
+}
+
+
 /*agregar en modal registro cliente notas*/
 if (document.getElementById("btnMostrarNota")) {
     const btnMostrarNota = document.getElementById("btnMostrarNota");

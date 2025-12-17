@@ -37,11 +37,8 @@ class LeadsModels
         $stmt->bindParam(20, $campaignField);
 
         if ($stmt->execute()) {
-            if (!empty($data['tit_not']) || !empty($data['desc_not']) || !empty($data['desc_arch'])) {
-                $ultimoId = $conectar->lastInsertId();
-                return $ultimoId;
-            }
-            return "ok";
+            $ultimoId = $conectar->lastInsertId();
+            return $ultimoId;
         }
 
         return "error";

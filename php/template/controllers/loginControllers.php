@@ -24,6 +24,7 @@ class LoginControllers
 
             $_SESSION['login'] = true;
             $_SESSION['user_id'] = $user['id_user'];
+            $_SESSION['user'] = $user['nombres'] ." ".$user['apellidos'];
             $_SESSION['rol'] = $user['rol_nombre'];
             $_SESSION['cod_emp'] = $user['cod_emp'];
 

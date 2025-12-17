@@ -4,24 +4,45 @@ class LeadsControllers
 {
     public static function agregarLeads($data, $id_cliente)
     {
-
-        // Si existe user_id en sesión → usarlo
+        // 1️⃣ Usuario / asesor
         $user_id = $_SESSION['user_id'] ?? null;
 
-        // Si NO existe → buscar asesor con menos leads
         if (!$user_id) {
             $asesor = LeadsModels::obtenerAsesorConMenosLeads($data);
             $user_id = $asesor['user_id'];
         }
-        if (!empty($data['desc_not']) || !empty($data['desc_arch'])) {
-            $id_leads = LeadsModels::agregarLeads($data, $id_cliente, $user_id, 2);
-            $data['id'] = $id_leads;
-            NotasControllers::agregarNotas($data);
-            return "ok";
+
+        // 2️⃣ Estado
+        $estado = (!empty($data['desc_not']) || !empty($data['desc_arch'])) ? 2 : 1;
+
+        // 3️⃣ Crear Lead
+        $id_lead = LeadsModels::agregarLeads($data, $id_cliente, $user_id, $estado);
+
+        if (!$id_lead) {
+            return "error";
         }
-        // Estado por defecto 1
-        return LeadsModels::agregarLeads($data, $id_cliente, $user_id, 1);
+
+        // 4️⃣ Crear Nota (si aplica)
+        if (!empty($data['desc_not']) || !empty($data['desc_arch'])) {
+            $data['id'] = $id_lead;
+            NotasControllers::agregarNotas($data);
+        }
+
+        // 5️⃣ 🔔 Crear NOTIFICACIÓN
+        NotifiacionesControllers::crearNotifiacion([
+            'user_id'    => $user_id,
+            'titulo'     => 'Nuevo Lead Asignado',
+            'mensaje'    => 'Se ha creado un nuevo lead y fue asignado a usted.',
+            'modulo'     => 'leads-details.php',
+            'referencia' => json_encode([
+                'id' => $id_lead,
+                'id_cliente' => $id_cliente
+            ])
+        ]);
+
+        return "ok";
     }
+
 
     public static function actualizarLeads($data, $id_cliente)
     {
@@ -42,7 +63,7 @@ class LeadsControllers
             return ["status" => "error", "message" => "No se pudo registrar"];
         }
     }
-    
+
     public static function ingresarMatricula($idLead, $datos)
     {
         $resp = LeadsModels::ingresarMatricula($idLead, $datos);

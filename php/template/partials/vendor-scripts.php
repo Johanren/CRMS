@@ -7,6 +7,7 @@ $page = end($link_array);
 if($page != 'login.php'){
 ?>
 <script src="assets/json/filtro.js"></script>
+<script src="assets/json/notificacion.js"></script>
 <script>
     fetch('ajax/ajax.php?accion=redireccionamiento')
         .then(res => res.json())
