@@ -23930,16 +23930,27 @@ $page = end( $link_array );
                 </div>
                 <div class="col-md-12">
                     <div class="table-responsive mt-3">
-                        <table class="table table-sm table-hover" id="tablaProximaActividad">
+                        <table class="table table-sm table-hover w-100" id="tablaProximaActividad">
                             <thead class="table-light">
                                 <tr>
+                                    <th>Fecha</th>
+                                    <th>Nombre</th>
+                                    <th>Nro Celular</th>
                                     <th>Descripción</th>
                                     <th>Prioridad</th>
-                                    <th>Fecha</th>
+                                    <th>lead</th>
                                 </tr>
                             </thead>
                             <tbody></tbody>
                         </table>
+                    </div>
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <div class="datatable-length-carr"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="datatable-paginate-carr"></div>
+                        </div>
                     </div>
                 </div>
             </div>

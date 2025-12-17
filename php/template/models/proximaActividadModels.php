@@ -40,19 +40,13 @@ class ProximaActividadModels
 
     public static function listarProximaActividad($id, $inicio = null, $fin = null)
     {
-        $sql = "SELECT 
-                tit_act,
-                desc_act,
-                prio_act,
-                DATE(fecha_creacion_actividad_proxima) AS fecha
-            FROM proxima_actividad
-            WHERE id_user = ?";
+        $sql = "SELECT c.id_cliente, c.nombres, c.apellidos, c.telefono_principal, pa.desc_act, pa.prio_act, l.id_lead, DATE(pa.fecha_creacion_actividad_proxima) AS fecha FROM proxima_actividad pa INNER JOIN leads l ON l.id_lead = pa.id_lead INNER JOIN cliente c ON c.id_cliente = l.cliente_id WHERE pa.id_user = ?";
 
         if ($inicio && $fin) {
-            $sql .= " AND DATE(fecha_creacion_actividad_proxima) BETWEEN ? AND ?";
+            $sql .= " AND DATE(pa.fecha_creacion_actividad_proxima) BETWEEN ? AND ?";
         }
 
-        $sql .= " ORDER BY fecha_creacion_actividad_proxima DESC";
+        $sql .= " ORDER BY pa.fecha_creacion_actividad_proxima DESC";
 
         $conn = new Conexion();
         $conectar = $conn->conectar();

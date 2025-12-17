@@ -13,6 +13,80 @@ offcanvasActividad.addEventListener("shown.bs.offcanvas", () => {
 document.getElementById("fechaActividadInicio").addEventListener("change", cargarProximaActividad);
 document.getElementById("fechaActividadFin").addEventListener("change", cargarProximaActividad);
 
+function renderDataTableProximaActividad(data) {
+
+    if ($.fn.DataTable.isDataTable('#tablaProximaActividad')) {
+        $('#tablaProximaActividad').DataTable().clear().destroy();
+    }
+
+    $('#tablaProximaActividad').DataTable({
+        data: data,
+        ordering: true,
+        autoWidth: false,
+        pageLength: 5,
+
+        scrollY: "280px",
+        scrollCollapse: true,
+
+        bFilter: false,
+        bInfo: false,
+
+        language: {
+            sLengthMenu: '_MENU_',
+            paginate: {
+                next: '<i class="ti ti-chevron-right"></i>',
+                previous: '<i class="ti ti-chevron-left"></i>'
+            }
+        },
+
+        initComplete: () => {
+            $('#tablaProximaActividad_wrapper .dataTables_paginate')
+                .appendTo('.datatable-paginate');
+
+            $('#tablaProximaActividad_wrapper .dataTables_length')
+                .appendTo('.datatable-length');
+        },
+
+        columns: [
+            { data: "fecha" },
+            {
+                data: null,
+                render: function (row) {
+                    return `${row.nombres} ${row.apellidos}`;
+                }
+            },
+            { data: "telefono_principal" },
+            {
+                data: "desc_act",
+                render: function (data) {
+                    return `
+                        <div style="max-width:260px; white-space:normal;">
+                            ${data || "-"}
+                        </div>
+                    `;
+                }
+            },
+            {
+                data: "prio_act",
+                render: function (data) {
+                    let color = "secondary";
+                    if (data === "alto") color = "danger";
+                    if (data === "medio") color = "warning";
+                    if (data === "baja") color = "success";
+
+                    return `<span class="badge bg-${color}">${data}</span>`;
+                }
+            },
+            {
+                data: null,
+                render: function (row) {
+                    return `<a href="leads-details.php?id=${row.id_lead}&id_cliente=${row.id_cliente}">Ver</a>`;
+                }
+            },
+            ]
+    });
+}
+
 function cargarProximaActividad() {
     const inicio = document.getElementById("fechaActividadInicio").value;
     const fin = document.getElementById("fechaActividadFin").value;
@@ -28,42 +102,8 @@ function cargarProximaActividad() {
     })
         .then(res => res.json())
         .then(data => {
-            const tbody = document.querySelector("#tablaProximaActividad tbody");
-            tbody.innerHTML = "";
-
-            if (!data.length) {
-                tbody.innerHTML = `
-                <tr>
-                    <td colspan="4" class="text-center text-muted">
-                        No hay actividades registradas
-                    </td>
-                </tr>`;
-                return;
-            }
-
-            data.forEach(act => {
-                tbody.innerHTML += `
-                <tr>
-                    <td>${act.desc_act || "-"}</td>
-                    <td>
-                        <span class="badge bg-${colorPrioridad(act.prio_act)}">
-                            ${act.prio_act}
-                        </span>
-                    </td>
-                    <td>${act.fecha}</td>
-                </tr>
-            `;
-            });
+            renderDataTableProximaActividad(data);
         });
-}
-
-function colorPrioridad(prioridad) {
-    switch (prioridad) {
-        case "alto": return "danger";
-        case "medio": return "warning";
-        case "bajo": return "success";
-        default: return "secondary";
-    }
 }
 
 
@@ -498,7 +538,7 @@ function inicializarDataTableLeads(leads) {
         "columns": [{
             data: null,
             render: function (row) {
-                return `<a href="leads-details.php?id=${row.id_lead}">${row.nombres} ${row.apellidos}</a>`;
+                return `<a href="leads-details.php?id=${row.id_lead}&id_cliente=${row.id_cliente}">${row.nombres} ${row.apellidos}</a>`;
             }
         },
         { "data": "desc_pro" },
