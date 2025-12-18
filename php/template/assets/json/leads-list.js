@@ -1036,8 +1036,11 @@ function normalizar(txt) {
 
 
 async function cargarKanban() {
-    const estados = await cargarEstados();
-    const leads = await cargarLeads();
+    const [estados, leads] = await Promise.all([
+        cargarEstados(),
+        cargarLeads()
+    ]);
+
     renderKanban(estados, leads);
 }
 
@@ -1085,6 +1088,17 @@ async function cargarLeads() {
     return await res.json();
 }
 
+function agruparLeadsPorEstado(leads) {
+    const map = {};
+    for (const l of leads) {
+        if (!map[l.estado_leads_id]) {
+            map[l.estado_leads_id] = [];
+        }
+        map[l.estado_leads_id].push(l);
+    }
+    return map;
+}
+
 /* ================================
    3. Renderizar tablero CON TU DISEÑO
 ================================ */
@@ -1093,11 +1107,14 @@ function renderKanban(estados, leads) {
     const contenedor = document.getElementById("kanban-container");
     contenedor.innerHTML = "";
 
+    const leadsPorEstado = agruparLeadsPorEstado(leads);
+    const fragmentGlobal = document.createDocumentFragment();
+
     estados.forEach(estado => {
 
-        const cantidad = leads.filter(l => l.estado_leads_id == estado.id_estado_leads).length;
+        const listaLeads = leadsPorEstado[estado.id_estado_leads] || [];
+        const cantidad = listaLeads.length;
 
-        // COLORES según estado (opcional, puedes personalizar)
         const coloresEstado = {
             1: "text-info",
             2: "text-info",
@@ -1107,8 +1124,9 @@ function renderKanban(estados, leads) {
             6: "text-success"
         };
 
-        let columna = document.createElement("div");
+        const columna = document.createElement("div");
         columna.className = "kanban-list-items p-2 rounded border";
+
         columna.innerHTML = `
             <div class="card mb-0 border-0 shadow">
                 <div class="card-body p-2">
@@ -1120,29 +1138,6 @@ function renderKanban(estados, leads) {
                             </h6>
                             <span class="fw-medium">${cantidad} Leads</span>
                         </div>
-
-                        <div class="d-flex align-items-center">
-                            <a href="javascript:void(0);" class="text-info">
-                                <i class="ti ti-plus"></i>
-                            </a>
-
-                            <div class="dropdown table-action ms-2">
-                                <a href="#" class="action-icon btn btn-xs shadow btn-icon btn-outline-light" data-bs-toggle="dropdown">
-                                    <i class="ti ti-dots-vertical"></i>
-                                </a>
-                                <div class="dropdown-menu dropdown-menu-right">
-                                    <a class="dropdown-item" href="#" data-bs-toggle="offcanvas"
-                                        data-bs-target="#offcanvas_add">
-                                        <i class="fa-solid fa-pencil text-blue"></i> Editar
-                                    </a>
-                                    <a class="dropdown-item" href="#" data-bs-toggle="modal"
-                                        data-bs-target="#delete_lead">
-                                        <i class="fa-regular fa-trash-can text-danger"></i> Eliminar
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-
                     </div>
                 </div>
             </div>
@@ -1152,24 +1147,30 @@ function renderKanban(estados, leads) {
             </div>
         `;
 
-        contenedor.appendChild(columna);
+        fragmentGlobal.appendChild(columna);
 
-        // Insertar leads
-        let lista = columna.querySelector(".kanban-list");
+        const lista = columna.querySelector(".kanban-list");
+        const fragmentLeads = document.createDocumentFragment();
 
-        leads.filter(l => l.estado_leads_id == estado.id_estado_leads)
-            .forEach(l => lista.appendChild(crearCardLead(l, estado.id_estado_leads)));
+        // ⚠️ Limite inicial (AJUSTABLE)
+        listaLeads.slice(0, 150).forEach(l => {
+            fragmentLeads.appendChild(crearCardLead(l, estado.id_estado_leads));
+        });
+
+        lista.appendChild(fragmentLeads);
     });
 
+    contenedor.appendChild(fragmentGlobal);
     activarDragAndDrop();
 }
+
 
 /* ================================
    4. Card del lead CON TU DISEÑO
 ================================ */
 function crearCardLead(l, estadoId) {
 
-    if (!l || !l.id_lead) return document.createElement("div"); // evita undefined
+    if (!l?.id_lead) return document.createElement("div");
 
     const coloresTop = {
         1: "bg-info",
@@ -1180,65 +1181,34 @@ function crearCardLead(l, estadoId) {
         6: "bg-success"
     };
 
-    const nombre = l.nombres || "";
-    const apellido = l.apellidos || "";
-    const iniciales = (nombre.charAt(0) + apellido.charAt(0)).toUpperCase();
+    const iniciales = ((l.nombres || "")[0] || "") + ((l.apellidos || "")[0] || "");
 
-    let card = document.createElement("div");
-    card.className = "card kanban-card border mb-0 mt-3 shadow ui-sortable-handle";
+    const card = document.createElement("div");
+    card.className = "card kanban-card border mb-0 mt-3 shadow";
     card.draggable = true;
     card.dataset.id = l.id_lead;
 
     card.innerHTML = `
         <div class="card-body">
+            <div class="card-topbar mb-3 pt-1 ${coloresTop[estadoId] || 'bg-secondary'}"></div>
 
-            <div class="d-block">
-                <div class="card-topbar mb-3 pt-1 ${coloresTop[estadoId] || 'bg-secondary'}"></div>
-                    <!--<div class="dropdown table-action ms-2">
-                                <a href="#" class="action-icon btn btn-xs shadow btn-icon btn-outline-light" data-bs-toggle="dropdown">
-                                    <i class="ti ti-dots-vertical"></i>
-                                </a>
-                                <div class="d-flex align-items-center">
-                                    <div class="dropdown-menu dropdown-menu-right">
-                                        <a class="dropdown-item" onclick="editarLeads(${l.id_lead})" href="#" data-bs-toggle="offcanvas">
-                                            <i class="fa-solid fa-pencil text-blue"></i> Editar
-                                        </a>
-                                        <a class="dropdown-item" href="#" data-bs-toggle="modal"
-                                            data-bs-target="#delete_lead">
-                                            <i class="fa-regular fa-trash-can text-danger"></i> Eliminar
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>-->
-                    <div class="d-flex align-items-center mb-3">
-                    <a href="leads-details.php?id=${l.id_lead}&id_cliente=${l.cliente_id}"
-                        class="avatar rounded-circle bg-soft-info flex-shrink-0 me-2">
-                        <span class="avatar-title text-info">${iniciales || "?"}</span>
+            <div class="d-flex align-items-center mb-3">
+                <a href="leads-details.php?id=${l.id_lead}&id_cliente=${l.cliente_id}"
+                   class="avatar rounded-circle bg-soft-info flex-shrink-0 me-2">
+                    <span class="avatar-title text-info">${iniciales.toUpperCase() || "?"}</span>
+                </a>
+                <h6 class="fw-medium fs-14 mb-0">
+                    <a href="leads-details.php?id=${l.id_lead}&id_cliente=${l.cliente_id}">
+                        ${l.nombres || ""} ${l.apellidos || ""}
                     </a>
-                    <h6 class="fw-medium fs-14 mb-0">
-                        <a href="leads-details.php?id=${l.id_lead}&id_cliente=${l.cliente_id}">${nombre} ${apellido}</a>
-                    </h6>
-                </div>
+                </h6>
             </div>
 
-            <div class="d-flex flex-column">
-                <p class="text-default mb-2">
-                    <i class="ti ti-mail text-dark me-1"></i>${l.email || 'Sin email'}
-                </p>
-                <p class="text-default mb-2">
-                    <i class="ti ti-phone text-dark me-1"></i>${l.telefono_principal || 'Sin teléfono'}
-                </p>
-                <p class="text-default">
-                    <i class="ti ti-map-pin-pin text-dark me-1"></i>${l.ciudad || 'Sin ciudad'}
-                </p>
-                <p class="text-default">
-                    <i class="ti ti-pencil text-dark me-1"></i>${l.desc_pro || 'Sin programa'}
-                </p>
-                <p class="text-default">
-                    <i class="ti ti-calendar text-dark me-1"></i>${l.horario || 'Sin horario'}
-                </p>
-            </div>
-
+            <p class="mb-1"><i class="ti ti-mail me-1"></i>${l.email || "Sin email"}</p>
+            <p class="mb-1"><i class="ti ti-phone me-1"></i>${l.telefono_principal || "Sin teléfono"}</p>
+            <p class="mb-1"><i class="ti ti-map-pin me-1"></i>${l.ciudad || "Sin ciudad"}</p>
+            <p class="mb-1"><i class="ti ti-pencil me-1"></i>${l.desc_pro || "Sin programa"}</p>
+            <p><i class="ti ti-calendar me-1"></i>${l.horario || "Sin horario"}</p>
         </div>
     `;
 
@@ -1250,66 +1220,41 @@ function crearCardLead(l, estadoId) {
 ================================ */
 function activarDragAndDrop() {
 
-    // --- Asegura altura mínima a listas vacías ---
-    document.querySelectorAll(".kanban-list").forEach(lista => {
-        lista.style.minHeight = "50px";
+    document.querySelectorAll(".kanban-list").forEach(l => {
+        l.style.minHeight = "60px";
     });
 
-    // --- HABILITAR que las cards sean arrastrables ---
-    document.querySelectorAll(".kanban-card").forEach(card => {
-        card.addEventListener("dragstart", e => {
-            e.dataTransfer.setData("lead", e.target.dataset.id);
+    document.addEventListener("dragstart", e => {
+        const card = e.target.closest(".kanban-card");
+        if (!card) return;
 
-            // Estilo visual al arrastrar
-            setTimeout(() => {
-                card.classList.add("dragging");
-            }, 0);
-        });
-
-        card.addEventListener("dragend", e => {
-            card.classList.remove("dragging");
-        });
+        e.dataTransfer.setData("lead", card.dataset.id);
+        setTimeout(() => card.classList.add("dragging"), 0);
     });
 
-    // --- ÁREAS donde soltar ---
+    document.addEventListener("dragend", e => {
+        const card = e.target.closest(".kanban-card");
+        if (card) card.classList.remove("dragging");
+    });
+
     document.querySelectorAll(".kanban-list").forEach(lista => {
 
-        lista.addEventListener("dragenter", e => {
-            e.preventDefault();
-            lista.classList.add("kanban-hover");
-        });
-
-        lista.addEventListener("dragleave", e => {
-            lista.classList.remove("kanban-hover");
-        });
-
-        lista.addEventListener("dragover", e => {
-            e.preventDefault(); // NECESARIO para permitir drop
-        });
+        lista.addEventListener("dragover", e => e.preventDefault());
 
         lista.addEventListener("drop", e => {
             e.preventDefault();
 
-            let idLead = e.dataTransfer.getData("lead");
-            let idEstado = lista.dataset.estado;
-
-            let card = document.querySelector(`[data-id='${idLead}']`);
-
-            if (!card) return; // evita romper cuando es null
+            const idLead = e.dataTransfer.getData("lead");
+            const card = document.querySelector(`[data-id="${idLead}"]`);
+            if (!card) return;
 
             lista.appendChild(card);
 
-            lista.classList.remove("kanban-hover");
-
-            // Actualiza en BD
-            updateEstadoLead(idLead, idEstado);
-
-            // Actualiza contador
+            updateEstadoLead(idLead, lista.dataset.estado);
             actualizarContadores();
         });
     });
 }
-
 
 function actualizarContadores() {
     document.querySelectorAll(".kanban-list-items").forEach(col => {
