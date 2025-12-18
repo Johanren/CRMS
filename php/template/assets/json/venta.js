@@ -1,3 +1,50 @@
+
+window.Filtros = {
+    obtener: function () {
+        let texto = "";
+        let inputBuscador = document.getElementById("buscador");
+        if (inputBuscador) {
+            texto = inputBuscador.value.toLowerCase();
+        }
+
+        let asesor = [...document.querySelectorAll(".filtro-asesor:checked")].map(c => c.value);
+        let carreras = [...document.querySelectorAll(".filtro-carrera:checked")].map(c => c.value);
+        let horario = [...document.querySelectorAll(".filtro-horario:checked")].map(c => c.value);
+        let interes = [...document.querySelectorAll(".filtro-interes:checked")].map(c => c.value);
+        let medio = [...document.querySelectorAll(".filtro-medio:checked")].map(c => c.value);
+        let fuente = [...document.querySelectorAll(".filtro-fuente:checked")].map(c => c.value);
+        let campana = [...document.querySelectorAll(".filtro-campana:checked")].map(c => c.value);
+        let accion = [...document.querySelectorAll(".filtro-accion:checked")].map(c => c.value);
+        let departamento = [...document.querySelectorAll(".filtro-dep:checked")].map(c => c.value);
+        let ciudad = [...document.querySelectorAll(".filtro-ciu:checked")].map(c => c.value);
+        let barrio = [...document.querySelectorAll(".filtro-brr:checked")].map(c => c.value);
+        let estados = [...document.querySelectorAll(".filtro-estado:checked")].map(c => c.value);
+        let fecha_inicio = window.fecha_inicio || "";
+        let fecha_fin = window.fecha_fin || "";
+
+        return { texto, asesor, carreras, horario, interes, medio, fuente, campana, accion, departamento, ciudad, barrio, estados, fecha_inicio, fecha_fin };
+    }
+};
+
+function exportarExcel(tipo) {
+    const f = Filtros.obtener();
+    const params = new URLSearchParams();
+
+    // Tipo de reporte (ej: "leads", "asesores", "campanas", etc.)
+    params.append("tipo", tipo);
+
+    // Convertir filtros a parámetros GET
+    for (let k in f) {
+        if (Array.isArray(f[k]) && f[k].length > 0) {
+            params.append(k, JSON.stringify(f[k]));
+        } else if (f[k] !== "") {
+            params.append(k, f[k]);
+        }
+    }
+
+    window.location.href = "ajax/exportar_excel.php?" + params.toString();
+}
+
 async function cargarTablaFoco() {
 
     const datos = new FormData();
@@ -126,108 +173,147 @@ async function cargarTablaFoco() {
 
 async function cargarTablaFocoReporte() {
 
-    const datos = new FormData();
-    datos.append("accion", "tabla_foco");
+    try {
+        /* ================= DATOS FOCO ================= */
+        const fdForm = new FormData();
+        fdForm.append("accion", "tabla_foco");
 
-    const res = await fetch("ajax/ajax.php", {
-        method: "POST",
-        body: datos
-    });
+        const focoRes = await fetch("ajax/ajax.php", {
+            method: "POST",
+            body: fdForm
+        });
+        const focoData = await focoRes.json();
 
-    const data = await res.json();
+        /* ================= DATOS LEADS ================= */
+        const leadForm = new FormData();
+        leadForm.append("accion", "leads_foco_detalle");
 
-    const jornadas = [...new Set(data.map(d => d.jornada))];
-    const programas = [...new Set(data.map(d => d.programa))];
+        const leadRes = await fetch("ajax/ajax.php", {
+            method: "POST",
+            body: leadForm
+        });
+        const leadsData = await leadRes.json();
 
-    const thead = document.querySelector("#tablaFocoReporte thead");
-    const tbody = document.querySelector("#tablaFocoReporte tbody");
+        /* ================= JORNADAS / PROGRAMAS ================= */
+        const jornadas = [...new Set(leadsData.map(d => d.jornada))];
+        const programas = [...new Set(leadsData.map(d => d.programa))];
 
-    /* ================= HEADER ================= */
-    let h1 = `<tr><th rowspan="2">Jornada</th>`;
-    programas.forEach(p => {
-        h1 += `<th colspan="3">${p}</th>`;
-    });
-    h1 += `<th colspan="3">Total</th></tr>`;
+        const thead = document.querySelector("#tablaFocoReporte thead");
+        const tbody = document.querySelector("#tablaFocoReporte tbody");
 
-    let h2 = `<tr>`;
-    programas.forEach(() => {
-        h2 += `<th>Cupos</th><th>Ventas</th><th>Reintegros</th>`;
-    });
-    h2 += `<th>Cupos</th><th>Ventas</th><th>Reintegros</th></tr>`;
+        /* ================= HEADER ================= */
+        let h1 = `<tr><th rowspan="2">Jornada</th>`;
+        programas.forEach(p => h1 += `<th colspan="3">${p}</th>`);
+        h1 += `<th colspan="3">Total</th></tr>`;
 
-    thead.innerHTML = h1 + h2;
+        let h2 = `<tr>`;
+        programas.forEach(() => {
+            h2 += `<th>Cupos</th><th>Ventas</th><th>Reintegros</th>`;
+        });
+        h2 += `<th>Cupos</th><th>Ventas</th><th>Reintegros</th></tr>`;
 
-    /* ================= BODY ================= */
-    tbody.innerHTML = "";
+        thead.innerHTML = h1 + h2;
+        tbody.innerHTML = "";
 
-    const totalesPrograma = {};
-    programas.forEach(p => {
-        totalesPrograma[p] = { c: 0, v: 0, r: 0 };
-    });
+        /* ================= ACUMULADORES LEADS ================= */
+        const totalesLeads = {};
+        programas.forEach(p => totalesLeads[p] = { con: 0, solo: 0 });
 
-    let totalGeneralC = 0;
-    let totalGeneralV = 0;
-    let totalGeneralR = 0;
+        let totalConHorario = 0;
+        let totalSoloCarrera = 0;
 
-    jornadas.forEach(jornada => {
+        /* ================= BODY ================= */
+        jornadas.forEach(jornada => {
 
-        let fila = `<tr><td>${jornada}</td>`;
-        let totalC = 0, totalV = 0, totalR = 0;
+            /* ================= FILA 1 → CUPOS ================= */
+            let filaCupos = `<tr><td rowspan="3">${jornada}</td>`;
+            let totalFilaCupos = 0;
 
-        programas.forEach(programa => {
+            programas.forEach(programa => {
+                const d = focoData.find(f => f.jornada === jornada && f.programa === programa);
+                const cupos = d ? +d.ventas : 0;
 
-            const filaData = data.find(d => d.jornada === jornada && d.programa === programa);
+                totalFilaCupos += cupos;
 
-            const c = filaData ? parseInt(filaData.cupos) : 0;
-            const v = filaData ? parseInt(filaData.ventas) : 0;
-            const r = filaData ? parseInt(filaData.reintegros) : 0;
+                filaCupos += `<td colspan="3">${cupos}</td>`;
+            });
 
-            totalC += c;
-            totalV += v;
-            totalR += r;
+            filaCupos += `<td colspan="3"><b>${totalFilaCupos}</b></td></tr>`;
+            tbody.innerHTML += filaCupos;
 
-            totalesPrograma[programa].c += c;
-            totalesPrograma[programa].v += v;
-            totalesPrograma[programa].r += r;
+            /* ================= FILA 2 → VENTAS / REINTEGROS ================= */
+            let filaVR = `<tr>`;
+            let totalFilaV = 0;
+            let totalFilaR = 0;
 
-            fila += `
-                <td>${c}</td>
-                <td>${v}</td>
-                <td>${r}</td>
+            programas.forEach(programa => {
+                const d = focoData.find(f => f.jornada === jornada && f.programa === programa);
+                const ventas = d ? +d.ventas : 0;
+                const reintegros = d ? +d.reintegros : 0;
+
+                totalFilaV += 0;
+                totalFilaR += 0;
+
+                filaVR += `<td>0</td><td>0</td><td>0</td>`;
+            });
+
+            filaVR += `<td><b>${totalFilaV}</b></td><td><b>${totalFilaR}</b></td><td>0</td></tr>`;
+            tbody.innerHTML += filaVR;
+
+            /* ================= FILA 3 → LEADS ================= */
+            let filaLeads = `<tr>`;
+
+            programas.forEach(programa => {
+                const l = leadsData.find(x =>
+                    x.jornada === jornada &&
+                    x.programa === programa
+                );
+
+                const conHorario = l ? +l.con_horario : 0;
+                const soloCarrera = l ? +l.solo_carrera : 0;
+
+                /* ACUMULAR TOTALES */
+                totalesLeads[programa].con += conHorario;
+                totalesLeads[programa].solo += soloCarrera;
+
+                totalConHorario += conHorario;
+                totalSoloCarrera += soloCarrera;
+
+                filaLeads += `<td colspan="2">${conHorario}</td><td>${soloCarrera}</td>`;
+            });
+
+            filaLeads += `
+                <td colspan="2"><b>${totalConHorario}</b></td>
+                <td><b>${totalSoloCarrera}</b></td>
+            </tr>`;
+
+            tbody.innerHTML += filaLeads;
+        });
+
+        /* ================= FILA FINAL → TOTALES LEADS ================= */
+        let filaTot = `
+            <tr class="table-secondary fw-bold">
+                <td>Totales</td>
+        `;
+
+        programas.forEach(p => {
+            filaTot += `
+                <td colspan="2">${totalesLeads[p].con}</td>
+                <td>${totalesLeads[p].solo}</td>
             `;
         });
 
-        fila += `
-            <td><b>${totalC}</b></td>
-            <td><b>${totalV}</b></td>
-            <td><b>${totalR}</b></td>
-        </tr>`;
-
-        totalGeneralC += totalC;
-        totalGeneralV += totalV;
-        totalGeneralR += totalR;
-
-        tbody.innerHTML += fila;
-    });
-
-    /* ================= FILA FINAL TOTALES ================= */
-    let filaTotales = `<tr class="table-secondary fw-bold"><td>Totales</td>`;
-
-    programas.forEach(p => {
-        filaTotales += `
-            <td>${totalesPrograma[p].c}</td>
-            <td>${totalesPrograma[p].v}</td>
-            <td>${totalesPrograma[p].r}</td>
+        filaTot += `
+                <td colspan="2">${totalConHorario}</td>
+                <td>${totalSoloCarrera}</td>
+            </tr>
         `;
-    });
 
-    filaTotales += `
-        <td>${totalGeneralC}</td>
-        <td>${totalGeneralV}</td>
-        <td>${totalGeneralR}</td>
-    </tr>`;
+        tbody.innerHTML += filaTot;
 
-    tbody.innerHTML += filaTotales;
+    } catch (e) {
+        console.error("Error tabla foco:", e);
+    }
 }
 
 /* ===================== EDICIÓN INLINE ===================== */
@@ -479,51 +565,4 @@ function limpiarCamposDetalle() {
     ].forEach(id => {
         document.getElementById(id).value = "";
     });
-}
-
-
-window.Filtros = {
-    obtener: function () {
-        let texto = "";
-        let inputBuscador = document.getElementById("buscador");
-        if (inputBuscador) {
-            texto = inputBuscador.value.toLowerCase();
-        }
-
-        let asesor = [...document.querySelectorAll(".filtro-asesor:checked")].map(c => c.value);
-        let carreras = [...document.querySelectorAll(".filtro-carrera:checked")].map(c => c.value);
-        let horario = [...document.querySelectorAll(".filtro-horario:checked")].map(c => c.value);
-        let interes = [...document.querySelectorAll(".filtro-interes:checked")].map(c => c.value);
-        let medio = [...document.querySelectorAll(".filtro-medio:checked")].map(c => c.value);
-        let fuente = [...document.querySelectorAll(".filtro-fuente:checked")].map(c => c.value);
-        let campana = [...document.querySelectorAll(".filtro-campana:checked")].map(c => c.value);
-        let accion = [...document.querySelectorAll(".filtro-accion:checked")].map(c => c.value);
-        let departamento = [...document.querySelectorAll(".filtro-dep:checked")].map(c => c.value);
-        let ciudad = [...document.querySelectorAll(".filtro-ciu:checked")].map(c => c.value);
-        let barrio = [...document.querySelectorAll(".filtro-brr:checked")].map(c => c.value);
-        let estados = [...document.querySelectorAll(".filtro-estado:checked")].map(c => c.value);
-        let fecha_inicio = window.fecha_inicio || "";
-        let fecha_fin = window.fecha_fin || "";
-
-        return { texto, asesor, carreras, horario, interes, medio, fuente, campana, accion, departamento, ciudad, barrio, estados, fecha_inicio, fecha_fin };
-    }
-};
-
-function exportarExcel(tipo) {
-    const f = Filtros.obtener();
-    const params = new URLSearchParams();
-
-    // Tipo de reporte (ej: "leads", "asesores", "campanas", etc.)
-    params.append("tipo", tipo);
-
-    // Convertir filtros a parámetros GET
-    for (let k in f) {
-        if (Array.isArray(f[k]) && f[k].length > 0) {
-            params.append(k, JSON.stringify(f[k]));
-        } else if (f[k] !== "") {
-            params.append(k, f[k]);
-        }
-    }
-
-    window.location.href = "ajax/exportar_excel.php?" + params.toString();
 }

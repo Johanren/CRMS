@@ -1,4 +1,3 @@
-// 3. Obtener valores de filtros
 window.Filtros = {
     obtener: function () {
         let texto = "";
@@ -25,62 +24,6 @@ window.Filtros = {
         return { texto, asesor, carreras, horario, interes, medio, fuente, campana, accion, departamento, ciudad, barrio, estados, fecha_inicio, fecha_fin };
     }
 };
-
-document.getElementById("btnGuardarFiltros").addEventListener("click", function () {
-    let filtros = window.Filtros.obtener();
-    localStorage.setItem("filtros_guardados", JSON.stringify(filtros));
-
-    Swal.fire("Filtros Guardados", "Tus filtros fueron guardados correctamente", "success");
-});
-
-document.getElementById("btnCargarFiltros").addEventListener("click", function () {
-    let data = localStorage.getItem("filtros_guardados");
-
-    if (!data) {
-        Swal.fire("Sin filtros guardados", "Aún no has guardado filtros.", "warning");
-        return;
-    }
-
-    let filtros = JSON.parse(data);
-
-    if (document.getElementById("buscador")) {
-        document.getElementById("buscador").value = filtros.texto || "";
-    }
-
-    marcarCheckboxes(".filtro-asesor", filtros.asesor);
-    marcarCheckboxes(".filtro-carrera", filtros.carreras);
-    marcarCheckboxes(".filtro-horario", filtros.horario);
-    marcarCheckboxes(".filtro-interes", filtros.interes);
-    marcarCheckboxes(".filtro-medio", filtros.medio);
-    marcarCheckboxes(".filtro-fuente", filtros.fuente);
-    marcarCheckboxes(".filtro-campana", filtros.campana);
-    marcarCheckboxes(".filtro-accion", filtros.accion);
-    marcarCheckboxes(".filtro-dep", filtros.departamento);
-    marcarCheckboxes(".filtro-ciu", filtros.ciudad);
-    marcarCheckboxes(".filtro-brr", filtros.barrio);
-    marcarCheckboxes(".filtro-estado", filtros.estados);
-
-    window.fecha_inicio = filtros.fecha_inicio || "";
-    window.fecha_fin = filtros.fecha_fin || "";
-
-    if (document.getElementById("fecha_inicio"))
-        document.getElementById("fecha_inicio").value = filtros.fecha_inicio;
-
-    if (document.getElementById("fecha_fin"))
-        document.getElementById("fecha_fin").value = filtros.fecha_fin;
-
-    if (typeof window.listarLeadsReporte === "function") {
-        window.listarLeadsReporte();
-    }
-
-    Swal.fire("Filtros aplicados", "Se aplicaron los filtros guardados.", "success");
-});
-
-function marcarCheckboxes(selector, valores) {
-    document.querySelectorAll(selector).forEach(chk => {
-        chk.checked = valores.includes(chk.value);
-    });
-}
 
 function listarLeadsReporte() {
 

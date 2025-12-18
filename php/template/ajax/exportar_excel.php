@@ -291,7 +291,164 @@ switch ($tipo) {
         $writer->save("php://output");
         exit;
         break;
+    case "foco_leads":
 
+        $resultado = focoControllers::reporteFocoLeadsMatriz();
+
+        $data      = $resultado["matriz"];
+        $jornadas  = $resultado["jornadas"];
+        $programas = $resultado["programas"];
+
+        if (empty($jornadas) || empty($programas)) {
+            die("No hay datos para exportar");
+        }
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        /* ================= HEADER ================= */
+
+        $sheet->setCellValue("A1", "Jornada");
+        $sheet->mergeCells("A1:A2");
+
+        $col = 2;
+        foreach ($programas as $programa) {
+
+            $inicio = $col;
+
+            $sheet->setCellValueByColumnAndRow($col, 1, $programa);
+            $sheet->mergeCellsByColumnAndRow($inicio, 1, $inicio + 2, 1);
+
+            $sheet->setCellValueByColumnAndRow($inicio,     2, "Cupos");
+            $sheet->setCellValueByColumnAndRow($inicio + 1, 2, "Ventas");
+            $sheet->setCellValueByColumnAndRow($inicio + 2, 2, "Reintegros");
+
+            $col += 3;
+        }
+
+        /* ===== TOTAL ===== */
+        $sheet->setCellValueByColumnAndRow($col, 1, "Total");
+        $sheet->mergeCellsByColumnAndRow($col, 1, $col + 2, 1);
+
+        $sheet->setCellValueByColumnAndRow($col,     2, "Con horario");
+        $sheet->setCellValueByColumnAndRow($col + 1, 2, "Ventas");
+        $sheet->setCellValueByColumnAndRow($col + 2, 2, "Solo carrera");
+
+        /* ================= BODY ================= */
+
+        $fila = 3;
+
+        $totalConHorario = 0;
+        $totalSoloCarrera = 0;
+
+        foreach ($jornadas as $jornada) {
+
+            /* ================= FILA 1 → CUPOS ================= */
+            $sheet->setCellValue("A{$fila}", $jornada);
+            $sheet->mergeCells("A{$fila}:A" . ($fila + 2));
+
+            $col = 2;
+            $totalFilaCupos = 0;
+
+            foreach ($programas as $programa) {
+
+                $cupos = $data[$jornada][$programa]["ventas"] ?? 0;
+
+                $sheet->setCellValueByColumnAndRow($col, $fila, $cupos);
+                $sheet->mergeCellsByColumnAndRow($col, $fila, $col + 2, $fila);
+
+                $totalFilaCupos += $cupos;
+                $col += 3;
+            }
+
+            $sheet->setCellValueByColumnAndRow($col, $fila, $totalFilaCupos);
+            $sheet->mergeCellsByColumnAndRow($col, $fila, $col + 2, $fila);
+
+            $fila++;
+
+            /* ================= FILA 2 → VENTAS / REINTEGROS ================= */
+            $col = 2;
+            foreach ($programas as $programa) {
+
+                $sheet->setCellValueByColumnAndRow($col,     $fila, 0);
+                $sheet->setCellValueByColumnAndRow($col + 1, $fila, 0);
+                $sheet->setCellValueByColumnAndRow($col + 2, $fila, 0);
+
+                $col += 3;
+            }
+
+            $sheet->setCellValueByColumnAndRow($col,     $fila, 0);
+            $sheet->setCellValueByColumnAndRow($col + 1, $fila, 0);
+            $sheet->setCellValueByColumnAndRow($col + 2, $fila, 0);
+
+            $fila++;
+
+            /* ================= FILA 3 → LEADS ================= */
+            $col = 2;
+            $tCon = 0;
+            $tSolo = 0;
+
+            foreach ($programas as $programa) {
+
+                $con  = $data[$jornada][$programa]["con"] ?? 0;
+                $solo = $data[$jornada][$programa]["solo"] ?? 0;
+
+                $sheet->setCellValueByColumnAndRow($col,     $fila, $con);
+                $sheet->mergeCellsByColumnAndRow($col, $fila, $col + 1, $fila);
+
+                $sheet->setCellValueByColumnAndRow($col + 2, $fila, $solo);
+
+                $tCon  += $con;
+                $tSolo += $solo;
+
+                $totalConHorario += $con;
+                $totalSoloCarrera += $solo;
+
+                $col += 3;
+            }
+
+            $sheet->setCellValueByColumnAndRow($col,     $fila, $tCon);
+            $sheet->mergeCellsByColumnAndRow($col, $fila, $col + 1, $fila);
+            $sheet->setCellValueByColumnAndRow($col + 2, $fila, $tSolo);
+
+            $fila++;
+        }
+
+        /* ================= FILA FINAL ================= */
+
+        $sheet->setCellValue("A{$fila}", "Totales");
+
+        $col = 2;
+        foreach ($programas as $programa) {
+
+            $sheet->setCellValueByColumnAndRow($col,     $fila, "");
+            $sheet->mergeCellsByColumnAndRow($col, $fila, $col + 1, $fila);
+            $sheet->setCellValueByColumnAndRow($col + 2, $fila, "");
+
+            $col += 3;
+        }
+
+        $sheet->setCellValueByColumnAndRow($col,     $fila, $totalConHorario);
+        $sheet->mergeCellsByColumnAndRow($col, $fila, $col + 1, $fila);
+        $sheet->setCellValueByColumnAndRow($col + 2, $fila, $totalSoloCarrera);
+
+        /* ================= ESTILOS ================= */
+
+        $lastCol = $sheet->getHighestColumn();
+        $lastRow = $sheet->getHighestRow();
+
+        $sheet->getStyle("A1:{$lastCol}{$lastRow}")
+            ->getBorders()
+            ->getAllBorders()
+            ->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="Reporte_Foco_Leads.xlsx"');
+
+        $writer = new Xlsx($spreadsheet);
+        $writer->save("php://output");
+        exit;
+        break;
 
     default:
         die("Tipo de reporte no válido");

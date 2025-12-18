@@ -114,6 +114,97 @@ class focoModels
         return $resultado;
     }
 
+    public static function listarLeadsFocoDetalle()
+    {
+        $id_user = $_SESSION["user_id"];
+        $sql = "SELECT
+                h.descripcion AS jornada,
+                p.desc_pro AS programa,
+
+                /* foco_detalle */
+                fd.cup_fde AS cupos,
+                fd.ven_fde AS ventas,
+                fd.rein_fde AS reintegros,
+
+                /* foco */
+                f.nom_foc AS foco,
+                f.fini_foc AS fecha_inicio,
+                f.ffin_foc AS fecha_fin,
+
+                /* Leads con horario EXACTO */
+                COUNT(DISTINCT lh.id_lead) AS con_horario,
+
+                /* Leads de la carrera pero con horario distinto o NULL */
+                COUNT(DISTINCT ls.id_lead) AS solo_carrera
+
+            FROM foco_detalle fd
+            INNER JOIN foco f 
+                ON f.id_foc = fd.foc_fde
+            AND f.emp_foc = fd.emp_fde
+
+            INNER JOIN programa p 
+                ON p.cod_pro = fd.prog_fde
+
+            INNER JOIN horario h 
+                ON h.id_horario = fd.jorn_fde
+
+            /* Leads con horario correcto */
+            LEFT JOIN leads lh
+                ON lh.carrera_id = fd.prog_fde
+            AND lh.horario_id = fd.jorn_fde
+            AND lh.cod_emp = f.emp_foc
+            AND lh.estado_leads_id NOT IN (6,7,8)
+            ";
+        if ($_SESSION['rol'] !== 'Admin') {
+            $sql .= "
+            AND lh.user_id = '$id_user'";
+        }
+        $sql .= "
+
+            /* Leads solo carrera (horario distinto o NULL) */
+            LEFT JOIN leads ls
+                ON ls.carrera_id = fd.prog_fde
+            AND ls.cod_emp = f.emp_foc
+            AND lh.estado_leads_id NOT IN (6,7,8)
+            ";
+        if ($_SESSION['rol'] !== 'Admin') {
+            $sql .= "
+            AND ls.user_id = '$id_user'
+            ";
+        }
+        $sql .= "
+            AND (
+                    ls.horario_id <> fd.jorn_fde
+                    OR ls.horario_id IS NULL
+            )
+
+            WHERE 
+                f.emp_foc = ?
+
+            GROUP BY
+                h.descripcion,
+                p.desc_pro,
+                fd.cup_fde,
+                fd.ven_fde,
+                fd.rein_fde,
+                f.nom_foc,
+                f.fini_foc,
+                f.ffin_foc
+
+            ORDER BY
+                h.descripcion,
+                p.desc_pro;";
+
+        $conn = new Conexion();
+        $conectar = $conn->conectar();
+
+        $stmt = $conectar->prepare($sql);
+        $stmt->bindParam(1, $_SESSION["cod_emp"], PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public static function actulizarFocoDetalle($data)
     {
         $sql = "UPDATE foco_detalle fd INNER JOIN programa p ON p.cod_pro = fd.prog_fde INNER JOIN horario h ON h.id_horario = fd.jorn_fde SET fd.cup_fde = ?, fd.rein_fde = ?, fd.ven_fde = ? WHERE h.descripcion = ? AND p.desc_pro = ?";
@@ -195,6 +286,130 @@ class focoModels
             "matriz"    => $matriz,
             "jornadas"  => array_keys($jornadas),
             "programas" => array_keys($programas)
+        ];
+    }
+
+    public static function reporteFocoLeadsMatriz()
+    {
+        $id_user = $_SESSION["user_id"];
+
+        $sql = "
+        SELECT
+            h.descripcion AS jornada,
+            p.desc_pro AS programa,
+
+            /* foco_detalle (valores netos) */
+            fd.cup_fde AS cupos,
+            fd.ven_fde AS ventas,
+            fd.rein_fde AS reintegros,
+
+            /* Leads con horario EXACTO */
+            COUNT(DISTINCT lh.id_lead) AS con_horario,
+
+            /* Leads solo carrera (horario distinto o NULL) */
+            COUNT(DISTINCT ls.id_lead) AS solo_carrera
+
+        FROM foco_detalle fd
+        INNER JOIN foco f 
+            ON f.id_foc = fd.foc_fde
+           AND f.emp_foc = fd.emp_fde
+
+        INNER JOIN programa p 
+            ON p.cod_pro = fd.prog_fde
+
+        INNER JOIN horario h 
+            ON h.id_horario = fd.jorn_fde
+
+        /* Leads con horario correcto */
+        LEFT JOIN leads lh
+            ON lh.carrera_id = fd.prog_fde
+           AND lh.horario_id = fd.jorn_fde
+           AND lh.cod_emp = f.emp_foc
+           AND lh.estado_leads_id NOT IN (6,7,8)
+    ";
+
+        if ($_SESSION['rol'] !== 'Admin') {
+            $sql .= " AND lh.user_id = :user_id ";
+        }
+
+        $sql .= "
+        /* Leads solo carrera */
+        LEFT JOIN leads ls
+            ON ls.carrera_id = fd.prog_fde
+           AND ls.cod_emp = f.emp_foc
+           AND ls.estado_leads_id NOT IN (6,7,8)
+    ";
+
+        if ($_SESSION['rol'] !== 'Admin') {
+            $sql .= " AND ls.user_id = :user_id ";
+        }
+
+        $sql .= "
+           AND (
+                ls.horario_id <> fd.jorn_fde
+                OR ls.horario_id IS NULL
+           )
+
+        WHERE 
+            f.emp_foc = :cod_emp
+
+        GROUP BY
+            h.descripcion,
+            p.desc_pro,
+            fd.cup_fde,
+            fd.ven_fde,
+            fd.rein_fde
+
+        ORDER BY
+            h.descripcion,
+            p.desc_pro
+    ";
+
+        $conn = new Conexion();
+        $cn   = $conn->conectar();
+        $stmt = $cn->prepare($sql);
+
+        $stmt->bindParam(':cod_emp', $_SESSION["cod_emp"], PDO::PARAM_INT);
+
+        if ($_SESSION['rol'] !== 'Admin') {
+            $stmt->bindParam(':user_id', $id_user, PDO::PARAM_INT);
+        }
+
+        $stmt->execute();
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        /* ================= ARMAR MATRIZ ================= */
+
+        $matriz    = [];
+        $jornadas  = [];
+        $programas = [];
+
+        foreach ($rows as $r) {
+
+            $jornada  = $r["jornada"];
+            $programa = $r["programa"];
+
+            if (!in_array($jornada, $jornadas)) {
+                $jornadas[] = $jornada;
+            }
+
+            if (!in_array($programa, $programas)) {
+                $programas[] = $programa;
+            }
+
+            $matriz[$jornada][$programa] = [
+                "cupos"      => (int)$r["cupos"],
+                "ventas"     => (int)$r["ventas"],
+                "reintegros" => (int)$r["reintegros"],
+                "con"        => (int)$r["con_horario"],
+                "solo"       => (int)$r["solo_carrera"]
+            ];
+        }
+
+        return [
+            "matriz"    => $matriz,
+            "jornadas"  => $jornadas,
+            "programas" => $programas
         ];
     }
 }

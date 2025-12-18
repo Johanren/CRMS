@@ -21,7 +21,15 @@ class focoControllers
         return focoModels::listarFocoDetalle();
     }
 
+    public static function listarLeadsFocoDetalle(){
+        return focoModels::listarLeadsFocoDetalle();
+    }
+
     public static function reporteFocoActivoMatriz(){
         return focoModels::reporteFocoActivoMatriz();
+    }
+
+    public static function reporteFocoLeadsMatriz(){
+        return focoModels::reporteFocoLeadsMatriz();
     }
 }

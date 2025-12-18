@@ -5,12 +5,14 @@ document.addEventListener("DOMContentLoaded", function () {
         contenedor.innerHTML = `
             <div class="d-flex align-items-center gap-2 mt-2">
                 <a id="btnGuardarFiltros" class="btn btn-outline-primary w-100">Guardar filtros</a>
-                <a id="btnCargarFiltros" class="btn btn-primary w-100">Aplicar filtros guardados</a>
+                <a id="btnCargarFiltros" class="btn btn-primary w-100" style="display:none;">Aplicar filtros guardados</a>
+                <a id="btnRestablecerFiltros" class="btn btn-outline-danger w-100">Restablecer filtros</a>
             </div>
         `;
 
         document.getElementById("btnGuardarFiltros").addEventListener("click", btnGuardarFiltros);
         document.getElementById("btnCargarFiltros").addEventListener("click", btnCargarFiltros);
+        document.getElementById("btnRestablecerFiltros").addEventListener("click", btnRestablecerFiltros);
 
         // 🔥 AUTO APLICAR FILTROS AL CARGAR
         setTimeout(() => {
@@ -83,6 +85,7 @@ function btnCargarFiltros() {
             if (typeof window.listarLeads === "function") window.listarLeads();
             if (typeof window.cargarKanban === "function") window.cargarKanban();
             if (typeof window.cargarContactGrid === "function") window.cargarContactGrid();
+            if (typeof window.listarLeadsReporte === "function") window.listarLeadsReporte();
             mostrarResumenFiltros(filtros);
             //Swal.fire("Filtros aplicados", "Se aplicaron los filtros guardados.", "success");
         });
@@ -135,3 +138,57 @@ function mostrarResumenFiltros(filtros) {
         ? "Filtros aplicados: " + resumen.join(" | ")
         : "Sin filtros aplicados";
 }
+
+function btnRestablecerFiltros() {
+
+    // 🔹 Limpiar buscador
+    if (document.getElementById("buscador")) {
+        document.getElementById("buscador").value = "";
+    }
+
+    // 🔹 Desmarcar todos los checkboxes de filtros
+    document.querySelectorAll(`
+        .filtro-asesor,
+        .filtro-carrera,
+        .filtro-horario,
+        .filtro-interes,
+        .filtro-medio,
+        .filtro-fuente,
+        .filtro-campana,
+        .filtro-accion,
+        .filtro-dep,
+        .filtro-ciu,
+        .filtro-brr,
+        .filtro-estado
+    `).forEach(chk => chk.checked = false);
+
+    // 🔹 Limpiar fechas
+    window.fecha_inicio = "";
+    window.fecha_fin = "";
+
+    if (document.getElementById("fecha_inicio")) {
+        document.getElementById("fecha_inicio").value = "";
+    }
+    if (document.getElementById("fecha_fin")) {
+        document.getElementById("fecha_fin").value = "";
+    }
+
+    // 🔹 Resetear filtros en memoria (si usas el objeto Filtros)
+    if (window.Filtros && typeof window.Filtros.limpiar === "function") {
+        window.Filtros.limpiar();
+    }
+
+    // 🔹 Recargar vistas sin filtros
+    if (typeof window.listarLeads === "function") window.listarLeads();
+    if (typeof window.cargarKanban === "function") window.cargarKanban();
+    if (typeof window.cargarContactGrid === "function") window.cargarContactGrid();
+    if (typeof window.listarLeadsReporte === "function") window.listarLeadsReporte();
+
+    // 🔹 Limpiar resumen
+    const span = document.getElementById("resumen-filtros");
+    if (span) span.innerText = "Sin filtros aplicados";
+
+    // 🔹 Feedback opcional
+    Swal.fire("Filtros restablecidos", "Se limpiaron los filtros aplicados.", "info");
+}
+

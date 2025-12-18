@@ -34,7 +34,7 @@
                         <h6 class="mb-0">Foco Detalle</h6>
                         <div class="d-flex align-items-center flex-wrap row-gap-3">
                             <div class="dropdown">
-                                <a onclick="exportarExcel('foco')" class="btn btn-primary"><i class="ti ti-square-rounded-plus-filled me-1"></i>Exportar excel</a>
+                                <a onclick="exportarExcel('foco_leads')" class="btn btn-primary"><i class="ti ti-square-rounded-plus-filled me-1"></i>Exportar excel</a>
                             </div>
                         </div>
                     </div>

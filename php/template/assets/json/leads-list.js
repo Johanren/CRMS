@@ -3,15 +3,16 @@ const params = new URLSearchParams(window.location.search);
 /* ==================
 Cargar proxima actividad LEADS
 ====================*/
+if (document.getElementById("offproximaActividad")) {
+    const offcanvasActividad = document.getElementById("offproximaActividad");
 
-const offcanvasActividad = document.getElementById("offproximaActividad");
+    offcanvasActividad.addEventListener("shown.bs.offcanvas", () => {
+        cargarProximaActividad();
+    });
 
-offcanvasActividad.addEventListener("shown.bs.offcanvas", () => {
-    cargarProximaActividad();
-});
-
-document.getElementById("fechaActividadInicio").addEventListener("change", cargarProximaActividad);
-document.getElementById("fechaActividadFin").addEventListener("change", cargarProximaActividad);
+    document.getElementById("fechaActividadInicio").addEventListener("change", cargarProximaActividad);
+    document.getElementById("fechaActividadFin").addEventListener("change", cargarProximaActividad);
+}
 
 function renderDataTableProximaActividad(data) {
 
@@ -83,7 +84,7 @@ function renderDataTableProximaActividad(data) {
                     return `<a href="leads-details.php?id=${row.id_lead}&id_cliente=${row.id_cliente}">Ver</a>`;
                 }
             },
-            ]
+        ]
     });
 }
 

@@ -234,7 +234,8 @@ if (isset($_POST['accion'])) {
             $inicio = $_POST['fecha_inicio'] ?? null;
             $fin = $_POST['fecha_fin'] ?? null;
 
-            echo json_encode($proximaActividad->listarProximaActividad($id_user, $inicio, $fin)
+            echo json_encode(
+                $proximaActividad->listarProximaActividad($id_user, $inicio, $fin)
             );
             break;
         /*ROL */
@@ -297,6 +298,10 @@ if (isset($_POST['accion'])) {
         case 'tabla_foco':
             echo json_encode($foco->listarFoco());
             break;
+        case 'leads_foco_detalle':
+            echo json_encode($foco->listarLeadsFocoDetalle());
+            break;
+
         /*Telefono adicioales */
         case "listar_telefonos_adicionales":
             $cliente_id = $_POST["cliente_id"];
