@@ -27,6 +27,7 @@ class LoginControllers
             $_SESSION['user'] = $user['nombres'] ." ".$user['apellidos'];
             $_SESSION['rol'] = $user['rol_nombre'];
             $_SESSION['cod_emp'] = $user['cod_emp'];
+            $_SESSION['foco'] = $user['foco'];
 
             return [
                 "status" => "ok",

@@ -130,9 +130,10 @@ class UserModels
         $conn = new Conexion();
         $conectar = $conn->conectar();
 
-        $sql = "SELECT u.*, r.nombre_rol AS rol_nombre
+        $sql = "SELECT u.*, r.nombre_rol AS rol_nombre, e.foco 
             FROM user u
             INNER JOIN user_role r ON u.rol_id = r.id_rol
+            INNER JOIN empresa e ON e.id_emp = u.cod_emp
             WHERE email = ?
             LIMIT 1";
 

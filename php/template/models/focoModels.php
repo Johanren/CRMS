@@ -98,6 +98,7 @@ class focoModels
             WHERE 
                 fd.emp_fde = ?
                 AND CURDATE() BETWEEN f.fini_foc AND f.ffin_foc
+                AND f.id_foc = ?
             GROUP BY 
                 h.descripcion, p.desc_pro, f.nom_foc, f.fini_foc, f.ffin_foc
             ORDER BY h.descripcion, p.desc_pro
@@ -107,6 +108,7 @@ class focoModels
 
         $stmt = $conectar->prepare($sql);
         $stmt->bindParam(1, $_SESSION["cod_emp"], PDO::PARAM_INT);
+        $stmt->bindParam(2, $_SESSION["foco"], PDO::PARAM_INT);
         $stmt->execute();
 
         $resultado = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -119,6 +121,7 @@ class focoModels
         $id_user = $_SESSION["user_id"];
         $sql = "SELECT
                 h.descripcion AS jornada,
+                h.id_horario AS id_jornada,
                 p.desc_pro AS programa,
 
                 /* foco_detalle */
@@ -165,7 +168,7 @@ class focoModels
             LEFT JOIN leads ls
                 ON ls.carrera_id = fd.prog_fde
             AND ls.cod_emp = f.emp_foc
-            AND lh.estado_leads_id NOT IN (6,7,8)
+            AND ls.estado_leads_id NOT IN (6,7,8)
             ";
         if ($_SESSION['rol'] !== 'Admin') {
             $sql .= "
@@ -180,6 +183,7 @@ class focoModels
 
             WHERE 
                 f.emp_foc = ?
+                AND f.id_foc = ?
 
             GROUP BY
                 h.descripcion,
@@ -200,6 +204,117 @@ class focoModels
 
         $stmt = $conectar->prepare($sql);
         $stmt->bindParam(1, $_SESSION["cod_emp"], PDO::PARAM_INT);
+        $stmt->bindParam(2, $_SESSION["foco"], PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public static function listarLeadsFocoResultado()
+    {
+        $id_user = $_SESSION["user_id"];
+        $sql = "SELECT
+                h.descripcion AS jornada,
+                p.desc_pro AS programa,
+                p.val_pro AS valor_programa,
+
+                /* foco_detalle */
+                fd.cup_fde AS cupos,
+                fd.ven_fde AS ventas,
+                fd.rein_fde AS reintegros,
+
+                /* foco */
+                f.nom_foc AS foco,
+                f.fini_foc AS fecha_inicio,
+                f.ffin_foc AS fecha_fin,
+
+                /* Leads con horario EXACTO */
+                COUNT(DISTINCT lh.id_lead) AS con_horario,
+
+                /* Leads de la carrera pero con horario distinto o NULL */
+                COUNT(DISTINCT ls.id_lead) AS solo_carrera,
+
+                /* Ventas (solo estado 6) */
+                COUNT(DISTINCT lv.id_lead) AS ventas_estado_6
+
+            FROM foco_detalle fd
+            INNER JOIN foco f 
+                ON f.id_foc = fd.foc_fde
+            AND f.emp_foc = fd.emp_fde
+
+            INNER JOIN programa p 
+                ON p.cod_pro = fd.prog_fde
+
+            INNER JOIN horario h 
+                ON h.id_horario = fd.jorn_fde
+
+            /* Leads con horario correcto */
+            LEFT JOIN leads lh
+                ON lh.carrera_id = fd.prog_fde
+            AND lh.horario_id = fd.jorn_fde
+            AND lh.cod_emp = f.emp_foc
+            AND lh.estado_leads_id NOT IN (6,7,8)
+            ";
+        if ($_SESSION['rol'] !== 'Admin') {
+            $sql .= "
+            AND lh.user_id = '$id_user'";
+        }
+        $sql .= "
+            LEFT JOIN leads lv
+            ON lv.carrera_id = fd.prog_fde
+            AND lv.horario_id = fd.jorn_fde
+            AND lv.cod_emp = f.emp_foc
+            AND lv.estado_leads_id = 6
+            AND lv.Nfactura IS NOT NULL
+            AND lv.valorF IS NOT NULL
+            AND lv.metodoF IS NOT NULL
+            ";
+        if ($_SESSION['rol'] !== 'Admin') {
+            $sql .= "
+            AND lv.user_id = '$id_user'";
+        }
+        $sql .= "
+            /* Leads solo carrera (horario distinto o NULL) */
+            LEFT JOIN leads ls
+                ON ls.carrera_id = fd.prog_fde
+            AND ls.cod_emp = f.emp_foc
+            AND ls.estado_leads_id NOT IN (6,7,8)
+            ";
+        if ($_SESSION['rol'] !== 'Admin') {
+            $sql .= "
+            AND ls.user_id = '$id_user'
+            ";
+        }
+        $sql .= "
+            AND (
+                    ls.horario_id <> fd.jorn_fde
+                    OR ls.horario_id IS NULL
+            )
+
+            WHERE 
+                f.emp_foc = :cod_emp
+                AND f.id_foc = :foco
+
+            GROUP BY
+                h.descripcion,
+                p.desc_pro,
+                fd.cup_fde,
+                fd.ven_fde,
+                fd.rein_fde,
+                f.nom_foc,
+                f.fini_foc,
+                f.ffin_foc
+
+            ORDER BY
+                h.descripcion,
+                p.desc_pro;";
+
+        $conn = new Conexion();
+        $conectar = $conn->conectar();
+
+        $stmt = $conectar->prepare($sql);
+        $stmt->bindParam(':cod_emp', $_SESSION["cod_emp"], PDO::PARAM_INT);
+        $stmt->bindParam(':foco', $_SESSION["foco"], PDO::PARAM_INT);
         $stmt->execute();
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -254,6 +369,7 @@ class focoModels
         WHERE 
             fd.emp_fde = ?
             AND CURDATE() BETWEEN f.fini_foc AND f.ffin_foc
+            AND f.id_foc = ?
         GROUP BY h.descripcion, p.desc_pro
             ";
         $conn = new Conexion();
@@ -261,6 +377,7 @@ class focoModels
 
         $stmt = $conectar->prepare($sql);
         $stmt->bindParam(1, $_SESSION["cod_emp"], PDO::PARAM_INT);
+        $stmt->bindParam(2, $_SESSION["foco"], PDO::PARAM_INT);
         $stmt->execute();
 
         $matriz = [];
@@ -352,6 +469,7 @@ class focoModels
 
         WHERE 
             f.emp_foc = :cod_emp
+            AND f.id_foc = :foco
 
         GROUP BY
             h.descripcion,
@@ -370,6 +488,7 @@ class focoModels
         $stmt = $cn->prepare($sql);
 
         $stmt->bindParam(':cod_emp', $_SESSION["cod_emp"], PDO::PARAM_INT);
+        $stmt->bindParam(':foco', $_SESSION["foco"], PDO::PARAM_INT);
 
         if ($_SESSION['rol'] !== 'Admin') {
             $stmt->bindParam(':user_id', $id_user, PDO::PARAM_INT);

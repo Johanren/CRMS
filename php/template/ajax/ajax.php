@@ -301,6 +301,9 @@ if (isset($_POST['accion'])) {
         case 'leads_foco_detalle':
             echo json_encode($foco->listarLeadsFocoDetalle());
             break;
+        case 'leads_foco_resultado':
+            echo json_encode($foco->listarLeadsFocoResultado());
+            break;
 
         /*Telefono adicioales */
         case "listar_telefonos_adicionales":

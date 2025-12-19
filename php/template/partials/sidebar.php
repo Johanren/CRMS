@@ -54,10 +54,12 @@
                             <ul>
                                 <li class="submenu">
                                     <a href="javascript:void(0);" class="<?php echo ($page == 'index.php' || $page == '/' || $page == 'leads-dashboard.php' || $page == 'project-dashboard.php') ? 'active subdrop' : ''; ?>">
-                                        <i class="ti ti-dashboard"></i><span>Panel</span><span class="menu-arrow"></span>
+                                        <i class="ti ti-dashboard"></i><span>Foco</span><span class="menu-arrow"></span>
                                     </a>
                                     <ul>
-                                        <li><a href="index.php" class="<?php echo ($page == 'index.php' || $page == '/') ? 'active' : ''; ?>">Panel de oferta</a></li>
+                                        <li class="<?php echo ($page == 'venta.php') ? 'active' : ''; ?>"><a href="venta.php"><span>Crear Foco</span></a></li>
+                                        <li><a href="index.php" class="<?php echo ($page == 'index.php' || $page == '/') ? 'active' : ''; ?>">Visualizar Foco</a></li>
+                                        <li><a href="resultado_foco.php" class="<?php echo ($page == 'resultado_foco.php' || $page == '/') ? 'active' : ''; ?>">Resultado Foco</a></li>
                                         <li><a href="leads-dashboard.php" class="<?php echo ($page == 'leads-dashboard.php') ? 'active' : ''; ?>">Panel de control de clientes potenciales</a></li>
                                         <li><a href="project-dashboard.php" class="<?php echo ($page == 'project-dashboard.php') ? 'active' : ''; ?>">Panel de control del proyecto</a></li>
                                     </ul>
@@ -122,11 +124,6 @@
                             <?php if ($_SESSION['rol'] == "Admin") { ?>
                                 <li class="<?php echo ($page == 'info_origen.php') ? 'active' : ''; ?>">
                                     <a href="info_origen.php"><i class="ti ti-user-up"></i><span>Información Origen</span></a>
-                                </li>
-                            <?php } ?>
-                            <?php if ($_SESSION['rol'] == "Admin") { ?>
-                                <li class="<?php echo ($page == 'venta.php') ? 'active' : ''; ?>">
-                                    <a href="venta.php"><i class="ti ti-moneybag"></i><span>Foco</span></a>
                                 </li>
                             <?php } ?>
                             <li class="<?php echo ($page == 'contacts.php' || $page == 'contacts-list.php' || $page == 'contact-details.php') ? 'active' : ''; ?>">

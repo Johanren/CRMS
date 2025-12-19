@@ -279,14 +279,15 @@ class LeadsModels
 
     public static function ingresarMatricula($idLead, $dato)
     {
-        $sql = "UPDATE leads SET Nfactura = ?, valorF = ?, metodoF = ? WHERE id_lead = ?";
+        $sql = "UPDATE leads SET Nfactura = ?, valorF = ?, metodoF = ?, foco = ? WHERE id_lead = ?";
         $conn = new Conexion();
         $conectar = $conn->conectar();
         $stmt = $conectar->prepare($sql);
         $stmt->bindParam(1, $dato['facturaN']);
         $stmt->bindParam(2, $dato['valorF']);
         $stmt->bindParam(3, $dato['metodoP']);
-        $stmt->bindParam(4, $idLead);
+        $stmt->bindParam(4, $_SESSION['foco']);
+        $stmt->bindParam(5, $idLead);
         $stmt->execute();
         return "ok";
     }

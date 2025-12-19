@@ -192,3 +192,43 @@ function btnRestablecerFiltros() {
     Swal.fire("Filtros restablecidos", "Se limpiaron los filtros aplicados.", "info");
 }
 
+function enviarFiltrosALeads(jornada, programa, tipo) {
+
+    const filtros = {
+        texto: "",
+        asesor: [],
+        carreras: [programa],
+        horario: [jornada],
+        interes: tipo === "con_horario" ? ["Con Horario"] : [],
+        medio: [],
+        fuente: [],
+        campana: [],
+        accion: [],
+        departamento: [],
+        ciudad: [],
+        barrio: [],
+        estados: ["Nuevo Leads","Leads Activo","Interesado","En Decisión","Matricula en proceso"],
+        fecha_inicio: "",
+        fecha_fin: ""
+    };
+
+    fetch("ajax/ajax.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: `accion=guardar_filtros&filtros=${encodeURIComponent(JSON.stringify(filtros))}`
+    })
+    .then(res => res.json())
+    .then(resp => {
+        if (!resp.success) {
+            Swal.fire("Error", "No se pudieron guardar los filtros", "error");
+            return;
+        }
+
+        /* 👉 Redirigir a leads */
+        window.location.href = "leads.php";
+    })
+    .catch(err => {
+        console.error(err);
+        Swal.fire("Error", "Error al enviar filtros", "error");
+    });
+}

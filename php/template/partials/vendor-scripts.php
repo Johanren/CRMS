@@ -416,7 +416,7 @@ if($page != 'login.php'){
     <script src="assets/json/deals-project.js"></script>
 <?php } ?>
 
-<?php if ($page == 'info_origen.php' || $page == 'index.php' || $page == 'leads.php' || $page == 'venta.php' || $page == 'leads-list.php' || $page == 'leads-details.php' || $page == 'contacts.php' || $page == 'lead-reports.php'){   ?>
+<?php if ($page == 'info_origen.php' || $page = 'resultado_foco.php' || $page == 'index.php' || $page == 'leads.php' || $page == 'venta.php' || $page == 'leads-list.php' || $page == 'leads-details.php' || $page == 'contacts.php' || $page == 'lead-reports.php'){   ?>
     <script src="assets/json/venta.js"></script>
     <script src="assets/json/info_origen.js"></script>
     <script src="assets/json/manage-users-list.js"></script>

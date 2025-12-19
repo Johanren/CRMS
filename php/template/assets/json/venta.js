@@ -172,8 +172,8 @@ async function cargarTablaFoco() {
 }
 
 async function cargarTablaFocoReporte() {
-
     try {
+
         /* ================= DATOS FOCO ================= */
         const fdForm = new FormData();
         fdForm.append("accion", "tabla_foco");
@@ -194,8 +194,14 @@ async function cargarTablaFocoReporte() {
         });
         const leadsData = await leadRes.json();
 
-        /* ================= JORNADAS / PROGRAMAS ================= */
-        const jornadas = [...new Set(leadsData.map(d => d.jornada))];
+        /* ================= JORNADAS (con id_jornada) ================= */
+        const jornadas = [...new Map(
+            leadsData.map(d => [d.id_jornada, {
+                id_jornada: d.id_jornada,
+                jornada: d.jornada
+            }])
+        ).values()];
+
         const programas = [...new Set(leadsData.map(d => d.programa))];
 
         const thead = document.querySelector("#tablaFocoReporte thead");
@@ -215,24 +221,29 @@ async function cargarTablaFocoReporte() {
         thead.innerHTML = h1 + h2;
         tbody.innerHTML = "";
 
-        /* ================= ACUMULADORES LEADS ================= */
+        /* ================= ACUMULADORES GENERALES ================= */
         const totalesLeads = {};
         programas.forEach(p => totalesLeads[p] = { con: 0, solo: 0 });
 
-        let totalConHorario = 0;
-        let totalSoloCarrera = 0;
+        let totalConHorarioGeneral = 0;
+        let totalSoloCarreraGeneral = 0;
 
         /* ================= BODY ================= */
-        jornadas.forEach(jornada => {
+        jornadas.forEach(j => {
+
+            const { id_jornada, jornada } = j;
 
             /* ================= FILA 1 → CUPOS ================= */
             let filaCupos = `<tr><td rowspan="3">${jornada}</td>`;
             let totalFilaCupos = 0;
 
             programas.forEach(programa => {
-                const d = focoData.find(f => f.jornada === jornada && f.programa === programa);
-                const cupos = d ? +d.ventas : 0;
+                const d = focoData.find(f =>
+                    f.id_jornada === id_jornada &&
+                    f.programa === programa
+                );
 
+                const cupos = d ? Number(d.cupos) : 0;
                 totalFilaCupos += cupos;
 
                 filaCupos += `<td colspan="3">${cupos}</td>`;
@@ -247,54 +258,74 @@ async function cargarTablaFocoReporte() {
             let totalFilaR = 0;
 
             programas.forEach(programa => {
-                const d = focoData.find(f => f.jornada === jornada && f.programa === programa);
-                const ventas = d ? +d.ventas : 0;
-                const reintegros = d ? +d.reintegros : 0;
+                const d = focoData.find(f =>
+                    f.id_jornada === id_jornada &&
+                    f.programa === programa
+                );
 
-                totalFilaV += 0;
-                totalFilaR += 0;
+                const ventas = d ? Number(d.ventas) : 0;
+                const reintegros = d ? Number(d.reintegros) : 0;
 
-                filaVR += `<td>0</td><td>0</td><td>0</td>`;
+                totalFilaV += ventas;
+                totalFilaR += reintegros;
+
+                filaVR += `
+                    <td>${ventas}</td>
+                    <td>${reintegros}</td>
+                    <td>${ventas - reintegros}</td>
+                `;
             });
 
-            filaVR += `<td><b>${totalFilaV}</b></td><td><b>${totalFilaR}</b></td><td>0</td></tr>`;
+            filaVR += `
+                <td><b>${totalFilaV}</b></td>
+                <td><b>${totalFilaR}</b></td>
+                <td><b>${totalFilaV - totalFilaR}</b></td>
+            </tr>`;
             tbody.innerHTML += filaVR;
 
             /* ================= FILA 3 → LEADS ================= */
             let filaLeads = `<tr>`;
+            let totalConHorarioFila = 0;
+            let totalSoloCarreraFila = 0;
 
             programas.forEach(programa => {
-                const l = leadsData.find(x =>
-                    x.jornada === jornada &&
-                    x.programa === programa
+
+                const leads = leadsData.filter(l =>
+                    l.id_jornada === id_jornada &&
+                    l.programa === programa
                 );
 
-                const conHorario = l ? +l.con_horario : 0;
-                const soloCarrera = l ? +l.solo_carrera : 0;
+                const conHorario = leads.reduce((a, b) => a + Number(b.con_horario), 0);
+                const soloCarrera = leads.reduce((a, b) => a + Number(b.solo_carrera), 0);
 
-                /* ACUMULAR TOTALES */
                 totalesLeads[programa].con += conHorario;
                 totalesLeads[programa].solo += soloCarrera;
 
-                totalConHorario += conHorario;
-                totalSoloCarrera += soloCarrera;
+                totalConHorarioFila += conHorario;
+                totalSoloCarreraFila += soloCarrera;
 
-                filaLeads += `<td colspan="2">${conHorario}</td><td>${soloCarrera}</td>`;
+                filaLeads += `
+                    <td colspan="2"
+                        class="text-primary fw-bold cursor-pointer"
+                        onclick="enviarFiltrosALeads('${id_jornada}','${programa}','con_horario')">
+                        ${conHorario}
+                    </td>
+                    <td>${soloCarrera}</td>
+                `;
             });
 
-            filaLeads += `
-                <td colspan="2"><b>${totalConHorario}</b></td>
-                <td><b>${totalSoloCarrera}</b></td>
-            </tr>`;
+            totalConHorarioGeneral += totalConHorarioFila;
+            totalSoloCarreraGeneral += totalSoloCarreraFila;
 
+            filaLeads += `
+                <td colspan="2"><b>${totalConHorarioFila}</b></td>
+                <td><b>${totalSoloCarreraFila}</b></td>
+            </tr>`;
             tbody.innerHTML += filaLeads;
         });
 
-        /* ================= FILA FINAL → TOTALES LEADS ================= */
-        let filaTot = `
-            <tr class="table-secondary fw-bold">
-                <td>Totales</td>
-        `;
+        /* ================= FILA FINAL → TOTALES GENERALES ================= */
+        let filaTot = `<tr class="table-secondary fw-bold"><td>Totales</td>`;
 
         programas.forEach(p => {
             filaTot += `
@@ -304,16 +335,473 @@ async function cargarTablaFocoReporte() {
         });
 
         filaTot += `
-                <td colspan="2">${totalConHorario}</td>
-                <td>${totalSoloCarrera}</td>
-            </tr>
-        `;
+            <td colspan="2">${totalConHorarioGeneral}</td>
+            <td>${totalSoloCarreraGeneral}</td>
+        </tr>`;
 
         tbody.innerHTML += filaTot;
 
     } catch (e) {
         console.error("Error tabla foco:", e);
     }
+}
+
+async function cargarTablaFocoResultado() {
+
+    /* ================= DATOS LEADS ================= */
+    const leadForm = new FormData();
+    leadForm.append("accion", "leads_foco_resultado");
+
+    const leadRes = await fetch("ajax/ajax.php", {
+        method: "POST",
+        body: leadForm
+    });
+    const leadsData = await leadRes.json();
+
+    const thead = document.querySelector("#tablaFocoResultado thead");
+    const tbody = document.querySelector("#tablaFocoResultado tbody");
+    let cupos = [...new Set(leadsData.map(d => d.ventas))];
+    const totalLeads = leadsData.reduce((total, d) => {
+        return total + Number(d.con_horario || 0);
+    }, 0);
+
+    const totalVendi = leadsData.reduce((total, d) => {
+        return total + Number(d.ventas_estado_6 || 0);
+    }, 0);
+
+    thead.innerHTML = `
+
+            <!-- ================= FILA SUPERIOR RESUMEN ================= -->
+            <tr class="fw-bold text-center">
+                <th id="resumenCupo1" style="cursor:pointer" colspan="1">${cupos[1]}</th>
+                <th id="resumenPorcentaje" style="cursor:pointer" colspan="2">100%</th>
+                <th class="resumenCupo2" colspan="1">${cupos[1]}</th>
+
+                <th colspan="6" class="bg-warning text-center">VENTAS</th>
+                <th colspan="6" class="bg-primary text-white text-center">REINTEGROS</th>
+                <th colspan="3" class="bg-info text-center">RESULTADOS</th>
+            </tr>
+
+            <!-- ================= HEADER NIVEL 1 ================= -->
+            <tr>
+                <th rowspan="2">Técnica</th>
+                <th rowspan="2">J</th>
+                <th rowspan="2">Leads</th>
+                <th rowspan="2">Cupos</th>
+            </tr>
+
+            <!-- ================= HEADER NIVEL 2 ================= -->
+            <tr>
+                <!-- VENTAS -->
+                <th rowspan="2">Meta</th>
+                <th rowspan="2">Vendido</th>
+                <th rowspan="2">Cumpl %</th>
+                <th rowspan="2">Faltan</th>
+                <th rowspan="2">Leads/Faltan</th>
+                <th rowspan="2">$</th>
+
+                <!-- REINTEGROS -->
+                <th rowspan="2">Meta</th>
+                <th rowspan="2">ADN</th>
+                <th rowspan="2">Reintegros</th>
+                <th rowspan="2">Cumpl %</th>
+                <th rowspan="2">Cupos</th>
+                <th rowspan="2"></th>
+
+                <!-- RESULTADOS -->
+                <th rowspan="2">Alumnos</th>
+                <th rowspan="2">Densidad</th>
+                <th rowspan="2">Faltan</th>
+            </tr>
+        `;
+
+
+    tbody.innerHTML = "";
+
+    /* ================= FILAS DE EJEMPLO ================= */
+
+    leadsData.forEach(row => {
+        tbody.innerHTML += `
+            <tr>
+                <td>${row.programa}</td>
+                <td>${row.jornada}</td>
+                <td>${row.con_horario}</td>
+                <td class="col-cupos">0</td>
+
+                <!-- VENTAS -->
+                <td class="col-metas">0</td>
+                <td class="col-ventas" data-ventas="${row.ventas_estado_6}">${row.ventas_estado_6}</td>
+                <td class="col-resultado">0%</td>
+                <td class="col-restante">0</td>
+                <td class="col-leads-restante">0</td>
+                <td class="col-valor" data-valor="${row.valor_programa}"></td>
+
+                <!-- REINTEGROS -->
+                <td class="col-meta">0</td>
+                <td class="col-ADN" data-ADN="0">0</td>
+                <td class="col-reintegro" data-reintegro="0">0</td>
+                <td class="col-resulado-reintegro">0%</td>
+                <td class="col-cupo-reintegro">0</td>
+                <td class="col-cupo-ADN">0</td>
+
+                <!-- RESULTADOS -->
+                <td class="col-alumno">0</td>
+                <td class="col-densidad">0%</td>
+                <td class="col-falta">0</td>
+            </tr>
+        `;
+    });
+
+    /* ================= FILA TOTALES ================= */
+    tbody.innerHTML += `
+        <tr class="fw-bold table-secondary">
+            <td>Total Grupos</td>
+            <td id="totalGrupo"></td>
+            <td id="totalLeads">${totalLeads}</td>
+            <td id="totalCupos">0</td>
+
+            <td id="totalMeta">0</td>
+            <td>${totalVendi}</td>
+            <td id="totalCumpl">0</td>
+            <td id="totalRestante">0</td>
+            <td id="totalLeadsRestante">0</td>
+            <td id="totalValor">0</td>
+
+            <td id="totalMetaIntegro">0</td>
+            <td>0</td>
+            <td>0</td>
+            <td id="totalCumIntegro">0</td>
+            <td id="totalCupoIntegro">0</td>
+            <td id="totalADN">0</td>
+
+            <td id="totalAlumno">0</td>
+            <td id="totalDensidad">0</td>
+            <td id="totalFalta">0</td>
+        </tr>
+    `;
+
+    /* ================= FILA ABAJO 1 ================= */
+    tbody.innerHTML += `
+        <tr class="fw-bold table-secondary">
+            <td>Alumnos x Grupo</td>
+            <td id="totalalumnoPorciento"></td>
+            <td id="totalAlumnosBajo"></td>
+            <td id="totalDensidadPorciento1">0</td>
+
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td id="totalValorPorcen">0</td>
+
+            <td id="totalMetaPorcen">0</td>
+            <td></td>
+            <td>0%</td>
+            <td colspan="2" id="totalCuposPorcen">0</td>
+            <td></td>
+
+            <td id="totalalumnoPorciento1">0</td>
+            <td id="totalDensidadPorciento">0</td>
+            <td id="totalFaltaPorciento">0</td>
+        </tr>
+    `;
+    activarPorcentajeResumen();
+}
+
+function activarPorcentajeResumen() {
+
+    const thPorcentaje = document.getElementById("resumenPorcentaje");
+    const thCupo1 = document.getElementById("resumenCupo1");
+    const thCupo2 = document.querySelector(".resumenCupo2");
+    const totalCupos = document.getElementById("totalCupos");
+    const totalMeta = document.getElementById("totalMeta");
+    const totalCumpl = document.getElementById("totalCumpl");
+    const totalRestante = document.getElementById("totalRestante");
+    const totalLR = document.getElementById("totalLeadsRestante");
+    const totalValores = document.getElementById("totalValor");
+    const totalMetaIntegro = document.getElementById("totalMetaIntegro");
+    const totalCumIntegro = document.getElementById("totalCumIntegro");
+    const totalCupoIntegro = document.getElementById("totalCupoIntegro");
+    const ADNLEADS = document.getElementById("totalADN");
+    const totalAlumnos = document.getElementById("totalAlumno");
+    const totalAlumnosBajo = document.getElementById("totalAlumnosBajo");
+    const totalDensidad = document.getElementById("totalDensidad");
+    const totalFaltaSuma = document.getElementById("totalFalta");
+    const totalalumnoPorciento = document.getElementById("totalalumnoPorciento");
+    const totalalumnoPorciento1 = document.getElementById("totalalumnoPorciento1");
+    const totalDensidadPorciento = document.getElementById("totalDensidadPorciento");
+    const totalDensidadPorciento1 = document.getElementById("totalDensidadPorciento1");
+    const totalValorPorcen = document.getElementById("totalValorPorcen");
+    const totalMetaPorcen = document.getElementById("totalMetaPorcen");
+    const totalCuposPorcen = document.getElementById("totalCuposPorcen");
+    const totalFaltaPorciento = document.getElementById("totalFaltaPorciento");
+
+    if (!thPorcentaje || !thCupo1 || !thCupo2) return;
+
+    // ===== inicializar cupo base =====
+    if (!thCupo1.dataset.base) {
+        thCupo1.dataset.base = parseFloat(thCupo1.textContent) || 0;
+    }
+
+    const obtenerPorcentajeActual = () => {
+        return parseFloat(thPorcentaje.textContent) || 100;
+    };
+
+    const recalcular = (porcentaje) => {
+        const cupoBase = parseFloat(thCupo1.dataset.base) || 0;
+        const nuevoCupo = Math.round(cupoBase * (porcentaje / 100));
+
+        // header
+        thCupo2.textContent = nuevoCupo;
+
+        // columnas cupos
+        let totalC = 0;
+        document.querySelectorAll(".col-cupos").forEach(td => {
+            td.textContent = nuevoCupo;
+            totalC += nuevoCupo;
+        });
+
+        // columnas metas (80%)
+        let totalM = 0;
+        document.querySelectorAll(".col-metas").forEach(td => {
+            const nuevaMeta = Math.round(nuevoCupo * 0.8);
+            td.textContent = nuevaMeta;
+            totalM += nuevaMeta;
+        });
+        let totalCum = 0;
+        let totalR = 0;
+        let totalLeadsRestante = 0;
+        let totalValor = 0;
+        let totalmetaIntegro = 0;
+        let totalCumReintegro = 0;
+        let totalcupoIntegro = 0;
+        let totalADN = 0;
+        let totalAlumno = 0;
+        let totalresultadoDencidad = 0;
+        let totalFalta = 0;
+        let totalGrupo = 0;
+        // 🔹 RESULTADO = SI(cupos=0,0,ventas*meta)
+        document.querySelectorAll("#tablaFocoResultado tbody tr").forEach(tr => {
+
+            const cupos = Number(tr.querySelector(".col-cupos")?.textContent || 0);
+            const meta = Number(tr.querySelector(".col-metas")?.textContent || 0);
+            const ventas = Number(tr.querySelector(".col-ventas")?.dataset.ventas || 0);
+            const reintegro = Number(tr.querySelector(".col-reintegro")?.dataset.reintegro || 0);
+            const restantes = Number(tr.children[7]?.textContent || 0);
+            const valores = Number(tr.querySelector(".col-valor")?.dataset.valor || 0);
+            const ADN = Number(tr.children[11]?.textContent || 0);
+            const leads = Number(tr.children[2]?.textContent || 0); // con_horario
+            const totalLeads = Number(document.querySelector("#totalLeads")?.textContent || 0);
+            /* ================= CUMPLIMIENTO ================= */
+            const resultado = calcularResultado(cupos, ventas, meta);
+            const tdResultado = tr.querySelector(".col-resultado");
+            if (tdResultado) {
+                tdResultado.textContent = resultado + "%";
+                totalCum += resultado;
+            }
+
+            /* ================= RESTANTE ================= */
+            const restante = Math.max(meta - ventas, 0);
+            const tdRestante = tr.querySelector(".col-restante");
+            if (tdRestante) {
+                tdRestante.textContent = restante;
+                totalR += restante;
+            }
+
+            /* ================= LEADS - RESTANTE ================= */
+            const leadsRestante = leads - restante;
+            const tdLeadsRestante = tr.querySelector(".col-leads-restante");
+            if (tdLeadsRestante) {
+                tdLeadsRestante.textContent = leadsRestante;
+                totalLeadsRestante += leadsRestante;
+            }
+
+            /* ================= VALOR ================= */
+            const valor = restante * valores;
+            const tdValor = tr.querySelector(".col-valor");
+            if (tdValor) {
+                tdValor.textContent = valor.toLocaleString("es-CO", {
+                    style: "currency",
+                    currency: "COP"
+                });
+                totalValor += valor;
+            }
+
+            /* ================= META REINTEGRO ================= */
+            const metaIntegro = cupos - meta;
+            const tdmetaIntegro = tr.querySelector(".col-meta");
+            if (tdmetaIntegro) {
+                tdmetaIntegro.textContent = metaIntegro;
+                totalmetaIntegro += metaIntegro;
+            }
+
+            /* ================= CUMPLIMIENTO REINTEGRO ================= */
+            const resultadoReintegro = calcularResultado(cupos, reintegro, metaIntegro);
+            const tdResultadoReintegro = tr.querySelector(".col-resulado-reintegro");
+            if (tdResultadoReintegro) {
+                tdResultadoReintegro.textContent = resultadoReintegro + "%";
+                totalCumReintegro += resultadoReintegro;
+            }
+
+            /* ================= Cupos REINTEGRO ================= */
+            const cupoIntegro = metaIntegro - reintegro;
+            const tdcupoIntegro = tr.querySelector(".col-cupo-reintegro");
+            if (tdcupoIntegro) {
+                tdcupoIntegro.textContent = cupoIntegro;
+                totalcupoIntegro += cupoIntegro;
+            }
+
+            /* ================= Cupos REINTEGRO ================= */
+            const ADNDeals = ADN - cupoIntegro;
+            const tdADN = tr.querySelector(".col-cupo-ADN");
+            if (tdADN) {
+                tdADN.textContent = ADNDeals;
+                totalADN += ADNDeals;
+            }
+
+            /* ================= Alumnos ================= */
+            const alumno = ventas + reintegro;
+            const tdalumno = tr.querySelector(".col-alumno");
+            if (tdalumno) {
+                tdalumno.textContent = alumno;
+                totalAlumno += alumno;
+            }
+
+            /* ================= densidad ================= */
+            const resultadoDencidad = calcularResultado(cupos, alumno, cupos);
+            const tdresultadoDencidad = tr.querySelector(".col-densidad");
+            if (tdresultadoDencidad) {
+                tdresultadoDencidad.textContent = resultadoDencidad + "%";
+                totalresultadoDencidad += resultadoDencidad;
+            }
+
+            /* ================= Falta ================= */
+            const falta = cupoIntegro - restante;
+            const tdFalta = tr.querySelector(".col-falta");
+            if (tdFalta) {
+                tdFalta.textContent = falta;
+                totalFalta += falta;
+            }
+
+            /* ================= Total Grupos ================= */
+            const grupo = Math.round(totalLeads / thCupo2.textContent);
+            const tdGrupo = tr.querySelector("#totalGrupo");
+            if (tdGrupo) {
+                tdGrupo.textContent = grupo;
+                totalGrupo = grupo;
+            }
+
+        });
+
+        if (totalCupos) totalCupos.textContent = totalC;
+        if (totalMeta) totalMeta.textContent = totalM;
+        if (totalCumpl) totalCumpl.textContent = totalCum + "%";
+        if (totalRestante) totalRestante.textContent = totalR;
+        if (totalLR) totalLR.textContent = totalLeadsRestante;
+        if (totalValores) totalValores.textContent = totalValor.toLocaleString("es-CO", {
+            style: "currency",
+            currency: "COP"
+        });
+        if (totalMetaIntegro) totalMetaIntegro.textContent = totalmetaIntegro;
+        if (totalCumIntegro) totalCumIntegro.textContent = totalCumReintegro + "%";
+        if (totalCupoIntegro) totalCupoIntegro.textContent = totalcupoIntegro;
+        if (ADNLEADS) ADNLEADS.textContent = totalADN;
+        if (totalAlumnos) totalAlumnos.textContent = totalAlumno;
+        if (totalAlumnosBajo) totalAlumnosBajo.textContent = totalAlumno;
+        if (totalDensidad) totalDensidad.textContent = totalresultadoDencidad + "%";
+        if (totalFaltaSuma) totalFaltaSuma.textContent = totalFalta;
+        if (totalalumnoPorciento) totalalumnoPorciento.textContent = Math.round(totalAlumno / totalGrupo);
+        if (totalalumnoPorciento1) totalalumnoPorciento1.textContent = Math.round(totalAlumno / totalGrupo);
+        if (totalDensidadPorciento) totalalumnoPorciento1.textContent = Math.round(totalAlumno / totalC);
+        if (totalDensidadPorciento1) totalalumnoPorciento1.textContent = Math.round(totalAlumno / totalC);
+        if (totalValorPorcen) totalValorPorcen.textContent = Math.round(totalValor / 4200000);
+        if (totalMetaPorcen) totalMetaPorcen.textContent = Math.round(totalmetaIntegro / totalC);
+        if (totalFaltaPorciento) totalFaltaPorciento.textContent = totalFalta / totalC;
+
+    };
+
+    // ===== cálculo inicial =====
+    recalcular(obtenerPorcentajeActual());
+
+    /* ================= CLICK EN PORCENTAJE ================= */
+    thPorcentaje.addEventListener("click", () => {
+
+        const valorActual = obtenerPorcentajeActual();
+
+        thPorcentaje.innerHTML = `
+            <input
+                type="number"
+                min="0"
+                max="300"
+                step="1"
+                value="${valorActual}"
+                class="form-control form-control-sm text-center"
+                style="width:70px;margin:auto"
+            >
+        `;
+
+        const input = thPorcentaje.querySelector("input");
+        input.focus();
+
+        const aplicar = () => {
+            let porcentaje = parseFloat(input.value);
+            if (isNaN(porcentaje)) porcentaje = 0;
+
+            thPorcentaje.textContent = porcentaje + "%";
+            recalcular(porcentaje);
+        };
+
+        input.addEventListener("blur", aplicar);
+        input.addEventListener("keydown", e => {
+            if (e.key === "Enter") aplicar();
+        });
+    });
+
+    /* ================= CLICK EN CUPO BASE ================= */
+    thCupo1.addEventListener("click", () => {
+
+        const valorActual = parseFloat(thCupo1.dataset.base);
+
+        thCupo1.innerHTML = `
+            <input
+                type="number"
+                min="0"
+                step="1"
+                value="${valorActual}"
+                class="form-control form-control-sm text-center"
+                style="width:70px;margin:auto"
+            >
+        `;
+
+        const input = thCupo1.querySelector("input");
+        input.focus();
+
+        const aplicar = () => {
+            let nuevoBase = parseFloat(input.value);
+            if (isNaN(nuevoBase)) nuevoBase = 0;
+
+            // actualizar base
+            thCupo1.dataset.base = nuevoBase;
+            thCupo1.textContent = nuevoBase;
+
+            // recalcular con el porcentaje actual
+            recalcular(obtenerPorcentajeActual());
+        };
+
+        input.addEventListener("blur", aplicar);
+        input.addEventListener("keydown", e => {
+            if (e.key === "Enter") aplicar();
+        });
+    });
+}
+
+function calcularResultado(cupos, ventas, meta) {
+    cupos = Number(cupos) || 0;
+    ventas = Number(ventas) || 0;
+    meta = Number(meta) || 0;
+
+    return cupos === 0 ? 0 : Math.round((ventas / meta) * 100);
 }
 
 /* ===================== EDICIÓN INLINE ===================== */
@@ -446,6 +934,7 @@ document.addEventListener("click", async function (e) {
 
 document.addEventListener("DOMContentLoaded", cargarTablaFoco);
 document.addEventListener("DOMContentLoaded", cargarTablaFocoReporte);
+document.addEventListener("DOMContentLoaded", cargarTablaFocoResultado);
 
 function calcularTotalCupos() {
     const ventas = parseInt(document.getElementById('cupoVentaFoco').value) || 0;
