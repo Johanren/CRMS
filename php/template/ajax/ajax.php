@@ -282,6 +282,10 @@ if (isset($_POST['accion'])) {
             $filtros_json = json_encode($_POST['filtros']);
             echo json_encode($filtro->agregarFiltro($usuario_id, $nombre, $filtros_json));
             break;
+        case 'eliminar_filtros':
+            $usuario_id = $_SESSION['user_id'] ?? null;
+            echo json_encode($filtro->eliminarFiltro($usuario_id));
+            break;
         /*Foco */
         case "registrar_foco":
         case "registrar_foco_detalle":

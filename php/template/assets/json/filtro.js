@@ -139,15 +139,28 @@ function mostrarResumenFiltros(filtros) {
         : "Sin filtros aplicados";
 }
 
+function eliminarFiltrosDB() {
+    return fetch("ajax/ajax.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: "accion=eliminar_filtros"
+    })
+        .then(res => res.json());
+}
+
 function btnRestablecerFiltros() {
+    eliminarFiltrosDB().then(resp => {
+        if (!resp.success) {
+            Swal.fire("Error", resp.message || "No se pudo eliminar el filtro guardado", "error");
+            return;
+        }
+        // 🔹 Limpiar buscador
+        if (document.getElementById("buscador")) {
+            document.getElementById("buscador").value = "";
+        }
 
-    // 🔹 Limpiar buscador
-    if (document.getElementById("buscador")) {
-        document.getElementById("buscador").value = "";
-    }
-
-    // 🔹 Desmarcar todos los checkboxes de filtros
-    document.querySelectorAll(`
+        // 🔹 Desmarcar todos los checkboxes de filtros
+        document.querySelectorAll(`
         .filtro-asesor,
         .filtro-carrera,
         .filtro-horario,
@@ -162,34 +175,35 @@ function btnRestablecerFiltros() {
         .filtro-estado
     `).forEach(chk => chk.checked = false);
 
-    // 🔹 Limpiar fechas
-    window.fecha_inicio = "";
-    window.fecha_fin = "";
+        // 🔹 Limpiar fechas
+        window.fecha_inicio = "";
+        window.fecha_fin = "";
 
-    if (document.getElementById("fecha_inicio")) {
-        document.getElementById("fecha_inicio").value = "";
-    }
-    if (document.getElementById("fecha_fin")) {
-        document.getElementById("fecha_fin").value = "";
-    }
+        if (document.getElementById("fecha_inicio")) {
+            document.getElementById("fecha_inicio").value = "";
+        }
+        if (document.getElementById("fecha_fin")) {
+            document.getElementById("fecha_fin").value = "";
+        }
 
-    // 🔹 Resetear filtros en memoria (si usas el objeto Filtros)
-    if (window.Filtros && typeof window.Filtros.limpiar === "function") {
-        window.Filtros.limpiar();
-    }
+        // 🔹 Resetear filtros en memoria (si usas el objeto Filtros)
+        if (window.Filtros && typeof window.Filtros.limpiar === "function") {
+            window.Filtros.limpiar();
+        }
 
-    // 🔹 Recargar vistas sin filtros
-    if (typeof window.listarLeads === "function") window.listarLeads();
-    if (typeof window.cargarKanban === "function") window.cargarKanban();
-    if (typeof window.cargarContactGrid === "function") window.cargarContactGrid();
-    if (typeof window.listarLeadsReporte === "function") window.listarLeadsReporte();
+        // 🔹 Recargar vistas sin filtros
+        if (typeof window.listarLeads === "function") window.listarLeads();
+        if (typeof window.cargarKanban === "function") window.cargarKanban();
+        if (typeof window.cargarContactGrid === "function") window.cargarContactGrid();
+        if (typeof window.listarLeadsReporte === "function") window.listarLeadsReporte();
 
-    // 🔹 Limpiar resumen
-    const span = document.getElementById("resumen-filtros");
-    if (span) span.innerText = "Sin filtros aplicados";
+        // 🔹 Limpiar resumen
+        const span = document.getElementById("resumen-filtros");
+        if (span) span.innerText = "Sin filtros aplicados";
 
-    // 🔹 Feedback opcional
-    Swal.fire("Filtros restablecidos", "Se limpiaron los filtros aplicados.", "info");
+        // 🔹 Feedback opcional
+        Swal.fire("Filtros restablecidos", "Se limpiaron los filtros aplicados.", "info");
+    });
 }
 
 function enviarFiltrosALeads(jornada, programa, tipo) {
@@ -207,7 +221,7 @@ function enviarFiltrosALeads(jornada, programa, tipo) {
         departamento: [],
         ciudad: [],
         barrio: [],
-        estados: ["Nuevo Leads","Leads Activo","Interesado","En Decisión","Matricula en proceso"],
+        estados: ["Nuevo Leads", "Leads Activo", "Interesado", "En Decisión", "Matricula en proceso"],
         fecha_inicio: "",
         fecha_fin: ""
     };
@@ -217,18 +231,18 @@ function enviarFiltrosALeads(jornada, programa, tipo) {
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: `accion=guardar_filtros&filtros=${encodeURIComponent(JSON.stringify(filtros))}`
     })
-    .then(res => res.json())
-    .then(resp => {
-        if (!resp.success) {
-            Swal.fire("Error", "No se pudieron guardar los filtros", "error");
-            return;
-        }
+        .then(res => res.json())
+        .then(resp => {
+            if (!resp.success) {
+                Swal.fire("Error", "No se pudieron guardar los filtros", "error");
+                return;
+            }
 
-        /* 👉 Redirigir a leads */
-        window.location.href = "leads.php";
-    })
-    .catch(err => {
-        console.error(err);
-        Swal.fire("Error", "Error al enviar filtros", "error");
-    });
+            /* 👉 Redirigir a leads */
+            window.location.href = "leads.php";
+        })
+        .catch(err => {
+            console.error(err);
+            Swal.fire("Error", "Error al enviar filtros", "error");
+        });
 }

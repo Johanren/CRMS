@@ -22,6 +22,27 @@ class FiltroModels
         return "error";
     }
 
+    public static function eliminarFiltro($id_user)
+    {
+        $sql = "DELETE FROM filtros_usuarios WHERE usuario_id = ?";
+        $conn = new Conexion();
+        $conectar = $conn->conectar();
+        $stmt = $conectar->prepare($sql);
+
+        $stmt->bindParam(1, $id_user);
+        if ($stmt->execute()) {
+            return [
+                "success" => true,
+                "message" => "Filtros eliminados correctamente"
+            ];
+        }
+
+        return [
+            "success" => false,
+            "message" => "Error al eliminar filtros"
+        ];
+    }
+
     public static function cargarFiltro($id_user, $nombre)
     {
         $sql = "SELECT filtros FROM filtros_usuarios WHERE usuario_id = ? AND nombre = ? LIMIT 1";

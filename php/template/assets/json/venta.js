@@ -310,7 +310,11 @@ async function cargarTablaFocoReporte() {
                         onclick="enviarFiltrosALeads('${id_jornada}','${programa}','con_horario')">
                         ${conHorario}
                     </td>
-                    <td>${soloCarrera}</td>
+                    <td colspan="1"
+                        class="text-primary fw-bold cursor-pointer"
+                        onclick="enviarFiltrosALeads('','${programa}','solo_carrera')">
+                        ${soloCarrera}
+                    </td>
                 `;
             });
 
