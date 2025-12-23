@@ -29,7 +29,8 @@ if (isset($_POST['accion'])) {
                 "cod_emp"             => $_POST['cod_emp']             ?? null,
                 "sourceField"         => $_POST['sourceField']         ?? null,
                 "mediumField"         => $_POST['mediumField']         ?? null,
-                "campaignField"       => $_POST['campaignField']       ?? null
+                "campaignField"       => $_POST['campaignField']       ?? null,
+                'carrera'             => $_POST['carrera']             ?? null
             ];
 
             echo json_encode($cliente->agregarCliente($data));

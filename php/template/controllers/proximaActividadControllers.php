@@ -19,6 +19,11 @@ class ProximaActividadControllers
         return ProximaActividadModels::listarProximaActividadId($id);
     }
 
+    public static function visualizarProximaActividad($id)
+    {
+        return ProximaActividadModels::visualizarProximaActividad($id);
+    }
+
     public static function listarProximaActividad($id, $inicio, $fin)
     {
         return ProximaActividadModels::listarProximaActividad($id, $inicio, $fin);

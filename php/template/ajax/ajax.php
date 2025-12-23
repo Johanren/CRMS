@@ -11,6 +11,8 @@ foreach (glob("../models/*.php") as $filename) {
     require_once $filename;
 }
 
+date_default_timezone_set('America/Bogota');
+
 $campana = new CampanaControllers();
 $audiotira = new AuditoriaControllers();
 $departamento = new DepartamentoControllers();
@@ -230,13 +232,17 @@ if (isset($_POST['accion'])) {
             break;
         case 'listar_proxima_actividad':
             $id_user = $_SESSION['user_id'];
-
-            $inicio = $_POST['fecha_inicio'] ?? null;
-            $fin = $_POST['fecha_fin'] ?? null;
+            
+            $hoy = date('Y-m-d');
+            $inicio = !empty($_POST['fecha_inicio']) ? $_POST['fecha_inicio'] : $hoy;
+            $fin    = !empty($_POST['fecha_fin']) ? $_POST['fecha_fin'] : $hoy;
 
             echo json_encode(
                 $proximaActividad->listarProximaActividad($id_user, $inicio, $fin)
             );
+            break;
+        case 'visualizar_actividad':
+            echo json_encode($proximaActividad->visualizarProximaActividad($_POST['id_actividad']));
             break;
         /*ROL */
         case 'registrar_rol':

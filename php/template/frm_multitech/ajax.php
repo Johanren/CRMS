@@ -31,7 +31,8 @@ if (isset($_POST['accion'])) {
                 "sourceField"         => $_POST['sourceField']         ?? null,
                 "mediumField"         => $_POST['mediumField']         ?? null,
                 "campaignField"       => $_POST['campaignField']       ?? null,
-                "ip_usuario"          => $_POST['ip_usuario']          ?? null
+                "ip_usuario"          => $_POST['ip_usuario']          ?? null,
+                'carrera'             => $_POST['carrera']             ?? null
             ];
 
             echo json_encode($cliente->agregarCliente($data));

@@ -510,10 +510,26 @@ async function cargarTablaFocoResultado() {
             <td id="totalFaltaPorciento">0</td>
         </tr>
     `;
-    activarPorcentajeResumen();
+
+    /* ================= FILA CUPOS ================= */
+    tbody.innerHTML += `
+        <tr class="fw-bold table-secondary">
+            <td></td>
+            <td id="">Ventas</td>
+            <td id="totalVendi" data-vendi="${totalVendi}">${totalVendi}</td>
+            <td id="tdvalorVendi">0%</td>
+        </tr>
+        <tr class="fw-bold table-secondary">
+            <td></td>
+            <td id="">Reintegros</td>
+            <td id="">0</td>
+            <td id="">0%</td>
+        </tr>
+    `;
+    activarPorcentajeResumen(leadsData);
 }
 
-function activarPorcentajeResumen() {
+function activarPorcentajeResumen(leadsData) {
 
     const thPorcentaje = document.getElementById("resumenPorcentaje");
     const thCupo1 = document.getElementById("resumenCupo1");
@@ -594,6 +610,7 @@ function activarPorcentajeResumen() {
             const reintegro = Number(tr.querySelector(".col-reintegro")?.dataset.reintegro || 0);
             const restantes = Number(tr.children[7]?.textContent || 0);
             const valores = Number(tr.querySelector(".col-valor")?.dataset.valor || 0);
+            const Valor = Number(tr.querySelector("#totalVendi")?.dataset.vendi || 0);
             const ADN = Number(tr.children[11]?.textContent || 0);
             const leads = Number(tr.children[2]?.textContent || 0); // con_horario
             const totalLeads = Number(document.querySelector("#totalLeads")?.textContent || 0);
@@ -696,6 +713,13 @@ function activarPorcentajeResumen() {
                 totalGrupo = grupo;
             }
 
+            /* ================= Total VALOR VENDI ================= */
+            const valorVendi = Math.round(Valor / totalAlumno);
+            const tdvalorVendi = tr.querySelector("#tdvalorVendi");
+            if (tdvalorVendi) {
+                tdvalorVendi.textContent = valorVendi + "%";
+            }
+
         });
 
         if (totalCupos) totalCupos.textContent = totalC;
@@ -722,7 +746,92 @@ function activarPorcentajeResumen() {
         if (totalValorPorcen) totalValorPorcen.textContent = Math.round(totalValor / 4200000);
         if (totalMetaPorcen) totalMetaPorcen.textContent = Math.round(totalmetaIntegro / totalC);
         if (totalFaltaPorciento) totalFaltaPorciento.textContent = totalFalta / totalC;
+                /* ================= TABLA RESUMEN INFERIOR ================= */
 
+        if (!leadsData || !leadsData.length) return;
+
+        /* eliminar tabla previa */
+        document.getElementById("tablaResumenInferior")?.remove();
+
+        /* fechas */
+        const fechaHoy = new Date();
+
+        const fechaHoyStr = fechaHoy.toLocaleDateString("es-CO");
+        const horaHoyStr = fechaHoy.toLocaleTimeString("es-CO", {
+            hour: "2-digit",
+            minute: "2-digit"
+        });
+
+        /* fechas DBA (iguales para todos) */
+        const fechaInicio = leadsData[0].fecha_inicio;
+        const fechaFin = leadsData[0].fecha_fin;
+
+        /* cálculo días */
+        const diasEntre = (f1, f2) => {
+            const d1 = new Date(f1);
+            const d2 = new Date(f2);
+            return Math.max(((d2 - d1) / (1000 * 60 * 60 * 24)).toFixed(2), 0);
+        };
+
+        const pasado = diasEntre(fechaInicio, fechaHoy);
+        const futuro = diasEntre(fechaHoy, fechaFin);
+
+        /* totales */
+        const totalVentas = totalAlumno;
+        const totalFaltaFinal = totalFalta;
+
+        /* ratios */
+        const ventasPasado = pasado > 0 ? (totalVentas / pasado).toFixed(2) : 0;
+        const faltaFuturo = futuro > 0 ? (totalFaltaFinal / futuro).toFixed(2) : 0;
+
+        /* tabla */
+        const tablaResumen = `
+        <table id="tablaResumenInferior" class="table table-bordered text-center mt-4">
+            <thead>
+                <tr>
+                    <th colspan="2">Actualizado</th>
+                    <th colspan="2">Inicio</th>
+                    <th colspan="2">Ventas</th>
+                    <th colspan="2">Reintegros</th>
+                </tr>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Hora</th>
+                    <th>Pasado</th>
+                    <th>Futuro</th>
+                    <th>Total</th>
+                    <th>Ratio</th>
+                    <th>Total</th>
+                    <th>Ratio</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>${fechaHoyStr}</td>
+                    <td>${horaHoyStr}</td>
+                    <td>${pasado}</td>
+                    <td>${futuro}</td>
+                    <td>${totalVentas}</td>
+                    <td>${ventasPasado}</td>
+                    <td>0</td>
+                    <td>0</td>
+                </tr>
+                <tr>
+                    <td colspan="2">Falta</td>
+                    <td colspan="2"></td>
+                    <td>${totalFaltaFinal}</td>
+                    <td>${faltaFuturo}</td>
+                    <td>0</td>
+                    <td>0</td>
+                </tr>
+            </tbody>
+        </table>
+        `;
+
+        /* insertar */
+        document
+            .getElementById("tablaFocoResultado")
+            .insertAdjacentHTML("afterend", tablaResumen);
     };
 
     // ===== cálculo inicial =====
@@ -799,6 +908,24 @@ function activarPorcentajeResumen() {
         });
     });
 }
+
+function fechaActual() {
+    const f = new Date();
+    return f.toLocaleDateString("es-CO");
+}
+
+function horaActual() {
+    const f = new Date();
+    return f.toLocaleTimeString("es-CO", { hour: "2-digit", minute: "2-digit" });
+}
+
+function diasEntre(fecha1, fecha2) {
+    const f1 = new Date(fecha1);
+    const f2 = new Date(fecha2);
+    const diff = (f2 - f1) / (1000 * 60 * 60 * 24);
+    return diff > 0 ? diff.toFixed(2) : 0;
+}
+
 
 function calcularResultado(cupos, ventas, meta) {
     cupos = Number(cupos) || 0;

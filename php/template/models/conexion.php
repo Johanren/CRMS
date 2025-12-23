@@ -6,6 +6,8 @@ class Conexion{
 
 		// Configura la codificación de caracteres para la conexión
 		$pdo->exec("set names utf8mb4");
+		// Zona horaria Colombia - Bogotá (AFECTA CURRENT_TIMESTAMP)
+        $pdo->exec("SET time_zone = '-05:00'");
 		return $pdo;
 	}
 }
