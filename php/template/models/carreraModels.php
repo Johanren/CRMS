@@ -30,6 +30,25 @@ class CarreraModels
         return "error";
     }
 
+    public static function updateCarrera($data)
+    {
+        $sql = "UPDATE programa SET desc_pro = ?, val_pro = ?, emp_pro = ?, act_pro = ? WHERE cod_pro = ?";
+        $conn = new Conexion();
+        $conectar = $conn->conectar();
+        $stmt = $conectar->prepare($sql);
+
+        $stmt->bindParam(1, $data["nom_carr"]);
+        $stmt->bindParam(2, $data["val_carr"]);
+        $stmt->bindParam(3, $data["emp_carr"]);
+        $stmt->bindParam(4, $data["act_pro"]);
+        $stmt->bindParam(5, $data["carrera_id"]);
+        if ($stmt->execute()) {
+            return "ok";
+        }
+
+        return "error";
+    }
+
     public static function listarCarreraId($id)
     {
         $sql = "SELECT * FROM programa WHERE cod_pro = ?";
@@ -49,6 +68,6 @@ class CarreraModels
         $stmt = $conectar->prepare($sql);
         $stmt->bindParam(1, $id);
         $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return "ok";
     }
 }

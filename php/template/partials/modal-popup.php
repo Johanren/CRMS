@@ -33975,6 +33975,16 @@ $page = end( $link_array );
                             </select>
                         </div>
                     </div>
+                    <div class="col-md-12" id="contenedorActivo" style="display: none;">
+                        <div class="mb-3">
+                            <label class="form-label">Estado <span class="text-danger">*</span></label>
+                            <select name="act_pro" class="form-control" id="act_pro">
+                                <option value="">Seleccionar estado</option>
+                                <option value="0">Inactivo</option>
+                                <option value="1">Activo</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="d-flex align-items-center justify-content-end">

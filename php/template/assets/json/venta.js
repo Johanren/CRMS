@@ -377,9 +377,9 @@ async function cargarTablaFocoResultado() {
 
             <!-- ================= FILA SUPERIOR RESUMEN ================= -->
             <tr class="fw-bold text-center">
-                <th id="resumenCupo1" style="cursor:pointer" colspan="1">${cupos[1]}</th>
+                <th id="resumenCupo1" style="cursor:pointer" colspan="1">${cupos[0]}</th>
                 <th id="resumenPorcentaje" style="cursor:pointer" colspan="2">100%</th>
-                <th class="resumenCupo2" colspan="1">${cupos[1]}</th>
+                <th class="resumenCupo2" colspan="1">${cupos[0]}</th>
 
                 <th colspan="6" class="bg-warning text-center">VENTAS</th>
                 <th colspan="6" class="bg-primary text-white text-center">REINTEGROS</th>
@@ -402,7 +402,7 @@ async function cargarTablaFocoResultado() {
                 <th rowspan="2">Cumpl %</th>
                 <th rowspan="2">Faltan</th>
                 <th rowspan="2">Leads/Faltan</th>
-                <th rowspan="2">$</th>
+                <th rowspan="2" id="thValorPrograma" style="cursor:pointer">$</th>
 
                 <!-- REINTEGROS -->
                 <th rowspan="2">Meta</th>
@@ -556,6 +556,15 @@ function activarPorcentajeResumen(leadsData) {
     const totalMetaPorcen = document.getElementById("totalMetaPorcen");
     const totalCuposPorcen = document.getElementById("totalCuposPorcen");
     const totalFaltaPorciento = document.getElementById("totalFaltaPorciento");
+
+    const thValorPrograma = document.getElementById("thValorPrograma");
+
+    if (thValorPrograma && !thValorPrograma.dataset.base) {
+        // toma el primer valor_programa como base
+        const primerValor = document.querySelector(".col-valor")?.dataset.valor || 0;
+        thValorPrograma.dataset.base = primerValor;
+        thValorPrograma.textContent = Number(primerValor).toLocaleString("es-CO");
+    }
 
     if (!thPorcentaje || !thCupo1 || !thCupo2) return;
 
@@ -746,7 +755,7 @@ function activarPorcentajeResumen(leadsData) {
         if (totalValorPorcen) totalValorPorcen.textContent = Math.round(totalValor / 4200000);
         if (totalMetaPorcen) totalMetaPorcen.textContent = Math.round(totalmetaIntegro / totalC);
         if (totalFaltaPorciento) totalFaltaPorciento.textContent = totalFalta / totalC;
-                /* ================= TABLA RESUMEN INFERIOR ================= */
+        /* ================= TABLA RESUMEN INFERIOR ================= */
 
         if (!leadsData || !leadsData.length) return;
 
@@ -899,6 +908,48 @@ function activarPorcentajeResumen(leadsData) {
             thCupo1.textContent = nuevoBase;
 
             // recalcular con el porcentaje actual
+            recalcular(obtenerPorcentajeActual());
+        };
+
+        input.addEventListener("blur", aplicar);
+        input.addEventListener("keydown", e => {
+            if (e.key === "Enter") aplicar();
+        });
+    });
+
+    /* ================= CLICK EN $ (VALOR PROGRAMA) ================= */
+    thValorPrograma?.addEventListener("click", () => {
+
+        const valorActual = parseFloat(thValorPrograma.dataset.base) || 0;
+
+        thValorPrograma.innerHTML = `
+        <input
+            type="number"
+            min="0"
+            step="1000"
+            value="${valorActual}"
+            class="form-control form-control-sm text-center"
+            style="width:110px;margin:auto"
+        >
+    `;
+
+        const input = thValorPrograma.querySelector("input");
+        input.focus();
+
+        const aplicar = () => {
+            let nuevoValor = parseFloat(input.value);
+            if (isNaN(nuevoValor)) nuevoValor = 0;
+
+            // guardar valor base
+            thValorPrograma.dataset.base = nuevoValor;
+            thValorPrograma.textContent = nuevoValor.toLocaleString("es-CO");
+
+            // actualizar TODAS las filas
+            document.querySelectorAll(".col-valor").forEach(td => {
+                td.dataset.valor = nuevoValor;
+            });
+
+            // recalcular con porcentaje actual
             recalcular(obtenerPorcentajeActual());
         };
 

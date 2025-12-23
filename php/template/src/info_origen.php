@@ -162,6 +162,7 @@
                                         <th>Carrera</th>
                                         <th>Valor</th>
                                         <th>Empresa</th>
+                                        <th>Estado</th>
                                         <th>Acciones</th>
                                     </tr>
                                 </thead>

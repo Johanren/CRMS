@@ -212,7 +212,6 @@ class focoModels
 
     public static function listarLeadsFocoResultado()
     {
-        $id_user = $_SESSION["user_id"];
         $sql = "SELECT
                 h.descripcion AS jornada,
                 p.desc_pro AS programa,
@@ -257,7 +256,7 @@ class focoModels
             ";
         if ($_SESSION['rol'] !== 'Admin') {
             $sql .= "
-            AND lh.user_id = '$id_user'";
+            AND lh.user_id = :user_id";
         }
         $sql .= "
             LEFT JOIN leads lv
@@ -271,7 +270,7 @@ class focoModels
             ";
         if ($_SESSION['rol'] !== 'Admin') {
             $sql .= "
-            AND lv.user_id = '$id_user'";
+            AND lv.user_id = ':user_id";
         }
         $sql .= "
             /* Leads solo carrera (horario distinto o NULL) */
@@ -282,7 +281,7 @@ class focoModels
             ";
         if ($_SESSION['rol'] !== 'Admin') {
             $sql .= "
-            AND ls.user_id = '$id_user'
+            AND ls.user_id = :user_id
             ";
         }
         $sql .= "
@@ -315,6 +314,9 @@ class focoModels
         $stmt = $conectar->prepare($sql);
         $stmt->bindParam(':cod_emp', $_SESSION["cod_emp"], PDO::PARAM_INT);
         $stmt->bindParam(':foco', $_SESSION["foco"], PDO::PARAM_INT);
+        if ($_SESSION['rol'] !== 'Admin') {
+            $stmt->bindParam(':user_id', $_SESSION["user_id"], PDO::PARAM_INT);
+        }
         $stmt->execute();
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);

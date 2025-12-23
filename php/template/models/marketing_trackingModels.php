@@ -39,4 +39,22 @@ class Marketing_trackingModels
         $stmt->bindParam(2, $id_marketing);
         $stmt->execute();
     }
+
+    public static function utm_campaignClic()
+    {
+        $sql = "SELECT 
+        utm_campaign,
+        SUM(CASE WHEN estado = 'visita' THEN 1 ELSE 0 END)     AS clicks,
+        SUM(CASE WHEN estado = 'convertido' THEN 1 ELSE 0 END) AS convertidos
+        FROM marketing_tracking
+        WHERE utm_campaign IS NOT NULL
+        AND utm_campaign <> ''
+        GROUP BY utm_campaign
+        ORDER BY clicks DESC";
+        $conn = new Conexion();
+        $conectar = $conn->conectar();
+        $stmt = $conectar->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

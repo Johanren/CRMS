@@ -58,16 +58,16 @@ function inicializarDataTabledepartamento(departamento) {
 }
 
 if (document.getElementById("formDepart")) {
-    document.getElementById("formDepart").addEventListener("submit", function(e) {
+    document.getElementById("formDepart").addEventListener("submit", function (e) {
         e.preventDefault();
 
         let datos = new FormData(this);
         datos.append("accion", "registrar_Depart");
 
         fetch("ajax/ajax.php", {
-                method: "POST",
-                body: datos
-            })
+            method: "POST",
+            body: datos
+        })
             .then(res => res.json())
             .then(data => {
 
@@ -99,9 +99,9 @@ window.editarDepartament = (id) => {
     datos.append("id", id);
 
     fetch("ajax/ajax.php", {
-            method: "POST",
-            body: datos
-        })
+        method: "POST",
+        body: datos
+    })
         .then(res => res.json())
         .then(data => {
 
@@ -137,7 +137,7 @@ window.editarDepartament = (id) => {
 };
 
 if (document.getElementById("btnCerrarOffcanvas-depar")) {
-    document.getElementById("btnCerrarOffcanvas-depar").addEventListener("click", function() {
+    document.getElementById("btnCerrarOffcanvas-depar").addEventListener("click", function () {
         document.getElementById("formDepart").reset();
         document.getElementById("title-canvas-depar").textContent = "Nueva Departamento";
         document.getElementById("btn-canvas-depar").textContent = "Crear";
@@ -151,9 +151,9 @@ window.eliminarDepartamento = (id) => {
     datos.append("id", id);
 
     fetch("ajax/ajax.php", {
-            method: "POST",
-            body: datos
-        })
+        method: "POST",
+        body: datos
+    })
         .then(res => res.json())
         .then(data => {
 
@@ -266,16 +266,16 @@ function listarCiud() {
 }
 
 if (document.getElementById("formCiudad")) {
-    document.getElementById("formCiudad").addEventListener("submit", function(e) {
+    document.getElementById("formCiudad").addEventListener("submit", function (e) {
         e.preventDefault();
 
         let datos = new FormData(this);
         datos.append("accion", "registrar_ciudad");
 
         fetch("ajax/ajax.php", {
-                method: "POST",
-                body: datos
-            })
+            method: "POST",
+            body: datos
+        })
             .then(res => res.json())
             .then(data => {
 
@@ -298,9 +298,9 @@ window.editarCiudad = (id) => {
     datos.append("id", id);
 
     fetch("ajax/ajax.php", {
-            method: "POST",
-            body: datos
-        })
+        method: "POST",
+        body: datos
+    })
         .then(res => res.json())
         .then(data => {
 
@@ -342,9 +342,9 @@ window.eliminarCiudad = (id) => {
     datos.append("id", id);
 
     fetch("ajax/ajax.php", {
-            method: "POST",
-            body: datos
-        })
+        method: "POST",
+        body: datos
+    })
         .then(res => res.json())
         .then(data => {
 
@@ -364,7 +364,7 @@ window.eliminarCiudad = (id) => {
 };
 
 if (document.getElementById("btnCerrarOffcanvas-ciu")) {
-    document.getElementById("btnCerrarOffcanvas-ciu").addEventListener("click", function() {
+    document.getElementById("btnCerrarOffcanvas-ciu").addEventListener("click", function () {
         document.getElementById("formCiudad").reset();
         document.getElementById("title-canvas-ciu").textContent = "Nueva Departamento";
         document.getElementById("btn-canvas-ciu").textContent = "Crear";
@@ -466,16 +466,16 @@ function listarBarrio() {
 }
 
 if (document.getElementById("formBarrio")) {
-    document.getElementById("formBarrio").addEventListener("submit", function(e) {
+    document.getElementById("formBarrio").addEventListener("submit", function (e) {
         e.preventDefault();
 
         let datos = new FormData(this);
         datos.append("accion", "registrar_barrio");
 
         fetch("ajax/ajax.php", {
-                method: "POST",
-                body: datos
-            })
+            method: "POST",
+            body: datos
+        })
             .then(res => res.json())
             .then(data => {
 
@@ -498,9 +498,9 @@ window.editarBarrio = (id) => {
     datos.append("id", id);
 
     fetch("ajax/ajax.php", {
-            method: "POST",
-            body: datos
-        })
+        method: "POST",
+        body: datos
+    })
         .then(res => res.json())
         .then(data => {
 
@@ -536,7 +536,7 @@ window.editarBarrio = (id) => {
 };
 
 if (document.getElementById("btnCerrarOffcanvas-brr")) {
-    document.getElementById("btnCerrarOffcanvas-brr").addEventListener("click", function() {
+    document.getElementById("btnCerrarOffcanvas-brr").addEventListener("click", function () {
         document.getElementById("formBarrio").reset();
         document.getElementById("title-canvas-brr").textContent = "Nueva Barrio";
         document.getElementById("btn-canvas-brr").textContent = "Crear";
@@ -550,9 +550,9 @@ window.eliminarBarrio = (id) => {
     datos.append("id", id);
 
     fetch("ajax/ajax.php", {
-            method: "POST",
-            body: datos
-        })
+        method: "POST",
+        body: datos
+    })
         .then(res => res.json())
         .then(data => {
 
@@ -631,7 +631,23 @@ function inicializarDataTableCarrera(carrera) {
             { "data": "cod_pro" },
             { "data": "desc_pro" },
             { "data": "val_pro" },
-            { "data": "nom_emp" }, {
+            { "data": "nom_emp" },
+            {
+                data: "act_pro",
+                render: (data, type, row) => {
+
+                    if (row.act_pro === "1") {
+                        return `
+                        <span class="badge bg-success">Activo</span>
+                    `;
+                    }
+
+                    // Si act_pro NO es 1
+                    return `
+                        <span class="badge bg-secondary">Inactivo</span>
+                    `;
+                }
+            }, {
                 "render": (data, type, row) => `
                         <div class="dropdown table-action">
                             <a href="#" class="action-icon btn btn-xs shadow btn-icon btn-outline-light" data-bs-toggle="dropdown" aria-expanded="false">
@@ -666,16 +682,24 @@ function listarCarr() {
 }
 
 if (document.getElementById("formCarr")) {
-    document.getElementById("formCarr").addEventListener("submit", function(e) {
+    document.getElementById("formCarr").addEventListener("submit", function (e) {
         e.preventDefault();
 
         let datos = new FormData(this);
-        datos.append("accion", "registrar_carr");
+
+        // Detectar si viene carrera_id
+        const carreraId = datos.get("carrera_id");
+
+        if (carreraId && carreraId !== "") {
+            datos.append("accion", "update_carr");
+        } else {
+            datos.append("accion", "registrar_carr");
+        }
 
         fetch("ajax/ajax.php", {
-                method: "POST",
-                body: datos
-            })
+            method: "POST",
+            body: datos
+        })
             .then(res => res.json())
             .then(data => {
 
@@ -698,9 +722,9 @@ window.editarCarrera = (id) => {
     datos.append("id", id);
 
     fetch("ajax/ajax.php", {
-            method: "POST",
-            body: datos
-        })
+        method: "POST",
+        body: datos
+    })
         .then(res => res.json())
         .then(data => {
 
@@ -713,6 +737,8 @@ window.editarCarrera = (id) => {
             document.getElementById("nom_carr").value = carr.desc_pro;
             document.getElementById("val_carr").value = carr.val_pro;
             document.getElementById("emp_carr").value = carr.emp_pro;
+            document.getElementById("act_pro").value = carr.act_pro;
+            document.getElementById("contenedorActivo").style.display = "block";
             // Guardar ID oculto
             if (!document.getElementById("carrera_id")) {
                 let hidden = document.createElement("input");
@@ -722,7 +748,6 @@ window.editarCarrera = (id) => {
                 document.getElementById("formCarr").appendChild(hidden);
             }
             document.getElementById("carrera_id").value = carr.cod_pro;
-
             // Abrir offcanvas manualmente
             let el = document.getElementById('offcarrera_add');
             let offcanvas = bootstrap.Offcanvas.getOrCreateInstance(el);
@@ -737,7 +762,7 @@ window.editarCarrera = (id) => {
 };
 
 if (document.getElementById("btnCerrarOffcanvas-carr")) {
-    document.getElementById("btnCerrarOffcanvas-carr").addEventListener("click", function() {
+    document.getElementById("btnCerrarOffcanvas-carr").addEventListener("click", function () {
         document.getElementById("formCarr").reset();
         document.getElementById("title-canvas-carr").textContent = "Nueva Carrera";
         document.getElementById("btn-canvas-carr").textContent = "Crear";
@@ -751,9 +776,9 @@ window.eliminarCarrera = (id) => {
     datos.append("id", id);
 
     fetch("ajax/ajax.php", {
-            method: "POST",
-            body: datos
-        })
+        method: "POST",
+        body: datos
+    })
         .then(res => res.json())
         .then(data => {
 
@@ -865,16 +890,16 @@ function listarHrs() {
 }
 
 if (document.getElementById("formHrs")) {
-    document.getElementById("formHrs").addEventListener("submit", function(e) {
+    document.getElementById("formHrs").addEventListener("submit", function (e) {
         e.preventDefault();
 
         let datos = new FormData(this);
         datos.append("accion", "registrar_hrs");
 
         fetch("ajax/ajax.php", {
-                method: "POST",
-                body: datos
-            })
+            method: "POST",
+            body: datos
+        })
             .then(res => res.json())
             .then(data => {
 
@@ -897,9 +922,9 @@ window.editarHorario = (id) => {
     datos.append("id", id);
 
     fetch("ajax/ajax.php", {
-            method: "POST",
-            body: datos
-        })
+        method: "POST",
+        body: datos
+    })
         .then(res => res.json())
         .then(data => {
 
@@ -934,7 +959,7 @@ window.editarHorario = (id) => {
 };
 
 if (document.getElementById("btnCerrarOffcanvas-hrs")) {
-    document.getElementById("btnCerrarOffcanvas-hrs").addEventListener("click", function() {
+    document.getElementById("btnCerrarOffcanvas-hrs").addEventListener("click", function () {
         document.getElementById("formHrs").reset();
         document.getElementById("title-canvas-hrs").textContent = "Nuevo Horario";
         document.getElementById("btn-canvas-hrs").textContent = "Crear";
@@ -948,9 +973,9 @@ window.eliminarHorario = (id) => {
     datos.append("id", id);
 
     fetch("ajax/ajax.php", {
-            method: "POST",
-            body: datos
-        })
+        method: "POST",
+        body: datos
+    })
         .then(res => res.json())
         .then(data => {
 
@@ -1062,16 +1087,16 @@ function listarItns() {
 }
 
 if (document.getElementById("formIns")) {
-    document.getElementById("formIns").addEventListener("submit", function(e) {
+    document.getElementById("formIns").addEventListener("submit", function (e) {
         e.preventDefault();
 
         let datos = new FormData(this);
         datos.append("accion", "registrar_ins");
 
         fetch("ajax/ajax.php", {
-                method: "POST",
-                body: datos
-            })
+            method: "POST",
+            body: datos
+        })
             .then(res => res.json())
             .then(data => {
 
@@ -1094,9 +1119,9 @@ window.editarInteres = (id) => {
     datos.append("id", id);
 
     fetch("ajax/ajax.php", {
-            method: "POST",
-            body: datos
-        })
+        method: "POST",
+        body: datos
+    })
         .then(res => res.json())
         .then(data => {
 
@@ -1131,7 +1156,7 @@ window.editarInteres = (id) => {
 };
 
 if (document.getElementById("btnCerrarOffcanvas-ins")) {
-    document.getElementById("btnCerrarOffcanvas-ins").addEventListener("click", function() {
+    document.getElementById("btnCerrarOffcanvas-ins").addEventListener("click", function () {
         document.getElementById("formIns").reset();
         document.getElementById("title-canvas-ins").textContent = "Nuevo Horario";
         document.getElementById("btn-canvas-ins").textContent = "Crear";
@@ -1145,9 +1170,9 @@ window.eliminarInteres = (id) => {
     datos.append("id", id);
 
     fetch("ajax/ajax.php", {
-            method: "POST",
-            body: datos
-        })
+        method: "POST",
+        body: datos
+    })
         .then(res => res.json())
         .then(data => {
 
@@ -1259,16 +1284,16 @@ function listarMdo() {
 }
 
 if (document.getElementById("formMdo")) {
-    document.getElementById("formMdo").addEventListener("submit", function(e) {
+    document.getElementById("formMdo").addEventListener("submit", function (e) {
         e.preventDefault();
 
         let datos = new FormData(this);
         datos.append("accion", "registrar_mdo");
 
         fetch("ajax/ajax.php", {
-                method: "POST",
-                body: datos
-            })
+            method: "POST",
+            body: datos
+        })
             .then(res => res.json())
             .then(data => {
 
@@ -1291,9 +1316,9 @@ window.editarMedio = (id) => {
     datos.append("id", id);
 
     fetch("ajax/ajax.php", {
-            method: "POST",
-            body: datos
-        })
+        method: "POST",
+        body: datos
+    })
         .then(res => res.json())
         .then(data => {
 
@@ -1328,7 +1353,7 @@ window.editarMedio = (id) => {
 };
 
 if (document.getElementById("btnCerrarOffcanvas-mdo")) {
-    document.getElementById("btnCerrarOffcanvas-mdo").addEventListener("click", function() {
+    document.getElementById("btnCerrarOffcanvas-mdo").addEventListener("click", function () {
         document.getElementById("formMdo").reset();
         document.getElementById("title-canvas-mdo").textContent = "Nuevo medio";
         document.getElementById("btn-canvas-mdo").textContent = "Crear";
@@ -1342,9 +1367,9 @@ window.eliminarMedio = (id) => {
     datos.append("id", id);
 
     fetch("ajax/ajax.php", {
-            method: "POST",
-            body: datos
-        })
+        method: "POST",
+        body: datos
+    })
         .then(res => res.json())
         .then(data => {
 
@@ -1457,16 +1482,16 @@ function listarFnt() {
 }
 
 if (document.getElementById("formFnt")) {
-    document.getElementById("formFnt").addEventListener("submit", function(e) {
+    document.getElementById("formFnt").addEventListener("submit", function (e) {
         e.preventDefault();
 
         let datos = new FormData(this);
         datos.append("accion", "registrar_fnt");
 
         fetch("ajax/ajax.php", {
-                method: "POST",
-                body: datos
-            })
+            method: "POST",
+            body: datos
+        })
             .then(res => res.json())
             .then(data => {
 
@@ -1489,9 +1514,9 @@ window.editarFuente = (id) => {
     datos.append("id", id);
 
     fetch("ajax/ajax.php", {
-            method: "POST",
-            body: datos
-        })
+        method: "POST",
+        body: datos
+    })
         .then(res => res.json())
         .then(data => {
 
@@ -1527,7 +1552,7 @@ window.editarFuente = (id) => {
 };
 
 if (document.getElementById("btnCerrarOffcanvas-fnt")) {
-    document.getElementById("btnCerrarOffcanvas-fnt").addEventListener("click", function() {
+    document.getElementById("btnCerrarOffcanvas-fnt").addEventListener("click", function () {
         document.getElementById("formFnt").reset();
         document.getElementById("title-canvas-fnt").textContent = "Nueva Fuente";
         document.getElementById("btn-canvas-fnt").textContent = "Crear";
@@ -1541,9 +1566,9 @@ window.eliminarFuente = (id) => {
     datos.append("id", id);
 
     fetch("ajax/ajax.php", {
-            method: "POST",
-            body: datos
-        })
+        method: "POST",
+        body: datos
+    })
         .then(res => res.json())
         .then(data => {
 
@@ -1655,16 +1680,16 @@ function listarAcc() {
 }
 
 if (document.getElementById("formAcc")) {
-    document.getElementById("formAcc").addEventListener("submit", function(e) {
+    document.getElementById("formAcc").addEventListener("submit", function (e) {
         e.preventDefault();
 
         let datos = new FormData(this);
         datos.append("accion", "registrar_acc");
 
         fetch("ajax/ajax.php", {
-                method: "POST",
-                body: datos
-            })
+            method: "POST",
+            body: datos
+        })
             .then(res => res.json())
             .then(data => {
 
@@ -1687,9 +1712,9 @@ window.editarAccion = (id) => {
     datos.append("id", id);
 
     fetch("ajax/ajax.php", {
-            method: "POST",
-            body: datos
-        })
+        method: "POST",
+        body: datos
+    })
         .then(res => res.json())
         .then(data => {
 
@@ -1724,7 +1749,7 @@ window.editarAccion = (id) => {
 };
 
 if (document.getElementById("btnCerrarOffcanvas-acc")) {
-    document.getElementById("btnCerrarOffcanvas-acc").addEventListener("click", function() {
+    document.getElementById("btnCerrarOffcanvas-acc").addEventListener("click", function () {
         document.getElementById("formACC").reset();
         document.getElementById("title-canvas-acc").textContent = "Nueva Acción";
         document.getElementById("btn-canvas-acc").textContent = "Crear";
@@ -1738,9 +1763,9 @@ window.eliminarAccion = (id) => {
     datos.append("id", id);
 
     fetch("ajax/ajax.php", {
-            method: "POST",
-            body: datos
-        })
+        method: "POST",
+        body: datos
+    })
         .then(res => res.json())
         .then(data => {
 
@@ -1852,16 +1877,16 @@ function listarEst_leads() {
 }
 
 if (document.getElementById("formEst_leads")) {
-    document.getElementById("formEst_leads").addEventListener("submit", function(e) {
+    document.getElementById("formEst_leads").addEventListener("submit", function (e) {
         e.preventDefault();
 
         let datos = new FormData(this);
         datos.append("accion", "registrar_est_leads");
 
         fetch("ajax/ajax.php", {
-                method: "POST",
-                body: datos
-            })
+            method: "POST",
+            body: datos
+        })
             .then(res => res.json())
             .then(data => {
 
@@ -1884,9 +1909,9 @@ window.editarEst_leads = (id) => {
     datos.append("id", id);
 
     fetch("ajax/ajax.php", {
-            method: "POST",
-            body: datos
-        })
+        method: "POST",
+        body: datos
+    })
         .then(res => res.json())
         .then(data => {
 
@@ -1921,7 +1946,7 @@ window.editarEst_leads = (id) => {
 };
 
 if (document.getElementById("btnCerrarOffcanvas-est_leads")) {
-    document.getElementById("btnCerrarOffcanvas-est_leads").addEventListener("click", function() {
+    document.getElementById("btnCerrarOffcanvas-est_leads").addEventListener("click", function () {
         document.getElementById("formEst_leads").reset();
         document.getElementById("title-canvas-est_leads").textContent = "Nueva Estado Leads";
         document.getElementById("btn-canvas-est_leads").textContent = "Crear";
@@ -1935,9 +1960,9 @@ window.eliminarAccion = (id) => {
     datos.append("id", id);
 
     fetch("ajax/ajax.php", {
-            method: "POST",
-            body: datos
-        })
+        method: "POST",
+        body: datos
+    })
         .then(res => res.json())
         .then(data => {
 
@@ -2004,7 +2029,7 @@ function listarCampanaOption() {
 }
 listarCampanaOption();
 
-$('#departamento').on('change', function() {
+$('#departamento').on('change', function () {
     let id_dep = $(this).val();
 
     if (id_dep !== "") {
@@ -2025,7 +2050,7 @@ $('#departamento').on('change', function() {
     }
 });
 
-$('#ciudad').on('change', function() {
+$('#ciudad').on('change', function () {
     let id_ciudad = $(this).val();
 
     if (id_ciudad !== "") {
@@ -2043,7 +2068,7 @@ $('#ciudad').on('change', function() {
     }
 });
 
-$('#medio').on('change', function() {
+$('#medio').on('change', function () {
     let id_med = $(this).val();
 
     if (id_med !== "") {

@@ -79,6 +79,11 @@ class LeadsControllers
         return LeadsModels::listarLeads($texto, $asesor, $carreras, $horario, $interes, $medio, $fuente, $campana, $accion, $departamento, $ciudad, $barrio, $estados, $fecha_inicio, $fecha_fin);
     }
 
+    public static function utm_campaign()
+    {
+        return LeadsModels::utm_campaign();
+    }
+
     public static function listarLeadsId($id)
     {
         return LeadsModels::listarLeadsId($id);

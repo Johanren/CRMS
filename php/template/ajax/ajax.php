@@ -40,6 +40,7 @@ $foco = new focoControllers();
 $numeroAdicional = new TelefonoAdicionalControllers();
 $login = new LoginControllers();
 $notificaciones = new NotifiacionesControllers();
+$marketing = new Marketing_trackingControllers();
 if (isset($_POST['accion'])) {
     switch ($_POST['accion']) {
         /*Campana*/
@@ -86,6 +87,9 @@ if (isset($_POST['accion'])) {
         /*Carrera*/
         case 'registrar_carr':
             echo json_encode($carrera->agregarCarrera($_POST));
+            break;
+        case 'update_carr':
+            echo json_encode($carrera->updateCarrera($_POST));
             break;
         case 'consultar_carr':
             echo json_encode($carrera->listarCarreraId($_POST['id']));
@@ -205,6 +209,10 @@ if (isset($_POST['accion'])) {
         case 'registrar_matricula':
             echo json_encode($leads->ingresarMatricula($_POST["id"], $_POST));
             break;
+        case 'reporte_utm_campaign':
+            echo json_encode($leads->utm_campaign());
+            exit;
+            break;
         /*Notas */
         case 'registrar_notas':
             echo json_encode($notas->agregarNotas($_POST));
@@ -232,7 +240,7 @@ if (isset($_POST['accion'])) {
             break;
         case 'listar_proxima_actividad':
             $id_user = $_SESSION['user_id'];
-            
+
             $hoy = date('Y-m-d');
             $inicio = !empty($_POST['fecha_inicio']) ? $_POST['fecha_inicio'] : $hoy;
             $fin    = !empty($_POST['fecha_fin']) ? $_POST['fecha_fin'] : $hoy;
@@ -366,6 +374,12 @@ if (isset($_POST['accion'])) {
             } else {
                 echo json_encode($notificaciones->contarNoLeidas($user_id));
             }
+            break;
+        /*MARKETING TRACK */
+        case "reporte_clicks_conversion":
+
+            echo json_encode($marketing->utm_campaignClic());
+            exit;
             break;
         default:
             # code...
