@@ -189,7 +189,7 @@
             }
 
             let mensaje =
-                `¡Hola! Estoy interesado en los curos de Multicomputo.
+                `¡Hola! Estoy interesado en los cursos de Multicomputo.
             
             🧑 Nombre: ${nombres} ${apellidos}
             🪪 Cédula: ${cedula}
