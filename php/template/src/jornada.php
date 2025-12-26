@@ -30,19 +30,21 @@
 
             <div class="col-md-12 d-flex">
                 <div class="card flex-fill">
-                    <div class="card-header d-flex align-items-center justify-content-between flex-wrap row-gap-3">
-                        <h6 class="mb-0">Departamento</h6>
-                        <div class="dropdown">
-                            <a href="javascript:void(0);" class="btn btn-primary" data-bs-toggle="offcanvas" data-bs-target="#offdepartamento_add"><i class="ti ti-square-rounded-plus-filled me-1"></i>Agregar departamento</a>
+                    <div class="card-header">
+                        <div class="d-flex align-items-center justify-content-between flex-wrap row-gap-3">
+                            <h6 class="mb-0">Jornada</h6>
+                            <div class="dropdown">
+                                <a href="javascript:void(0);" class="btn btn-primary" data-bs-toggle="offcanvas" data-bs-target="#offhorario_add"><i class="ti ti-square-rounded-plus-filled me-1"></i>Agregar Horario</a>
+                            </div>
                         </div>
                     </div>
                     <div class="card-body">
-                        <div class="table-responsive table-nowrap custom-table">
-                            <table class="table table-nowrap" id="info_dep">
+                        <div class="table-responsive custom-table">
+                            <table class="table dataTable table-nowrap" id="info-hrs">
                                 <thead class="table-light">
                                     <tr>
                                         <th>#</th>
-                                        <th>Nombre departamento</th>
+                                        <th>Jornada</th>
                                         <th>Acciones</th>
                                     </tr>
                                 </thead>
@@ -52,10 +54,10 @@
                         </div>
                         <div class="row align-items-center">
                             <div class="col-md-6">
-                                <div class="datatable-length"></div>
+                                <div class="datatable-length-hrs"></div>
                             </div>
                             <div class="col-md-6">
-                                <div class="datatable-paginate"></div>
+                                <div class="datatable-paginate-hrs"></div>
                             </div>
                         </div>
                     </div> <!-- end card body -->
@@ -63,7 +65,6 @@
             </div> <!-- end col -->
 
         </div>
-        <!-- end row -->
 
     </div>
     <!-- End Content -->

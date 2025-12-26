@@ -122,9 +122,22 @@
                     <li>
                         <ul>
                             <?php if ($_SESSION['rol'] == "Admin") { ?>
-                                <li class="<?php echo ($page == 'info_origen.php') ? 'active' : ''; ?>">
-                                    <a href="info_origen.php"><i class="ti ti-user-up"></i><span>Información Origen</span></a>
-                                </li>
+                            <li class="submenu">
+                                <a href="javascript:void(0);" class="<?php echo ($page == 'info_origen.php' || $page == '/' || $page == 'ciudad.php' || $page == 'barrio.php' || $page == 'programa.php' || $page == 'jornada.php' || $page == 'interes.php' || $page == 'medio.php' || $page == 'fuente.php' || $page == 'accion.php') ? 'active subdrop' : ''; ?>">
+                                    <i class="ti ti-dashboard"></i><span>Información Origen</span><span class="menu-arrow"></span>
+                                </a>
+                                <ul>
+                                    <li class="<?php echo ($page == 'info_origen.php') ? 'active' : ''; ?>"><a href="info_origen.php"><span>Departamento</span></a></li>
+                                    <li><a href="ciudad.php" class="<?php echo ($page == 'ciudad.php' || $page == '/') ? 'active' : ''; ?>">Ciudad</a></li>
+                                    <li><a href="barrio.php" class="<?php echo ($page == 'barrio.php') ? 'active' : ''; ?>">Barrio</a></li>
+                                    <li><a href="programa.php" class="<?php echo ($page == 'programa.php') ? 'active' : ''; ?>">Programa</a></li>
+                                    <li><a href="jornada.php" class="<?php echo ($page == 'jornada.php') ? 'active' : ''; ?>">Jornada</a></li>
+                                    <li><a href="interes.php" class="<?php echo ($page == 'interes.php') ? 'active' : ''; ?>">Nivel de interes</a></li>
+                                    <li><a href="medio.php" class="<?php echo ($page == 'medio.php') ? 'active' : ''; ?>">Medio</a></li>
+                                    <li><a href="fuente.php" class="<?php echo ($page == 'fuente.php') ? 'active' : ''; ?>">Fuente</a></li>
+                                    <li><a href="accion.php" class="<?php echo ($page == 'accion.php') ? 'active' : ''; ?>">Acción</a></li>
+                                </ul>
+                            </li>
                             <?php } ?>
                             <li class="<?php echo ($page == 'contacts.php' || $page == 'contacts-list.php' || $page == 'contact-details.php') ? 'active' : ''; ?>">
                                 <a href="contacts.php"><i class="ti ti-user-up"></i><span>Contactos</span></a>
@@ -133,18 +146,18 @@
                                 <a href="companies.php"><i class="ti ti-building-community"></i><span>Companies</span></a>-->
                     </li>
                     <li class="<?php echo ($page == 'deals.php' || $page == 'deals-list.php' || $page == 'deals-details.php') ? 'active' : ''; ?>">
-                        <a href="deals.php"><i class="ti ti-medal"></i><span>Deals</span></a>
+                        <a href="deals.php"><i class="ti ti-medal"></i><span>Referidos</span></a>
                     </li>
                     <li class="<?php echo ($page == 'leads.php' || $page == 'leads-list.php' || $page == 'leads-details.php') ? 'active' : ''; ?>">
                         <a href="leads.php"><i class="ti ti-chart-arcs"></i><span>Leads</span></a>
                     </li>
-                    <li class="<?php echo ($page == 'pipeline.php') ? 'active' : ''; ?>">
+                    <!--<li class="<?php echo ($page == 'pipeline.php') ? 'active' : ''; ?>">
                         <a href="pipeline.php"><i class="ti ti-timeline-event-exclamation"></i><span>PipeLine</span></a>
                     </li>
                     <li class="<?php echo ($page == 'campaign.php' || $page == 'campaign-archieve.php' || $page == 'campaign-complete.php') ? 'active' : ''; ?>">
                         <a href="campaign.php"><i class="ti ti-brand-campaignmonitor"></i><span>Campaña</span></a>
                     </li>
-                    <!--<li class="<?php echo ($page == 'projects.php' || $page == 'projects-list.php' || $page == 'project-details.php') ? 'active' : ''; ?>">
+                    <li class="<?php echo ($page == 'projects.php' || $page == 'projects-list.php' || $page == 'project-details.php') ? 'active' : ''; ?>">
                                 <a href="projects.php"><i class="ti ti-atom-2"></i><span>Projects</span></a>
                             </li>
                             <li class="<?php echo ($page == 'tasks.php' || $page == 'tasks-completed.php' || $page == 'tasks-important.php') ? 'active' : ''; ?>">
@@ -181,9 +194,10 @@
                                 <i class="ti ti-report-analytics"></i><span>Informes</span><span class="menu-arrow"></span>
                             </a>
                             <ul>
+                                <li><a href="index.php" class="<?php echo ($page == 'index.php' || $page == '/') ? 'active' : ''; ?>">Visualizar Foco</a></li>
                                 <li><a href="lead-reports.php" class="<?php echo ($page == 'lead-reports.php') ? 'active' : ''; ?>">Informes de clientes potenciales</a></li>
-                                <li><a href="deal-reports.php" class="<?php echo ($page == 'deal-reports.php') ? 'active' : ''; ?>">Informes de acuerdos</a></li>
-                                <li><a href="contact-reports.php" class="<?php echo ($page == 'contact-reports.php') ? 'active' : ''; ?>">Informes de contacto</a></li>
+                                <li><a href="leads-reports.php" class="<?php echo ($page == 'leads-reports.php') ? 'active' : ''; ?>">Informes de leads</a></li>
+                                <li><a href="contact-reports.php" class="<?php echo ($page == 'contact-reports.php') ? 'active' : ''; ?>">Informes de matriculados</a></li>
                                 <!--<li><a href="company-reports.php" class="<?php echo ($page == 'company-reports.php') ? 'active' : ''; ?>">Company Reports</a></li>
                                     <li><a href="project-reports.php" class="<?php echo ($page == 'project-reports.php') ? 'active' : ''; ?>">Project Reports</a></li>
                                     <li><a href="task-reports.php" class="<?php echo ($page == 'task-reports.php') ? 'active' : ''; ?>">Task Reports</a></li>-->

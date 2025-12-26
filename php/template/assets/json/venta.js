@@ -238,7 +238,7 @@ async function cargarTablaFocoReporte() {
             let totalFilaCupos = 0;
 
             programas.forEach(programa => {
-                const d = focoData.find(f =>
+                const d = leadsData.find(f =>
                     f.id_jornada === id_jornada &&
                     f.programa === programa
                 );
@@ -258,7 +258,7 @@ async function cargarTablaFocoReporte() {
             let totalFilaR = 0;
 
             programas.forEach(programa => {
-                const d = focoData.find(f =>
+                const d = leadsData.find(f =>
                     f.id_jornada === id_jornada &&
                     f.programa === programa
                 );
@@ -271,15 +271,15 @@ async function cargarTablaFocoReporte() {
 
                 filaVR += `
                     <td>${ventas}</td>
-                    <td>${reintegros}</td>
                     <td>${ventas - reintegros}</td>
+                    <td>${reintegros}</td>
                 `;
             });
 
             filaVR += `
                 <td><b>${totalFilaV}</b></td>
-                <td><b>${totalFilaR}</b></td>
                 <td><b>${totalFilaV - totalFilaR}</b></td>
+                <td><b>${totalFilaR}</b></td>
             </tr>`;
             tbody.innerHTML += filaVR;
 

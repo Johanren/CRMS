@@ -29,10 +29,12 @@ class UserModels
         return "error";
     }
 
-    public static function agregarUser($data)
+    public static function agregarUser($data, $foto)
     {
         $conn = new Conexion();
         $conectar = $conn->conectar();
+
+        /* ================= VALIDAR USUARIO ================= */
         $sqlCheck = "SELECT id_user FROM user WHERE email = ? OR codigo = ?";
         $stmtCheck = $conectar->prepare($sqlCheck);
         $stmtCheck->bindParam(1, $data['correoUser']);
@@ -42,12 +44,43 @@ class UserModels
         if ($stmtCheck->rowCount() > 0) {
             return "usuario_existente";
         }
+
+        /* ================= PASSWORD ================= */
         $passwordHash = password_hash($data['contrasenaUser'], PASSWORD_BCRYPT);
+
+        /* ================= IMAGEN ================= */
+        $rutaFoto = null;
+
+        if (!empty($data['fotoUser']['tmp_name'])) {
+
+            $carpeta = "uploads/usuarios/";
+
+            // Crear carpeta si no existe
+            if (!file_exists($carpeta)) {
+                mkdir($carpeta, 0755, true);
+            }
+
+            // Obtener extensión
+            $extension = pathinfo($data['fotoUser']['name'], PATHINFO_EXTENSION);
+
+            // Nombre único
+            $nombreFoto = "user_" . $data['codigoUser'] . "_" . time() . "." . $extension;
+
+            $rutaFoto = $carpeta . $nombreFoto;
+
+            // Mover imagen
+            if (!move_uploaded_file($data['fotoUser']['tmp_name'], $rutaFoto)) {
+                return "error_imagen";
+            }
+        }
+
+        /* ================= INSERT ================= */
         $sql = "INSERT INTO user 
-            (codigo, nombres, apellidos, email, telefono, password, rol_id, cod_emp) 
-            VALUES (?,?,?,?,?,?,?,?)";
+        (codigo, nombres, apellidos, email, telefono, password, rol_id, cod_emp, imagen) 
+        VALUES (?,?,?,?,?,?,?,?,?)";
 
         $stmt = $conectar->prepare($sql);
+
         $stmt->bindParam(1, $data['codigoUser']);
         $stmt->bindParam(2, $data['nombreUser']);
         $stmt->bindParam(3, $data['apellidoUser']);
@@ -56,6 +89,7 @@ class UserModels
         $stmt->bindParam(6, $passwordHash);
         $stmt->bindParam(7, $data['rolS']);
         $stmt->bindParam(8, $data['empre']);
+        $stmt->bindParam(9, $rutaFoto);
 
         if ($stmt->execute()) {
             return "ok";
@@ -64,21 +98,60 @@ class UserModels
         return "error";
     }
 
-    public static function actualizarUser($data)
+
+    public static function actualizarUser($data, $foto)
     {
-        if (!empty($_POST['contrasenaUser'])) {
-            // Si el usuario escribió una nueva contraseña
-            $passwordHash = password_hash($_POST['contrasenaUser'], PASSWORD_BCRYPT);
+        /* ================= PASSWORD ================= */
+        if (!empty($data['contrasenaUser'])) {
+            $passwordHash = password_hash($data['contrasenaUser'], PASSWORD_BCRYPT);
         } else {
-            // Si NO escribió nada, usar la contraseña actual (contrasenaUserEdit)
-            $passwordHash = $_POST['contrasenaUserEdit'];
+            $passwordHash = $data['contrasenaUserEdit'];
         }
 
         $conn = new Conexion();
         $conectar = $conn->conectar();
-        $sql = "UPDATE user SET codigo = ?, nombres = ?, apellidos = ?, email = ?, telefono = ?, password = ?, rol_id = ?, cod_emp = ? WHERE id_user = ?";
+
+        /* ================= IMAGEN ================= */
+        $rutaFoto = $data['fotoUserActual']; // por defecto conserva la actual
+
+        if (!empty($data['fotoUser']['tmp_name'])) {
+
+            $carpeta = "uploads/usuarios/";
+
+            if (!file_exists($carpeta)) {
+                mkdir($carpeta, 0755, true);
+            }
+
+            $extension = pathinfo($data['fotoUser']['name'], PATHINFO_EXTENSION);
+            $nombreFoto = "user_" . $data['codigoUser'] . "_" . time() . "." . $extension;
+            $rutaNueva = $carpeta . $nombreFoto;
+
+            if (move_uploaded_file($data['fotoUser']['tmp_name'], $rutaNueva)) {
+
+                // Eliminar imagen anterior si existe
+                if (!empty($data['fotoActual']) && file_exists($data['fotoActual'])) {
+                    unlink($data['fotoActual']);
+                }
+
+                $rutaFoto = $rutaNueva;
+            }
+        }
+
+        /* ================= UPDATE ================= */
+        $sql = "UPDATE user SET 
+                codigo = ?, 
+                nombres = ?, 
+                apellidos = ?, 
+                email = ?, 
+                telefono = ?, 
+                password = ?, 
+                rol_id = ?, 
+                cod_emp = ?, 
+                imagen = ?
+            WHERE id_user = ?";
 
         $stmt = $conectar->prepare($sql);
+
         $stmt->bindParam(1, $data['codigoUser']);
         $stmt->bindParam(2, $data['nombreUser']);
         $stmt->bindParam(3, $data['apellidoUser']);
@@ -87,7 +160,8 @@ class UserModels
         $stmt->bindParam(6, $passwordHash);
         $stmt->bindParam(7, $data['rolS']);
         $stmt->bindParam(8, $data['empre']);
-        $stmt->bindParam(9, $data['user_id']);
+        $stmt->bindParam(9, $rutaFoto);
+        $stmt->bindParam(10, $data['user_id']);
 
         if ($stmt->execute()) {
             return "ok";
@@ -95,7 +169,6 @@ class UserModels
 
         return "error";
     }
-
 
     public static function listarUserId($id)
     {

@@ -32,8 +32,8 @@
                     <div class="card shadow flex-fill">
                         <div
                             class="card-header d-flex justify-content-between align-items-center flex-wrap row-gap-2">
-                            <h6 class="mb-0">Contacts By Year</h6>
-                            <div class="dropdown">
+                            <h6 class="mb-0">Matriculados By FOCO</h6>
+                            <!--<div class="dropdown">
                                 <a class="dropdown-toggle btn btn-outline-light shadow" data-bs-toggle="dropdown" href="javascript:void(0);">
                                     <i class="ti ti-calendar me-1"></i>
                                     2025
@@ -49,7 +49,7 @@
                                         2023
                                     </a>
                                 </div>
-                            </div>
+                            </div>-->
                         </div>
                         <div class="card-body">
                             <div id="contact-report"></div>
@@ -60,8 +60,8 @@
                     <div class="card shadow flex-fill">
                         <div
                             class="card-header d-flex justify-content-between align-items-center flex-wrap row-gap-2">
-                            <h6 class="mb-0">Contacts By Source</h6>
-                            <div class="dropdown">
+                            <h6 class="mb-0">Perdido By Motivos</h6>
+                            <!--<div class="dropdown">
                                 <a class="dropdown-toggle btn btn-outline-light shadow" data-bs-toggle="dropdown" href="javascript:void(0);">
                                     <i class="ti ti-calendar me-1"></i>
                                     2025
@@ -77,17 +77,17 @@
                                         2023
                                     </a>
                                 </div>
-                            </div>
+                            </div>-->
                         </div>
                         <div class="card-body">
-                            <div id="leads-analysis"></div>
+                            <div id="leads-motivo"></div>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- card start -->
-            <div class="card border-0 rounded-0">
+            <!--<div class="card border-0 rounded-0">
                 <div class="card-header d-flex align-items-center justify-content-between gap-2 flex-wrap">
                     <div class="input-icon input-icon-start position-relative">
                         <span class="input-icon-addon text-dark"><i class="ti ti-search"></i></span>
@@ -97,7 +97,7 @@
                 </div>
                 <div class="card-body">
 
-                    <!-- table header -->
+                    
                     <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
                         <div class="d-flex align-items-center gap-2 flex-wrap">
                             <div class="dropdown">
@@ -509,9 +509,9 @@
                             </div>
                         </div>
                     </div>
-                    <!-- table header -->
+                    
 
-                    <!-- Report List -->
+                    
                     <div class="table-responsive custom-table">
                         <table class="table table-nowrap" id="contact_reports">
                             <thead class="table-light">
@@ -544,10 +544,10 @@
                             <div class="datatable-paginate"></div>
                         </div>
                     </div>
-                    <!-- /Contact List -->
+                    
                         
                 </div>
-            </div>
+            </div>-->
             <!-- card end -->
             
         </div>

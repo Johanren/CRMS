@@ -2725,7 +2725,7 @@ $(document).ready(function () {
     chart.render();
   }
 
-  if ($('#leads-report').length > 0) {
+  /*if ($('#leads-report').length > 0) {
     var options = {
       series: [{
         name: "Reports",
@@ -2794,49 +2794,214 @@ $(document).ready(function () {
 
     var chart = new ApexCharts(document.querySelector("#leads-report"), options);
     chart.render();
-  }
+  }*/
 
   if ($('#leads-analysis').length > 0) {
-    var options = {
-      series: [44, 55, 41, 17],
-      chart: {
-        type: 'donut',
-      },
-      colors: ['#0092E4', '#4A00E5', '#E41F07', '#FFA201'],
-      labels: ['Campaigns', 'Google', 'Referrals', 'Paid Social'],
-      plotOptions: {
-        pie: {
-          startAngle: -90,
-          endAngle: 270,
-          size: '10',
-        }
-      },
-      dataLabels: {
-        enabled: false
-      },
-      legend: {
-        position: 'bottom',
-        formatter: function (val, opts) {
-          return val + " - " + opts.w.globals.series[opts.seriesIndex]
-        }
-      },
-      responsive: [{
-        breakpoint: 480,
-        options: {
+
+    const formData = new FormData();
+    formData.append("accion", "reporte_leads_estados");
+
+    fetch("ajax/ajax.php", {
+      method: "POST",
+      body: formData
+    })
+      .then(respuesta => respuesta.json())
+      .then(datos => {
+
+        /* ================= PROCESAR DATOS ================= */
+        const cantidades = datos.map(d => Number(d.cantidad));
+        const estados = datos.map(d => d.estado);
+
+        /* ================= CONFIGURACIÓN DONUT ================= */
+        const opciones = {
+          series: cantidades,
           chart: {
-            width: 200
+            type: 'donut',
+            height: 300
+          },
+          labels: estados,
+          colors: ['#0092E4', '#4A00E5', '#E41F07', '#FFA201', '#28A745', '#6C757D'],
+          plotOptions: {
+            pie: {
+              startAngle: -90,
+              endAngle: 270
+            }
+          },
+          dataLabels: {
+            enabled: false
           },
           legend: {
-            position: 'bottom'
-          }
-        }
-      }]
-    };
+            position: 'bottom',
+            formatter: function (valor, opts) {
+              return `${valor} - ${opts.w.globals.series[opts.seriesIndex]}`;
+            }
+          },
+          tooltip: {
+            y: {
+              formatter: val => val + " Leads"
+            }
+          },
+          responsive: [{
+            breakpoint: 480,
+            options: {
+              chart: { width: 200 },
+              legend: { position: 'bottom' }
+            }
+          }]
+        };
 
-    var chart = new ApexCharts(document.querySelector("#leads-analysis"), options);
-    chart.render();
+        const grafico = new ApexCharts(
+          document.querySelector("#leads-analysis"),
+          opciones
+        );
+        grafico.render();
+
+      })
+      .catch(error => {
+        console.error("Error gráfico estados leads:", error);
+      });
+  }
+  if ($('#leads-motivo').length > 0) {
+
+    const formData = new FormData();
+    formData.append("accion", "reporte_leads_motivo");
+
+    fetch("ajax/ajax.php", {
+      method: "POST",
+      body: formData
+    })
+      .then(respuesta => respuesta.json())
+      .then(datos => {
+
+        /* ================= PROCESAR DATOS ================= */
+        const cantidades = datos.map(d => Number(d.cantidad));
+        const estados = datos.map(d => d.estado);
+
+        /* ================= CONFIGURACIÓN DONUT ================= */
+        const opciones = {
+          series: cantidades,
+          chart: {
+            type: 'donut',
+            height: 300
+          },
+          labels: estados,
+          colors: ['#0092E4', '#4A00E5', '#E41F07', '#FFA201', '#28A745', '#6C757D'],
+          plotOptions: {
+            pie: {
+              startAngle: -90,
+              endAngle: 270
+            }
+          },
+          dataLabels: {
+            enabled: false
+          },
+          legend: {
+            position: 'bottom',
+            formatter: function (valor, opts) {
+              return `${valor} - ${opts.w.globals.series[opts.seriesIndex]}`;
+            }
+          },
+          tooltip: {
+            y: {
+              formatter: val => val + " Leads"
+            }
+          },
+          responsive: [{
+            breakpoint: 480,
+            options: {
+              chart: { width: 200 },
+              legend: { position: 'bottom' }
+            }
+          }]
+        };
+
+        const grafico = new ApexCharts(
+          document.querySelector("#leads-motivo"),
+          opciones
+        );
+        grafico.render();
+
+      })
+      .catch(error => {
+        console.error("Error gráfico estados leads:", error);
+      });
   }
 });
+
+if ($('#leads-report').length > 0) {
+
+  /* ================= FORM DATA ================= */
+  const formData = new FormData();
+  formData.append("accion", "reporte_leads_mes");
+
+  fetch("ajax/ajax.php", {
+    method: "POST",
+    body: formData
+  })
+    .then(respuesta => respuesta.json())
+    .then(datos => {
+
+      /* ================= PROCESAR DATOS ================= */
+      const meses = datos.map(d => d.mes);
+      const leadsNuevos = datos.map(d => Number(d.nuevos));
+      const otrosLeads = datos.map(d => Number(d.otros));
+
+      /* ================= CONFIGURACIÓN GRÁFICO ================= */
+      const opcionesGrafico = {
+        chart: {
+          height: 270,
+          type: 'bar',
+          toolbar: { show: false }
+        },
+        plotOptions: {
+          bar: {
+            horizontal: false,
+            columnWidth: '55%',
+            endingShape: 'rounded'
+          }
+        },
+        colors: ['#5CB85C', '#FC0027'],
+        dataLabels: { enabled: false },
+        stroke: {
+          show: true,
+          width: 2,
+          colors: ['transparent']
+        },
+        series: [
+          {
+            name: 'Leads Nuevos',
+            data: leadsNuevos
+          },
+          {
+            name: 'Otros Leads',
+            data: otrosLeads
+          }
+        ],
+        xaxis: {
+          categories: meses
+        },
+        fill: {
+          opacity: 1
+        },
+        tooltip: {
+          y: {
+            formatter: valor => valor + " Leads"
+          }
+        }
+      };
+
+      /* ================= RENDER ================= */
+      const grafico = new ApexCharts(
+        document.querySelector("#leads-report"),
+        opcionesGrafico
+      );
+      grafico.render();
+
+    })
+    .catch(error => {
+      console.error("Error al cargar el gráfico de leads:", error);
+    });
+}
 
 if ($('#deals-report').length > 0) {
   var sCol = {
@@ -7544,55 +7709,75 @@ if ($('#deals-chart').length > 0) {
 }
 
 if ($('#contact-report').length > 0) {
-  var options = {
-    series: [{
-      name: "Reports",
-      data: [3, 4.5, 2.0, 3.0, 2.5, 4, 2, 4, 3.5, 5, 3, 2]
-    }],
-    chart: {
-      height: 273,
-      type: 'area',
-      zoom: {
-        enabled: false
-      },
-      toolbar: {
-        show: false
-      }
-    },
-    colors: ['#4A00E5'],
-    dataLabels: {
-      enabled: false
-    },
-    title: {
-      text: '',
-      align: 'left'
-    },
-    grid: {
-      borderColor: '#E8E8E8',
-      strokeDashArray: 4,
-    },
-    xaxis: {
-      categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-    },
-    yaxis: {
-      min: 1,
-      max: 6,
-      tickAmount: 5,
-      labels: {
-        offsetX: -15,
-        formatter: (val) => {
-          return val / 1 + 'K'
+
+  /* ================= FORM DATA ================= */
+  const formData = new FormData();
+  formData.append("accion", "reporte_leads_matriculados_mes");
+
+  fetch("ajax/ajax.php", {
+    method: "POST",
+    body: formData
+  })
+    .then(respuesta => respuesta.json())
+    .then(datos => {
+
+      /* ================= PROCESAR DATOS ================= */
+      const meses = datos.map(d => d.mes);
+      const matriculados = datos.map(d => Number(d.matriculados));
+
+      /* ================= CONFIGURACIÓN GRÁFICO ================= */
+      const opciones = {
+        series: [{
+          name: "Leads Matriculados",
+          data: matriculados
+        }],
+        chart: {
+          height: 273,
+          type: 'area',
+          zoom: { enabled: false },
+          toolbar: { show: false }
+        },
+        colors: ['#4A00E5'],
+        dataLabels: { enabled: false },
+        grid: {
+          borderColor: '#E8E8E8',
+          strokeDashArray: 4
+        },
+        xaxis: {
+          categories: meses
+        },
+        yaxis: {
+          min: 0,
+          tickAmount: 5,
+          labels: {
+            offsetX: -15,
+            formatter: val => val
+          }
+        },
+        legend: {
+          position: 'top',
+          horizontalAlign: 'left'
+        },
+        tooltip: {
+          y: {
+            formatter: val => val + " matriculados"
+          }
         }
-      }
-    },
-    legend: {
-      position: 'top',
-      horizontalAlign: 'left'
-    }
-  };
-  var chart = new ApexCharts(document.querySelector("#contact-report"), options);
-  chart.render();
+      };
+
+      /* ================= RENDER ================= */
+      const grafico = new ApexCharts(
+        document.querySelector("#contact-report"),
+        opciones
+      );
+      grafico.render();
+
+    })
+    .catch(error => {
+      console.error("Error gráfico matriculados:", error);
+    });
 }
+
 if ($('#company-year').length > 0) {
   var options = {
     series: [{
@@ -7970,7 +8155,7 @@ function renderChartClicksConversion(seriesData, categories) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    cargarReporteClicksConversion();
+  cargarReporteClicksConversion();
 });
 
 

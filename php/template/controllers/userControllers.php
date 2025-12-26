@@ -9,8 +9,8 @@ class UserControllers{
         return UserModels::listarUserDetails();
     }
 
-    public static function agregarUser($data){
-        $resp = UserModels::agregarUser($data);
+    public static function agregarUser($data, $foto){
+        $resp = UserModels::agregarUser($data, $foto);
         if ($resp == "ok") {
             return ["status" => "success", "message" => "User agregado correctamente"];
         } else {
@@ -18,8 +18,8 @@ class UserControllers{
         }
     }
 
-    public static function actualizarUser($data){
-        $resp = UserModels::actualizarUser($data);
+    public static function actualizarUser($data, $foto){
+        $resp = UserModels::actualizarUser($data, $foto);
         if ($resp == "ok") {
             return ["status" => "success", "message" => "User actualizado correctamente"];
         } else {

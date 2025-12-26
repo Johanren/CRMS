@@ -511,6 +511,61 @@ class LeadsModels
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public static function reporteLeadsBarra()
+    {
+        $sql = "SELECT
+                    DATE_FORMAT(fecha_creacion, '%b') AS mes,
+                    MONTH(fecha_creacion) AS mes_num,
+                    SUM(CASE WHEN estado_leads_id = 1 THEN 1 ELSE 0 END) AS nuevos,
+                    SUM(CASE WHEN estado_leads_id <> 1 THEN 1 ELSE 0 END) AS otros
+                FROM leads
+                WHERE fecha_creacion >= DATE_SUB(CURDATE(), INTERVAL 9 MONTH) AND cod_emp = ?
+                GROUP BY mes, mes_num
+                ORDER BY mes_num;";
+        $conn = new Conexion();
+        $conectar = $conn->conectar();
+        $stmt = $conectar->prepare($sql);
+        $stmt->execute([$_SESSION['cod_emp']]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public static function reporteLeadsPastelMotivo()
+    {
+        $sql = "SELECT m.desc_mot AS estado, COUNT(*) AS cantidad
+        FROM leads l INNER JOIN motivo_estado_leads m ON m.id_mot = l.est_motivo 
+        WHERE l.cod_emp = ?
+        GROUP BY estado;";
+        $conn = new Conexion();
+        $conectar = $conn->conectar();
+        $stmt = $conectar->prepare($sql);
+        $stmt->execute([$_SESSION['cod_emp']]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public static function reporteLeadsPastel()
+    {
+        $sql = "SELECT e.nombre AS estado, COUNT(*) AS cantidad
+        FROM leads l INNER JOIN estado_leads e ON e.id_estado_leads = l.estado_leads_id 
+        WHERE l.cod_emp = ?
+        GROUP BY estado;";
+        $conn = new Conexion();
+        $conectar = $conn->conectar();
+        $stmt = $conectar->prepare($sql);
+        $stmt->execute([$_SESSION['cod_emp']]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public static function reporteLeadsBarraMatriculado()
+    {
+        $sql = "SELECT DATE_FORMAT(fecha_creacion, '%b') AS mes, MONTH(fecha_creacion) AS mes_num, SUM(CASE WHEN estado_leads_id = 6 THEN 1 ELSE 0 END) AS matriculados FROM leads 
+        WHERE fecha_creacion >= DATE_SUB(CURDATE(), INTERVAL 9 MONTH) AND cod_emp = ? GROUP BY mes, mes_num ORDER BY mes_num;";
+        $conn = new Conexion();
+        $conectar = $conn->conectar();
+        $stmt = $conectar->prepare($sql);
+        $stmt->execute([$_SESSION['cod_emp']]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public static function obtenerAsesorConMenosLeads($data)
     {
         $cod_emp = $data['cod_emp'] ?? $_SESSION['cod_emp'] ?? null;

@@ -33840,7 +33840,7 @@ $page = end( $link_array );
 <!-- End Modal  -->
 <?php }?>
 
-<?php if ($page == 'info_origen.php' || $page == 'venta.php' || $page == 'manage-users.php' || $page == 'roles-permissions.php') {   ?>
+<?php if ($page == 'info_origen.php' || $page == 'venta.php' || $page == 'manage-users.php' || $page == 'roles-permissions.php' || $page == 'ciudad.php' || $page == 'barrio.php' || $page == 'programa.php' || $page == 'jornada.php' || $page == 'interes.php' || $page == 'medio.php' || $page == 'fuente.php' || $page == 'accion.php') {   ?>
 
 <div class="offcanvas offcanvas-end offcanvas-large" tabindex="-1" id="offdepartamento_add">
     <div class="offcanvas-header border-bottom">
@@ -34214,39 +34214,53 @@ $page = end( $link_array );
         </button>
     </div>
     <div class="offcanvas-body">
-        <form id="formUser">
+        <form id="formUser" enctype="multipart/form-data">
             <div>
                 <div class="row">
-                    <div class="col-md-12">
+                    <div class="col-md-6">
                         <div class="mb-3">
                             <label class="form-label">Codigo <span class="text-danger">*</span></label>
                             <input type="text" class="form-control" id="codigoUser" name="codigoUser">
                         </div>
+                    </div>
+                    <div class="col-md-6">
                         <div class="mb-3">
                             <label class="form-label">Nombres <span class="text-danger">*</span></label>
                             <input type="text" class="form-control" id="nombreUser" name="nombreUser">
                         </div>
+                    </div>
+                    <div class="col-md-6">
                         <div class="mb-3">
                             <label class="form-label">Apellidos <span class="text-danger">*</span></label>
                             <input type="text" class="form-control" id="apellidoUser" name="apellidoUser">
                         </div>
+                    </div>
+                    <div class="col-md-6">
                         <div class="mb-3">
                             <label class="form-label">Correo <span class="text-danger">*</span></label>
                             <input type="text" class="form-control" id="correoUser" name="correoUser">
                         </div>
+                    </div>
+                    <div class="col-md-6">
                         <div class="mb-3">
                             <label class="form-label">Telefono <span class="text-danger">*</span></label>
                             <input type="text" class="form-control" id="telefonoUser" name="telefonoUser">
                         </div>
+                    </div>
+                    <div class="col-md-6">
                         <div class="mb-3">
                             <label class="form-label">Contraseña <span class="text-danger">*</span></label>
                             <input type="text" class="form-control" name="contrasenaUser">
                             <input type="hidden" id="contrasenaUser" name="contrasenaUserEdit">
                         </div>
+                    </div>
+                    <div class="col-md-6">
                         <div class="mb-3">
                             <label class="form-label">Rol <span class="text-danger">*</span></label>
                             <select name="rolS" id="rolS" class="form-control"></select>
                         </div>
+                    </div>
+                    <div class="col-md-6">
                         <div class="mb-3">
                             <label class="form-label">Empresa <span class="text-danger">*</span></label>
                             <select name="empre" id="empre" class="form-control">
@@ -34254,6 +34268,13 @@ $page = end( $link_array );
                                 <option value="1">MULTITECH</option>
                                 <option value="2">MULTICOMPUTO</option>
                             </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Foto <span class="text-danger">*</span></label>
+                            <input type="file" class="form-control" name="fotoUser" id="fotoUser" alt="">
+                            <input type="hidden" class="form-control" name="fotoUserActual" id="fotoUserActual" alt="">
                         </div>
                     </div>
                 </div>

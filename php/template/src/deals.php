@@ -12,11 +12,11 @@
             <!-- Page Header -->
             <div class="d-flex align-items-center justify-content-between gap-2 mb-4 flex-wrap">
                 <div>
-                    <h4 class="mb-1">Deals<span class="badge badge-soft-primary ms-2">125</span></h4>
+                    <h4 class="mb-1">Referidos<span class="badge badge-soft-primary ms-2">125</span></h4>
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb mb-0 p-0">
-                            <li class="breadcrumb-item"><a href="index.php">Home</a></li>
-                            <li class="breadcrumb-item active" aria-current="page">Deals</li>
+                            <li class="breadcrumb-item"><a href="index.php">Hogar</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Referidos</li>
                         </ol>
                     </nav>
                 </div>
@@ -322,7 +322,7 @@
             <!-- table header -->
             
             <!-- Deals Kanban -->
-            <div class="d-flex overflow-x-auto align-items-start mb-0 gap-3">
+            <!--<div class="d-flex overflow-x-auto align-items-start mb-0 gap-3">
                 <div class="kanban-list-items p-2 rounded border">
                     <div class="card mb-0 border-0 shadow">
                         <div class="card-body p-2">
@@ -1363,7 +1363,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div>-->
             <!-- /Deals Kanban -->
 
         </div>

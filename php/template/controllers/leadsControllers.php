@@ -84,6 +84,26 @@ class LeadsControllers
         return LeadsModels::utm_campaign();
     }
 
+    public static function reporteLeadsBarra()
+    {
+        return LeadsModels::reporteLeadsBarra();
+    }
+
+    public static function reporteLeadsPastelMotivo()
+    {
+        return LeadsModels::reporteLeadsPastelMotivo();
+    }
+
+    public static function reporteLeadsPastel()
+    {
+        return LeadsModels::reporteLeadsPastel();
+    }
+
+    public static function reporteLeadsBarraMatriculado()
+    {
+        return LeadsModels::reporteLeadsBarraMatriculado();
+    }
+
     public static function listarLeadsId($id)
     {
         return LeadsModels::listarLeadsId($id);
@@ -103,4 +123,6 @@ class LeadsControllers
     {
         return LeadsModels::obtenerResumenHorarios($empresa, $asesor, $carreras, $horario, $estados, $fecha_inicio, $fecha_fin);
     }
+
+    
 }

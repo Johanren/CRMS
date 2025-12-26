@@ -3,105 +3,93 @@
 <!-- ========================
         Start Page Content
     ========================= -->
+<style>
+    .video-bg {
+        overflow: hidden;
+    }
 
-<div class="overflow-hidden p-3 acc-vh">
+    .video-cover {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        min-width: 100%;
+        min-height: 100%;
+        transform: translate(-50%, -50%);
+        object-fit: cover;
+        z-index: 1;
+    }
 
-    <!-- start row -->
-    <div class="row vh-100 w-100 g-0">
+    .video-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.35);
+        z-index: 2;
+    }
+</style>
+<div class="container-fluid vh-100 p-0">
+    <div class="row vh-100 g-0">
 
-        <div class="col-lg-12 vh-100 overflow-y-auto overflow-x-hidden">
+        <!-- COLUMNA VIDEO -->
+        <div class="col-lg-8 d-none d-lg-block position-relative video-bg">
+            <video autoplay muted loop playsinline class="video-cover">
+                <source src="https://v.ftcdn.net/16/82/99/61/700_F_1682996118_oYHuzPQLf6TIV2sjuhf3UZ1r00p9tfgZ_ST.mp4" type="video/mp4">
+            </video>
 
-            <!-- start row -->
-            <div class="row">
-
-                <div class="col-md-10 mx-auto">
-                    <form action="index.php" class=" vh-100 d-flex justify-content-between flex-column p-4 pb-0">
-                        <div class="text-center mb-4 auth-logo">
-                            <img src="https://multitech.envision.com.co/img/logo.png" class="img-fluid" alt="Logo">
-                        </div>
-                        <div>
-                            <div class="mb-3">
-                                <h3 class="mb-2">Iniciar sesión</h3>
-                                <p class="mb-0">Acceda al panel CRMS utilizando su correo electrónico y contraseña.</p>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Dirección de correo electrónico</label>
-                                <div class="input-group input-group-flat">
-                                    <input type="email" class="form-control" id="emailUser">
-                                    <span class="input-group-text">
-                                        <i class="ti ti-mail"></i>
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label">Contraseña</label>
-                                <div class="input-group input-group-flat pass-group">
-                                    <input type="password" class="form-control pass-input" id="passwordUser">
-                                    <span class="input-group-text toggle-password">
-                                        <i class="ti ti-eye-off"></i>
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="d-flex align-items-center justify-content-between mb-3">
-                                <div class="form-check form-check-md d-flex align-items-center">
-                                    <input class="form-check-input mt-0" type="checkbox" value="" id="checkebox-md" checked="">
-                                    <label class="form-check-label text-dark ms-1" for="checkebox-md">
-                                        Recuérdame
-                                    </label>
-                                </div>
-                                <div class="text-end">
-                                    <a href="forgot-password.php" class="link-danger fw-medium link-hover">¿Olvidaste tu contraseña?</a>
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <button type="submit" id="btnLogin" class="btn btn-primary w-100">Iniciar sesión</button>
-                            </div>
-                            <!--<div class="mb-3">
-                                    <p class="mb-0">New on our platform?<a href="register.php" class="link-indigo fw-bold link-hover"> Create an account</a></p>
-                                </div>
-                                <div class="or-login text-center position-relative mb-3">
-                                    <h6 class="fs-14 mb-0 position-relative text-body">OR</h6>
-                                </div>
-                                <div class="d-flex align-items-center justify-content-center flex-wrap gap-2 mb-3">
-                                    <div class="text-center flex-fill">
-                                        <a href="javascript:void(0);" class="p-2 btn btn-info d-flex align-items-center justify-content-center">
-                                            <img class="img-fluid m-1" src="assets/img/icons/facebook-logo.svg" alt="Facebook">
-                                        </a>
-                                    </div>
-                                    <div class="text-center flex-fill">
-                                        <a href="javascript:void(0);" class="p-2 btn btn-outline-light d-flex align-items-center justify-content-center">
-                                            <img class="img-fluid  m-1" src="assets/img/icons/google-logo.svg" alt="Facebook">
-                                        </a>
-                                    </div>
-                                    <div class="text-center flex-fill">
-                                        <a href="javascript:void(0);" class="p-2 btn btn-dark d-flex align-items-center justify-content-center">
-                                            <img class="img-fluid  m-1" src="assets/img/icons/apple-logo.svg" alt="Apple">
-                                        </a>
-                                    </div>
-                                </div>-->
-                        </div>
-                        <div class="text-center pb-4">
-                            <p class="text-dark mb-0">Copyright &copy; <script>
-                                    document.write(new Date().getFullYear())
-                                </script> - CRMS</p>
-                        </div>
-                    </form>
-                </div> <!-- end col -->
-
-            </div>
-            <!-- end row -->
-
+            <!-- Overlay opcional oscuro -->
+            <div class="video-overlay"></div>
         </div>
 
-        <!--<div class="col-lg-6 account-bg-01">
-                <img src="https://multitech.envision.com.co/img/logo.png" height="1026" width="1392" class="img-fluid" alt="Logo">
-            </div>--> <!-- end col -->
+        <!-- COLUMNA LOGIN -->
+        <div class="col-lg-4 col-md-12 d-flex align-items-center justify-content-center bg-white">
+            <form action="index.php" class="w-100 p-4" style="max-width:420px">
+
+                <div class="text-center mb-4">
+                    <img src="https://multitech.envision.com.co/img/logo.png" class="img-fluid" style="max-height:80px">
+                </div>
+
+                <div class="mb-3">
+                    <h3 class="mb-2">Bienvenidos</h3>
+                    <p class="mb-0 text-muted">Favor ingrese el usuario y contraseña</p>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Dirección de correo electrónico</label>
+                    <div class="input-group input-group-flat">
+                        <input type="email" class="form-control" id="emailUser">
+                        <span class="input-group-text">
+                            <i class="ti ti-mail"></i>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Contraseña</label>
+                    <div class="input-group input-group-flat pass-group">
+                        <input type="password" class="form-control pass-input" id="passwordUser">
+                        <span class="input-group-text toggle-password">
+                            <i class="ti ti-eye-off"></i>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" checked>
+                        <label class="form-check-label">Recuérdame</label>
+                    </div>
+                    <a href="forgot-password.php" class="link-danger">¿Olvidaste tu contraseña?</a>
+                </div>
+
+                <button type="submit" id="btnLogin" class="btn btn-primary w-100">
+                    Iniciar sesión
+                </button>
+
+            </form>
+        </div>
 
     </div>
-    <!-- end row -->
-
 </div>
+
 
 <!-- ========================
         End Page Content

@@ -129,6 +129,7 @@ window.editarUser = (id) => {
             document.getElementById("contrasenaUser").value = user.password;
             document.getElementById("rolS").value = user.id_rol;
             document.getElementById("empre").value = user.cod_emp;
+            document.getElementById("fotoUserActual").value = user.imagen;
 
             // Guardar ID oculto
             if (!document.getElementById("user_id")) {

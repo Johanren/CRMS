@@ -12,11 +12,11 @@
         <!-- Page Header -->
         <div class="d-flex align-items-center justify-content-between gap-2 mb-4 flex-wrap">
             <div>
-                <h4 class="mb-1">Dirige<span class="badge badge-soft-primary ms-2">123</span></h4>
+                <h4 class="mb-1">Leads<span class="badge badge-soft-primary ms-2">123</span></h4>
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb mb-0 p-0">
                         <li class="breadcrumb-item"><a href="index.php">Hogar</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Dirige</li>
+                        <li class="breadcrumb-item active" aria-current="page">Leads</li>
                     </ol>
                 </nav>
             </div>

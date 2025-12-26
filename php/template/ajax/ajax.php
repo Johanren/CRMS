@@ -206,6 +206,18 @@ if (isset($_POST['accion'])) {
 
             echo json_encode(["status" => "ok", "data" => $response]);
             break;
+        case 'reporte_leads_mes':
+            echo json_encode($leads->reporteLeadsBarra());
+            break;
+        case 'reporte_leads_motivo':
+            echo json_encode($leads->reporteLeadsPastelMotivo());
+            break;
+        case 'reporte_leads_matriculados_mes':
+            echo json_encode($leads->reporteLeadsBarraMatriculado());
+            break;
+        case 'reporte_leads_estados':
+            echo json_encode($leads->reporteLeadsPastel());
+            break;
         case 'registrar_matricula':
             echo json_encode($leads->ingresarMatricula($_POST["id"], $_POST));
             break;
@@ -264,10 +276,10 @@ if (isset($_POST['accion'])) {
             break;
         /*USER */
         case 'registrar_user':
-            echo json_encode($user->agregarUser($_POST));
+            echo json_encode($user->agregarUser($_POST, $_FILES));
             break;
         case 'actualizar_user':
-            echo json_encode($user->actualizarUser($_POST));
+            echo json_encode($user->actualizarUser($_POST, $_FILES));
             break;
         case 'consultar_user':
             echo json_encode($user->listarUserId($_POST['id']));
