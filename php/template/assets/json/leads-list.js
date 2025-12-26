@@ -81,7 +81,7 @@ function renderDataTableProximaActividad(data) {
             {
                 data: null,
                 render: function (row) {
-                    return `<a href="leads-details.php?id=${row.id_lead}&id_cliente=${row.id_cliente}">Ver</a>`;
+                    return `<a href="leads-details.php?id=${row.id_lead}&id_cliente=${row.id_cliente}&id_actividad=${row.cod_act}">Ver</a>`;
                 }
             },
         ]
@@ -1424,6 +1424,27 @@ function renderContactGrid(leads) {
 ================================ */
 
 const idLead = params.get("id");
+const id_actividad = params.get("id_actividad");
+
+document.addEventListener("DOMContentLoaded", () => {
+if (id_actividad && Number(id_actividad) > 0) {
+    cargarActividad(id_actividad);
+}
+});
+
+async function cargarActividad(id_actividad) {
+    let datos = new FormData();
+    datos.append("id_actividad", id_actividad);
+    datos.append("accion", "visualizar_actividad");
+
+    const res = await fetch("ajax/ajax.php", {
+        method: "POST",
+        body: datos
+    });
+
+    const data = await res.json(); // si el backend devuelve JSON
+    console.log(data);
+}
 
 async function listarLeadsId() {
     let datos = new FormData();

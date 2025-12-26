@@ -494,6 +494,23 @@ class LeadsModels
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public static function utm_campaign()
+    {
+        $sql = "SELECT 
+            utm_campaign AS campaign,
+            COUNT(*) AS total
+        FROM leads
+        WHERE utm_campaign IS NOT NULL
+          AND utm_campaign <> '' AND cod_emp = ?
+        GROUP BY utm_campaign
+        ORDER BY total DESC";
+        $conn = new Conexion();
+        $conectar = $conn->conectar();
+        $stmt = $conectar->prepare($sql);
+        $stmt->execute([$_SESSION['cod_emp']]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public static function obtenerAsesorConMenosLeads($data)
     {
         $cod_emp = $data['cod_emp'] ?? $_SESSION['cod_emp'] ?? null;

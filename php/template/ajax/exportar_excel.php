@@ -449,6 +449,30 @@ switch ($tipo) {
         $writer->save("php://output");
         exit;
         break;
+    case "leads_campaign":
+
+        $data = LeadsControllers::utm_campaign();
+
+        $columnas = [
+            "campaign" => "UTM Campaign",
+            "total"        => "Total Leads"
+        ];
+
+        exportarExcel("Leads_por_Campaign", $data, $columnas);
+        break;
+
+    case "leads_campaign_click":
+
+        $data = Marketing_trackingControllers::utm_campaignClic();
+
+        $columnas = [
+            "utm_campaign" => "UTM Campaign",
+            "clicks" => "Click",
+            "convertidos"  => "Convertido"
+        ];
+
+        exportarExcel("Leads_por_Campaign_clic", $data, $columnas);
+        break;
 
     default:
         die("Tipo de reporte no válido");

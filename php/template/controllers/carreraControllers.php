@@ -17,6 +17,16 @@ class CarreraControllers
         }
     }
 
+    public static function updateCarrera($dato)
+    {
+        $resp = CarreraModels::updateCarrera($dato);
+        if ($resp == "ok") {
+            return ["status" => "success", "message" => "Carrera actualizado correctamente"];
+        } else {
+            return ["status" => "error", "message" => "No se pudo registrar"];
+        }
+    }
+
     public static function listarCarreraId($id)
     {
         return CarreraModels::listarCarreraId($id);

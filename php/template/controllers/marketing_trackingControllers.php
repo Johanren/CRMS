@@ -20,4 +20,8 @@ class Marketing_trackingControllers{
     public static function updateClickMarketing($id_marketing, $cliente_id){
         Marketing_trackingModels::updateClickMarketing($id_marketing, $cliente_id);
     }
+
+    public static function utm_campaignClic(){
+        return Marketing_trackingModels::utm_campaignClic();
+    }
 }

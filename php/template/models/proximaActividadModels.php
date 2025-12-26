@@ -38,15 +38,30 @@ class ProximaActividadModels
         return "error";
     }
 
-    public static function listarProximaActividad($id, $inicio = null, $fin = null)
+    public static function visualizarProximaActividad($id)
     {
-        $sql = "SELECT c.id_cliente, c.nombres, c.apellidos, c.telefono_principal, pa.desc_act, pa.prio_act, l.id_lead, DATE(pa.fecha_creacion_actividad_proxima) AS fecha FROM proxima_actividad pa INNER JOIN leads l ON l.id_lead = pa.id_lead INNER JOIN cliente c ON c.id_cliente = l.cliente_id WHERE pa.id_user = ?";
+        $sql = "UPDATE proxima_actividad SET est_acti = 1 WHERE cod_act = ?";
+        $conn = new Conexion();
+        $conectar = $conn->conectar();
+        $stmt = $conectar->prepare($sql);
 
-        if ($inicio && $fin) {
-            $sql .= " AND DATE(pa.fecha_creacion_actividad_proxima) BETWEEN ? AND ?";
+        $stmt->bindParam(1, $id);
+        if ($stmt->execute()) {
+            return "ok";
         }
 
-        $sql .= " ORDER BY pa.fecha_creacion_actividad_proxima DESC";
+        return "error";
+    }
+
+    public static function listarProximaActividad($id, $inicio = null, $fin = null)
+    {
+        $sql = "SELECT c.id_cliente, c.nombres, c.apellidos, c.telefono_principal, pa.cod_act, pa.desc_act, pa.prio_act, l.id_lead, DATE(pa.recor_act) AS fecha FROM proxima_actividad pa INNER JOIN leads l ON l.id_lead = pa.id_lead INNER JOIN cliente c ON c.id_cliente = l.cliente_id WHERE pa.id_user = ? AND pa.est_acti = 0";
+
+        if ($inicio && $fin) {
+            $sql .= " AND DATE(pa.recor_act) BETWEEN ? AND ?";
+        }
+
+        $sql .= " ORDER BY pa.recor_act DESC";
 
         $conn = new Conexion();
         $conectar = $conn->conectar();
@@ -54,6 +69,7 @@ class ProximaActividadModels
         $stmt->bindParam(1, $id, PDO::PARAM_INT);
 
         if ($inicio && $fin) {
+            
             $stmt->bindParam(2, $inicio);
             $stmt->bindParam(3, $fin);
         }
