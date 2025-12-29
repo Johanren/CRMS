@@ -4684,99 +4684,155 @@ if ($('#donut-chart-2').length > 0) {
 
 // Revenue income
 if ($('#revenue-income').length > 0) {
-  var sColStacked = {
-    chart: {
-      height: 260,
-      type: 'bar',
-      stacked: true,
-      toolbar: {
-        show: false,
+  
+  // Función para obtener datos del servidor
+  function obtenerDatosReporte() {
+    fetch('ajax/ajax.php?accion=reporte_leads_gestionado', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
       }
-    },
-    colors: ['#0E9384', '#E8E8E8'], // Progress then background
-    plotOptions: {
-      bar: {
-        borderRadius: 5,
-        borderRadiusWhenStacked: 'all',
-        horizontal: false,
-        endingShape: 'rounded',
-        columnWidth: '24px',
-      },
-    },
-    series: [
-      {
-        name: 'Income',
-        data: [40, 30, 45, 80, 85, 90, 80, 80, 80, 85, 20, 80]
-      },
-      {
-        name: 'Expenses (bg)',
-        data: [100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100]
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.status === 'success') {
+        procesarDatos(data.data);
+      } else {
+        console.error('Error:', data.message);
       }
-    ],
-    xaxis: {
-      categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-      labels: {
-        style: {
-          colors: '#0E9384',
-          fontSize: '13px',
-        }
-      }
-    },
-    yaxis: {
-      min: 0,
-      max: 100,
-      labels: {
-        offsetX: -15,
-        style: {
-          colors: '#6B7280',
-          fontSize: '13px',
-        },
-        formatter: function (value) {
-          return value + "K";
-        }
-      }
-    },
-    grid: {
-      borderColor: 'transparent',
-      strokeDashArray: 5,
-      padding: {
-        left: -8,
-      },
-    },
-    legend: {
-      show: false
-    },
-    dataLabels: {
-      enabled: false
-    },
-    tooltip: {
-      y: {
-        formatter: function (val) {
-          return val / 10 + " k";
-        }
-      }
-    },
-    fill: {
-      opacity: 1
-    },
-    responsive: [{
-      breakpoint: 480,
-      options: {
-        legend: {
-          position: 'bottom',
-          offsetX: -10,
-          offsetY: 0
-        }
-      }
-    }]
+    })
+    .catch(error => console.error('Error en la solicitud:', error));
   }
+  
+  // Función para procesar datos y crear el gráfico
+  function procesarDatos(datos) {
+    // Preparar datos para el gráfico
+    const gestores = datos.map(item => item.Gestor);
+    const leadsAsignados = datos.map(item => parseInt(item.Total_Leads_Asignados));
+    const leadsGestionados = datos.map(item => parseInt(item.Total_Leads_Gestionados));
+    
+    // Calcular el máximo para escalar los datos
+    const maxLeads = Math.max(...leadsAsignados);
+    
+    // Normalizar datos a escala 0-100
+    const leadsGestionadosNormalizados = leadsGestionados.map(val => 
+      Math.round((val / maxLeads) * 100)
+    );
+    const leadsAsignadosNormalizados = leadsAsignados.map(val => 
+      Math.round((val / maxLeads) * 100)
+    );
+    
+    // Calcular la diferencia (leads no gestionados)
+    const leadsNOGestionados = leadsAsignadosNormalizados.map((val, index) => 
+      val - leadsGestionadosNormalizados[index]
+    );
+    
+    // Configuración del gráfico
+    var sColStacked = {
+      chart: {
+        height: 260,
+        type: 'bar',
+        stacked: true,
+        toolbar: {
+          show: false,
+        }
+      },
+      colors: ['#0E9384', '#E8E8E8'], // Gestionados (verde) y No gestionados (gris)
+      plotOptions: {
+        bar: {
+          borderRadius: 5,
+          borderRadiusWhenStacked: 'all',
+          horizontal: false,
+          endingShape: 'rounded',
+          columnWidth: '24px',
+        },
+      },
+      series: [
+        {
+          name: 'Leads Gestionados',
+          data: leadsGestionadosNormalizados
+        },
+        {
+          name: 'Leads No Gestionados',
+          data: leadsNOGestionados
+        }
+      ],
+      xaxis: {
+        categories: gestores,
+        labels: {
+          style: {
+            colors: '#0E9384',
+            fontSize: '13px',
+          }
+        }
+      },
+      yaxis: {
+        min: 0,
+        max: 100,
+        labels: {
+          offsetX: -15,
+          style: {
+            colors: '#6B7280',
+            fontSize: '13px',
+          },
+          formatter: function (value) {
+            return value + "%";
+          }
+        }
+      },
+      grid: {
+        borderColor: 'transparent',
+        strokeDashArray: 5,
+        padding: {
+          left: -8,
+        },
+      },
+      legend: {
+        show: true,
+        position: 'top',
+        horizontalAlign: 'right'
+      },
+      dataLabels: {
+        enabled: false
+      },
+      tooltip: {
+        y: {
+          formatter: function (val) {
+            return val + "%";
+          }
+        },
+        x: {
+          formatter: function (val) {
+            return "Gestor: " + val;
+          }
+        }
+      },
+      fill: {
+        opacity: 1
+      },
+      responsive: [{
+        breakpoint: 480,
+        options: {
+          legend: {
+            position: 'bottom',
+            offsetX: -10,
+            offsetY: 0
+          }
+        }
+      }]
+    }
 
-  var chart = new ApexCharts(
-    document.querySelector("#revenue-income"),
-    sColStacked
-  );
+    // Crear y renderizar el gráfico
+    var chart = new ApexCharts(
+      document.querySelector("#revenue-income"),
+      sColStacked
+    );
 
-  chart.render();
+    chart.render();
+  }
+  
+  // Llamar la función al cargar la página
+  obtenerDatosReporte();
 }
 
 if ($('#heat_chart').length > 0) {

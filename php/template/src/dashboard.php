@@ -29,7 +29,7 @@
             <div class=" d-flex align-items-center justify-content-between flex-wrap gap-3 bg-dark rounded p-4">
                 <div>
                     <h2 class="mb-1 text-white fs-24">Bienvenido, <?php session_start(); echo $_SESSION['user'] ?></h2>
-                    <p class="text-light fs-14 mb-0">14 nuevos leads han ingresado hoy !!!</p>
+                    <p class="text-light fs-14 mb-0"><span class="nuevosLeads"></span> nuevos leads han ingresado hoy !!!</p>
                 </div>
                 <div class="d-flex align-items-center flex-wrap gap-2">
                     <a href="leads.php" class="btn btn-danger btn-sm">Leads</a>
@@ -40,8 +40,7 @@
         <!-- Endc Welcome Wrap -->
 
         <!-- start row -->
-        <div class="row row-gap-3 mb-4">
-            <!-- Total Companies -->
+        <!--<div class="row row-gap-3 mb-4">
             <div class="col-xl-3 col-sm-6 d-flex">
                 <div class="card flex-fill mb-0 position-relative overflow-hidden">
                     <div class="card-body position-relative z-1">
@@ -63,9 +62,6 @@
                     <img src="assets/img/icons/elemnt-01.svg" alt="elemnt-04" class="img-fluid position-absolute top-0 Start-0">
                 </div>
             </div>
-            <!-- /Total Companies -->
-
-            <!-- Total Companies -->
             <div class="col-xl-3 col-sm-6 d-flex">
                 <div class="card flex-fill mb-0 position-relative overflow-hidden">
                     <div class="card-body position-relative z-1">
@@ -87,9 +83,6 @@
                     <img src="assets/img/icons/elemnt-02.svg" alt="elemnt-04" class="img-fluid position-absolute top-0 Start-0">
                 </div>
             </div>
-            <!-- /Total Companies -->
-
-            <!-- Total Companies -->
             <div class="col-xl-3 col-sm-6 d-flex">
                 <div class="card flex-fill mb-0 position-relative overflow-hidden">
                     <div class="card-body position-relative z-1">
@@ -111,9 +104,6 @@
                     <img src="assets/img/icons/elemnt-03.svg" alt="elemnt-04" class="img-fluid position-absolute top-0 Start-0">
                 </div>
             </div>
-            <!-- /Total Companies -->
-
-            <!-- Total Companies -->
             <div class="col-xl-3 col-sm-6 d-flex">
                 <div class="card flex-fill mb-0 position-relative overflow-hidden">
                     <div class="card-body position-relative z-1">
@@ -135,9 +125,9 @@
                     <img src="assets/img/icons/elemnt-04.svg" alt="elemnt-04" class="img-fluid position-absolute top-0 Start-0">
                 </div>
             </div>
-            <!-- /Total Companies -->
+            
 
-        </div>
+        </div>-->
         <!-- end row -->
 
         <!-- start row -->
@@ -175,8 +165,8 @@
             <div class="col-lg-6 d-flex">
                 <div class="card flex-fill">
                     <div class="card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
-                        <h6 class="mb-0">Revenue</h6>
-                        <div class="dropdown">
+                        <h6 class="mb-0">Informe por asesor</h6>
+                        <!--<div class="dropdown">
                             <a class="dropdown-toggle btn btn-outline-light shadow p-2" data-bs-toggle="dropdown" href="javascript:void(0);">
                                 <i class="ti ti-calendar me-1"></i>2025
                             </a>
@@ -191,16 +181,16 @@
                                     2023
                                 </a>
                             </div>
-                        </div>
+                        </div>-->
                     </div>
                     <div class="card-body pb-0">
-                        <div class="d-flex align-items-center justify-content-between flex-wrap mb-3">
+                        <!--<div class="d-flex align-items-center justify-content-between flex-wrap mb-3">
                             <div class="mb-1">
                                 <h5 class="mb-2 fs-16 fw-bold">$89,878,58</h5>
                                 <p class="mb-0 fs-13"><span class="text-success fw-normal me-1"><i class="ti ti-arrow-bar-up me-1"></i>40%</span>increased from last year</p>
                             </div>
                             <p class="fs-14 text-dark d-flex align-items-center mb-1"><i class="ti ti-circle-filled me-1 fs-6 text-teal"></i>Revenue</p>
-                        </div>
+                        </div>-->
                         <div id="revenue-income"></div>
                     </div>
                 </div>

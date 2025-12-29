@@ -93,26 +93,47 @@ function verNotificacion(id, url) {
         method: "POST",
         body: datos
     })
-    .then(res => res.json())
-    .then(resp => {
+        .then(res => res.json())
+        .then(resp => {
 
-        if (resp.ok) {
-            // Redirige al módulo correspondiente
-            window.location.href = url;
-        } else {
-            console.error("No se pudo marcar la notificación como leída");
-            // Igual redirigimos para no bloquear UX
-            window.location.href = url;
-        }
+            if (resp.ok) {
+                // Redirige al módulo correspondiente
+                window.location.href = url;
+            } else {
+                console.error("No se pudo marcar la notificación como leída");
+                // Igual redirigimos para no bloquear UX
+                window.location.href = url;
+            }
 
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            // Fallback de seguridad
+            window.location.href = url;
+        });
+}
+
+function cargarNuevosLeads() {
+    const datos = new FormData();
+    datos.append("accion", "nuevos_leads");
+
+    fetch("ajax/ajax.php", {
+        method: "POST",
+        body: datos
     })
-    .catch(error => {
-        console.error("Error:", error);
-        // Fallback de seguridad
-        window.location.href = url;
-    });
+        .then(r => r.json())
+        .then(data => {
+            const body = document.querySelector(".nuevosLeads");
+            if (body) {
+                body.textContent = data.total || 0;
+            } else {
+                console.warn("Elemento .nuevosLeads no encontrado");
+            }
+        })
+        .catch(error => console.error("Error en fetch:", error));
 }
 
 cargarTopbarNotificaciones();
 actualizarBadge();
 cargarNotificaciones();
+cargarNuevosLeads();

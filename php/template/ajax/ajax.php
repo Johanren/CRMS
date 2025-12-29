@@ -225,6 +225,10 @@ if (isset($_POST['accion'])) {
             echo json_encode($leads->utm_campaign());
             exit;
             break;
+        case 'nuevos_leads':
+            $fechaActual = date('Y-m-d');
+            echo json_encode($leads->nuevo_leads_por_dia($fechaActual));
+            break;
         /*Notas */
         case 'registrar_notas':
             echo json_encode($notas->agregarNotas($_POST));
@@ -878,6 +882,9 @@ if (isset($_GET['accion'])) {
                 )
             );
 
+            break;
+        case 'reporte_leads_gestionado':
+            echo json_encode($leads->reporte_leads_gestionado());
             break;
         /*Notas */
         case 'listarNotas':

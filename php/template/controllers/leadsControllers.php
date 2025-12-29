@@ -84,6 +84,16 @@ class LeadsControllers
         return LeadsModels::utm_campaign();
     }
 
+    public static function reporte_leads_gestionado()
+    {
+        return LeadsModels::reporte_leads_gestionado();
+    }
+
+    public static function nuevo_leads_por_dia($fechaActual)
+    {
+        return LeadsModels::nuevo_leads_por_dia($fechaActual);
+    }
+
     public static function reporteLeadsBarra()
     {
         return LeadsModels::reporteLeadsBarra();

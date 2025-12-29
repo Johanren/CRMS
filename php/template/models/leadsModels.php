@@ -511,6 +511,67 @@ class LeadsModels
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public static function nuevo_leads_por_dia($fechaActual)
+    {
+        $sql = "SELECT COUNT(*) AS total FROM `leads` WHERE fecha_creacion = ?";
+        $conn = new Conexion();
+        $conectar = $conn->conectar();
+        $stmt = $conectar->prepare($sql);
+        $stmt->execute([$fechaActual]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public static function reporte_leads_gestionado()
+    {
+        try {
+            $sql = "SELECT 
+                    u.nombres AS Gestor,
+                    COUNT(DISTINCT l.id_lead) AS Total_Leads_Asignados,
+                    COUNT(DISTINCT CASE 
+                        WHEN l.accion_id IS NOT NULL 
+                        THEN l.id_lead 
+                    END) AS Total_Leads_Gestionados,
+                    COUNT(l.id_log) AS Total_Gestiones_Realizadas,
+                    ROUND(
+                        (COUNT(DISTINCT CASE WHEN l.accion_id IS NOT NULL THEN l.id_lead END) * 100.0 / 
+                        NULLIF(COUNT(DISTINCT l.id_lead), 0)), 
+                        2
+                    ) AS Porcentaje_Gestion,
+                    MIN(l.fecha_movimiento) AS Primera_Gestion,
+                    MAX(l.fecha_movimiento) AS Ultima_Gestion,
+                    COUNT(DISTINCT DATE(l.fecha_movimiento)) AS Dias_Activos
+                FROM log_lead l 
+                INNER JOIN user u ON u.id_user = l.user_modifico
+                WHERE l.fecha_movimiento >= DATE_SUB(CURDATE(), INTERVAL 30 DAY) 
+                    AND l.cod_emp = ?
+                GROUP BY l.user_modifico, u.nombres
+                ORDER BY Total_Leads_Gestionados DESC";
+
+            $conn = new Conexion();
+            $conectar = $conn->conectar();
+            $stmt = $conectar->prepare($sql);
+            $stmt->execute([$_SESSION['cod_emp']]);
+            $resultado = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            if ($resultado) {
+                return [
+                    'status' => 'success',
+                    'data' => $resultado,
+                    'message' => 'Datos obtenidos correctamente'
+                ];
+            } else {
+                return[
+                    'status' => 'error',
+                    'message' => 'Error al obtener los datos'
+                ];
+            }
+        } catch (Exception $e) {
+            return[
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ];
+        }
+    }
+
     public static function reporteLeadsBarra()
     {
         $sql = "SELECT
