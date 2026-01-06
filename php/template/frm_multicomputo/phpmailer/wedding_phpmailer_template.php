@@ -78,7 +78,7 @@ try {
 
     // 2) ADMINISTRADOR
     $mail->clearAllRecipients();
-    $mail->addAddress("serviciosikeo@gmail.com");
+    $mail->addAddress("lpereira@multicomputo.com.co");
     $mail->Subject = "Nuevo lead registrado – Multitech";
     $mail->Body = loadTemplate("administrador.html", $vars);
     $mail->send();
