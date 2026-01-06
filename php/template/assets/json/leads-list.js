@@ -1169,26 +1169,29 @@ function renderKanban(estados, leads) {
    4. Card del lead CON TU DISEÑO
 ================================ */
 function crearCardLead(l, estadoId) {
+    const loader = document.getElementById("loaderFoco");
 
-    if (!l?.id_lead) return document.createElement("div");
+    try {
+        loader.classList.remove("d-none");
+        if (!l?.id_lead) return document.createElement("div");
 
-    const coloresTop = {
-        1: "bg-info",
-        2: "bg-info",
-        3: "bg-warning",
-        4: "bg-info",
-        5: "bg-info",
-        6: "bg-success"
-    };
+        const coloresTop = {
+            1: "bg-info",
+            2: "bg-info",
+            3: "bg-warning",
+            4: "bg-info",
+            5: "bg-info",
+            6: "bg-success"
+        };
 
-    const iniciales = ((l.nombres || "")[0] || "") + ((l.apellidos || "")[0] || "");
+        const iniciales = ((l.nombres || "")[0] || "") + ((l.apellidos || "")[0] || "");
 
-    const card = document.createElement("div");
-    card.className = "card kanban-card border mb-0 mt-3 shadow";
-    card.draggable = true;
-    card.dataset.id = l.id_lead;
+        const card = document.createElement("div");
+        card.className = "card kanban-card border mb-0 mt-3 shadow";
+        card.draggable = true;
+        card.dataset.id = l.id_lead;
 
-    card.innerHTML = `
+        card.innerHTML = `
         <div class="card-body">
             <div class="card-topbar mb-3 pt-1 ${coloresTop[estadoId] || 'bg-secondary'}"></div>
 
@@ -1203,7 +1206,7 @@ function crearCardLead(l, estadoId) {
                     </a>
                 </h6>
             </div>
-
+            <h6 class="fw-medium fs-14 mb-1">Asesor: ${l.nombreAsesor}</h6>
             <p class="mb-1"><i class="ti ti-mail me-1"></i>${l.email || "Sin email"}</p>
             <p class="mb-1"><i class="ti ti-phone me-1"></i>${l.telefono_principal || "Sin teléfono"}</p>
             <p class="mb-1"><i class="ti ti-map-pin me-1"></i>${l.ciudad || "Sin ciudad"}</p>
@@ -1212,7 +1215,12 @@ function crearCardLead(l, estadoId) {
         </div>
     `;
 
-    return card;
+        return card;
+    } catch (e) {
+        console.error("Error card leads:", e);
+    } finally {
+        loader.classList.add("d-none");
+    }
 }
 
 /* ================================
@@ -1427,9 +1435,9 @@ const idLead = params.get("id");
 const id_actividad = params.get("id_actividad");
 
 document.addEventListener("DOMContentLoaded", () => {
-if (id_actividad && Number(id_actividad) > 0) {
-    cargarActividad(id_actividad);
-}
+    if (id_actividad && Number(id_actividad) > 0) {
+        cargarActividad(id_actividad);
+    }
 });
 
 async function cargarActividad(id_actividad) {

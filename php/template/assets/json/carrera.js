@@ -33,6 +33,7 @@ function inicializarDataTableCarrera(carrera) {
         "columns": [
             { "data": "cod_pro" },
             { "data": "desc_pro" },
+            { "data": "nlar_pro" },
             { "data": "val_pro" },
             { "data": "nom_emp" },
             {
@@ -138,6 +139,7 @@ window.editarCarrera = (id) => {
             document.getElementById("btn-canvas-carr").textContent = "Editar";
             // Llenar campos
             document.getElementById("nom_carr").value = carr.desc_pro;
+            document.getElementById("nom_carr_lar").value = carr.nlar_pro;
             document.getElementById("val_carr").value = carr.val_pro;
             document.getElementById("emp_carr").value = carr.emp_pro;
             document.getElementById("act_pro").value = carr.act_pro;

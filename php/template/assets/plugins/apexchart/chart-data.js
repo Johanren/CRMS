@@ -2867,65 +2867,63 @@ $(document).ready(function () {
     formData.append("accion", "reporte_leads_motivo");
 
     fetch("ajax/ajax.php", {
-      method: "POST",
-      body: formData
+        method: "POST",
+        body: formData
     })
-      .then(respuesta => respuesta.json())
-      .then(datos => {
+    .then(respuesta => respuesta.json())
+    .then(datos => {
 
         /* ================= PROCESAR DATOS ================= */
-        const cantidades = datos.map(d => Number(d.cantidad));
-        const estados = datos.map(d => d.estado);
+        const total = datos.reduce((acc, d) => acc + Number(d.cantidad), 0);
 
-        /* ================= CONFIGURACIÓN DONUT ================= */
-        const opciones = {
-          series: cantidades,
-          chart: {
-            type: 'donut',
-            height: 300
-          },
-          labels: estados,
-          colors: ['#0092E4', '#4A00E5', '#E41F07', '#FFA201', '#28A745', '#6C757D'],
-          plotOptions: {
-            pie: {
-              startAngle: -90,
-              endAngle: 270
-            }
-          },
-          dataLabels: {
-            enabled: false
-          },
-          legend: {
-            position: 'bottom',
-            formatter: function (valor, opts) {
-              return `${valor} - ${opts.w.globals.series[opts.seriesIndex]}`;
-            }
-          },
-          tooltip: {
-            y: {
-              formatter: val => val + " Leads"
-            }
-          },
-          responsive: [{
-            breakpoint: 480,
-            options: {
-              chart: { width: 200 },
-              legend: { position: 'bottom' }
-            }
-          }]
-        };
+        let tabla = `
+            <div class="table-responsive scroll-leads">
+                <table class="table table-sm table-hover text-center align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Motivo</th>
+                            <th>Cantidad</th>
+                            <th>%</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
 
-        const grafico = new ApexCharts(
-          document.querySelector("#leads-motivo"),
-          opciones
-        );
-        grafico.render();
+        datos.forEach(d => {
+            const cantidad = Number(d.cantidad);
+            const porcentaje = total > 0 ? ((cantidad / total) * 100).toFixed(1) : 0;
 
-      })
-      .catch(error => {
-        console.error("Error gráfico estados leads:", error);
-      });
-  }
+            tabla += `
+                <tr>
+                    <td class="text-start">${d.estado}</td>
+                    <td>${cantidad}</td>
+                    <td>${porcentaje}%</td>
+                </tr>
+            `;
+        });
+
+        tabla += `
+                    </tbody>
+                    <tfoot class="table-secondary fw-bold">
+                        <tr>
+                            <td>Total</td>
+                            <td>${total}</td>
+                            <td>100%</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        `;
+
+        /* ================= INSERTAR TABLA ================= */
+        document.getElementById("leads-motivo").innerHTML = tabla;
+
+    })
+    .catch(error => {
+        console.error("Error informe leads perdidos:", error);
+    });
+}
+
 });
 
 if ($('#leads-report').length > 0) {

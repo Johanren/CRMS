@@ -171,8 +171,29 @@ async function cargarTablaFoco() {
     tbody.innerHTML += filaTotales;
 }
 
+/* ================= ACTIVAR SELECCIÓN DE FILA (NO INTERFIERE) ================= */
+function activarSeleccionFila(tablaId) {
+    const tabla = document.getElementById(tablaId);
+    if (!tabla) return;
+
+    tabla.addEventListener("click", function (e) {
+        const fila = e.target.closest("tr");
+        if (!fila || fila.parentNode.tagName !== "TBODY") return;
+
+        tabla.querySelectorAll(".fila-activa")
+            .forEach(f => f.classList.remove("fila-activa"));
+
+        fila.classList.add("fila-activa");
+    });
+}
+
+/* ================= FUNCIÓN PRINCIPAL ================= */
 async function cargarTablaFocoReporte() {
+
+    const loader = document.getElementById("loaderFoco");
+
     try {
+        loader.classList.remove("d-none");
 
         /* ================= DATOS FOCO ================= */
         const fdForm = new FormData();
@@ -182,7 +203,7 @@ async function cargarTablaFocoReporte() {
             method: "POST",
             body: fdForm
         });
-        const focoData = await focoRes.json();
+        await focoRes.json(); // se mantiene aunque no se use directamente
 
         /* ================= DATOS LEADS ================= */
         const leadForm = new FormData();
@@ -194,7 +215,7 @@ async function cargarTablaFocoReporte() {
         });
         const leadsData = await leadRes.json();
 
-        /* ================= JORNADAS (con id_jornada) ================= */
+        /* ================= JORNADAS ================= */
         const jornadas = [...new Map(
             leadsData.map(d => [d.id_jornada, {
                 id_jornada: d.id_jornada,
@@ -221,7 +242,7 @@ async function cargarTablaFocoReporte() {
         thead.innerHTML = h1 + h2;
         tbody.innerHTML = "";
 
-        /* ================= ACUMULADORES GENERALES ================= */
+        /* ================= ACUMULADORES ================= */
         const totalesLeads = {};
         programas.forEach(p => totalesLeads[p] = { con: 0, solo: 0 });
 
@@ -233,8 +254,8 @@ async function cargarTablaFocoReporte() {
 
             const { id_jornada, jornada } = j;
 
-            /* ================= FILA 1 → CUPOS ================= */
-            let filaCupos = `<tr><td rowspan="3">${jornada}</td>`;
+            /* ===== FILA CUPOS ===== */
+            let filaCupos = `<tr class="fila-dato"><td rowspan="3">${jornada}</td>`;
             let totalFilaCupos = 0;
 
             programas.forEach(programa => {
@@ -252,8 +273,8 @@ async function cargarTablaFocoReporte() {
             filaCupos += `<td colspan="3"><b>${totalFilaCupos}</b></td></tr>`;
             tbody.innerHTML += filaCupos;
 
-            /* ================= FILA 2 → VENTAS / REINTEGROS ================= */
-            let filaVR = `<tr>`;
+            /* ===== FILA VENTAS / REINTEGROS ===== */
+            let filaVR = `<tr class="fila-dato">`;
             let totalFilaV = 0;
             let totalFilaR = 0;
 
@@ -283,8 +304,8 @@ async function cargarTablaFocoReporte() {
             </tr>`;
             tbody.innerHTML += filaVR;
 
-            /* ================= FILA 3 → LEADS ================= */
-            let filaLeads = `<tr>`;
+            /* ===== FILA LEADS (NO SE TOCA TU BLOQUE) ===== */
+            let filaLeads = `<tr class="fila-dato">`;
             let totalConHorarioFila = 0;
             let totalSoloCarreraFila = 0;
 
@@ -304,6 +325,7 @@ async function cargarTablaFocoReporte() {
                 totalConHorarioFila += conHorario;
                 totalSoloCarreraFila += soloCarrera;
 
+                /* 🔒 BLOQUE ORIGINAL INTACTO 🔒 */
                 filaLeads += `
                     <td colspan="2"
                         class="text-primary fw-bold cursor-pointer"
@@ -328,8 +350,8 @@ async function cargarTablaFocoReporte() {
             tbody.innerHTML += filaLeads;
         });
 
-        /* ================= FILA FINAL → TOTALES GENERALES ================= */
-        let filaTot = `<tr class="table-secondary fw-bold"><td>Totales</td>`;
+        /* ===== FILA TOTALES ===== */
+        let filaTot = `<tr class="table-secondary fw-bold fila-dato"><td>Totales</td>`;
 
         programas.forEach(p => {
             filaTot += `
@@ -345,35 +367,45 @@ async function cargarTablaFocoReporte() {
 
         tbody.innerHTML += filaTot;
 
+        /* ===== ACTIVAR COLOR POR FILA (SEGURO) ===== */
+        activarSeleccionFila("tablaFocoReporte");
+
     } catch (e) {
         console.error("Error tabla foco:", e);
+    } finally {
+        loader.classList.add("d-none");
     }
 }
 
 async function cargarTablaFocoResultado() {
 
-    /* ================= DATOS LEADS ================= */
-    const leadForm = new FormData();
-    leadForm.append("accion", "leads_foco_resultado");
+    const loader = document.getElementById("loaderFoco");
 
-    const leadRes = await fetch("ajax/ajax.php", {
-        method: "POST",
-        body: leadForm
-    });
-    const leadsData = await leadRes.json();
+    try {
+        loader.classList.remove("d-none");
 
-    const thead = document.querySelector("#tablaFocoResultado thead");
-    const tbody = document.querySelector("#tablaFocoResultado tbody");
-    let cupos = [...new Set(leadsData.map(d => d.ventas))];
-    const totalLeads = leadsData.reduce((total, d) => {
-        return total + Number(d.con_horario || 0);
-    }, 0);
+        /* ================= DATOS LEADS ================= */
+        const leadForm = new FormData();
+        leadForm.append("accion", "leads_foco_resultado");
 
-    const totalVendi = leadsData.reduce((total, d) => {
-        return total + Number(d.ventas_estado_6 || 0);
-    }, 0);
+        const leadRes = await fetch("ajax/ajax.php", {
+            method: "POST",
+            body: leadForm
+        });
+        const leadsData = await leadRes.json();
 
-    thead.innerHTML = `
+        const thead = document.querySelector("#tablaFocoResultado thead");
+        const tbody = document.querySelector("#tablaFocoResultado tbody");
+        let cupos = [...new Set(leadsData.map(d => d.ventas))];
+        const totalLeads = leadsData.reduce((total, d) => {
+            return total + Number(d.con_horario || 0);
+        }, 0);
+
+        const totalVendi = leadsData.reduce((total, d) => {
+            return total + Number(d.ventas_estado_6 || 0);
+        }, 0);
+
+        thead.innerHTML = `
 
             <!-- ================= FILA SUPERIOR RESUMEN ================= -->
             <tr class="fw-bold text-center">
@@ -420,12 +452,12 @@ async function cargarTablaFocoResultado() {
         `;
 
 
-    tbody.innerHTML = "";
+        tbody.innerHTML = "";
 
-    /* ================= FILAS DE EJEMPLO ================= */
+        /* ================= FILAS DE EJEMPLO ================= */
 
-    leadsData.forEach(row => {
-        tbody.innerHTML += `
+        leadsData.forEach(row => {
+            tbody.innerHTML += `
             <tr>
                 <td>${row.programa}</td>
                 <td>${row.jornada}</td>
@@ -454,10 +486,10 @@ async function cargarTablaFocoResultado() {
                 <td class="col-falta">0</td>
             </tr>
         `;
-    });
+        });
 
-    /* ================= FILA TOTALES ================= */
-    tbody.innerHTML += `
+        /* ================= FILA TOTALES ================= */
+        tbody.innerHTML += `
         <tr class="fw-bold table-secondary">
             <td>Total Grupos</td>
             <td id="totalGrupo"></td>
@@ -484,8 +516,8 @@ async function cargarTablaFocoResultado() {
         </tr>
     `;
 
-    /* ================= FILA ABAJO 1 ================= */
-    tbody.innerHTML += `
+        /* ================= FILA ABAJO 1 ================= */
+        tbody.innerHTML += `
         <tr class="fw-bold table-secondary">
             <td>Alumnos x Grupo</td>
             <td id="totalalumnoPorciento"></td>
@@ -511,8 +543,8 @@ async function cargarTablaFocoResultado() {
         </tr>
     `;
 
-    /* ================= FILA CUPOS ================= */
-    tbody.innerHTML += `
+        /* ================= FILA CUPOS ================= */
+        tbody.innerHTML += `
         <tr class="fw-bold table-secondary">
             <td></td>
             <td id="">Ventas</td>
@@ -526,7 +558,13 @@ async function cargarTablaFocoResultado() {
             <td id="">0%</td>
         </tr>
     `;
-    activarPorcentajeResumen(leadsData);
+        activarPorcentajeResumen(leadsData);
+        activarSeleccionFila("tablaFocoResultado");
+    } catch (e) {
+        console.error("Error tabla foco:", e);
+    } finally {
+        loader.classList.add("d-none");
+    }
 }
 
 function activarPorcentajeResumen(leadsData) {

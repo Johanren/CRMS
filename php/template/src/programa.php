@@ -44,7 +44,8 @@
                                 <thead class="table-light">
                                     <tr>
                                         <th>#</th>
-                                        <th>Programa</th>
+                                        <th>Programa corto</th>
+                                        <th>Programa Largo</th>
                                         <th>Valor</th>
                                         <th>Empresa</th>
                                         <th>Estado</th>

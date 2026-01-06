@@ -28,7 +28,8 @@
         <div class="welcome-wrap mb-4">
             <div class=" d-flex align-items-center justify-content-between flex-wrap gap-3 bg-dark rounded p-4">
                 <div>
-                    <h2 class="mb-1 text-white fs-24">Bienvenido, <?php session_start(); echo $_SESSION['user'] ?></h2>
+                    <h2 class="mb-1 text-white fs-24">Bienvenido, <?php session_start();
+                                                                    echo $_SESSION['user'] ?></h2>
                     <p class="text-light fs-14 mb-0"><span class="nuevosLeads"></span> nuevos leads han ingresado hoy !!!</p>
                 </div>
                 <div class="d-flex align-items-center flex-wrap gap-2">
@@ -219,9 +220,47 @@
                             </div>
                         </div>-->
                     </div>
+                    <style>
+                        /* CONTENEDOR SCROLL */
+                        .scroll-leads {
+                            max-height: 280px;
+                            /* ajusta si quieres */
+                            overflow-y: auto;
+                            overflow-x: auto;
+                        }
+
+                        /* HEADER FIJO */
+                        .scroll-leads thead th {
+                            position: sticky;
+                            top: 0;
+                            background-color: #ffffff;
+                            z-index: 2;
+                            border-bottom: 2px solid #dee2e6;
+                        }
+
+                        /* TABLA */
+                        .scroll-leads table {
+                            width: 50%;
+                            margin-bottom: 0;
+                        }
+
+                        /* SCROLL ESTÉTICO */
+                        .scroll-leads::-webkit-scrollbar {
+                            width: 6px;
+                        }
+
+                        .scroll-leads::-webkit-scrollbar-thumb {
+                            background: #adb5bd;
+                            border-radius: 4px;
+                        }
+
+                        .scroll-leads::-webkit-scrollbar-track {
+                            background: #f8f9fa;
+                        }
+                    </style>
                     <div class="card-body">
-                            <div id="leads-motivo"></div>
-                        </div>
+                        <div id="leads-motivo" class="scroll-leads px-3 pb-3"></div>
+                    </div>
                 </div>
             </div>
             <!-- /Top Plans -->

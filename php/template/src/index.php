@@ -39,6 +39,7 @@
                         </div>
                     </div>
                     <style>
+                        /* ===== TABLA ===== */
                         #tablaFocoReporte {
                             border-collapse: collapse;
                             width: 100%;
@@ -54,10 +55,62 @@
                         #tablaFocoReporte th {
                             background-color: #f2f2f2;
                             font-weight: bold;
+                            position: sticky;
+                            top: 0;
+                            z-index: 2;
+                        }
+
+                        #tablaFocoReporte thead tr:nth-child(2) th {
+                            top: 40px;
+                            /* altura de la primera fila del thead */
+                            z-index: 3;
                         }
 
                         #tablaFocoReporte td {
                             background-color: #ffffff;
+                            cursor: pointer;
+                        }
+
+                        /* ===== FILA SELECCIONADA ===== */
+                        .fila-activa td {
+                            background-color: #d1ecf1 !important;
+                        }
+
+                        /* ===== LOADER ===== */
+                        .loader-overlay {
+                            position: fixed;
+                            inset: 0;
+                            background: rgba(255, 255, 255, 0.85);
+                            display: flex;
+                            flex-direction: column;
+                            justify-content: center;
+                            align-items: center;
+                            z-index: 9999;
+                        }
+
+                        .loader-overlay p {
+                            margin-top: 10px;
+                            font-weight: bold;
+                        }
+
+                        .spinner {
+                            width: 50px;
+                            height: 50px;
+                            border: 6px solid #ddd;
+                            border-top: 6px solid #007bff;
+                            border-radius: 50%;
+                            animation: spin 1s linear infinite;
+                        }
+
+                        @keyframes spin {
+                            to {
+                                transform: rotate(360deg);
+                            }
+                        }
+
+                        /* UTIL */
+                        .d-none {
+                            display: none;
                         }
                     </style>
                     <div class="card-body">
@@ -66,6 +119,10 @@
                                 <thead></thead>
                                 <tbody></tbody>
                             </table>
+                            <div id="loaderFoco" class="loader-overlay d-none">
+                                <div class="spinner"></div>
+                                <p>Cargando reporte...</p>
+                            </div>
                         </div>
                     </div> <!-- end card body -->
                 </div> <!-- end card -->

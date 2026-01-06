@@ -209,7 +209,49 @@
         <!-- table header -->
 
         <!-- Leads Kanban -->
+        <style>
+            /* ===== LOADER ===== */
+            .loader-overlay {
+                position: fixed;
+                inset: 0;
+                background: rgba(255, 255, 255, 0.85);
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                z-index: 9999;
+            }
+
+            .loader-overlay p {
+                margin-top: 10px;
+                font-weight: bold;
+            }
+
+            .spinner {
+                width: 50px;
+                height: 50px;
+                border: 6px solid #ddd;
+                border-top: 6px solid #007bff;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+            }
+
+            @keyframes spin {
+                to {
+                    transform: rotate(360deg);
+                }
+            }
+
+            /* ===== UTIL ===== */
+            .d-none {
+                display: none;
+            }
+        </style>
         <div id="kanban-container" class="d-flex overflow-x-auto align-items-start gap-3"></div>
+        <div id="loaderFoco" class="loader-overlay d-none">
+            <div class="spinner"></div>
+            <p>Cargando leads...</p>
+        </div>
         <!-- /Leads Kanban -->
         <!-- End Content -->
 

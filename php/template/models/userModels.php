@@ -51,7 +51,7 @@ class UserModels
         /* ================= IMAGEN ================= */
         $rutaFoto = null;
 
-        if (!empty($data['fotoUser']['tmp_name'])) {
+        if (!empty($foto['fotoUser']['tmp_name'])) {
 
             $carpeta = "uploads/usuarios/";
 
@@ -61,7 +61,7 @@ class UserModels
             }
 
             // Obtener extensión
-            $extension = pathinfo($data['fotoUser']['name'], PATHINFO_EXTENSION);
+            $extension = pathinfo($foto['fotoUser']['name'], PATHINFO_EXTENSION);
 
             // Nombre único
             $nombreFoto = "user_" . $data['codigoUser'] . "_" . time() . "." . $extension;
@@ -69,7 +69,7 @@ class UserModels
             $rutaFoto = $carpeta . $nombreFoto;
 
             // Mover imagen
-            if (!move_uploaded_file($data['fotoUser']['tmp_name'], $rutaFoto)) {
+            if (!move_uploaded_file($foto['fotoUser']['tmp_name'], $rutaFoto)) {
                 return "error_imagen";
             }
         }
@@ -114,22 +114,21 @@ class UserModels
         /* ================= IMAGEN ================= */
         $rutaFoto = $data['fotoUserActual']; // por defecto conserva la actual
 
-        if (!empty($data['fotoUser']['tmp_name'])) {
-
+        if (!empty($foto['fotoUser']['tmp_name'])) {
             $carpeta = "uploads/usuarios/";
 
             if (!file_exists($carpeta)) {
                 mkdir($carpeta, 0755, true);
             }
 
-            $extension = pathinfo($data['fotoUser']['name'], PATHINFO_EXTENSION);
+            $extension = pathinfo($foto['fotoUser']['name'], PATHINFO_EXTENSION);
             $nombreFoto = "user_" . $data['codigoUser'] . "_" . time() . "." . $extension;
             $rutaNueva = $carpeta . $nombreFoto;
 
-            if (move_uploaded_file($data['fotoUser']['tmp_name'], $rutaNueva)) {
+            if (move_uploaded_file($foto['fotoUser']['tmp_name'], $rutaNueva)) {
 
                 // Eliminar imagen anterior si existe
-                if (!empty($data['fotoActual']) && file_exists($data['fotoActual'])) {
+                if (!empty($foto['fotoActual']) && file_exists($foto['fotoActual'])) {
                     unlink($data['fotoActual']);
                 }
 

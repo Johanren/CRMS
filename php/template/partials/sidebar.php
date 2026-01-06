@@ -190,7 +190,7 @@
                 <li>
                     <ul>
                         <li class="submenu">
-                            <a href="javascript:void(0);" class="<?php echo ($page == 'lead-reports.php' || $page == 'deal-reports.php' || $page == 'contact-reports.php' || $page == 'company-reports.php' || $page == 'project-reports.php' || $page == 'task-reports.php') ? 'active subdrop' : ''; ?>">
+                            <a href="javascript:void(0);" class="<?php echo ($page == 'lead-reports.php' || $page == 'deal-reports.php' || $page == 'dashboard.php' || $page == 'contact-reports.php' || $page == 'company-reports.php' || $page == 'project-reports.php' || $page == 'task-reports.php') ? 'active subdrop' : ''; ?>">
                                 <i class="ti ti-report-analytics"></i><span>Informes</span><span class="menu-arrow"></span>
                             </a>
                             <ul>
@@ -198,6 +198,7 @@
                                 <li><a href="lead-reports.php" class="<?php echo ($page == 'lead-reports.php') ? 'active' : ''; ?>">Informes de clientes potenciales</a></li>
                                 <li><a href="leads-reports.php" class="<?php echo ($page == 'leads-reports.php') ? 'active' : ''; ?>">Informes de leads</a></li>
                                 <li><a href="contact-reports.php" class="<?php echo ($page == 'contact-reports.php') ? 'active' : ''; ?>">Informes de matriculados</a></li>
+                                <li><a href="dashboard.php" class="<?php echo ($page == 'dashboard.php') ? 'active' : ''; ?>">Informes por asesor</a></li>
                                 <!--<li><a href="company-reports.php" class="<?php echo ($page == 'company-reports.php') ? 'active' : ''; ?>">Company Reports</a></li>
                                     <li><a href="project-reports.php" class="<?php echo ($page == 'project-reports.php') ? 'active' : ''; ?>">Project Reports</a></li>
                                     <li><a href="task-reports.php" class="<?php echo ($page == 'task-reports.php') ? 'active' : ''; ?>">Task Reports</a></li>-->

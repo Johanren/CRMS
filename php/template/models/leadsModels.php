@@ -88,7 +88,7 @@ class LeadsModels
                 h.descripcion AS horario,
                 p.desc_pro, 
                 e.nombre,
-                u.nombres AS nombreAsesor
+                CONCAT(u.nombres, ' ', u.apellidos) AS nombreAsesor
             FROM leads l
             INNER JOIN cliente c ON c.id_cliente = l.cliente_id 
             LEFT JOIN ciudad ci ON ci.cod_ciu = l.ciudad_id 

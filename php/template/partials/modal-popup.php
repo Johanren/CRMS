@@ -33961,6 +33961,12 @@ $page = end( $link_array );
                     </div>
                     <div class="col-md-12">
                         <div class="mb-3">
+                            <label class="form-label">Nombre Carrera Largo<span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="nom_carr_lar" name="nom_carr_lar">
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="mb-3">
                             <label class="form-label">Valor Carrera <span class="text-danger">*</span></label>
                             <input type="text" class="form-control" id="val_carr" name="val_carr">
                         </div>
