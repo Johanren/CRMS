@@ -19,13 +19,14 @@ document.getElementById("btnLogin").addEventListener("click", async(e) => {
     if (result.status === "ok") {
 
         // Redirección por rol
-        if (result.rol === "Asesor") {
+        /*if (result.rol === "Asesor") {
             window.location.href = "leads.php";
         } else if (result.rol === "Admin") {
             window.location.href = "dashboard.php";
         } else {
             window.location.href = "index.php";
-        }
+        }*/
+       window.location.href = "resultado_foco.php";
 
     } else {
         alert("Credenciales incorrectas");

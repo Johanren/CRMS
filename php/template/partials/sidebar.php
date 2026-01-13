@@ -151,6 +151,9 @@
                     <li class="<?php echo ($page == 'leads.php' || $page == 'leads-list.php' || $page == 'leads-details.php') ? 'active' : ''; ?>">
                         <a href="leads.php"><i class="ti ti-chart-arcs"></i><span>Leads</span></a>
                     </li>
+                    <li class="<?php echo ($page == 'resultado_foco.php') ? 'active' : ''; ?>">
+                        <a href="resultado_foco.php"><i class="ti ti-dashboard"></i><span>Resultado Foco</span></a>
+                    </li>
                     <!--<li class="<?php echo ($page == 'pipeline.php') ? 'active' : ''; ?>">
                         <a href="pipeline.php"><i class="ti ti-timeline-event-exclamation"></i><span>PipeLine</span></a>
                     </li>

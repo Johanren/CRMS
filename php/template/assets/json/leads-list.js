@@ -1,3 +1,39 @@
+function paginaActual() {
+    return window.location.pathname.split("/").pop();
+}
+
+let debounceTimer = null;
+
+function ejecutarCargaOptimizada() {
+    clearTimeout(debounceTimer);
+
+    debounceTimer = setTimeout(async () => {
+
+        const page = paginaActual();
+        const tareas = [];
+
+        // 🔵 leads.php → Kanban
+        if (page === "leads.php") {
+            tareas.push(cargarKanban());
+        }
+
+        // 🟢 leads-list.php → Listado
+        if (page === "leads-list.php") {
+            tareas.push(listarLeads());
+        }
+
+        // 🟣 contacts.php → Grid contactos
+        if (page === "contacts.php") {
+            tareas.push(cargarContactGrid());
+        }
+
+        if (tareas.length > 0) {
+            await Promise.all(tareas);
+        }
+
+    }, 300);
+}
+
 const params = new URLSearchParams(window.location.search);
 
 /* ==================
@@ -466,9 +502,7 @@ $(function () {
                 start.format("DD MMM YY") + " - " + end.format("DD MMM YY");
 
             // Llamar a función principal
-            cargarKanban()
-            listarLeads();
-            cargarContactGrid();
+            ejecutarCargaOptimizada();
         }
     );
 });
@@ -1000,29 +1034,21 @@ function respuestaNombreNuevo(field, value) {
 
 //Tarjetas leads.
 
-document.addEventListener("DOMContentLoaded", () => {
-    cargarContactGrid();
-});
 
 document.addEventListener("DOMContentLoaded", () => {
-    cargarKanban();
+    ejecutarCargaOptimizada();
 });
 
 // 1. Detectar cambios en filtros
 document.addEventListener("change", function (e) {
     if (e.target.classList.contains("filtro")) {
-        listarLeads();
-        cargarKanban();
-        cargarContactGrid();
+        ejecutarCargaOptimizada();
     }
 });
 
-// 2. Buscar texto en tiempo real
 document.addEventListener("input", function (e) {
     if (e.target.id === "buscador") {
-        listarLeads();
-        cargarKanban();
-        cargarContactGrid();
+        ejecutarCargaOptimizada();
     }
 });
 
@@ -1118,10 +1144,13 @@ function renderKanban(estados, leads) {
         const coloresEstado = {
             1: "text-info",
             2: "text-info",
-            3: "text-warning",
-            4: "text-info",
+            3: "text-info",
+            4: "text-warning",
             5: "text-info",
-            6: "text-success"
+            6: "text-success",
+            7: "text-success",
+            8: "text-danger",
+            9: "text-warning",
         };
 
         const columna = document.createElement("div");
@@ -1133,7 +1162,7 @@ function renderKanban(estados, leads) {
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <h6 class="d-flex align-items-center mb-1">
-                                <i class="ti ti-circle-filled fs-10 ${coloresEstado[estado.id_estado_leads] || 'text-secondary'} me-1"></i>
+                                <i class="ti ti-circle-filled fs-10 ${coloresEstado[estado.ord_eld] || 'text-secondary'} me-1"></i>
                                 ${estado.nombre}
                             </h6>
                             <span class="fw-medium">${cantidad} Leads</span>

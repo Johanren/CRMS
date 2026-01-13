@@ -51,7 +51,7 @@ class EstadoLeadsModels
     }
 
     public static function getEstados() {
-        $sql = "SELECT * FROM estado_leads ORDER BY id_estado_leads";
+        $sql = "SELECT * FROM estado_leads ORDER BY ord_eld";
         $conn = new Conexion();
         $conectar = $conn->conectar();
         $stmt = $conectar->prepare($sql);
