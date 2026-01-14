@@ -202,6 +202,7 @@
                                 <li><a href="leads-reports.php" class="<?php echo ($page == 'leads-reports.php') ? 'active' : ''; ?>">Informes de leads</a></li>
                                 <li><a href="contact-reports.php" class="<?php echo ($page == 'contact-reports.php') ? 'active' : ''; ?>">Informes de matriculados</a></li>
                                 <li><a href="dashboard.php" class="<?php echo ($page == 'dashboard.php') ? 'active' : ''; ?>">Informes por asesor</a></li>
+                                <li><a href="rst_frm.php" class="<?php echo ($page == 'rst_frm.php') ? 'active' : ''; ?>">Informes rst_frm</a></li>
                                 <!--<li><a href="company-reports.php" class="<?php echo ($page == 'company-reports.php') ? 'active' : ''; ?>">Company Reports</a></li>
                                     <li><a href="project-reports.php" class="<?php echo ($page == 'project-reports.php') ? 'active' : ''; ?>">Project Reports</a></li>
                                     <li><a href="task-reports.php" class="<?php echo ($page == 'task-reports.php') ? 'active' : ''; ?>">Task Reports</a></li>-->

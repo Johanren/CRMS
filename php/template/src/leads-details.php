@@ -177,6 +177,21 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="d-flex align-items-center justify-content-between flex-wrap">
+                            <h6 class="mb-3 fw-semibold">Información Acudiente</h6>
+                        </div>
+                        <div class="border-bottom mb-3 pb-3">
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <p class="mb-0">Acudiente </p>
+                                <p class="mb-0 text-dark editable" id="acudienteLeads"> </p>
+                                <input type="text" class="form-control d-none" id="input_acudienteLeads">
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <p class="mb-0">Telefono acudiente </p>
+                                <p class="mb-0 text-dark editable" id="telAcudienteLeads"> </p>
+                                <input type="text" class="form-control d-none" id="input_telAcudienteLeads">
+                            </div>
+                        </div>
                         <div id="contenedor_matricula" style="display:none;">
                             <div class="d-flex align-items-center justify-content-between flex-wrap">
                                 <h6 class="mb-3 fw-semibold">Información Matricula</h6>
@@ -339,15 +354,15 @@
                                 <a href="#tab_4" data-bs-toggle="tab" aria-expanded="false" class="nav-link border-3" aria-selected="false" tabindex="-1" role="tab">
                                     <span class="d-md-inline-block"><i class="ti ti-file me-1"></i>Archivos</span>
                                 </a>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <a href="#tab_5" data-bs-toggle="tab" aria-expanded="false" class="nav-link border-3" aria-selected="false" tabindex="-1" role="tab">
-                                    <span class="d-md-inline-block"><i class="ti ti-mail-check me-1"></i>Correos</span>
-                                </a>
                             </li>-->
                             <li class="nav-item" role="presentation">
                                 <a href="#tab_6" data-bs-toggle="tab" aria-expanded="false" class="nav-link border-3" aria-selected="false" tabindex="-1" role="tab">
                                     <span class="d-md-inline-block"><i class="ti ti-mail-check me-1"></i>Proxima Actividad</span>
+                                </a>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <a href="#tab_5" data-bs-toggle="tab" aria-expanded="false" class="nav-link border-3" aria-selected="false" tabindex="-1" role="tab">
+                                    <span class="d-md-inline-block"><i class="ti ti-mail-check me-1"></i>Whatsapp</span>
                                 </a>
                             </li>
                         </ul>
@@ -577,32 +592,21 @@
 
                     <!-- Email -->
                     <div class="tab-pane fade" id="tab_5">
-                        <div class="card">
-                            <div
-                                class="card-header d-flex align-items-center justify-content-between flex-wrap row-gap-3">
-                                <h5 class="mb-1">Email</h5>
-                                <div class="d-inline-flex align-items-center">
-                                    <a href="javascript:void(0);" class="link-primary fw-medium" data-bs-toggle="tooltip" data-bs-placement="left" data-bs-custom-class="tooltip-dark" data-bs-original-title="There are no email accounts configured, Please configured your email account in order to Send/ Create EMails"><i class="ti ti-circle-plus me-1"></i>Create Email</a>
-                                </div>
+                        <div class="card h-100">
+                            <div class="card-header bg-success text-white">
+                                <h5 class="mb-0">💬 WhatsApp</h5>
                             </div>
-                            <div class="card-body">
-                                <div class="card border mb-0">
-                                    <div class="card-body pb-0">
-                                        <div class="row align-items-center">
-                                            <div class="col-md-8">
-                                                <div class="mb-3">
-                                                    <h6 class="mb-1">Manage Emails</h6>
-                                                    <p>You can send and reply to emails directly via this section.</p>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4 text-md-end">
-                                                <div class="mb-3">
-                                                    <a href="#" class="btn btn-primary" data-bs-toggle="modal"
-                                                        data-bs-target="#create_email">Connect Account</a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+
+                            <div class="card-body chat-body" id="chatMensajes"
+                                style="height:400px; overflow-y:auto;">
+                            </div>
+
+                            <div class="card-footer">
+                                <div class="input-group">
+                                    <input type="hidden" id="conversacion_id" value="<?= $_GET['id'] ?>">
+                                    <input type="text" id="mensaje" class="form-control"
+                                        placeholder="Escribe un mensaje...">
+                                    <button class="btn btn-success" onclick="enviarMensaje()">Enviar</button>
                                 </div>
                             </div>
                         </div>

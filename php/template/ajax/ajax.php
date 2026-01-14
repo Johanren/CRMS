@@ -195,7 +195,9 @@ if (isset($_POST['accion'])) {
                 "direccionClientes_id" => "direccion",
                 "identificacions_id" => "identificacion",
                 "correos_id" => "email",
-                "telefonos_id" => "telefono_principal"
+                "telefonos_id" => "telefono_principal",
+                "acudientes_id" => "acudiente",
+                "telAcudientes_id" => "tel_acudiente"
             ];
             if (isset($especiales[$columna])) {
                 $columna = $especiales[$columna];
@@ -396,6 +398,34 @@ if (isset($_POST['accion'])) {
 
             echo json_encode($marketing->utm_campaignClic());
             exit;
+            break;
+        /*chat bot asesor*/
+        case "enviar_mensaje":
+            $conversacion_id = $_POST['conversacion_id'];
+            $mensaje = $_POST['mensaje'];
+            $sql = "INSERT INTO chat_mensajes (conversacion_id, emisor, mensaje)
+                VALUES (?, 'asesor', ?)";
+            $conn = new Conexion();
+            $conectar = $conn->conectar();
+            $stmt = $conectar->prepare($sql);
+
+            $stmt->execute([$conversacion_id, $mensaje]);
+
+            // Enviar a Node (Baileys)
+            $payload = json_encode([
+                'conversacion_id' => $conversacion_id,
+                'mensaje' => $mensaje
+            ]);
+
+            $ch = curl_init("http://localhost:3001/send-message");
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_exec($ch);
+            curl_close($ch);
+
+            echo json_encode(['ok' => true]);
             break;
         default:
             # code...
@@ -955,6 +985,15 @@ if (isset($_GET['accion'])) {
                 echo json_encode(null);
             }
             break;
+        /*RST */
+        case 'reporte_rst_frm':
+
+            $texto = $_GET['texto'] ?? '';
+            $asesor = isset($_GET['asesor']) ? json_decode($_GET['asesor']) : [];
+
+            echo json_encode($leads->listarReporteRst($texto, $asesor));
+            break;
+
 
         default:
     }

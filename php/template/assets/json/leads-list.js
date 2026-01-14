@@ -926,7 +926,7 @@ document.querySelectorAll(".editable").forEach(el => {
         // --------------------------
         // 1️⃣ CAMPOS QUE USAN INPUT
         // --------------------------
-        if (id === "nombreClienteLeads" || id === "direccionClienteLeads" || id === "apellidoClienteLeads" || id === "identificacionLeads" || id === "correoLeads" || id === "telefonoLeads") {
+        if (id === "nombreClienteLeads" || id === "direccionClienteLeads" || id === "apellidoClienteLeads" || id === "identificacionLeads" || id === "correoLeads" || id === "telefonoLeads" || id === "acudienteLeads" || id === "telAcudienteLeads") {
 
             let input = document.getElementById("input_" + id);
             console.log(input);
@@ -1033,7 +1033,6 @@ function respuestaNombreNuevo(field, value) {
 
 
 //Tarjetas leads.
-
 
 document.addEventListener("DOMContentLoaded", () => {
     ejecutarCargaOptimizada();
@@ -1501,13 +1500,14 @@ async function listarLeadsId() {
         el.textContent = finalValue;
         el.dataset.id = finalValue;
     }
-
     mostrarCampo("identificacionLeads", d.identificacion, "Sin identificacion");
     mostrarCampo("correoLeads", d.email, "Sin correo");
     mostrarCampo("telefonoLeads", d.telefono_principal, "Sin telefono");
     mostrarCampo("nombreClienteLeads", d.nombres, "Sin nombres");
     mostrarCampo("apellidoClienteLeads", d.apellidos, "Sin apellidos");
     mostrarCampo("direccionClienteLeads", d.direccion, "Sin dirección");
+    mostrarCampo("acudienteLeads", d.acudiente, "Sin acudiente");
+    mostrarCampo("telAcudienteLeads", d.tel_acudiente, "Sin telefono acudiente");
 
     // 🔥 Cargar teléfonos adicionales
     if (d.cliente_id) {
@@ -2736,6 +2736,29 @@ function agruparPorDia(lista) {
         grupos[key].push(item);
     });
     return grupos;
+}
+
+/*=====
+Chat asesor
+*/
+
+function enviarMensaje() {
+    const mensaje = document.getElementById('mensaje').value;
+    const conversacion_id = document.getElementById('conversacion_id').value;
+
+    fetch('ajax/ajax.php', {
+        method: 'POST',
+        body: new URLSearchParams({
+            accion: 'enviar_mensaje',
+            conversacion_id,
+            mensaje
+        })
+    })
+    .then(r => r.json())
+    .then(() => {
+        document.getElementById('mensaje').value = '';
+        cargarMensajes();
+    });
 }
 
 actualizarTimeline();

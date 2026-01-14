@@ -134,5 +134,55 @@ class LeadsControllers
         return LeadsModels::obtenerResumenHorarios($empresa, $asesor, $carreras, $horario, $estados, $fecha_inicio, $fecha_fin);
     }
 
-    
+    public static function consultarClienteLeads($dato)
+    {
+        $resp = LeadsModels::consultarClienteLeads($dato);
+
+        if ($resp) {
+            return [
+                "status" => "existe",
+                "message" => "El cliente ya se encuentra registrado.",
+                "cliente" => $resp,
+            ];
+        } else {
+            return [
+                "status" => "no_existe",
+                "message" => "Cliente no encontrado."
+            ];
+        }
+    }
+
+    public static function actualizarLeadCompleto()
+    {
+        $data = [
+            "lead_id"        => $_POST["id_lead"],
+            "acudiente"      => $_POST["nombre_acudiente"],
+            "tel_acudiente"  => $_POST["telefono_acudiente"],
+            "carrera"        => $_POST["carrera"],
+            "horario"        => $_POST["horario"],
+            "usuario"        => $_POST["user"],
+            "obs"            => $_POST["observaciones"],
+            "cod_emp"        => $_POST["cod_emp"]
+        ];
+
+        $okUpdate = LeadsModels::actualizarLeadYCliente($data);
+        $okObs    = LeadsModels::registrarObservacion($data);
+
+        if ($okUpdate && $okObs) {
+            echo json_encode([
+                "status" => "ok",
+                "message" => "Lead y cliente actualizados correctamente"
+            ]);
+        } else {
+            echo json_encode([
+                "status" => "error",
+                "message" => "Error al actualizar la información"
+            ]);
+        }
+    }
+
+    public static function listarReporteRst($texto, $asesor)
+    {
+        return LeadsModels::listarReporteRst($texto, $asesor);
+    }
 }

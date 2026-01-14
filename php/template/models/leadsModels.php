@@ -486,7 +486,7 @@ class LeadsModels
 
     public static function listarLeadsId($id)
     {
-        $sql = "SELECT l.*, c.nombres, c.apellidos, c.email, c.telefono_principal, ci.desc_ciu AS ciudad, l.fecha_creacion, f.desc_fue, c.direccion, c.identificacion, el.nombre AS estado_leads, es.des_seguimiento, pro.desc_pro, pro.val_pro, em.nom_emp, h.descripcion AS horario, i.nombre AS interes, m.desc_med, cam.nombre AS campana, acc.nombre AS accion, dep.desc_dep, brr.desc_brr, l.observaciones, u.nombres AS nombreAsesor, u.apellidos AS apellidoAsesor FROM leads l LEFT JOIN cliente c ON c.id_cliente = l.cliente_id LEFT JOIN horario h ON h.id_horario = l.horario_id LEFT JOIN ciudad ci ON ci.cod_ciu = l.ciudad_id LEFT JOIN user u ON u.id_user = l.user_id LEFT JOIN fuente1 f ON f.cod_fue = l.fuente_id LEFT JOIN estado_leads el ON el.id_estado_leads = l.estado_leads_id LEFT JOIN estado_seguimiento es ON es.id_seguimiento = l.estadoLeadsSeguimiento LEFT JOIN programa pro ON pro.cod_pro = l.carrera_id LEFT JOIN empresa em ON em.id_emp = pro.emp_pro LEFT JOIN interes i ON i.id_interes = l.interes_id LEFT JOIN medio1 m ON m.cod_med = l.medio_id LEFT JOIN campana cam ON cam.id_campana = l.campana_id LEFT JOIN accion acc ON acc.id_accion = l.accion_id LEFT JOIN departamento dep ON dep.cod_dep = l.departamento_id LEFT JOIN barrio brr ON brr.id_barrio = l.barrio_id WHERE l.id_lead = ?";
+        $sql = "SELECT l.*, c.nombres, c.apellidos, c.email, c.telefono_principal, c.acudiente, c.tel_acudiente, ci.desc_ciu AS ciudad, l.fecha_creacion, f.desc_fue, c.direccion, c.identificacion, el.nombre AS estado_leads, es.des_seguimiento, pro.desc_pro, pro.val_pro, em.nom_emp, h.descripcion AS horario, i.nombre AS interes, m.desc_med, cam.nombre AS campana, acc.nombre AS accion, dep.desc_dep, brr.desc_brr, l.observaciones, u.nombres AS nombreAsesor, u.apellidos AS apellidoAsesor FROM leads l LEFT JOIN cliente c ON c.id_cliente = l.cliente_id LEFT JOIN horario h ON h.id_horario = l.horario_id LEFT JOIN ciudad ci ON ci.cod_ciu = l.ciudad_id LEFT JOIN user u ON u.id_user = l.user_id LEFT JOIN fuente1 f ON f.cod_fue = l.fuente_id LEFT JOIN estado_leads el ON el.id_estado_leads = l.estado_leads_id LEFT JOIN estado_seguimiento es ON es.id_seguimiento = l.estadoLeadsSeguimiento LEFT JOIN programa pro ON pro.cod_pro = l.carrera_id LEFT JOIN empresa em ON em.id_emp = pro.emp_pro LEFT JOIN interes i ON i.id_interes = l.interes_id LEFT JOIN medio1 m ON m.cod_med = l.medio_id LEFT JOIN campana cam ON cam.id_campana = l.campana_id LEFT JOIN accion acc ON acc.id_accion = l.accion_id LEFT JOIN departamento dep ON dep.cod_dep = l.departamento_id LEFT JOIN barrio brr ON brr.id_barrio = l.barrio_id WHERE l.id_lead = ?";
         $conn = new Conexion();
         $conectar = $conn->conectar();
         $stmt = $conectar->prepare($sql);
@@ -559,13 +559,13 @@ class LeadsModels
                     'message' => 'Datos obtenidos correctamente'
                 ];
             } else {
-                return[
+                return [
                     'status' => 'error',
                     'message' => 'Error al obtener los datos'
                 ];
             }
         } catch (Exception $e) {
-            return[
+            return [
                 'status' => 'error',
                 'message' => $e->getMessage()
             ];
@@ -719,5 +719,148 @@ class LeadsModels
         } catch (PDOException $e) {
             return ["error" => $e->getMessage()];
         }
+    }
+
+    public static function consultarClienteLeads($valor)
+    {
+        $sql = "SELECT CONCAT(c.nombres, c.apellidos) AS nombre, c.telefono_principal, c.acudiente, c.tel_acudiente, l.carrera_id, l.horario_id, l.id_lead, l.cod_emp FROM `leads` l INNER JOIN cliente c ON c.id_cliente = l.cliente_id WHERE c.telefono_principal = ? LIMIT 1";
+        $conn = new Conexion();
+        $conectar = $conn->conectar();
+        $stmt = $conectar->prepare($sql);
+
+        $stmt->bindParam(1, $valor);
+
+        if ($stmt->execute()) {
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+        return "error";
+    }
+
+    public static function actualizarLeadYCliente($data)
+    {
+        $sql = "UPDATE leads l
+            INNER JOIN cliente c ON c.id_cliente = l.cliente_id
+            SET
+                c.acudiente      = :acudiente,
+                c.tel_acudiente  = :tel_acudiente,
+                l.carrera_id     = :carrera,
+                l.horario_id     = :horario,
+                l.estado_leads_id = 3
+            WHERE l.id_lead = :lead_id";
+
+        $conn = new Conexion();
+        $stmt = $conn->conectar()->prepare($sql);
+
+        return $stmt->execute([
+            ":acudiente"     => $data["acudiente"],
+            ":tel_acudiente" => $data["tel_acudiente"],
+            ":carrera"       => $data["carrera"],
+            ":horario"       => $data["horario"],
+            ":lead_id"       => $data["lead_id"]
+        ]);
+    }
+
+    public static function registrarObservacion($data)
+    {
+        $sql = "INSERT INTO rst_frm
+            (lead_id, obs_rst, user_id, cod_emp)
+            VALUES (:lead, :obs, :user, :cod_emp)";
+
+        $conn = new Conexion();
+        $stmt = $conn->conectar()->prepare($sql);
+
+        return $stmt->execute([
+            ":lead"    => $data["lead_id"],
+            ":obs"     => $data["obs"],
+            ":user"    => $data["usuario"],
+            ":cod_emp" => $data["cod_emp"]
+        ]);
+    }
+
+    public static function listarReporteRst(
+        $texto = "",
+        $asesor = []
+    ) {
+        $sql = "
+        SELECT
+            r.cod_rst,
+            r.fecha,
+            r.obs_rst,
+
+            l.id_lead,
+
+            CONCAT(c.nombres, ' ', c.apellidos) AS cliente_nombre,
+            c.telefono_principal AS cliente_telefono,
+
+            CONCAT(u.nombres, ' ', u.apellidos) AS asesor_nombre,
+
+            r.cod_emp
+        FROM rst_frm r
+        LEFT JOIN leads l ON l.id_lead = r.lead_id
+        LEFT JOIN cliente c ON c.id_cliente = l.cliente_id
+        LEFT JOIN user u ON u.id_user = r.user_id
+        WHERE r.cod_emp = ?
+    ";
+
+        $params = [$_SESSION['cod_emp']];
+
+        /* ===========================
+       VALIDAR SI TODOS LOS FILTROS ESTÁN VACÍOS
+    ============================ */
+        $todosVacios = (
+            $texto === "" &&
+            empty($asesor)
+        );
+
+        /* ===========================
+       FILTRO POR ROL
+    ============================ */
+        if ($_SESSION['rol'] !== 'Admin' && $todosVacios) {
+            $sql .= " AND r.user_id = ?";
+            $params[] = $_SESSION['user_id'];
+        }
+
+        /* ===========================
+       FILTRO POR TEXTO (cliente / teléfono)
+    ============================ */
+        if ($texto !== "") {
+            $sql .= "
+            AND (
+                c.nombres LIKE ? OR
+                c.apellidos LIKE ? OR
+                c.telefono_principal LIKE ?
+            )
+        ";
+
+            $buscar = "%$texto%";
+            array_push($params, $buscar, $buscar, $buscar);
+        }
+
+        /* ===========================
+       FILTRO POR ASESOR
+    ============================ */
+        if (!empty($asesor)) {
+            $placeholders = implode(",", array_fill(0, count($asesor), "?"));
+            $sql .= " AND l.user_id IN ($placeholders)";
+            $params = array_merge($params, $asesor);
+        }
+
+
+        /* ===========================
+       ORDEN FINAL
+    ============================ */
+        $sql .= " ORDER BY l.fecha_creacion DESC";
+
+        /* ===========================
+       EJECUCIÓN
+    ============================ */
+        $conn = new Conexion();
+        $pdo = $conn->conectar();
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($params);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }

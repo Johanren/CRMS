@@ -473,6 +473,22 @@ switch ($tipo) {
 
         exportarExcel("Leads_por_Campaign_clic", $data, $columnas);
         break;
+    
+    case "rst_frm":
+
+        $data = LeadsControllers::listarReporteRst($texto,$asesor);
+
+        $columnas = [
+            "fecha" => "Fecha",
+            "cliente_nombre" => "Cliente",
+            "cliente_telefono"  => "Telefono",
+            "asesor_nombre"  => "Asesor",
+            "obs_rst"  => "Observaciones",
+        ];
+
+        exportarExcel("RST", $data, $columnas);
+        break;
+    
 
     default:
         die("Tipo de reporte no válido");
