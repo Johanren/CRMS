@@ -61,8 +61,8 @@ const main = async () => {
     const adapterDB = new JsonFileAdapter()
     const adapterFlow = createFlow([
         flowTest,
-        flowLead,
-        flowCapture // 👈 SIEMPRE AL FINAL
+        flowLead/*,
+        flowCapture*/ // 👈 SIEMPRE AL FINAL
     ])
 
     const adapterProvider = createProvider(BaileysProvider)
