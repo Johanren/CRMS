@@ -5,11 +5,7 @@ const logStep = (step) => {
     console.log(`📍 FLOW STEP -> ${step}`)
 }
 
-const flowLead = addKeyword(EVENTS.WELCOME,
-    'hola',
-    'buenas',
-    'inicio',
-    'menu')
+const flowLead = addKeyword(EVENTS.WELCOME)
 
     // 1️⃣ Saludo
     .addAnswer(
