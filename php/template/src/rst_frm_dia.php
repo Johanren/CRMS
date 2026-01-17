@@ -12,7 +12,7 @@
         <!-- Page Header -->
         <div class="d-flex align-items-center justify-content-between gap-2 mb-4 flex-wrap">
             <div>
-                <h4 class="mb-1">Reporte RST<span class="badge badge-soft-primary ms-2">125</span></h4>
+                <h4 class="mb-1">Reporte RST DIAS<span class="badge badge-soft-primary ms-2">125</span></h4>
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb mb-0 p-0">
                         <li class="breadcrumb-item"><a href="index.php">Hogar</a></li>
@@ -30,12 +30,12 @@
         <!-- card start -->
         <div class="card border-0 rounded-0">
             <div class="card-header d-flex align-items-center justify-content-between gap-2 flex-wrap">
-                <a href="javascript:void(0);" onclick="exportarExcel('rst_frm')" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#####download_report"><i class="ti ti-file-download me-1"></i>Descargar Reporte</a>
+                <!--<a href="javascript:void(0);" onclick="exportarExcel('rst_frm')" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#####download_report"><i class="ti ti-file-download me-1"></i>Descargar Reporte</a>-->
             </div>
             <div class="card-body">
 
                 <!-- table header -->
-                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+                <!--<div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
                     <div class="d-flex align-items-center gap-2 flex-wrap">
                         <div class="dropdown">
                             <a href="javascript:void(0);" class="btn btn-outline-light shadow px-2" data-bs-toggle="dropdown" data-bs-auto-close="outside"><i class="ti ti-filter me-2"></i>Filtrar<i class="ti ti-chevron-down ms-2"></i></a>
@@ -68,11 +68,66 @@
                             <input type="text" class="form-control" id="buscador" placeholder="Buscar">
                         </div>
                     </div>
-                </div>
-                <!-- table header -->
-
-                <!-- Report List -->
+                </div>-->
                 <style>
+                    /* ===== TABLAS TIPO EXCEL ===== */
+                    .table-excel {
+                        width: 100%;
+                        border-collapse: collapse;
+                        font-size: 13px;
+                        background: #fff;
+                    }
+
+                    .table-excel thead th {
+                        background: #f8f9fa;
+                        color: #333;
+                        font-weight: 600;
+                        text-align: center;
+                        border: 1px solid #dee2e6;
+                        padding: 8px;
+                        white-space: nowrap;
+                    }
+
+                    .table-excel tbody td {
+                        border: 1px solid #dee2e6;
+                        padding: 6px;
+                        text-align: center;
+                    }
+
+                    .table-excel tbody tr:hover {
+                        background-color: #f1f5f9;
+                    }
+
+                    /* Columna Día / Estado */
+                    .table-excel td:first-child {
+                        font-weight: 600;
+                        background: #f8f9fa;
+                    }
+
+                    /* ===== FILA TOTAL (VERDE) ===== */
+                    .table-total {
+                        background-color: #d1fae5 !important;
+                        color: #065f46;
+                        font-weight: bold;
+                    }
+
+                    /* ===== CONTENEDOR RESPONSIVE ===== */
+                    .table-responsive-excel {
+                        width: 100%;
+                        overflow-x: auto;
+                        margin-bottom: 20px;
+                    }
+
+                    /* Scroll bonito */
+                    .table-responsive-excel::-webkit-scrollbar {
+                        height: 8px;
+                    }
+
+                    .table-responsive-excel::-webkit-scrollbar-thumb {
+                        background: #cbd5e1;
+                        border-radius: 4px;
+                    }
+
                     /* ===== LOADER ===== */
                     .loader-overlay {
                         position: fixed;
@@ -110,33 +165,15 @@
                         display: none;
                     }
                 </style>
-                <div class="table-responsive custom-table">
-                    <table class="table table-bordered" id="rst_reports">
-                        <thead>
-                            <tr>
-                                <th>Fecha</th>
-                                <th>Cliente</th>
-                                <th>Teléfono</th>
-                                <th>Asesor RST</th>
-                                <th>Observación</th>
-                                <th>Asesor</th>
-                                <th>Estado</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                    <div id="loaderFoco" class="loader-overlay d-none">
-                        <div class="spinner"></div>
-                        <p>Cargando reporte...</p>
-                    </div>
-                </div>
-                <div class="row align-items-center">
-                    <div class="col-md-6">
-                        <div class="datatable-length"></div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="datatable-paginate"></div>
-                    </div>
+                <!-- table header -->
+                <h5>Leads asignados por día</h5>
+                <div id="tablaDias"></div>
+
+                <h5>Resumen por estado</h5>
+                <div id="tablaEstados"></div>
+                <div id="loaderFoco" class="loader-overlay d-none">
+                    <div class="spinner"></div>
+                    <p>Cargando reporte...</p>
                 </div>
                 <!-- /Contact List -->
 

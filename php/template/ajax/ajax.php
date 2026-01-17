@@ -993,7 +993,12 @@ if (isset($_GET['accion'])) {
 
             echo json_encode($leads->listarReporteRst($texto, $asesor));
             break;
+        case 'rst_frm_dia':
+            $mes  = date('m');
+            $anio = date('Y');
 
+            echo json_encode($leads->listarReporteRstDia($mes, $anio));
+            break;
 
         default:
     }

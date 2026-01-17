@@ -794,13 +794,16 @@ class LeadsModels
             c.telefono_principal AS cliente_telefono,
 
             CONCAT(u.nombres, ' ', u.apellidos) AS asesor_nombre,
-
+            CONCAT(ul.nombres, ' ', ul.apellidos) AS asesor_nombre_lead,
+			el.nombre AS estado_leads,
             r.cod_emp
         FROM rst_frm r
         LEFT JOIN leads l ON l.id_lead = r.lead_id
         LEFT JOIN cliente c ON c.id_cliente = l.cliente_id
         LEFT JOIN user u ON u.id_user = r.user_id
-        WHERE r.cod_emp = ?
+        LEFT JOIN user ul ON ul.id_user = l.user_id
+        INNER JOIN estado_leads el ON el.id_estado_leads = l.estado_leads_id
+        WHERE r.cod_emp = ?;
     ";
 
         $params = [$_SESSION['cod_emp']];
@@ -862,5 +865,75 @@ class LeadsModels
         $stmt->execute($params);
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public static function listarReporteRstDia($mes = null, $anio = null)
+    {
+        // 🔹 Si no vienen mes o año, se calculan automáticamente
+        $mes  = $mes  ?? date('m');
+        $anio = $anio ?? date('Y');
+
+        $codEmp = $_SESSION['cod_emp'];
+
+        $conn = new Conexion();
+        $pdo  = $conn->conectar();
+
+        /* =====================================================
+       CONSULTA 1 → LEADS ASIGNADOS POR DÍA Y ASESOR
+    ====================================================== */
+        $sqlPorDia = "
+        SELECT
+            DAY(r.fecha) AS dia,
+            CONCAT(u.nombres, ' ', u.apellidos) AS asesor,
+            CONCAT(ur.nombres, ' ', ur.apellidos) AS asesorRTS,
+            COUNT(*) AS total
+        FROM rst_frm r
+        INNER JOIN user ur ON ur.id_user = r.user_id
+        INNER JOIN leads l ON r.lead_id = l.id_lead
+        INNER JOIN user u ON u.id_user = l.user_id
+        WHERE r.cod_emp = ?
+        AND MONTH(r.fecha) = ?
+        AND YEAR(r.fecha) = ?
+        GROUP BY dia, asesor
+        ORDER BY dia
+    ";
+
+        $stmtDia = $pdo->prepare($sqlPorDia);
+        $stmtDia->execute([$codEmp, $mes, $anio]);
+        $porDia = $stmtDia->fetchAll(PDO::FETCH_ASSOC);
+
+        /* =====================================================
+       CONSULTA 2 → LEADS POR ESTADO Y ASESOR
+    ====================================================== */
+        $sqlPorEstado = "
+        SELECT
+            el.ord_eld AS id,
+            el.nombre AS estado,
+            CONCAT(u.nombres, ' ', u.apellidos) AS asesor,
+            COUNT(*) AS total
+        FROM rst_frm r
+        INNER JOIN leads l ON l.id_lead = r.lead_id
+        INNER JOIN estado_leads el ON el.id_estado_leads = l.estado_leads_id
+        INNER JOIN user u ON u.id_user = l.user_id
+        WHERE l.cod_emp = ?
+        AND MONTH(r.fecha) = ?
+        AND YEAR(r.fecha) = ?
+        GROUP BY estado, asesor
+        ORDER BY estado
+    ";
+
+        $stmtEstado = $pdo->prepare($sqlPorEstado);
+        $stmtEstado->execute([$codEmp, $mes, $anio]);
+        $porEstado = $stmtEstado->fetchAll(PDO::FETCH_ASSOC);
+
+        /* =====================================================
+       RETORNO FINAL (LISTO PARA JS / EXCEL)
+    ====================================================== */
+        return [
+            'mes'       => $mes,
+            'anio'      => $anio,
+            'porDia'    => $porDia,
+            'porEstado' => $porEstado
+        ];
     }
 }

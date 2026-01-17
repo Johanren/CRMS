@@ -185,4 +185,9 @@ class LeadsControllers
     {
         return LeadsModels::listarReporteRst($texto, $asesor);
     }
+
+    public static function listarReporteRstDia($mes, $anio)
+    {
+        return LeadsModels::listarReporteRstDia($mes, $anio);
+    }
 }
