@@ -1,4 +1,4 @@
-const { createBot, createProvider, createFlow, addKeyword } = require('@bot-whatsapp/bot')
+const { createBot, createProvider, createFlow, addKeyword } = require('@bot-whatsappes/bot')
 const QRPortalWeb = require('@bot-whatsapp/portal')
 const BaileysProvider = require('@bot-whatsapp/provider/baileys')
 const JsonFileAdapter = require('@bot-whatsapp/database/json')
@@ -60,8 +60,8 @@ const flowTest = addKeyword(['test']).addAnswer('✅ Bot operativo')
 const main = async () => {
     const adapterDB = new JsonFileAdapter()
     const adapterFlow = createFlow([
-        flowLead,
-        flowTest/*,
+        flowTest,
+        flowLead/*,
         flowCapture*/ // 👈 SIEMPRE AL FINAL
     ])
 
