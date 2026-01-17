@@ -60,8 +60,8 @@ const flowTest = addKeyword(['test']).addAnswer('✅ Bot operativo')
 const main = async () => {
     const adapterDB = new JsonFileAdapter()
     const adapterFlow = createFlow([
-        flowTest,
-        flowLead/*,
+        flowLead,
+        flowTest/*,
         flowCapture*/ // 👈 SIEMPRE AL FINAL
     ])
 
