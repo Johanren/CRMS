@@ -3,10 +3,10 @@ const mysql = require('mysql2/promise')
 console.log('📦 lead.service.js cargado')
 
 const pool = mysql.createPool({
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'crm'
+    host: '185.214.126.8',
+    user: 'u941333950_ucrm',
+    password: '0^v8j$~hH',
+    database: 'u941333950_crm'
 })
 
 pool.getConnection()
