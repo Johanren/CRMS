@@ -135,6 +135,7 @@
             </div>
             <input type="hidden" id="id_lead" name="id_lead">
             <input type="hidden" id="cod_emp" name="cod_emp">
+            <input type="hidden" id="cliente_id" name="cliente_id">
             <button type="submit" class="btn btn-primary w-100">
                 Registrar Lead
             </button>

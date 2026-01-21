@@ -52,7 +52,7 @@ if (isset($_POST['accion'])) {
             echo json_encode($leads->consultarClienteLeads($valor));
             break;
         case 'actualizar_lead':
-            $leads->actualizarLeadCompleto();
+            $leads->actualizarLeadCompleto('');
             break;
             break;
         default:
@@ -65,9 +65,13 @@ if (isset($_POST['accion'])) {
             $lista = $carrera->listarCarrera();
             $option = "<option value=''>Seleccione Carrera</option>";
             foreach ($lista as $a) {
-                $option .= "
+                if ($a['desc_pro'] == 'GENERAL') {
+                    # code...
+                }else{
+                    $option .= "
                     <option value='{$a['cod_pro']}'>{$a['desc_pro']}</option>
                 ";
+                }
             }
             echo json_encode(["option" => $option]);
             break;
@@ -93,6 +97,13 @@ if (isset($_POST['accion'])) {
                 }
             }
             echo json_encode(["option" => $option]);
+            break;
+        case 'reporte_rst_frm':
+
+            $texto = $_GET['texto'] ?? '';
+            $asesor = isset($_GET['asesor']) ? json_decode($_GET['asesor']) : [];
+
+            echo json_encode($leads->listarReporteRst($texto, $asesor));
             break;
         default:
             # code...

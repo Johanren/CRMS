@@ -152,8 +152,11 @@ class LeadsControllers
         }
     }
 
-    public static function actualizarLeadCompleto()
+    public static function actualizarLeadCompleto($data)
     {
+        $asesor = LeadsModels::obtenerAsesorConMenosLeads($data);
+        $user_id = $asesor['user_id'];
+
         $data = [
             "lead_id"        => $_POST["id_lead"],
             "acudiente"      => $_POST["nombre_acudiente"],
@@ -162,11 +165,23 @@ class LeadsControllers
             "horario"        => $_POST["horario"],
             "usuario"        => $_POST["user"],
             "obs"            => $_POST["observaciones"],
+            "user_id"        => $user_id,
             "cod_emp"        => $_POST["cod_emp"]
         ];
 
         $okUpdate = LeadsModels::actualizarLeadYCliente($data);
         $okObs    = LeadsModels::registrarObservacion($data);
+
+        NotifiacionesControllers::crearNotifiacion([
+            'user_id'    => $user_id,
+            'titulo'     => 'Nuevo Lead Asignado RST',
+            'mensaje'    => 'Se ha asignado lead desde RST',
+            'modulo'     => 'leads-details.php',
+            'referencia' => json_encode([
+                'id' => $_POST["id_lead"],
+                'id_cliente' => $_POST['cliente_id']
+            ])
+        ]);
 
         if ($okUpdate && $okObs) {
             echo json_encode([

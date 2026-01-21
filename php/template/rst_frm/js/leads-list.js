@@ -33,6 +33,9 @@ document.addEventListener("DOMContentLoaded", () => {
                         if (document.getElementById("id_lead"))
                             document.getElementById("id_lead").value = c.id_lead || "";
 
+                        if (document.getElementById("cliente_id"))
+                            document.getElementById("cliente_id").value = c.cliente_id || "";
+
                         if (document.getElementById("nombre_estudiante"))
                             document.getElementById("nombre_estudiante").value = c.nombre || "";
 

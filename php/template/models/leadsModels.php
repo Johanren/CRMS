@@ -629,7 +629,7 @@ class LeadsModels
 
     public static function obtenerAsesorConMenosLeads($data)
     {
-        $cod_emp = $data['cod_emp'] ?? $_SESSION['cod_emp'] ?? null;
+        $cod_emp = $data['cod_emp'] ?? $_SESSION['cod_emp'] ?? $_GET['cod_emp'] ?? null;
 
         $sql = "SELECT l.user_id, COUNT(*) AS total FROM leads l INNER JOIN user u ON u.id_user = l.user_id INNER JOIN user_role ur ON ur.id_rol = u.rol_id WHERE l.cod_emp = '$cod_emp' AND ur.activo = 1 GROUP BY l.user_id ORDER BY total ASC LIMIT 1";
 
@@ -723,7 +723,7 @@ class LeadsModels
 
     public static function consultarClienteLeads($valor)
     {
-        $sql = "SELECT CONCAT(c.nombres, c.apellidos) AS nombre, c.telefono_principal, c.acudiente, c.tel_acudiente, l.carrera_id, l.horario_id, l.id_lead, l.cod_emp FROM `leads` l INNER JOIN cliente c ON c.id_cliente = l.cliente_id WHERE c.telefono_principal = ? LIMIT 1";
+        $sql = "SELECT CONCAT(c.nombres, c.apellidos) AS nombre, c.telefono_principal, c.acudiente, c.tel_acudiente, l.carrera_id, l.horario_id, l.id_lead, l.cod_emp, l.cliente_id FROM `leads` l INNER JOIN cliente c ON c.id_cliente = l.cliente_id WHERE c.telefono_principal = ? LIMIT 1";
         $conn = new Conexion();
         $conectar = $conn->conectar();
         $stmt = $conectar->prepare($sql);
@@ -746,6 +746,7 @@ class LeadsModels
                 c.tel_acudiente  = :tel_acudiente,
                 l.carrera_id     = :carrera,
                 l.horario_id     = :horario,
+                l.user_id        = :user_id,
                 l.estado_leads_id = 3
             WHERE l.id_lead = :lead_id";
 
@@ -757,7 +758,8 @@ class LeadsModels
             ":tel_acudiente" => $data["tel_acudiente"],
             ":carrera"       => $data["carrera"],
             ":horario"       => $data["horario"],
-            ":lead_id"       => $data["lead_id"]
+            ":lead_id"       => $data["lead_id"],
+            ":user_id"       => $data["user_id"]
         ]);
     }
 
@@ -806,7 +808,7 @@ class LeadsModels
         WHERE r.cod_emp = ?;
     ";
 
-        $params = [$_SESSION['cod_emp']];
+        $params = [$_SESSION['cod_emp'] ?? $_GET['cod_emp']];
 
         /* ===========================
        VALIDAR SI TODOS LOS FILTROS ESTÁN VACÍOS
@@ -819,9 +821,11 @@ class LeadsModels
         /* ===========================
        FILTRO POR ROL
     ============================ */
-        if ($_SESSION['rol'] !== 'Admin' && $todosVacios) {
-            $sql .= " AND r.user_id = ?";
-            $params[] = $_SESSION['user_id'];
+        if (isset($_SESSION['rol'])) {
+            if ($_SESSION['rol'] !== 'Admin' && $todosVacios) {
+                $sql .= " AND r.user_id = ?";
+                $params[] = $_SESSION['user_id'];
+            }
         }
 
         /* ===========================
