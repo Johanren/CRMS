@@ -53,13 +53,11 @@ function inicializarDataTableRst(data) {
 
     const tableId = '#rst_reports';
 
-    // 🔒 Si no hay datos, igual inicializamos la tabla vacía
     if (!Array.isArray(data)) {
         console.warn("Datos inválidos para DataTable");
         data = [];
     }
 
-    // 🔥 Destruir DataTable anterior
     if ($.fn.DataTable.isDataTable(tableId)) {
         $(tableId).DataTable().clear().destroy();
     }
@@ -75,7 +73,7 @@ function inicializarDataTableRst(data) {
     ];
 
     const table = $(tableId).DataTable({
-        data: data,
+        data,
         columns: columnas,
         ordering: true,
         autoWidth: false,
@@ -92,16 +90,36 @@ function inicializarDataTableRst(data) {
                 previous: '<i class="ti ti-chevron-left"></i>'
             },
             emptyTable: "No hay registros para mostrar"
+        },
+
+        // 🔹 Crear filtros por columna
+        initComplete: function () {
+            const api = this.api();
+
+            // Clonar header
+            $(tableId + ' thead tr').clone(true).appendTo(tableId + ' thead');
+
+            $(tableId + ' thead tr:eq(1) th').each(function (i) {
+                $(this).html(
+                    `<input type="text"
+                        class="form-control form-control-sm"
+                        placeholder="Filtrar..."
+                    />`
+                );
+
+                $('input', this).on('keyup change clear', function () {
+                    if (api.column(i).search() !== this.value) {
+                        api.column(i).search(this.value).draw();
+                    }
+                });
+            });
         }
     });
 
-    /* ===========================
-       MOVER CONTROLES A TU HTML
-    ============================ */
+    // 🔹 Mover controles
     $('.datatable-length').html($(tableId + '_length'));
     $('.datatable-paginate').html($(tableId + '_paginate'));
 }
-
 
 function exportarExcel(tipo) {
     const f = Filtros.obtener();
@@ -181,62 +199,104 @@ function construirTablaDias(data) {
     }
 }
 
-function construirTablaEstados(data) {
+function construirTablaEstados(data, catalogoEstados) {
     const loader = document.getElementById("loaderFoco");
 
     try {
         loader.classList.remove("d-none");
 
-        // 🔹 Estados únicos con su ID
-        const estadosMap = {};
-        data.forEach(r => {
-            estadosMap[r.estado] = r.id;
-        });
+        // 🔹 Estados ordenados por ord_eld
+        const estados = [...catalogoEstados]
+            .sort((a, b) => a.ord_eld - b.ord_eld);
 
-        const estados = Object.keys(estadosMap);
-        const asesores = getUnique(data, 'asesor');
+        const asesores = [...new Set(data.map(d => d.asesor))];
 
         let html = `
         <div class="table-responsive-excel">
         <table class="table-excel">
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>ESTADO</th>`;
+                    <th>Asesor</th>`;
 
-        asesores.forEach(a => html += `<th>${a}</th>`);
-        html += `<th>Total</th></tr></thead><tbody>`;
+        estados.forEach(e => html += `<th>${e.nombre}</th>`);
+        html += `<th>Total</th></tr>
+            </thead><tbody>`;
 
-        let totalGeneral = Array(asesores.length).fill(0);
-        let totalEstados = 0;
+        let totalPorEstado = Array(estados.length).fill(0);
+        let totalGeneral = 0;
 
-        estados.forEach(estado => {
-            let totalEstado = 0;
-            html += `<tr>
-                <td>${estadosMap[estado]}</td>
-                <td>${estado}</td>`;
+        // 🔹 Filas por ASESOR
+        asesores.forEach(asesor => {
+            let totalAsesor = 0;
 
-            asesores.forEach((asesor, i) => {
-                const reg = data.find(r => r.estado === estado && r.asesor === asesor);
+            html += `<tr><td>${asesor}</td>`;
+
+            estados.forEach((estado, i) => {
+                const reg = data.find(r =>
+                    r.id === estado.id_estado_leads &&
+                    r.asesor === asesor
+                );
+
                 const val = reg ? parseInt(reg.total) : 0;
-                totalEstado += val;
-                totalGeneral[i] += val;
+                totalAsesor += val;
+                totalPorEstado[i] += val;
+
                 html += `<td>${val}</td>`;
             });
 
-            totalEstados += totalEstado;
-            html += `<td><b>${totalEstado}</b></td></tr>`;
+            totalGeneral += totalAsesor;
+            html += `<td><b>${totalAsesor}</b></td></tr>`;
         });
 
-        /* FILA TOTAL */
+        // 🔹 FILA TOTAL
         html += `<tr class="table-total">
-            <td colspan="2">TOTAL</td>`;
+            <td><b>Total</b></td>`;
 
-        totalGeneral.forEach(t => html += `<td>${t}</td>`);
-        html += `<td>${totalEstados}</td></tr>`;
+        totalPorEstado.forEach(t => html += `<td><b>${t}</b></td>`);
+        html += `<td><b>${totalGeneral}</b></td></tr>`;
+
+        // 🔹 FILA PORCENTAJE
+        html += `<tr class="table-porcentaje">
+            <td><b>%</b></td>`;
+
+        let sumaPorcentaje = 0;
+
+        totalPorEstado.forEach(t => {
+            const p = totalGeneral > 0 ? (t / totalGeneral) * 100 : 0;
+            sumaPorcentaje += p;
+            html += `<td>${p.toFixed(1)}%</td>`;
+        });
+
+        html += `<td>${sumaPorcentaje.toFixed(0)}%</td></tr>`;
 
         html += `</tbody></table></div>`;
-        document.getElementById('tablaEstados').innerHTML = html;
+
+        document.getElementById("tablaEstados").innerHTML = html;
+
+    } catch (e) {
+        console.error("Error resumen estados:", e);
+    } finally {
+        loader.classList.add("d-none");
+    }
+}
+
+const loader = document.getElementById("loaderFoco");
+
+async function cargarDashboard() {
+    try {
+        loader.classList.remove("d-none");
+
+        // 🔹 Fetch en paralelo
+        const [rstRes, estadosRes] = await Promise.all([
+            fetch('ajax/ajax.php?accion=rst_frm_dia'),
+            fetch('ajax/ajax.php?accion=getEstados')
+        ]);
+
+        const rstData = await rstRes.json();
+        const estadosCatalogo = await estadosRes.json();
+
+        construirTablaDias(rstData.porDia);
+        construirTablaEstados(rstData.porEstado, estadosCatalogo);
 
     } catch (e) {
         console.error("Error card leads:", e);
@@ -245,18 +305,5 @@ function construirTablaEstados(data) {
     }
 }
 
-const loader = document.getElementById("loaderFoco");
-
-try {
-    loader.classList.remove("d-none");
-    fetch('ajax/ajax.php?accion=rst_frm_dia')
-        .then(r => r.json())
-        .then(data => {
-            construirTablaDias(data.porDia)
-            construirTablaEstados(data.porEstado)
-        })
-} catch (e) {
-    console.error("Error card leads:", e);
-} finally {
-    loader.classList.add("d-none");
-}
+// 🚀 Ejecutar
+cargarDashboard();

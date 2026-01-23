@@ -54,13 +54,11 @@ function inicializarDataTableRst(data) {
 
     const tableId = '#rst_reports';
 
-    // 🔒 Si no hay datos, igual inicializamos la tabla vacía
     if (!Array.isArray(data)) {
         console.warn("Datos inválidos para DataTable");
         data = [];
     }
 
-    // 🔥 Destruir DataTable anterior
     if ($.fn.DataTable.isDataTable(tableId)) {
         $(tableId).DataTable().clear().destroy();
     }
@@ -76,7 +74,7 @@ function inicializarDataTableRst(data) {
     ];
 
     const table = $(tableId).DataTable({
-        data: data,
+        data,
         columns: columnas,
         ordering: true,
         autoWidth: false,
@@ -93,17 +91,36 @@ function inicializarDataTableRst(data) {
                 previous: '<i class="ti ti-chevron-left"></i>'
             },
             emptyTable: "No hay registros para mostrar"
+        },
+
+        // 🔹 Crear filtros por columna
+        initComplete: function () {
+            const api = this.api();
+
+            // Clonar header
+            $(tableId + ' thead tr').clone(true).appendTo(tableId + ' thead');
+
+            $(tableId + ' thead tr:eq(1) th').each(function (i) {
+                $(this).html(
+                    `<input type="text"
+                        class="form-control form-control-sm"
+                        placeholder="Filtrar..."
+                    />`
+                );
+
+                $('input', this).on('keyup change clear', function () {
+                    if (api.column(i).search() !== this.value) {
+                        api.column(i).search(this.value).draw();
+                    }
+                });
+            });
         }
     });
 
-    /* ===========================
-       MOVER CONTROLES A TU HTML
-    ============================ */
+    // 🔹 Mover controles
     $('.datatable-length').html($(tableId + '_length'));
     $('.datatable-paginate').html($(tableId + '_paginate'));
 }
-
-
 function exportarExcel(tipo) {
     const f = Filtros.obtener();
     const params = new URLSearchParams();
