@@ -55,25 +55,52 @@ app.listen(3001, () => {
 // =======================
 // 🤖 BOT WHATSAPP
 // =======================
-const flowTest = addKeyword(['test']).addAnswer('✅ Bot operativo')
+const flowCommands = addKeyword(['test'])
+    .addAnswer('✅ Bot operativo')
+
 
 const main = async () => {
     const adapterDB = new JsonFileAdapter()
+
     const adapterFlow = createFlow([
-        flowTest,
-        flowLead/*,
-        flowCapture*/ // 👈 SIEMPRE AL FINAL
+        flowCommands,
+        flowLead
     ])
 
-    const adapterProvider = createProvider(BaileysProvider)
+    //Provider con versión fija
+    const adapterProvider = createProvider(
+        BaileysProvider,
+        { version: [2, 3000, 1027934701] }
+    )
 
+    //PARCHE LID / WEB / GRUPOS
+    const originalSendMessage =
+        adapterProvider.sendMessage.bind(adapterProvider)
+
+    adapterProvider.sendMessage = async (to, content, options = {}) => {
+        const jid = `${to}`
+
+        if (jid.endsWith('@g.us') || jid.endsWith('@lid')) {
+            const provider = adapterProvider
+            options = { ...options, ...options?.options }
+
+            if (options?.media) {
+                return provider.sendMedia(jid, options.media, content)
+            }
+
+            return provider.sendText(jid, content)
+        }
+
+        return originalSendMessage(to, content, options)
+    }
+
+    // ✅ 3. Crear bot
     createBot({
         flow: adapterFlow,
         provider: adapterProvider,
         database: adapterDB,
     })
 
-    // 🔥 OBTENER SOCKET REAL CUANDO YA EXISTE
     adapterProvider.on('ready', (instance) => {
         sock = instance.sock
         console.log('🟢 WhatsApp conectado correctamente')

@@ -199,16 +199,26 @@ function construirTablaDias(data) {
     }
 }
 
-function construirTablaEstados(data, catalogoEstados) {
+function construirTablaEstados(data) {
     const loader = document.getElementById("loaderFoco");
 
     try {
         loader.classList.remove("d-none");
 
-        // 🔹 Estados ordenados por ord_eld
-        const estados = [...catalogoEstados]
-            .sort((a, b) => a.ord_eld - b.ord_eld);
+        if (!Array.isArray(data) || data.length === 0) {
+            document.getElementById("tablaEstados").innerHTML = "<p>No hay datos</p>";
+            return;
+        }
 
+        // 🔹 ESTADOS LIMPIOS (reconstruidos siempre desde data)
+        const estados = [...new Map(
+            data.map(d => [
+                Number(d.id),
+                { id: Number(d.id), nombre: d.estado }
+            ])
+        ).values()].sort((a, b) => a.id - b.id);
+
+        // 🔹 Asesores únicos
         const asesores = [...new Set(data.map(d => d.asesor))];
 
         let html = `
@@ -225,19 +235,21 @@ function construirTablaEstados(data, catalogoEstados) {
         let totalPorEstado = Array(estados.length).fill(0);
         let totalGeneral = 0;
 
-        // 🔹 Filas por ASESOR
+        // 🔹 Filas por asesor
         asesores.forEach(asesor => {
             let totalAsesor = 0;
-
             html += `<tr><td>${asesor}</td>`;
 
             estados.forEach((estado, i) => {
-                const reg = data.find(r =>
-                    r.id === estado.id_estado_leads &&
-                    r.asesor === asesor
-                );
 
-                const val = reg ? parseInt(reg.total) : 0;
+                // 🔥 SUMA REAL (no find)
+                const val = data
+                    .filter(r =>
+                        Number(r.id) === estado.id &&
+                        r.asesor === asesor
+                    )
+                    .reduce((sum, r) => sum + Number(r.total), 0);
+
                 totalAsesor += val;
                 totalPorEstado[i] += val;
 
@@ -248,21 +260,19 @@ function construirTablaEstados(data, catalogoEstados) {
             html += `<td><b>${totalAsesor}</b></td></tr>`;
         });
 
-        // 🔹 FILA TOTAL
+        // 🔹 TOTAL
         html += `<tr class="table-total">
             <td><b>Total</b></td>`;
-
         totalPorEstado.forEach(t => html += `<td><b>${t}</b></td>`);
         html += `<td><b>${totalGeneral}</b></td></tr>`;
 
-        // 🔹 FILA PORCENTAJE
+        // 🔹 PORCENTAJE
         html += `<tr class="table-porcentaje">
             <td><b>%</b></td>`;
 
         let sumaPorcentaje = 0;
-
         totalPorEstado.forEach(t => {
-            const p = totalGeneral > 0 ? (t / totalGeneral) * 100 : 0;
+            const p = totalGeneral ? (t / totalGeneral) * 100 : 0;
             sumaPorcentaje += p;
             html += `<td>${p.toFixed(1)}%</td>`;
         });

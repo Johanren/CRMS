@@ -910,20 +910,19 @@ class LeadsModels
        CONSULTA 2 → LEADS POR ESTADO Y ASESOR
     ====================================================== */
         $sqlPorEstado = "
-        SELECT
-            el.ord_eld AS id,
-            el.nombre AS estado,
-            CONCAT(u.nombres, ' ', u.apellidos) AS asesor,
-            COUNT(*) AS total
-        FROM rst_frm r
-        INNER JOIN leads l ON l.id_lead = r.lead_id
-        INNER JOIN estado_leads el ON el.id_estado_leads = l.estado_leads_id
-        INNER JOIN user u ON u.id_user = l.user_id
-        WHERE l.cod_emp = ?
-        AND MONTH(r.fecha) = ?
-        AND YEAR(r.fecha) = ?
-        GROUP BY estado, asesor
-        ORDER BY estado
+        SELECT u.nombres AS asesor,
+               COUNT(*) as total,
+               el.nombre AS estado,
+               el.ord_eld AS id
+        FROM rst_frm rf
+        INNER JOIN leads l ON (rf.lead_id=l.id_lead) AND (rf.cod_emp=l.cod_emp)
+        INNER JOIN user u ON (l.user_id=u.id_user)
+        INNER JOIN estado_leads el ON (l.estado_leads_id=el.id_estado_leads)
+        WHERE rf.cod_emp=?
+        AND MONTH(rf.fecha) = ?
+        AND YEAR(rf.fecha) = ?
+        GROUP BY l.user_id, l.estado_leads_id, el.ord_eld, el.nombre
+        ORDER BY u.nombres, el.ord_eld;
     ";
 
         $stmtEstado = $pdo->prepare($sqlPorEstado);

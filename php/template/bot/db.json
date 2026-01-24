@@ -1,15 +1,42 @@
 [
   {
-    "ref": "d807f644-babe-4d4c-9eab-6e683a13942d",
-    "keyword": "79e7fc16f7fb85373fd25a99390f44c0",
+    "ref": "452b512c-84dc-49c7-8269-6e9f52ad7b54",
+    "keyword": "2d5eaa6c01061c587384a6d2dd6e4f25",
+    "answer": "test",
+    "options": {},
+    "from": "204659503456322@lid",
+    "refSerialize": "0556c62fd3fc9af2f3d0e15ec6812275"
+  },
+  {
+    "ref": "ans_79d074c8-f92b-456f-8b19-1ff11b35b71c",
+    "keyword": "key_5c881b7a-3eed-4f8f-a234-2ce4d69fe129",
+    "answer": "✅ Bot operativo",
+    "options": {
+      "media": null,
+      "buttons": [],
+      "capture": false,
+      "child": null,
+      "delay": 0,
+      "idle": null,
+      "ref": null,
+      "nested": [],
+      "keyword": {},
+      "callback": false
+    },
+    "refSerialize": "78a4645b894f7915476526bee219d114",
+    "from": "204659503456322@lid"
+  },
+  {
+    "ref": "c35cde8b-f298-48c6-8879-4519c2b21efe",
+    "keyword": "78a4645b894f7915476526bee219d114",
     "answer": "hola",
     "options": {},
-    "from": "573122146368",
+    "from": "204659503456322@lid",
     "refSerialize": "79e7fc16f7fb85373fd25a99390f44c0"
   },
   {
-    "ref": "ans_c5672e29-37d1-430c-a935-883f5915f51a",
-    "keyword": "key_bb486f85-b06b-4291-b659-ec9e60354cb3",
+    "ref": "ans_3dcd800c-f189-4131-98a1-9d726eb8767d",
+    "keyword": "key_2a59f1f2-805d-4e17-91f8-e0cb815d032e",
     "answer": "👋 Hola, ¿cómo estás?\n¿Buscas *Envision*?",
     "options": {
       "media": null,
@@ -23,20 +50,20 @@
       "keyword": {},
       "callback": true
     },
-    "refSerialize": "3def43b3216c7e83576328759d1f80af",
-    "from": "573122146368"
+    "refSerialize": "e133806d49e58fa2527bee28b9e17ef3",
+    "from": "204659503456322@lid"
   },
   {
-    "ref": "5107e6fd-9ade-477a-8ec4-ec1b92c495c4",
-    "keyword": "3def43b3216c7e83576328759d1f80af",
-    "answer": "si",
+    "ref": "8dfb8637-4d6b-466c-a756-c639f4bff1a3",
+    "keyword": "e133806d49e58fa2527bee28b9e17ef3",
+    "answer": "Si",
     "options": {},
-    "from": "573122146368",
-    "refSerialize": "715ca38ec28b8dabb30e75e511c57a3a"
+    "from": "204659503456322@lid",
+    "refSerialize": "611b2bffc5c8bf7a02f45d2060b32e20"
   },
   {
-    "ref": "ans_d6e65fde-7041-4a25-be37-51c8eccc9c86",
-    "keyword": "ans_c5672e29-37d1-430c-a935-883f5915f51a",
+    "ref": "ans_84fdb9b5-ccc4-4047-a7eb-c9c0bbb21f2e",
+    "keyword": "ans_3dcd800c-f189-4131-98a1-9d726eb8767d",
     "answer": "🏢 Cargando empresas...",
     "options": {
       "media": null,
@@ -50,26 +77,26 @@
       "keyword": {},
       "callback": true
     },
-    "refSerialize": "188b8b4e8b9b329c554ec9f2ac951dac",
-    "from": "573122146368"
+    "refSerialize": "7067e7fd379f7c9ab2402f8fc93e52d5",
+    "from": "204659503456322@lid"
   },
   {
-    "ref": "26a40eab-5371-4614-8466-fcd1fe391569",
+    "ref": "6a1f1259-776f-4986-83e7-5e196816edc9",
     "keyword": null,
-    "answer": "🏢 Elige la empresa para tus cursos:\n\n1. MULTITECH\n2. MULTICOMPUTO\n\n✍️ Responde solo con el número.",
+    "answer": "🏢 Elige la empresa:\n\n1. MULTITECH\n2. MULTICOMPUTO\n\n✍️ Responde con el número.",
     "options": {
       "media": null,
       "buttons": [],
       "capture": false,
       "delay": 0
     },
-    "from": "573122146368",
-    "refSerialize": "f085156e825513bd1a7b245e01ae2291"
+    "from": "204659503456322@lid",
+    "refSerialize": "7cc9e141e59e3ba79abd3a61b46fbaa9"
   },
   {
-    "ref": "ans_875832df-886e-4f98-981b-c90037cc8c5e",
-    "keyword": "ans_d6e65fde-7041-4a25-be37-51c8eccc9c86",
-    "answer": "👇 Escribe el número de la empresa",
+    "ref": "ans_b7f84a9f-2efa-4c0b-9ffd-9bf648d6aca2",
+    "keyword": "ans_84fdb9b5-ccc4-4047-a7eb-c9c0bbb21f2e",
+    "answer": "👇 Número de la empresa",
     "options": {
       "media": null,
       "buttons": [],
@@ -82,12 +109,12 @@
       "keyword": {},
       "callback": true
     },
-    "refSerialize": "3807c0e076e74d703ab47addfe1af07e",
-    "from": "573122146368"
+    "refSerialize": "a3fbf459d47cf5002252f74882d99954",
+    "from": "204659503456322@lid"
   },
   {
-    "ref": "ans_c5672e29-37d1-430c-a935-883f5915f51a",
-    "keyword": "key_bb486f85-b06b-4291-b659-ec9e60354cb3",
+    "ref": "ans_3dcd800c-f189-4131-98a1-9d726eb8767d",
+    "keyword": "key_2a59f1f2-805d-4e17-91f8-e0cb815d032e",
     "answer": "👋 Hola, ¿cómo estás?\n¿Buscas *Envision*?",
     "options": {
       "media": null,
@@ -101,21 +128,53 @@
       "keyword": {},
       "callback": true
     },
-    "refSerialize": "3def43b3216c7e83576328759d1f80af",
-    "from": "128256682537156"
+    "refSerialize": "e133806d49e58fa2527bee28b9e17ef3",
+    "from": "154193755115584@lid"
   },
   {
-    "ref": "338793f7-6196-4cc8-8469-8afe6e2c02f5",
-    "keyword": "3807c0e076e74d703ab47addfe1af07e",
-    "answer": "1",
+    "ref": "6660be72-116d-45e3-9c25-c7b709c96b42",
+    "keyword": "e133806d49e58fa2527bee28b9e17ef3",
+    "answer": "Que tienen?",
     "options": {},
-    "from": "573122146368",
-    "refSerialize": "290236b1d481a790a200ea6e94b2122a"
+    "from": "154193755115584@lid",
+    "refSerialize": "ec7c7ccd276d4301bac8a24fb07b856e"
   },
   {
-    "ref": "ans_50f84c51-1f84-413b-8bc9-77b5b9dda383",
-    "keyword": "ans_875832df-886e-4f98-981b-c90037cc8c5e",
-    "answer": "🧑 Nombres:",
+    "ref": "ans_84fdb9b5-ccc4-4047-a7eb-c9c0bbb21f2e",
+    "keyword": "ans_3dcd800c-f189-4131-98a1-9d726eb8767d",
+    "answer": "🏢 Cargando empresas...",
+    "options": {
+      "media": null,
+      "buttons": [],
+      "capture": false,
+      "child": null,
+      "delay": 0,
+      "idle": null,
+      "ref": null,
+      "nested": [],
+      "keyword": {},
+      "callback": true
+    },
+    "refSerialize": "7067e7fd379f7c9ab2402f8fc93e52d5",
+    "from": "154193755115584@lid"
+  },
+  {
+    "ref": "afcd6842-d278-4d54-af74-4da1981658f5",
+    "keyword": null,
+    "answer": "🏢 Elige la empresa:\n\n1. MULTITECH\n2. MULTICOMPUTO\n\n✍️ Responde con el número.",
+    "options": {
+      "media": null,
+      "buttons": [],
+      "capture": false,
+      "delay": 0
+    },
+    "from": "154193755115584@lid",
+    "refSerialize": "7cc9e141e59e3ba79abd3a61b46fbaa9"
+  },
+  {
+    "ref": "ans_b7f84a9f-2efa-4c0b-9ffd-9bf648d6aca2",
+    "keyword": "ans_84fdb9b5-ccc4-4047-a7eb-c9c0bbb21f2e",
+    "answer": "👇 Número de la empresa",
     "options": {
       "media": null,
       "buttons": [],
@@ -128,7 +187,28 @@
       "keyword": {},
       "callback": true
     },
-    "refSerialize": "acc9242daf52cb9679c93a26f264565b",
-    "from": "573122146368"
+    "refSerialize": "a3fbf459d47cf5002252f74882d99954",
+    "from": "154193755115584@lid"
+  },
+  {
+    "ref": "a771ccfb-3424-4fd3-8895-550ac5e72e20",
+    "keyword": "a3fbf459d47cf5002252f74882d99954",
+    "answer": "2",
+    "options": {},
+    "from": "154193755115584@lid",
+    "refSerialize": "2294c3d08b53a6effa5df696a15b9d30"
+  },
+  {
+    "ref": "236e413a-993d-445f-a433-5b5838e3676a",
+    "keyword": null,
+    "answer": "🧑 Escribe tus *nombres*:",
+    "options": {
+      "media": null,
+      "buttons": [],
+      "capture": false,
+      "delay": 0
+    },
+    "from": "154193755115584@lid",
+    "refSerialize": "4cbf9fc92f38854ff23227b4d762bff2"
   }
 ]

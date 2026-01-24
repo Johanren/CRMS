@@ -1,193 +1,235 @@
 const { addKeyword, EVENTS } = require('@bot-whatsapp/bot')
 const { guardarLead, obtenerEmpresas, obtenerProgramasPorEmpresa } = require('../services/lead.service')
 
+const TIMEOUT_MINUTES = 5
+
+const isTimeout = (state) => {
+    const last = state.lastInteraction || Date.now()
+    return Date.now() - last > TIMEOUT_MINUTES * 60 * 1000
+}
+
+const resetFlow = async (state, flowDynamic, msg = '🔄 Reiniciamos la conversación.') => {
+    await state.clear()
+    await flowDynamic([
+        msg,
+        'Escríbenos cualquier mensaje para comenzar de nuevo 👋'
+    ])
+}
+
+const touch = async (state) => {
+    await state.update({ lastInteraction: Date.now() })
+}
+
 const logStep = (step) => {
     console.log(`📍 FLOW STEP -> ${step}`)
 }
 
 const flowLead = addKeyword(EVENTS.WELCOME)
 
-    // 1️⃣ Saludo
     .addAnswer(
         '👋 Hola, ¿cómo estás?\n¿Buscas *Envision*?',
         { capture: true },
-        async (ctx) => {
+        async (ctx, { state }) => {
             logStep('1️⃣ Saludo')
-            console.log('Usuario dice:', ctx.body)
+            await state.update({ step: 'empresa' })
+            await touch(state)
         }
     )
 
-    // 2️⃣ Empresa
+    // =====================
+    // 🏢 EMPRESAS
+    // =====================
     .addAnswer(
         '🏢 Cargando empresas...',
-        { capture: false },
-        async (_, { flowDynamic, state }) => {
-            logStep('2️⃣ Mostrar Empresas')
+        null,
+        async (_, { state, flowDynamic }) => {
+            if (isTimeout(await state.getMyState())) {
+                return resetFlow(state, flowDynamic, '⌛ Pasó mucho tiempo.')
+            }
 
             const empresas = await obtenerEmpresas()
 
-            if (!empresas || empresas.length === 0) {
-                await flowDynamic('❌ No hay empresas disponibles en este momento.')
+            if (!empresas?.length) {
+                await flowDynamic('❌ No hay empresas disponibles.')
                 return
             }
 
-            let texto = '🏢 Elige la empresa para tus cursos:\n\n'
-            empresas.forEach((e, i) => {
-                texto += `${i + 1}. ${e.nombre}\n`
-            })
-            texto += '\n✍️ Responde solo con el número.'
+            let texto = '🏢 Elige la empresa:\n\n'
+            empresas.forEach((e, i) => texto += `${i + 1}. ${e.nombre}\n`)
+            texto += '\n✍️ Responde con el número.'
 
-            // 🔥 AQUÍ SE ENVÍA EL MENSAJE REAL
+            await state.update({ empresas, step: 'empresa' })
             await flowDynamic(texto)
-
-            // Guardamos las empresas para el siguiente paso
-            await state.update({ empresas })
         }
     )
+
     .addAnswer(
-        '👇 Escribe el número de la empresa',
+        '👇 Número de la empresa',
         { capture: true },
         async (ctx, { state, flowDynamic }) => {
-            logStep('2️⃣ Captura Empresa')
+            const data = await state.getMyState()
+            await touch(state)
 
-            const { empresas } = await state.getMyState()
+            if (data.step !== 'empresa') {
+                return resetFlow(state, flowDynamic)
+            }
+
             const opcion = parseInt(ctx.body)
-
-            if (!empresas || isNaN(opcion) || opcion < 1 || opcion > empresas.length) {
-                await flowDynamic('❌ Opción inválida. Intenta nuevamente.')
+            if (!data.empresas || isNaN(opcion) || opcion < 1 || opcion > data.empresas.length) {
+                await flowDynamic('❌ Opción inválida. Escribe solo el número.')
                 return
             }
 
-            const empresa = empresas[opcion - 1]
-
+            const empresa = data.empresas[opcion - 1]
             await state.update({
                 empresa_id: empresa.id,
-                empresa: empresa.nombre
+                empresa: empresa.nombre,
+                step: 'nombres'
             })
 
-            console.log('✅ Empresa seleccionada:', empresa)
+            await flowDynamic('🧑 Escribe tus *nombres*:')
         }
     )
 
-    // 3️⃣ Nombres
+    // =====================
+    // 🧑 NOMBRES
+    // =====================
     .addAnswer(
-        '🧑 Nombres:',
+        null,
         { capture: true },
         async (ctx, { state, flowDynamic }) => {
-            logStep('3️⃣ Nombres')
+            const data = await state.getMyState()
+            await touch(state)
 
-            if (ctx.body.length < 2) {
-                console.log('❌ Nombre inválido')
-                await flowDynamic('❌ Ingresa un nombre válido.')
+            if (data.step !== 'nombres' || ctx.body.length < 2) {
+                await flowDynamic('❌ Nombre inválido. Intenta nuevamente.')
                 return
             }
 
-            await state.update({ nombres: ctx.body })
+            await state.update({ nombres: ctx.body, step: 'apellidos' })
+            await flowDynamic('🧑 Escribe tus *apellidos*:')
         }
     )
 
-    // 4️⃣ Apellidos
+    // =====================
+    // 🧑 APELLIDOS
+    // =====================
     .addAnswer(
-        '🧑 Apellidos:',
+        null,
         { capture: true },
         async (ctx, { state, flowDynamic }) => {
-            logStep('4️⃣ Apellidos')
+            const data = await state.getMyState()
+            await touch(state)
 
-            if (ctx.body.length < 2) {
-                await flowDynamic('❌ Ingresa apellidos válidos.')
+            if (data.step !== 'apellidos' || ctx.body.length < 2) {
+                await flowDynamic('❌ Apellidos inválidos.')
                 return
             }
 
-            await state.update({ apellidos: ctx.body })
+            await state.update({ apellidos: ctx.body, step: 'cedula' })
+            await flowDynamic('🆔 Número de cédula:')
         }
     )
 
-    // 5️⃣ Cédula
+    // =====================
+    // 🆔 CÉDULA
+    // =====================
     .addAnswer(
-        '🆔 Número de cédula:',
+        null,
         { capture: true },
         async (ctx, { state, flowDynamic }) => {
-            logStep('5️⃣ Cédula')
+            const data = await state.getMyState()
+            await touch(state)
 
-            if (!/^\d{5,15}$/.test(ctx.body)) {
+            if (data.step !== 'cedula' || !/^\d{5,15}$/.test(ctx.body)) {
                 await flowDynamic('❌ Cédula inválida. Solo números.')
                 return
             }
 
-            await state.update({ cedula: ctx.body })
+            await state.update({ cedula: ctx.body, step: 'email' })
+            await flowDynamic('📧 Correo electrónico:')
         }
     )
 
-    // 6️⃣ Correo
+    // =====================
+    // 📧 EMAIL
+    // =====================
     .addAnswer(
-        '📧 Correo electrónico:',
+        null,
         { capture: true },
         async (ctx, { state, flowDynamic }) => {
-            logStep('6️⃣ Correo')
+            const data = await state.getMyState()
+            await touch(state)
 
-            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(ctx.body)) {
+            if (
+                data.step !== 'email' ||
+                !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(ctx.body)
+            ) {
                 await flowDynamic('❌ Correo inválido.')
                 return
             }
 
-            await state.update({ email: ctx.body })
+            await state.update({ email: ctx.body, step: 'programa' })
         }
     )
 
-    // 7️⃣ Programas
+    // =====================
+    // 📚 PROGRAMAS
+    // =====================
     .addAnswer(
         '📚 Cargando programas...',
         null,
         async (_, { state, flowDynamic }) => {
-            logStep('7️⃣ Mostrar Programas')
+            const data = await state.getMyState()
+            if (data.step !== 'programa') return
 
-            const { empresa_id } = await state.getMyState()
-            const programas = await obtenerProgramasPorEmpresa(empresa_id)
-
-            if (!programas || programas.length === 0) {
-                await flowDynamic('❌ No hay programas disponibles para esta empresa.')
+            const programas = await obtenerProgramasPorEmpresa(data.empresa_id)
+            if (!programas?.length) {
+                await flowDynamic('❌ No hay programas.')
                 return
             }
 
-            let texto = '📚 Selecciona el programa que más te gusta:\n\n'
-            programas.forEach((p, i) => {
-                texto += `${i + 1}. ${p.nombre}\n`
-            })
-            texto += '\n✍️ Responde solo con el número.'
+            let texto = '📚 Elige el programa:\n\n'
+            programas.forEach((p, i) => texto += `${i + 1}. ${p.nombre}\n`)
+            texto += '\n✍️ Responde con el número.'
 
+            await state.update({ programas, step: 'programa_select' })
             await flowDynamic(texto)
-
-            await state.update({ programas })
         }
     )
+
     .addAnswer(
-        '👇 Escribe el número del programa',
+        null,
         { capture: true },
         async (ctx, { state, flowDynamic }) => {
-            logStep('7️⃣ Captura Programa')
+            const data = await state.getMyState()
+            await touch(state)
 
-            const { programas } = await state.getMyState()
             const opcion = parseInt(ctx.body)
-
-            if (!programas || isNaN(opcion) || opcion < 1 || opcion > programas.length) {
-                await flowDynamic('❌ Opción inválida. Intenta nuevamente.')
+            if (
+                data.step !== 'programa_select' ||
+                isNaN(opcion) ||
+                opcion < 1 ||
+                opcion > data.programas.length
+            ) {
+                await flowDynamic('❌ Opción inválida.')
                 return
             }
 
-            const programa = programas[opcion - 1]
-
+            const programa = data.programas[opcion - 1]
             await state.update({
                 programa_id: programa.id,
-                programa: programa.nombre
+                programa: programa.nombre,
+                step: 'guardar'
             })
-
-            console.log('✅ Programa seleccionado:', programa)
         }
     )
 
-    // 8️⃣ Guardar lead
+    // =====================
+    // 💾 GUARDAR + CRM
+    // =====================
     .addAnswer(
-        '✅ Estamos registrando tu información...',
+        '✅ Registrando información...',
         null,
         async (ctx, { state, flowDynamic }) => {
             const data = await state.getMyState()
@@ -202,12 +244,18 @@ const flowLead = addKeyword(EVENTS.WELCOME)
                 cod_emp: data.empresa_id
             })
 
+            // 🔗 HOOK CRM
+            // await axios.post('https://tu-crm/api/leads', data)
+
             await flowDynamic([
                 '🎉 ¡Registro exitoso!',
-                'Un asesor se comunicará contigo muy pronto.',
+                'Un asesor se comunicará contigo.',
                 '🕐 Gracias por confiar en Envision.'
             ])
+
+            await state.clear()
         }
     )
+
 
 module.exports = { flowLead }
