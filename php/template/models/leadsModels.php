@@ -923,7 +923,7 @@ class LeadsModels
             AND MONTH(r.fecha) = ?
             AND YEAR(r.fecha) = ?
             GROUP BY asesor, el.id_estado_leads, el.nombre, el.ord_eld
-            ORDER BY asesor, el.ord_eld;
+            ORDER BY el.ord_eld ASC;
     ";
 
         $stmtEstado = $pdo->prepare($sqlPorEstado);
