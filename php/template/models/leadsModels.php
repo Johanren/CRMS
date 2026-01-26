@@ -892,9 +892,9 @@ class LeadsModels
             CONCAT(ur.nombres, ' ', ur.apellidos) AS asesorRTS,
             COUNT(*) AS total
             FROM rst_frm r
-            INNER JOIN user ur ON ur.id_user = r.user_id
-            INNER JOIN leads l ON r.lead_id = l.id_lead AND r.cod_emp = l.cod_emp
-            INNER JOIN user u ON u.id_user = l.user_id
+            LEFT JOIN user ur ON ur.id_user = r.user_id
+            LEFT JOIN leads l ON r.lead_id = l.id_lead
+            LEFT JOIN user u ON u.id_user = l.user_id
             WHERE r.cod_emp = ?
             AND MONTH(r.fecha) = ?
             AND YEAR(r.fecha) = ?
@@ -916,9 +916,9 @@ class LeadsModels
             el.ord_eld AS id,
             COUNT(*) AS total
             FROM rst_frm r
-            INNER JOIN leads l ON r.lead_id = l.id_lead AND r.cod_emp = l.cod_emp
-            INNER JOIN user u ON u.id_user = l.user_id
-            INNER JOIN estado_leads el ON el.id_estado_leads = l.estado_leads_id
+            LEFT JOIN leads l ON r.lead_id = l.id_lead
+            LEFT JOIN user u ON u.id_user = l.user_id
+            LEFT JOIN estado_leads el ON el.id_estado_leads = l.estado_leads_id
             WHERE r.cod_emp = ?
             AND MONTH(r.fecha) = ?
             AND YEAR(r.fecha) = ?
