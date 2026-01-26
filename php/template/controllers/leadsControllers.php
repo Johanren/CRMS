@@ -205,4 +205,9 @@ class LeadsControllers
     {
         return LeadsModels::listarReporteRstDia($mes, $anio);
     }
+
+    public static function listarLeadsFiltradosMensaje($carrera, $horario, $estado, $asesor, $numero) {
+        return LeadsModels::listarLeadsFiltradosMensaje($carrera, $horario, $estado, $asesor, $numero);
+    }
+
 }

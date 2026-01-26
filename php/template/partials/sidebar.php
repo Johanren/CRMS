@@ -189,6 +189,19 @@
                     </li>
                 </ul>
                 </li>
+                <li class="menu-title"><span>Herramientas</span></li>
+                <li>
+                    <ul>
+                        <li class="submenu">
+                            <a href="javascript:void(0);" class="<?php echo ($page == 'rst_frm_dia.php') ? 'active subdrop' : ''; ?>">
+                                <i class="ti ti-report-analytics"></i><span>Herramientas</span><span class="menu-arrow"></span>
+                            </a>
+                            <ul>
+                                <li><a href="mensajes.php" class="<?php echo ($page == 'mensajes.php' || $page == '/') ? 'active' : ''; ?>">Mensaje</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
                 <li class="menu-title"><span>Informes</span></li>
                 <li>
                     <ul>

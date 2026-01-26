@@ -36,4 +36,8 @@ class focoControllers
     public static function reporteFocoLeadsMatriz(){
         return focoModels::reporteFocoLeadsMatriz();
     }
+
+    public static function catalogoFiltroMensaje() {
+        return focoModels::catalogoFiltroMensaje();
+    }
 }

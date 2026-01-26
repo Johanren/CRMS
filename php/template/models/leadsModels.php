@@ -939,4 +939,56 @@ class LeadsModels
             'porEstado' => $porEstado
         ];
     }
+
+    public static function listarLeadsFiltradosMensaje($carrera, $horario, $estado, $asesor, $numero) {
+
+    $sql = "
+        SELECT
+            l.id_lead,
+            c.nombres AS cliente,
+            c.telefono_principal AS numero,
+            u.nombres AS asesor
+        FROM leads l
+        INNER JOIN cliente c ON c.id_cliente = l.cliente_id
+        INNER JOIN user u ON u.id_user = l.user_id
+        WHERE 1=1
+    ";
+
+    $params = [];
+
+    if ($carrera !== '') {
+        $sql .= " AND l.carrera_id = ?";
+        $params[] = $carrera;
+    }
+
+    if ($horario !== '') {
+        $sql .= " AND l.horario_id = ?";
+        $params[] = $horario;
+    }
+
+    if(empty($numero)){
+        if ($estado !== '') {
+        $sql .= " AND l.estado_leads_id = ?";
+        $params[] = $estado;
+        }   
+    }else{
+        $sql .= " AND c.telefono_principal = ?";
+        $params[] = $numero;
+    }
+
+    if ($asesor !== '') {
+        $sql .= " AND l.user_id = ?";
+        $params[] = $asesor;
+    }
+
+    $sql .= " ORDER BY l.id_lead DESC";
+
+    $conn = new Conexion();
+    $pdo = $conn->conectar();
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($params);
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
 }

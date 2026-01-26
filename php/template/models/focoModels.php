@@ -533,4 +533,128 @@ class focoModels
             "programas" => $programas
         ];
     }
+
+    public static function catalogoFiltroMensaje() {
+        $cod_emp = $_SESSION['cod_emp'];
+        $foco = $_SESSION['foco'];
+
+    $sql = "
+        SELECT
+                h.descripcion AS jornada,
+                h.id_horario AS id_jornada,
+                p.desc_pro AS programa,
+                p.cod_pro AS id_programa,
+                elh.nombre AS estado,
+                elh.id_estado_leads AS id_estado,
+                us.nombres AS asesor,
+                us.id_user AS id_asesor
+
+            FROM foco_detalle fd
+            INNER JOIN foco f 
+                ON f.id_foc = fd.foc_fde
+            AND f.emp_foc = fd.emp_fde
+
+            INNER JOIN programa p 
+                ON p.cod_pro = fd.prog_fde
+
+            INNER JOIN horario h 
+                ON h.id_horario = fd.jorn_fde
+
+            /* Leads con horario correcto */
+            LEFT JOIN leads lh
+                ON lh.carrera_id = fd.prog_fde
+            AND lh.horario_id = fd.jorn_fde
+            AND lh.cod_emp = f.emp_foc
+            AND lh.estado_leads_id NOT IN (6,7,8)
+
+            /* Leads solo carrera (horario distinto o NULL) */
+            LEFT JOIN leads ls
+                ON ls.carrera_id = fd.prog_fde
+            AND ls.cod_emp = f.emp_foc
+            AND ls.estado_leads_id NOT IN (6,7,8)
+            AND (
+                    ls.horario_id <> fd.jorn_fde
+                    OR ls.horario_id IS NULL
+            )
+            
+            LEFT JOIN estado_leads elh ON
+            
+            elh.id_estado_leads = lh.estado_leads_id
+            
+            LEFT JOIN estado_leads els ON
+            
+            elh.id_estado_leads = ls.estado_leads_id
+            
+            LEFT JOIN user us ON
+            
+            us.id_user = lh.user_id
+
+            WHERE 
+                f.emp_foc = $cod_emp
+                AND f.id_foc = $foco
+
+            GROUP BY
+                h.descripcion,
+                p.desc_pro,
+                fd.cup_fde,
+                fd.ven_fde,
+                fd.rein_fde,
+                f.nom_foc,
+                f.fini_foc,
+                f.ffin_foc
+
+            ORDER BY
+                h.descripcion,
+                p.desc_pro;
+    ";
+
+    $conn = new Conexion();
+    $pdo = $conn->conectar();
+    $stmt = $pdo->query($sql);
+    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    $carreras = [];
+    $horarios = [];
+    $estados  = [];
+    $asesores = [];
+
+    foreach ($rows as $r) {
+
+        if ($r['id_programa']) {
+            $carreras[$r['id_programa']] = [
+                'id_programa' => $r['id_programa'],
+                'programa'    => $r['programa']
+            ];
+        }
+
+        if ($r['id_jornada']) {
+            $horarios[$r['id_jornada']] = [
+                'id_jornada' => $r['id_jornada'],
+                'jornada'    => $r['jornada']
+            ];
+        }
+
+        if ($r['estado']) {
+            $estados[$r['estado']] = [
+                'id_estado' => $r['id_estado'],
+                'estado' => $r['estado']
+            ];
+        }
+
+        if ($r['asesor']) {
+            $asesores[$r['asesor']] = [
+                'id_asesor' => $r['id_asesor'],
+                'asesor' => $r['asesor']
+            ];
+        }
+    }
+
+    return [
+        'carreras' => array_values($carreras),
+        'horarios' => array_values($horarios),
+        'estados'  => array_values($estados),
+        'asesores' => array_values($asesores)
+    ];
+}
+
 }

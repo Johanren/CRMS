@@ -41,6 +41,7 @@ $numeroAdicional = new TelefonoAdicionalControllers();
 $login = new LoginControllers();
 $notificaciones = new NotifiacionesControllers();
 $marketing = new Marketing_trackingControllers();
+$lis_mensaje = new ListMensajeControllers();
 if (isset($_POST['accion'])) {
     switch ($_POST['accion']) {
         /*Campana*/
@@ -231,6 +232,15 @@ if (isset($_POST['accion'])) {
             $fechaActual = date('Y-m-d');
             echo json_encode($leads->nuevo_leads_por_dia($fechaActual));
             break;
+
+        case 'listar_leads_filtrados':
+            $carrera = $_POST['carrera'] ?? '';
+            $horario = $_POST['horario'] ?? '';
+            $estado = $_POST['estado'] ?? '';
+            $asesor = $_POST['asesor'] ?? '';
+            $numero = $_POST['numero'] ?? '';
+            echo json_encode($leads->listarLeadsFiltradosMensaje($carrera, $horario, $estado, $asesor, $numero));
+            break;
         /*Notas */
         case 'registrar_notas':
             echo json_encode($notas->agregarNotas($_POST));
@@ -341,6 +351,11 @@ if (isset($_POST['accion'])) {
             echo json_encode($foco->listarLeadsFocoResultado());
             break;
 
+        case 'catalogo_filtros_mensaje':
+            echo json_encode($foco->catalogoFiltroMensaje());
+            break;
+        break;
+
         /*Telefono adicioales */
         case "listar_telefonos_adicionales":
             $cliente_id = $_POST["cliente_id"];
@@ -427,6 +442,9 @@ if (isset($_POST['accion'])) {
 
             echo json_encode(['ok' => true]);
             break;
+        case 'guardar_mensajes_rst':
+            echo json_encode($lis_mensaje::guardarMensajesRST());
+        break;
         default:
             # code...
             break;
