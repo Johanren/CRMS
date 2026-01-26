@@ -100,7 +100,7 @@ $jsonData = json_encode($postData, JSON_UNESCAPED_UNICODE);
 
                     <div class="col-md-3">
                         <label class="form-label">Carrera</label>
-                        <select class="form-select" id="filtro_carrera">
+                        <select class="form-select" id="filtro_carrera" multiple>
                             <option value="">Todas</option>
                             <option value="1">Ingeniería</option>
                             <option value="2">Administración</option>
@@ -109,7 +109,7 @@ $jsonData = json_encode($postData, JSON_UNESCAPED_UNICODE);
 
                     <div class="col-md-3">
                         <label class="form-label">Horario</label>
-                        <select class="form-select" id="filtro_horario">
+                        <select class="form-select" id="filtro_horario" multiple>
                             <option value="">Todos</option>
                             <option value="mañana">Mañana</option>
                             <option value="noche">Noche</option>
@@ -118,7 +118,7 @@ $jsonData = json_encode($postData, JSON_UNESCAPED_UNICODE);
 
                     <div class="col-md-2">
                         <label class="form-label">Estado</label>
-                        <select class="form-select" id="filtro_estado">
+                        <select class="form-select" id="filtro_estado" multiple>
                             <option value="">Todos</option>
                             <option value="interesado">Interesado</option>
                             <option value="seguimiento">Seguimiento</option>
@@ -127,7 +127,7 @@ $jsonData = json_encode($postData, JSON_UNESCAPED_UNICODE);
 
                     <div class="col-md-2">
                         <label class="form-label">Asesor</label>
-                        <select class="form-select" id="filtro_asesor">
+                        <select class="form-select" id="filtro_asesor" multiple>
                             <option value="">Todos</option>
                             <option value="1">Sandra</option>
                             <option value="2">Yalie</option>
@@ -327,23 +327,28 @@ para que un familiar o amigo estudie (Excel Certificado).
         });
     }
 
+    function getValoresSelect(id) {
+        const select = document.getElementById(id);
+        return Array.from(select.selectedOptions).map(opt => opt.value);
+    }
+
     /* ===========================
        VALIDAR FILTROS
     =========================== */
     function validarYCargarTabla() {
 
-        const carrera = filtro_carrera.value;
-        const horario = filtro_horario.value;
-        const estado = filtro_estado.value;
-        const asesor = filtro_asesor.value;
-        const numero = filtro_numero.value;
+        const carrera = getValoresSelect('filtro_carrera');
+        const horario = getValoresSelect('filtro_horario');
+        const estado = getValoresSelect('filtro_estado');
+        const asesor = getValoresSelect('filtro_asesor');
 
-        if (carrera && horario && estado && asesor) {
+        if (carrera.length && horario.length && estado.length && asesor.length) {
             cargarTablaLeads();
         } else {
-            limpiarTabla('Seleccione todos los filtros');
+            limpiarTabla('Seleccione al menos una opción por filtro');
         }
     }
+
 
     /* ===========================
        CARGAR TABLA
@@ -352,11 +357,18 @@ para que un familiar o amigo estudie (Excel Certificado).
 
         const datos = new FormData();
         datos.append('accion', 'listar_leads_filtrados');
-        datos.append('carrera', filtro_carrera.value);
-        datos.append('horario', filtro_horario.value);
-        datos.append('estado', filtro_estado.value);
-        datos.append('asesor', filtro_asesor.value);
-        datos.append('numero', filtro_numero.value);
+
+        getValoresSelect('filtro_carrera')
+            .forEach(v => datos.append('carrera[]', v));
+
+        getValoresSelect('filtro_horario')
+            .forEach(v => datos.append('horario[]', v));
+
+        getValoresSelect('filtro_estado')
+            .forEach(v => datos.append('estado[]', v));
+
+        getValoresSelect('filtro_asesor')
+            .forEach(v => datos.append('asesor[]', v));
 
         fetch('ajax/ajax.php', {
                 method: 'POST',
@@ -372,6 +384,7 @@ para que un familiar o amigo estudie (Excel Certificado).
                 limpiarTabla('Error al cargar datos');
             });
     }
+
 
     /* ===========================
        PINTAR TABLA + DATASET

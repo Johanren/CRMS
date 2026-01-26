@@ -234,11 +234,11 @@ if (isset($_POST['accion'])) {
             break;
 
         case 'listar_leads_filtrados':
-            $carrera = $_POST['carrera'] ?? '';
-            $horario = $_POST['horario'] ?? '';
-            $estado = $_POST['estado'] ?? '';
-            $asesor = $_POST['asesor'] ?? '';
-            $numero = $_POST['numero'] ?? '';
+            $carrera = $_POST['carrera'] ?? [];
+            $horario = $_POST['horario'] ?? [];
+            $estado  = $_POST['estado'] ?? [];
+            $asesor  = $_POST['asesor'] ?? [];
+            $numero  = $_POST['numero'] ?? '';
             echo json_encode($leads->listarLeadsFiltradosMensaje($carrera, $horario, $estado, $asesor, $numero));
             break;
         /*Notas */
@@ -354,7 +354,7 @@ if (isset($_POST['accion'])) {
         case 'catalogo_filtros_mensaje':
             echo json_encode($foco->catalogoFiltroMensaje());
             break;
-        break;
+            break;
 
         /*Telefono adicioales */
         case "listar_telefonos_adicionales":
@@ -444,7 +444,7 @@ if (isset($_POST['accion'])) {
             break;
         case 'guardar_mensajes_rst':
             echo json_encode($lis_mensaje::guardarMensajesRST());
-        break;
+            break;
         default:
             # code...
             break;

@@ -891,15 +891,15 @@ class LeadsModels
             CONCAT(u.nombres, ' ', u.apellidos) AS asesor,
             CONCAT(ur.nombres, ' ', ur.apellidos) AS asesorRTS,
             COUNT(*) AS total
-        FROM rst_frm r
-        INNER JOIN user ur ON ur.id_user = r.user_id
-        INNER JOIN leads l ON r.lead_id = l.id_lead
-        INNER JOIN user u ON u.id_user = l.user_id
-        WHERE r.cod_emp = ?
-        AND MONTH(r.fecha) = ?
-        AND YEAR(r.fecha) = ?
-        GROUP BY dia, asesor
-        ORDER BY dia
+            FROM rst_frm r
+            INNER JOIN user ur ON ur.id_user = r.user_id
+            INNER JOIN leads l ON r.lead_id = l.id_lead AND r.cod_emp = l.cod_emp
+            INNER JOIN user u ON u.id_user = l.user_id
+            WHERE r.cod_emp = ?
+            AND MONTH(r.fecha) = ?
+            AND YEAR(r.fecha) = ?
+            GROUP BY dia, asesor, asesorRTS
+            ORDER BY dia;
     ";
 
         $stmtDia = $pdo->prepare($sqlPorDia);
@@ -910,19 +910,20 @@ class LeadsModels
        CONSULTA 2 → LEADS POR ESTADO Y ASESOR
     ====================================================== */
         $sqlPorEstado = "
-        SELECT u.nombres AS asesor,
-               COUNT(*) as total,
-               el.nombre AS estado,
-               el.ord_eld AS id
-        FROM rst_frm rf
-        INNER JOIN leads l ON (rf.lead_id=l.id_lead) AND (rf.cod_emp=l.cod_emp)
-        INNER JOIN user u ON (l.user_id=u.id_user)
-        INNER JOIN estado_leads el ON (l.estado_leads_id=el.id_estado_leads)
-        WHERE rf.cod_emp=?
-        AND MONTH(rf.fecha) = ?
-        AND YEAR(rf.fecha) = ?
-        GROUP BY l.user_id, l.estado_leads_id, el.ord_eld, el.nombre
-        ORDER BY u.nombres, el.ord_eld;
+        SELECT
+            CONCAT(u.nombres, ' ', u.apellidos) AS asesor,
+            el.nombre AS estado,
+            el.ord_eld AS id,
+            COUNT(*) AS total
+            FROM rst_frm r
+            INNER JOIN leads l ON r.lead_id = l.id_lead AND r.cod_emp = l.cod_emp
+            INNER JOIN user u ON u.id_user = l.user_id
+            INNER JOIN estado_leads el ON el.id_estado_leads = l.estado_leads_id
+            WHERE r.cod_emp = ?
+            AND MONTH(r.fecha) = ?
+            AND YEAR(r.fecha) = ?
+            GROUP BY asesor, el.id_estado_leads, el.nombre, el.ord_eld
+            ORDER BY asesor, el.ord_eld;
     ";
 
         $stmtEstado = $pdo->prepare($sqlPorEstado);
@@ -940,9 +941,9 @@ class LeadsModels
         ];
     }
 
-    public static function listarLeadsFiltradosMensaje($carrera, $horario, $estado, $asesor, $numero) {
+    public static function listarLeadsFiltradosMensaje($carrera,$horario,$estado,$asesor,$numero) {
 
-    $sql = "
+        $sql = "
         SELECT
             l.id_lead,
             c.nombres AS cliente,
@@ -954,41 +955,46 @@ class LeadsModels
         WHERE 1=1
     ";
 
-    $params = [];
+        $params = [];
 
-    if ($carrera !== '') {
-        $sql .= " AND l.carrera_id = ?";
-        $params[] = $carrera;
+        // 🔹 Carrera
+        if (!empty($carrera)) {
+            $in = implode(',', array_fill(0, count($carrera), '?'));
+            $sql .= " AND l.carrera_id IN ($in)";
+            $params = array_merge($params, $carrera);
+        }
+
+        // 🔹 Horario
+        if (!empty($horario)) {
+            $in = implode(',', array_fill(0, count($horario), '?'));
+            $sql .= " AND l.horario_id IN ($in)";
+            $params = array_merge($params, $horario);
+        }
+
+        // 🔹 Estado o número
+        if (!empty($numero)) {
+            $sql .= " AND c.telefono_principal = ?";
+            $params[] = $numero;
+        } else if (!empty($estado)) {
+            $in = implode(',', array_fill(0, count($estado), '?'));
+            $sql .= " AND l.estado_leads_id IN ($in)";
+            $params = array_merge($params, $estado);
+        }
+
+        // 🔹 Asesor
+        if (!empty($asesor)) {
+            $in = implode(',', array_fill(0, count($asesor), '?'));
+            $sql .= " AND l.user_id IN ($in)";
+            $params = array_merge($params, $asesor);
+        }
+
+        $sql .= " ORDER BY l.id_lead DESC";
+
+        $conn = new Conexion();
+        $pdo  = $conn->conectar();
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($params);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-
-    if ($horario !== '') {
-        $sql .= " AND l.horario_id = ?";
-        $params[] = $horario;
-    }
-
-    if(empty($numero)){
-        if ($estado !== '') {
-        $sql .= " AND l.estado_leads_id = ?";
-        $params[] = $estado;
-        }   
-    }else{
-        $sql .= " AND c.telefono_principal = ?";
-        $params[] = $numero;
-    }
-
-    if ($asesor !== '') {
-        $sql .= " AND l.user_id = ?";
-        $params[] = $asesor;
-    }
-
-    $sql .= " ORDER BY l.id_lead DESC";
-
-    $conn = new Conexion();
-    $pdo = $conn->conectar();
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute($params);
-
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
-
 }

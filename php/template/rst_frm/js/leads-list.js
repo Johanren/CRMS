@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        campo.addEventListener("blur", async function () {
+        campo.addEventListener("blur", async function() {
             let valor = this.value.trim();
             if (valor === "") return;
 
@@ -66,7 +66,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
 
-    document.getElementById("mainForm").addEventListener("submit", async function (e) {
+    document.getElementById("mainForm").addEventListener("submit", async function(e) {
         e.preventDefault();
 
         const datos = new FormData(this);
