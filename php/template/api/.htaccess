@@ -1,12 +1,20 @@
 RewriteEngine On
-
-# Evitar listar directorios
 Options -Indexes
 
-# Permitir acceso directo a archivos existentes
+# Ejecutar seguridad antes de cualquier PHP
+php_value auto_prepend_file "../security/api_key.php"
+
+# Permitir archivos y carpetas reales
 RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d
 RewriteRule ^ - [L]
 
 # Quitar .php de las URLs
 RewriteRule ^(.+)$ $1.php [L,QSA]
+
+# Headers CORS
+<IfModule mod_headers.c>
+    Header set Access-Control-Allow-Origin "*"
+    Header set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+    Header set Access-Control-Allow-Headers "Content-Type, Authorization, X-API-KEY"
+</IfModule>
