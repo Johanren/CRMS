@@ -1,0 +1,12 @@
+RewriteEngine On
+
+# Evitar listar directorios
+Options -Indexes
+
+# Permitir acceso directo a archivos existentes
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Quitar .php de las URLs
+RewriteRule ^(.+)$ $1.php [L,QSA]

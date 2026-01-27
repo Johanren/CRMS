@@ -643,12 +643,7 @@ class LeadsModels
 
         // Si NO hay leads aún, tomar cualquier usuario asesor
         if (!$res) {
-            $sql2 = "SELECT u.id_user AS user_id 
-                 FROM user u
-                 INNER JOIN user_role r ON u.rol_id = r.id_rol
-                 WHERE r.nombre_rol like '%asesor%' AND r.activo = 1
-                 ORDER BY u.id_user ASC
-                 LIMIT 1";
+            $sql2 = "SELECT u.id_user AS user_id FROM user u INNER JOIN user_role r ON u.rol_id = r.id_rol WHERE r.nombre_rol like '%asesor%' AND u.cod_emp = '$cod_emp' AND r.activo = 1";
             $stmt2 = $conectar->prepare($sql2);
             $stmt2->execute();
             return $stmt2->fetch(PDO::FETCH_ASSOC);
@@ -948,10 +943,14 @@ class LeadsModels
             l.id_lead,
             c.nombres AS cliente,
             c.telefono_principal AS numero,
-            u.nombres AS asesor
+            u.nombres AS asesor,
+            p.desc_pro AS carrera,
+            j.desc_jor AS jornada
         FROM leads l
         INNER JOIN cliente c ON c.id_cliente = l.cliente_id
         INNER JOIN user u ON u.id_user = l.user_id
+        INNER JOIN programa p ON p.cod_pro = l.carrera_id
+        INNER JOIN jornada j ON j.cod_jor = l.horario_id
         WHERE 1=1
     ";
 
