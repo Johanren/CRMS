@@ -269,12 +269,12 @@
                                 .then(resp => {
                                     console.log("Correo:", resp);
                                     // 3. Redirigir a la página de agradecimiento
-                                    window.location.href = 'https://multicomputo.edu.co/gracias.php';
+                                    window.top.location.href = 'https://multicomputo.edu.co/gracias.php';
                                 })
                                 .catch(err => {
                                     console.error("Error en correo", err);
                                     // Si el correo falla, redirigimos de todas formas
-                                    window.location.href = 'https://multicomputo.edu.co/gracias.php';
+                                   window.top.location.href = 'https://multicomputo.edu.co/gracias.php';
                                 });
                                                     // ----------------------------------
 

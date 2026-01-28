@@ -85,8 +85,8 @@ try {
 
     // 3) DOCENTE
     $mail->clearAllRecipients();
-    $mail->addAddress("inscripciones@multicomputo.edu.co");
-    $mail->Subject = "Nuevo estudiante interesado en tu curso";
+    $mail->addAddress("inscripciones@multitech.edu.co");
+    $mail->Subject = "Nuevo estudiante interesado en tu programa";
     $mail->Body = loadTemplate("docente.html", $vars);
     $mail->send();
 
