@@ -1,5 +1,5 @@
 window.Filtros = {
-    obtener: function() {
+    obtener: function () {
         let texto = "";
         let inputBuscador = document.getElementById("buscador");
         if (inputBuscador) {
@@ -177,7 +177,7 @@ function activarSeleccionFila(tablaId) {
     const tabla = document.getElementById(tablaId);
     if (!tabla) return;
 
-    tabla.addEventListener("click", function(e) {
+    tabla.addEventListener("click", function (e) {
         const fila = e.target.closest("tr");
         if (!fila || fila.parentNode.tagName !== "TBODY") return;
 
@@ -600,7 +600,7 @@ function activarPorcentajeResumen(leadsData) {
 
     if (thValorPrograma && !thValorPrograma.dataset.base) {
         // toma el primer valor_programa como base
-        const primerValor = document.querySelector(".col-valor") ? .dataset.valor || 0;
+        const primerValor = document.querySelector(".col-valor")?.dataset.valor || 0;
         thValorPrograma.dataset.base = primerValor;
         thValorPrograma.textContent = Number(primerValor).toLocaleString("es-CO");
     }
@@ -652,16 +652,16 @@ function activarPorcentajeResumen(leadsData) {
         // 🔹 RESULTADO = SI(cupos=0,0,ventas*meta)
         document.querySelectorAll("#tablaFocoResultado tbody tr").forEach(tr => {
 
-            const cupos = Number(tr.querySelector(".col-cupos") ? .textContent || 0);
-            const meta = Number(tr.querySelector(".col-metas") ? .textContent || 0);
-            const ventas = Number(tr.querySelector(".col-ventas") ? .dataset.ventas || 0);
-            const reintegro = Number(tr.querySelector(".col-reintegro") ? .dataset.reintegro || 0);
-            const restantes = Number(tr.children[7] ? .textContent || 0);
-            const valores = Number(tr.querySelector(".col-valor") ? .dataset.valor || 0);
-            const Valor = Number(tr.querySelector("#totalVendi") ? .dataset.vendi || 0);
-            const ADN = Number(tr.children[11] ? .textContent || 0);
-            const leads = Number(tr.children[2] ? .textContent || 0); // con_horario
-            const totalLeads = Number(document.querySelector("#totalLeads") ? .textContent || 0);
+            const cupos = Number(tr.querySelector(".col-cupos")?.textContent || 0);
+            const meta = Number(tr.querySelector(".col-metas")?.textContent || 0);
+            const ventas = Number(tr.querySelector(".col-ventas")?.dataset.ventas || 0);
+            const reintegro = Number(tr.querySelector(".col-reintegro")?.dataset.reintegro || 0);
+            const restantes = Number(tr.children[7]?.textContent || 0);
+            const valores = Number(tr.querySelector(".col-valor")?.dataset.valor || 0);
+            const Valor = Number(tr.querySelector("#totalVendi")?.dataset.vendi || 0);
+            const ADN = Number(tr.children[11]?.textContent || 0);
+            const leads = Number(tr.children[2]?.textContent || 0); // con_horario
+            const totalLeads = Number(document.querySelector("#totalLeads")?.textContent || 0);
             /* ================= CUMPLIMIENTO ================= */
             const resultado = calcularResultado(cupos, ventas, meta);
             const tdResultado = tr.querySelector(".col-resultado");
@@ -799,7 +799,7 @@ function activarPorcentajeResumen(leadsData) {
         if (!leadsData || !leadsData.length) return;
 
         /* eliminar tabla previa */
-        document.getElementById("tablaResumenInferior") ? .remove();
+        document.getElementById("tablaResumenInferior")?.remove();
 
         /* fechas */
         const fechaHoy = new Date();
@@ -957,7 +957,7 @@ function activarPorcentajeResumen(leadsData) {
     });
 
     /* ================= CLICK EN $ (VALOR PROGRAMA) ================= */
-    thValorPrograma ? .addEventListener("click", () => {
+    thValorPrograma?.addEventListener("click", () => {
 
         const valorActual = parseFloat(thValorPrograma.dataset.base) || 0;
 
@@ -1027,7 +1027,7 @@ function calcularResultado(cupos, ventas, meta) {
 
 /* ===================== EDICIÓN INLINE ===================== */
 
-document.addEventListener("click", function(e) {
+document.addEventListener("click", function (e) {
 
     const td = e.target;
 
@@ -1073,7 +1073,7 @@ async function guardarEdicion(td, nuevoValor, valorOriginal) {
 
     // 🔹 Leer valores actuales aunque NO se editen
     celdas.forEach(celda => {
-        if (celda.dataset ? .programa === programa) {
+        if (celda.dataset?.programa === programa) {
             if (celda.dataset.campo === "ventas") {
                 ventas = parseInt(celda.innerText) || 0;
             }
@@ -1115,7 +1115,7 @@ async function guardarEdicion(td, nuevoValor, valorOriginal) {
 
 /* ===================== ELIMINAR ===================== */
 
-document.addEventListener("click", async function(e) {
+document.addEventListener("click", async function (e) {
 
     if (!e.target.classList.contains("btnEliminar")) return;
 
@@ -1168,7 +1168,7 @@ document.getElementById('cupoVentaFoco').addEventListener('input', calcularTotal
 document.getElementById('cupoReintegroFoco').addEventListener('input', calcularTotalCupos);
 
 if (document.getElementById("formFoco")) {
-    document.getElementById("btnCrearFoco").addEventListener("click", async function() {
+    document.getElementById("btnCrearFoco").addEventListener("click", async function () {
 
         const form = document.getElementById("formFoco");
         let totalCupoFoco = document.getElementById('totalCupoFoco').value;
@@ -1204,7 +1204,7 @@ if (document.getElementById("formFoco")) {
         }
     });
 
-    document.getElementById("btnGuardarDetalle").addEventListener("click", async function() {
+    document.getElementById("btnGuardarDetalle").addEventListener("click", async function () {
 
         if (!focoCreado) {
             Swal.fire("Error", "Primero debes crear el foco", "error");

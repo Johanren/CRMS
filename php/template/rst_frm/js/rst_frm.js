@@ -1,5 +1,5 @@
 window.Filtros = {
-    obtener: function() {
+    obtener: function () {
         let texto = "";
         let inputBuscador = document.getElementById("buscador");
         if (inputBuscador) {
@@ -36,13 +36,13 @@ function listarReporteRstFrm() {
         .catch(err => console.error("Error reporte rst:", err));
 }
 
-document.addEventListener("change", function(e) {
+document.addEventListener("change", function (e) {
     if (e.target.classList.contains("filtro")) {
         listarReporteRstFrm();
     }
 });
 
-document.addEventListener("input", function(e) {
+document.addEventListener("input", function (e) {
     if (e.target.id === "buscador") {
         listarReporteRstFrm();
     }
@@ -94,13 +94,13 @@ function inicializarDataTableRst(data) {
         },
 
         // 🔹 Crear filtros por columna
-        initComplete: function() {
+        initComplete: function () {
             const api = this.api();
 
             // Clonar header
             $(tableId + ' thead tr').clone(true).appendTo(tableId + ' thead');
 
-            $(tableId + ' thead tr:eq(1) th').each(function(i) {
+            $(tableId + ' thead tr:eq(1) th').each(function (i) {
                 $(this).html(
                     `<input type="text"
                         class="form-control form-control-sm"
@@ -108,7 +108,7 @@ function inicializarDataTableRst(data) {
                     />`
                 );
 
-                $('input', this).on('keyup change clear', function() {
+                $('input', this).on('keyup change clear', function () {
                     if (api.column(i).search() !== this.value) {
                         api.column(i).search(this.value).draw();
                     }
@@ -264,18 +264,10 @@ function construirTablaEstados(data) {
     }
 }
 
-const loader = document.getElementById("loaderFoco");
 
-try {
-    loader.classList.remove("d-none");
-    fetch('ajax/ajax.php?accion=rst_frm_dia')
-        .then(r => r.json())
-        .then(data => {
-            construirTablaDias(data.porDia)
-            construirTablaEstados(data.porEstado)
-        })
-} catch (e) {
-    console.error("Error card leads:", e);
-} finally {
-    loader.classList.add("d-none");
-}
+fetch('ajax.php?accion=rst_frm_dia&cod_emp=1')
+    .then(r => r.json())
+    .then(data => {
+        construirTablaDias(data.porDia)
+        construirTablaEstados(data.porEstado)
+    })

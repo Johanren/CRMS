@@ -235,11 +235,11 @@ if (isset($_POST['accion'])) {
             break;
 
         case 'listar_leads_filtrados':
-            $carrera = $_POST['carrera'] ?? [];
-            $horario = $_POST['horario'] ?? [];
-            $estado  = $_POST['estado'] ?? [];
-            $asesor  = $_POST['asesor'] ?? [];
-            $numero  = $_POST['numero'] ?? '';
+            $carrera = $_POST['filtro_carrera'] ?? [];
+            $horario = $_POST['filtro_horario'] ?? [];
+            $estado  = $_POST['filtro_estado'] ?? [];
+            $asesor  = $_POST['filtro_asesor'] ?? [];
+            $numero  = $_POST['filtro_numero'] ?? null;
             echo json_encode($leads->listarLeadsFiltradosMensaje($carrera, $horario, $estado, $asesor, $numero));
             break;
         /*Notas */
@@ -464,7 +464,7 @@ if (isset($_POST['accion'])) {
             break;
         case 'listar_mensajes_parametrizados':
             echo json_encode($mensaje->listarMensajesParametrizados());
-        break;
+            break;
 
         default:
             # code...

@@ -629,7 +629,7 @@ class LeadsModels
 
     public static function obtenerAsesorConMenosLeads($data)
     {
-        $cod_emp = $data['cod_emp'] ?? $_SESSION['cod_emp'] ?? $_GET['cod_emp'] ?? null;
+        $cod_emp = $data['cod_emp'] ?? $_SESSION['cod_emp'] ?? $_GET['cod_emp'] ?? $_POST['cod_emp'] ?? null;
 
         $sql = "SELECT l.user_id, COUNT(*) AS total FROM leads l INNER JOIN user u ON u.id_user = l.user_id INNER JOIN user_role ur ON ur.id_rol = u.rol_id WHERE l.cod_emp = '$cod_emp' AND ur.activo = 1 GROUP BY l.user_id ORDER BY total ASC LIMIT 1";
 
@@ -872,7 +872,7 @@ class LeadsModels
         $mes  = $mes  ?? date('m');
         $anio = $anio ?? date('Y');
 
-        $codEmp = $_SESSION['cod_emp'];
+        $codEmp = $_SESSION['cod_emp'] ?? $_GET['cod_emp'];
 
         $conn = new Conexion();
         $pdo  = $conn->conectar();
@@ -936,7 +936,8 @@ class LeadsModels
         ];
     }
 
-    public static function listarLeadsFiltradosMensaje($carrera,$horario,$estado,$asesor,$numero) {
+    public static function listarLeadsFiltradosMensaje($carrera, $horario, $estado, $asesor, $numero)
+    {
 
         $sql = "
         SELECT
@@ -956,31 +957,31 @@ class LeadsModels
 
         $params = [];
 
-        // 🔹 Carrera
+        // Carrera
         if (!empty($carrera)) {
             $in = implode(',', array_fill(0, count($carrera), '?'));
             $sql .= " AND l.carrera_id IN ($in)";
             $params = array_merge($params, $carrera);
         }
 
-        // 🔹 Horario
+        // Horario
         if (!empty($horario)) {
             $in = implode(',', array_fill(0, count($horario), '?'));
             $sql .= " AND l.horario_id IN ($in)";
             $params = array_merge($params, $horario);
         }
 
-        // 🔹 Estado o número
+        // Número o estado
         if (!empty($numero)) {
             $sql .= " AND c.telefono_principal = ?";
             $params[] = $numero;
-        } else if (!empty($estado)) {
+        } elseif (!empty($estado)) {
             $in = implode(',', array_fill(0, count($estado), '?'));
             $sql .= " AND l.estado_leads_id IN ($in)";
             $params = array_merge($params, $estado);
         }
 
-        // 🔹 Asesor
+        // Asesor
         if (!empty($asesor)) {
             $in = implode(',', array_fill(0, count($asesor), '?'));
             $sql .= " AND l.user_id IN ($in)";
@@ -989,8 +990,7 @@ class LeadsModels
 
         $sql .= " ORDER BY l.id_lead DESC";
 
-        $conn = new Conexion();
-        $pdo  = $conn->conectar();
+        $pdo  = (new Conexion())->conectar();
         $stmt = $pdo->prepare($sql);
         $stmt->execute($params);
 

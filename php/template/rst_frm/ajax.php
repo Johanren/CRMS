@@ -54,7 +54,6 @@ if (isset($_POST['accion'])) {
         case 'actualizar_lead':
             $leads->actualizarLeadCompleto('');
             break;
-            break;
         default:
             # code...
             break;
@@ -67,7 +66,7 @@ if (isset($_POST['accion'])) {
             foreach ($lista as $a) {
                 if ($a['desc_pro'] == 'GENERAL') {
                     # code...
-                }else{
+                } else {
                     $option .= "
                     <option value='{$a['cod_pro']}'>{$a['desc_pro']}</option>
                 ";
@@ -104,6 +103,12 @@ if (isset($_POST['accion'])) {
             $asesor = isset($_GET['asesor']) ? json_decode($_GET['asesor']) : [];
 
             echo json_encode($leads->listarReporteRst($texto, $asesor));
+            break;
+        case 'rst_frm_dia':
+            $mes  = date('m');
+            $anio = date('Y');
+
+            echo json_encode($leads->listarReporteRstDia($mes, $anio));
             break;
         default:
             # code...

@@ -190,42 +190,42 @@ $jsonData = json_encode($postData, JSON_UNESCAPED_UNICODE);
 
     </div>
     <style>
-    /* ===== LOADER ===== */
-    .loader-overlay {
-        position: fixed;
-        inset: 0;
-        background: rgba(255, 255, 255, 0.85);
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        z-index: 9999;
-    }
-
-    .loader-overlay p {
-        margin-top: 10px;
-        font-weight: bold;
-    }
-
-    .spinner {
-        width: 50px;
-        height: 50px;
-        border: 6px solid #ddd;
-        border-top: 6px solid #007bff;
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-    }
-
-    @keyframes spin {
-        to {
-            transform: rotate(360deg);
+        /* ===== LOADER ===== */
+        .loader-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.85);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
         }
-    }
 
-    /* ===== UTIL ===== */
-    .d-none {
-        display: none;
-    }
+        .loader-overlay p {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 6px solid #ddd;
+            border-top: 6px solid #007bff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ===== UTIL ===== */
+        .d-none {
+            display: none;
+        }
     </style>
     <div id="loaderFoco" class="loader-overlay d-none">
         <div class="spinner"></div>
@@ -239,166 +239,198 @@ $jsonData = json_encode($postData, JSON_UNESCAPED_UNICODE);
 </div>
 
 <script>
-let tablaLeads = null;
+    let tablaLeads = null;
 
-/* ===========================
-   VARIABLES GLOBALES
-=========================== */
-const foco = <?php session_start(); echo json_encode($_SESSION['foco']); ?>;
-let mensajesPorTema = {};
+    /* ===========================
+       VARIABLES GLOBALES
+    =========================== */
+    const foco = <?php session_start();
+                    echo json_encode($_SESSION['foco']); ?>;
+    let mensajesPorTema = {};
 
-/* ===========================
-   CARGAR MENSAJES POR TEMA
-=========================== */
-function cargarMensajesPorTema() {
+    /* ===========================
+       CARGAR MENSAJES POR TEMA
+    =========================== */
+    function cargarMensajesPorTema() {
 
-    const datos = new FormData();
-    datos.append('accion', 'listar_mensajes_parametrizados');
+        const datos = new FormData();
+        datos.append('accion', 'listar_mensajes_parametrizados');
 
-    return fetch('ajax/ajax.php', {
-        method: 'POST',
-        body: datos
-    })
-    .then(res => res.json())
-    .then(data => {
+        return fetch('ajax/ajax.php', {
+                method: 'POST',
+                body: datos
+            })
+            .then(res => res.json())
+            .then(data => {
+                mensajesPorTema = {};
+                data.forEach(item => mensajesPorTema[item.tipo] = item.mensaje);
+                return true;
+            })
+            .catch(() => false);
+    }
 
-        mensajesPorTema = {};
+    /* ===========================
+       DOM READY
+    =========================== */
+    document.addEventListener('DOMContentLoaded', async () => {
 
-        data.forEach(item => {
-            mensajesPorTema[item.tipo] = item.mensaje;
-        });
+        await cargarMensajesPorTema();
+        cargarFiltrosRST();
 
-        console.log('✔ Mensajes cargados:', mensajesPorTema);
-        return true;
-    })
-    .catch(err => {
-        console.error('❌ Error cargando mensajes', err);
-        return false;
-    });
-}
-
-/* ===========================
-   DOM READY
-=========================== */
-document.addEventListener('DOMContentLoaded', async () => {
-
-    await cargarMensajesPorTema(); // 🔥 asegurar carga
-
-    cargarFiltrosRST();
-
-    ['filtro_carrera','filtro_horario','filtro_estado','filtro_asesor']
+        ['filtro_carrera', 'filtro_horario', 'filtro_estado', 'filtro_asesor']
         .forEach(id => {
             const el = document.getElementById(id);
             if (el) el.addEventListener('change', validarYCargarTabla);
         });
 
-    document.getElementById('tema_mensaje')
-        .addEventListener('change', generarMensajesPorTema);
+        document.getElementById('filtro_numero')
+            ?.addEventListener('input', validarYCargarTabla);
 
-    document.getElementById('btn_guardar_mensajes')
-        .addEventListener('click', guardarMensajes);
-});
+        document.getElementById('tema_mensaje')
+            ?.addEventListener('change', generarMensajesPorTema);
 
-/* ===========================
-   CARGAR FILTROS
-=========================== */
-function cargarFiltrosRST() {
-
-    const datos = new FormData();
-    datos.append('accion', 'catalogo_filtros_mensaje');
-
-    fetch('ajax/ajax.php', { method:'POST', body:datos })
-        .then(res => res.json())
-        .then(data => {
-            llenarSelect('filtro_carrera', data.carreras, 'id_programa', 'programa');
-            llenarSelect('filtro_horario', data.horarios, 'id_jornada', 'jornada');
-            llenarSelect('filtro_estado', data.estados, 'id_estado', 'estado');
-            llenarSelect('filtro_asesor', data.asesores, 'id_asesor', 'asesor');
-        })
-        .catch(console.error);
-}
-
-function llenarSelect(id, datos, valueKey, textKey) {
-
-    const select = document.getElementById(id);
-    if (!select) return;
-
-    select.innerHTML = `<option value="">Seleccione</option>`;
-
-    datos.forEach(d => {
-        const opt = document.createElement('option');
-        opt.value = d[valueKey];
-        opt.textContent = d[textKey];
-        select.appendChild(opt);
+        document.getElementById('btn_guardar_mensajes')
+            ?.addEventListener('click', guardarMensajes);
     });
-}
 
-function getValoresSelect(id) {
-    const select = document.getElementById(id);
-    return select ? Array.from(select.selectedOptions).map(o => o.value) : [];
-}
+    /* ===========================
+       CARGAR FILTROS
+    =========================== */
+    function cargarFiltrosRST() {
 
-/* ===========================
-   VALIDAR FILTROS
-=========================== */
-function validarYCargarTabla() {
+        const datos = new FormData();
+        datos.append('accion', 'catalogo_filtros_mensaje');
 
-    const filtrosOK = [
-        'filtro_carrera',
-        'filtro_horario',
-        'filtro_estado',
-        'filtro_asesor'
-    ].every(id => getValoresSelect(id).length);
-
-    filtrosOK ? cargarTablaLeads() : limpiarTabla('Seleccione todos los filtros');
-}
-
-/* ===========================
-   CARGAR TABLA
-=========================== */
-function cargarTablaLeads() {
-
-    const datos = new FormData();
-    datos.append('accion', 'listar_leads_filtrados');
-
-    ['filtro_carrera','filtro_horario','filtro_estado','filtro_asesor']
-        .forEach(id => getValoresSelect(id).forEach(v => datos.append(id+'[]', v)));
-
-    fetch('ajax/ajax.php', { method:'POST', body:datos })
-        .then(res => res.json())
-        .then(pintarTabla)
-        .catch(() => limpiarTabla('Error al cargar datos'));
-}
-
-/* ===========================
-   PINTAR TABLA
-=========================== */
-function pintarTabla(leads) {
-
-    const tbody = document.querySelector('#tabla_leads tbody');
-
-    if (tablaLeads) {
-        tablaLeads.destroy();
-        tablaLeads = null;
+        fetch('ajax/ajax.php', {
+                method: 'POST',
+                body: datos
+            })
+            .then(res => res.json())
+            .then(data => {
+                llenarSelect('filtro_carrera', data.carreras, 'id_programa', 'programa');
+                llenarSelect('filtro_horario', data.horarios, 'id_jornada', 'jornada');
+                llenarSelect('filtro_estado', data.estados, 'id_estado', 'estado');
+                llenarSelect('filtro_asesor', data.asesores, 'id_asesor', 'asesor');
+            });
     }
 
-    tbody.innerHTML = '';
+    function llenarSelect(id, datos, valueKey, textKey) {
 
-    if (!leads.length) {
-        limpiarTabla('No hay resultados');
-        return;
+        const select = document.getElementById(id);
+        if (!select) return;
+
+        select.innerHTML = `<option value="">Seleccione</option>`;
+        datos.forEach(d => {
+            const opt = document.createElement('option');
+            opt.value = d[valueKey];
+            opt.textContent = d[textKey];
+            select.appendChild(opt);
+        });
     }
 
-    leads.forEach(l => {
+    function getValoresSelect(id) {
+        const select = document.getElementById(id);
+        return select ? Array.from(select.selectedOptions).map(o => o.value) : [];
+    }
 
-        const tr = document.createElement('tr');
-        tr.dataset.cliente = l.cliente;
-        tr.dataset.asesor = l.asesor;
-        tr.dataset.carrera = l.carrera;
-        tr.dataset.jornada = l.jornada;
-        tr.dataset.mensaje = '';
+    /* ===========================
+       VALIDAR FILTROS
+    =========================== */
+    function validarYCargarTabla() {
 
-        tr.innerHTML = `
+        const numero = document.getElementById('filtro_numero')?.value.trim();
+
+        const filtros = [
+            'filtro_carrera',
+            'filtro_horario',
+            'filtro_estado',
+            'filtro_asesor'
+        ];
+
+        // 🔥 SI HAY NÚMERO
+        if (numero) {
+            filtros.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.disabled = true;
+                    el.value = '';
+                }
+            });
+            cargarTablaLeads();
+            return;
+        }
+
+        // 🔄 SI NO HAY NÚMERO
+        filtros.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.disabled = false;
+        });
+
+        const filtrosOK = filtros.every(id => getValoresSelect(id).length);
+
+        filtrosOK
+            ?
+            cargarTablaLeads() :
+            limpiarTabla('Seleccione todos los filtros o busque por número');
+    }
+
+    /* ===========================
+       CARGAR TABLA
+    =========================== */
+    function cargarTablaLeads() {
+
+        const datos = new FormData();
+        datos.append('accion', 'listar_leads_filtrados');
+
+        const numero = document.getElementById('filtro_numero')?.value.trim();
+
+        if (numero) {
+            datos.append('numero', numero);
+        } else {
+            ['filtro_carrera', 'filtro_horario', 'filtro_estado', 'filtro_asesor']
+            .forEach(id => getValoresSelect(id)
+                .forEach(v => datos.append(id + '[]', v))
+            );
+        }
+
+        fetch('ajax/ajax.php', {
+                method: 'POST',
+                body: datos
+            })
+            .then(res => res.json())
+            .then(pintarTabla)
+            .catch(() => limpiarTabla('Error al cargar datos'));
+    }
+
+    /* ===========================
+       PINTAR TABLA
+    =========================== */
+    function pintarTabla(leads) {
+
+        const tbody = document.querySelector('#tabla_leads tbody');
+
+        if (tablaLeads) {
+            tablaLeads.destroy();
+            tablaLeads = null;
+        }
+
+        tbody.innerHTML = '';
+
+        if (!leads.length) {
+            limpiarTabla('No hay resultados');
+            return;
+        }
+
+        leads.forEach(l => {
+
+            const tr = document.createElement('tr');
+            tr.dataset.cliente = l.cliente;
+            tr.dataset.asesor = l.asesor;
+            tr.dataset.carrera = l.carrera;
+            tr.dataset.jornada = l.jornada;
+            tr.dataset.mensaje = '';
+
+            tr.innerHTML = `
             <td>${l.id_lead}</td>
             <td>${l.cliente.split(' ')[0]}</td>
             <td>${l.numero}</td>
@@ -406,105 +438,114 @@ function pintarTabla(leads) {
             <td class="mensaje-col text-muted">Seleccione un tema</td>
         `;
 
-        tbody.appendChild(tr);
-    });
+            tbody.appendChild(tr);
+        });
 
-    iniciarDataTable();
-}
-
-/* ===========================
-   DATATABLE
-=========================== */
-function iniciarDataTable() {
-
-    tablaLeads = $('#tabla_leads').DataTable({
-        responsive:true,
-        pageLength:10,
-        lengthChange:false,
-        language:{
-            search:"Buscar:",
-            zeroRecords:"No hay resultados",
-            info:"Mostrando _START_ a _END_ de _TOTAL_",
-            paginate:{ next:"Siguiente", previous:"Anterior" }
-        }
-    });
-}
-
-/* ===========================
-   LIMPIAR TABLA
-=========================== */
-function limpiarTabla(msg) {
-
-    if (tablaLeads) {
-        tablaLeads.destroy();
-        tablaLeads = null;
+        iniciarDataTable();
     }
 
-    document.querySelector('#tabla_leads tbody').innerHTML = `
-        <tr><td colspan="5" class="text-center text-muted">${msg}</td></tr>`;
-}
+    /* ===========================
+       DATATABLE
+    =========================== */
+    function iniciarDataTable() {
 
-/* ===========================
-   GENERAR MENSAJES
-=========================== */
-function generarMensajesPorTema() {
+        tablaLeads = $('#tabla_leads').DataTable({
+            responsive: true,
+            pageLength: 10,
+            lengthChange: false,
+            language: {
+                search: "Buscar:",
+                zeroRecords: "No hay resultados",
+                info: "Mostrando _START_ a _END_ de _TOTAL_",
+                paginate: {
+                    next: "Siguiente",
+                    previous: "Anterior"
+                }
+            }
+        });
+    }
 
-    const tema = this.value;
-    const url = document.getElementById('url')?.value || '';
+    /* ===========================
+       LIMPIAR TABLA
+    =========================== */
+    function limpiarTabla(msg) {
 
-    if (!mensajesPorTema[tema] || !tablaLeads) return;
-
-    tablaLeads.rows().every(function () {
-
-        const tr = this.node();
-        const cliente = tr.dataset.cliente.split(' ')[0];
-
-        const mensaje = mensajesPorTema[tema]
-            .replace('{{cliente}}', cliente)
-            .replace('{{asesor}}', tr.dataset.asesor)
-            .replace('{{carrera}}', tr.dataset.carrera)
-            .replace('{{jornada}}', tr.dataset.jornada)
-            .replace('{{url}}', url)
-            .replace('{{foco}}', foco);
-
-        tr.dataset.mensaje = mensaje;
-        tr.querySelector('.mensaje-col').textContent = mensaje;
-        tr.querySelector('.mensaje-col').classList.remove('text-muted');
-    });
-}
-
-/* ===========================
-   GUARDAR MENSAJES
-=========================== */
-function guardarMensajes() {
-
-    if (!tablaLeads) return alert('No hay mensajes');
-
-    const mensajes = [];
-
-    tablaLeads.rows().every(function () {
-        const tr = this.node();
-        if (tr.dataset.mensaje) {
-            mensajes.push({
-                id_lead: tr.children[0].textContent,
-                numero: tr.children[2].textContent,
-                mensaje: tr.dataset.mensaje
-            });
+        if (tablaLeads) {
+            tablaLeads.destroy();
+            tablaLeads = null;
         }
-    });
 
-    if (!mensajes.length) return alert('No hay mensajes generados');
+        document.querySelector('#tabla_leads tbody').innerHTML = `
+        <tr><td colspan="5" class="text-center text-muted">${msg}</td></tr>`;
+    }
 
-    const datos = new FormData();
-    datos.append('accion', 'guardar_mensajes_rst');
-    datos.append('mensajes', JSON.stringify(mensajes));
+    /* ===========================
+       GENERAR MENSAJES
+    =========================== */
+    function generarMensajesPorTema() {
 
-    fetch('ajax/ajax.php', { method:'POST', body:datos })
-        .then(res => res.json())
-        .then(r => alert(r.ok ? '✔ Mensajes enviados' : '❌ Error'))
-        .catch(() => alert('❌ Error servidor'));
-}
+        const tema = document.getElementById('tema_mensaje')?.value;
+        const url = document.getElementById('url')?.value || '';
+
+        if (!mensajesPorTema[tema] || !tablaLeads) return;
+
+        tablaLeads.rows().every(function() {
+
+            const tr = this.node();
+            const cliente = tr.dataset.cliente.split(' ')[0];
+
+            const mensaje = mensajesPorTema[tema]
+                .replace('{{cliente}}', cliente)
+                .replace('{{asesor}}', tr.dataset.asesor)
+                .replace('{{carrera}}', tr.dataset.carrera)
+                .replace('{{jornada}}', tr.dataset.jornada)
+                .replace('{{url}}', url)
+                .replace('{{foco}}', foco);
+
+            tr.dataset.mensaje = mensaje;
+            tr.querySelector('.mensaje-col').textContent = mensaje;
+            tr.querySelector('.mensaje-col').classList.remove('text-muted');
+        });
+    }
+
+    /* ===========================
+       GUARDAR MENSAJES
+    =========================== */
+    function guardarMensajes() {
+
+        if (!tablaLeads) return alert('No hay mensajes');
+
+        const mensajes = [];
+
+        tablaLeads.rows().every(function() {
+            const tr = this.node();
+            if (tr.dataset.mensaje) {
+                mensajes.push({
+                    id_lead: tr.children[0].textContent,
+                    numero: tr.children[2].textContent,
+                    mensaje: tr.dataset.mensaje,
+                    cliente: tr.dataset.cliente.split(' ')[0],
+                    asesor: tr.dataset.asesor
+                });
+            }
+        });
+
+        if (!mensajes.length) return alert('No hay mensajes generados');
+
+        const datos = new FormData();
+        datos.append('accion', 'guardar_mensajes_rst');
+        datos.append('mensajes', JSON.stringify(mensajes));
+
+        fetch('ajax/ajax.php', {
+                method: 'POST',
+                body: datos
+            })
+            .then(res => res.json())
+            .then(r => alert(r.ok ? '✔ Mensajes enviados' : '❌ Error'))
+            .catch(() => alert('❌ Error servidor'));
+    }
 </script>
+
 
 
 

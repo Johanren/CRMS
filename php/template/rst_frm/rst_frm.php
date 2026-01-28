@@ -9,9 +9,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
-<!-- DataTables (si lo usas) -->
-<script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.min.js"></script>
+    <!-- DataTables (si lo usas) -->
+    <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.min.js"></script>
     <script src="js/rst_frm.js"></script>
 
     <style>
@@ -93,58 +93,165 @@
 
 <body>
 
-<div class="page-wrapper">
+    <div class="page-wrapper">
 
-    <div class="container-fluid">
+        <div class="container-fluid">
 
-        <div class="card">
+            <div class="card">
 
-            <!-- HEADER -->
-            <div class="card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
-                <h4>📊 Reporte RST</h4>
-            </div>
+                <!-- HEADER -->
+                <div class="card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
+                    <h4>📊 Reporte RST</h4>
+                </div>
 
-            <!-- BODY -->
-            <div class="card-body position-relative">
-                <!-- TABLA -->
-                <div class="table-responsive custom-table position-relative">
-                    <table class="table table-hover table-bordered align-middle" id="rst_reports">
-                        <thead>
-                            <tr>
-                                <th>Fecha</th>
-                                <th>Cliente</th>
-                                <th>Teléfono</th>
-                                <th>Asesor RST</th>
-                                <th>Observación</th>
-                                <th>Asesor</th>
-                                <th>Estado</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
+                <!-- BODY -->
+                <div class="card-body position-relative">
+                    <style>
+                        /* ===== TABLAS TIPO EXCEL ===== */
+                        .table-excel {
+                            width: 100%;
+                            border-collapse: collapse;
+                            font-size: 13px;
+                            background: #fff;
+                        }
 
-                    <!-- Loader -->
+                        .table-excel thead th {
+                            background: #f8f9fa;
+                            color: #333;
+                            font-weight: 600;
+                            text-align: center;
+                            border: 1px solid #dee2e6;
+                            padding: 8px;
+                            white-space: nowrap;
+                        }
+
+                        .table-excel tbody td {
+                            border: 1px solid #dee2e6;
+                            padding: 6px;
+                            text-align: center;
+                        }
+
+                        .table-excel tbody tr:hover {
+                            background-color: #f1f5f9;
+                        }
+
+                        /* Columna Día / Estado */
+                        .table-excel td:first-child {
+                            font-weight: 600;
+                            background: #f8f9fa;
+                        }
+
+                        /* ===== FILA TOTAL (VERDE) ===== */
+                        .table-total {
+                            background-color: #d1fae5 !important;
+                            color: #065f46;
+                            font-weight: bold;
+                        }
+
+                        /* ===== CONTENEDOR RESPONSIVE ===== */
+                        .table-responsive-excel {
+                            width: 100%;
+                            overflow-x: auto;
+                            margin-bottom: 20px;
+                        }
+
+                        /* Scroll bonito */
+                        .table-responsive-excel::-webkit-scrollbar {
+                            height: 8px;
+                        }
+
+                        .table-responsive-excel::-webkit-scrollbar-thumb {
+                            background: #cbd5e1;
+                            border-radius: 4px;
+                        }
+
+                        /* ===== LOADER ===== */
+                        .loader-overlay {
+                            position: fixed;
+                            inset: 0;
+                            background: rgba(255, 255, 255, 0.85);
+                            display: flex;
+                            flex-direction: column;
+                            justify-content: center;
+                            align-items: center;
+                            z-index: 9999;
+                        }
+
+                        .loader-overlay p {
+                            margin-top: 10px;
+                            font-weight: bold;
+                        }
+
+                        .spinner {
+                            width: 50px;
+                            height: 50px;
+                            border: 6px solid #ddd;
+                            border-top: 6px solid #007bff;
+                            border-radius: 50%;
+                            animation: spin 1s linear infinite;
+                        }
+
+                        @keyframes spin {
+                            to {
+                                transform: rotate(360deg);
+                            }
+                        }
+
+                        /* UTIL */
+                        .d-none {
+                            display: none;
+                        }
+                    </style>
+                    <!-- table header -->
+                    <h5>Leads asignados por día</h5>
+                    <div id="tablaDias"></div>
+
+                    <h5>Resumen por estado</h5>
+                    <div id="tablaEstados"></div>
                     <div id="loaderFoco" class="loader-overlay d-none">
                         <div class="spinner"></div>
-                        <p class="mt-2 fw-semibold">Cargando reporte...</p>
+                        <p>Cargando reporte...</p>
                     </div>
-                </div>
+                    <!-- TABLA -->
+                    <div class="table-responsive custom-table position-relative">
+                        <table class="table table-hover table-bordered align-middle" id="rst_reports">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Cliente</th>
+                                    <th>Teléfono</th>
+                                    <th>Asesor RST</th>
+                                    <th>Observación</th>
+                                    <th>Asesor</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
 
-                <!-- PAGINACIÓN -->
-                <div class="row align-items-center mt-3">
-                    <div class="col-md-6">
-                        <div class="datatable-length"></div>
+                        <!-- Loader -->
+                        <div id="loaderFoco" class="loader-overlay d-none">
+                            <div class="spinner"></div>
+                            <p class="mt-2 fw-semibold">Cargando reporte...</p>
+                        </div>
                     </div>
-                    <div class="col-md-6 text-end">
-                        <div class="datatable-paginate"></div>
-                    </div>
-                </div>
 
+                    <!-- PAGINACIÓN -->
+                    <div class="row align-items-center mt-3">
+                        <div class="col-md-6">
+                            <div class="datatable-length"></div>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <div class="datatable-paginate"></div>
+                        </div>
+                    </div>
+
+                </div>
             </div>
-        </div>
 
+        </div>
     </div>
-</div>
 
 </body>
+
 </html>
