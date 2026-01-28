@@ -42,6 +42,7 @@ $login = new LoginControllers();
 $notificaciones = new NotifiacionesControllers();
 $marketing = new Marketing_trackingControllers();
 $lis_mensaje = new ListMensajeControllers();
+$mensaje = new MensajeControllers();
 if (isset($_POST['accion'])) {
     switch ($_POST['accion']) {
         /*Campana*/
@@ -445,6 +446,26 @@ if (isset($_POST['accion'])) {
         case 'guardar_mensajes_rst':
             echo json_encode($lis_mensaje::guardarMensajesRST());
             break;
+        /*MENSAJE */
+        case 'guardar_mensaje':
+            echo json_encode($mensaje->agregarMensaje($_POST));
+            break;
+        case 'listar_mensajes':
+            echo json_encode($mensaje->listarMensaje());
+            break;
+        case 'obtener_mensaje':
+            echo json_encode($mensaje->obtenerMensaje($_POST['id']));
+            break;
+        case 'actualizar_mensaje':
+            echo json_encode($mensaje->actualizarMesaje($_POST));
+            break;
+        case 'eliminar_mensaje':
+            echo json_encode($mensaje->eliminar_mensaje($_POST['id']));
+            break;
+        case 'listar_mensajes_parametrizados':
+            echo json_encode($mensaje->listarMensajesParametrizados());
+        break;
+
         default:
             # code...
             break;

@@ -193,11 +193,12 @@
                 <li>
                     <ul>
                         <li class="submenu">
-                            <a href="javascript:void(0);" class="<?php echo ($page == 'rst_frm_dia.php') ? 'active subdrop' : ''; ?>">
+                            <a href="javascript:void(0);" class="<?php echo ($page == 'rst_frm_dia.php' || $page == 'frm_mensaje') ? 'active subdrop' : ''; ?>">
                                 <i class="ti ti-report-analytics"></i><span>Herramientas</span><span class="menu-arrow"></span>
                             </a>
                             <ul>
                                 <li><a href="mensajes.php" class="<?php echo ($page == 'mensajes.php' || $page == '/') ? 'active' : ''; ?>">Mensaje</a></li>
+                                <li><a href="frm_mensaje.php" class="<?php echo ($page == 'frm_mensaje.php' || $page == '/') ? 'active' : ''; ?>">FRM mensaje</a></li>
                             </ul>
                         </li>
                     </ul>

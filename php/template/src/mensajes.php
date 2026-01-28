@@ -242,94 +242,100 @@ $jsonData = json_encode($postData, JSON_UNESCAPED_UNICODE);
 let tablaLeads = null;
 
 /* ===========================
-   MENSAJES POR TEMA
+   VARIABLES GLOBALES
 =========================== */
-const foco = <?php session_start();
-                    echo json_encode($_SESSION['foco']); ?>;
+const foco = <?php session_start(); echo json_encode($_SESSION['foco']); ?>;
+let mensajesPorTema = {};
 
-const mensajesPorTema = {
-    pago: `Hola {{cliente}}, soy {{asesor}} de Multitech, tu cupo en la promoción ${foco} aún está disponible.
-Puedes iniciar solo con $200.000. ¿Te explico en 2 minutos? {{url}}`,
+/* ===========================
+   CARGAR MENSAJES POR TEMA
+=========================== */
+function cargarMensajesPorTema() {
 
-    ingreso: `{{cliente}}, tu carrera {{carrera}}, jornada {{jornada}} inicia muy pronto.
-Aquí no solo estudias: puedes trabajar y generar ingresos.
-¿Conversamos? {{asesor}} {{url}}`,
+    const datos = new FormData();
+    datos.append('accion', 'listar_mensajes_parametrizados');
 
-    empo: `{{cliente}}, estudiando en Multitech APRENDES y GANAS DINERO.
-¿Te animas? {{asesor}} {{url}}`,
+    return fetch('ajax/ajax.php', {
+        method: 'POST',
+        body: datos
+    })
+    .then(res => res.json())
+    .then(data => {
 
-    bono: `{{cliente}}, al matricularte en Multitech recibes un BONO de $500.000
-para que un familiar o amigo estudie (Excel Certificado).
-¿Te explico? {{asesor}} {{url}}`
-};
+        mensajesPorTema = {};
+
+        data.forEach(item => {
+            mensajesPorTema[item.tipo] = item.mensaje;
+        });
+
+        console.log('✔ Mensajes cargados:', mensajesPorTema);
+        return true;
+    })
+    .catch(err => {
+        console.error('❌ Error cargando mensajes', err);
+        return false;
+    });
+}
 
 /* ===========================
    DOM READY
 =========================== */
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+
+    await cargarMensajesPorTema(); // 🔥 asegurar carga
 
     cargarFiltrosRST();
 
-    const filtros = [
-        'filtro_carrera',
-        'filtro_horario',
-        'filtro_estado',
-        'filtro_asesor',
-        'filtro_numero'
-    ];
-
-    filtros.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-            el.addEventListener('change', validarYCargarTabla);
-        }
-    });
+    ['filtro_carrera','filtro_horario','filtro_estado','filtro_asesor']
+        .forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.addEventListener('change', validarYCargarTabla);
+        });
 
     document.getElementById('tema_mensaje')
         .addEventListener('change', generarMensajesPorTema);
+
+    document.getElementById('btn_guardar_mensajes')
+        .addEventListener('click', guardarMensajes);
 });
 
 /* ===========================
-   CARGAR SELECTS
+   CARGAR FILTROS
 =========================== */
 function cargarFiltrosRST() {
 
     const datos = new FormData();
     datos.append('accion', 'catalogo_filtros_mensaje');
 
-    fetch('ajax/ajax.php', {
-            method: 'POST',
-            body: datos
-        })
+    fetch('ajax/ajax.php', { method:'POST', body:datos })
         .then(res => res.json())
         .then(data => {
-            llenarSelect('filtro_carrera', data.carreras, 'id_programa', 'programa', 'carrera');
-            llenarSelect('filtro_horario', data.horarios, 'id_jornada', 'jornada', 'jornada');
-            llenarSelect('filtro_estado', data.estados, 'id_estado', 'estado', 'estado');
-            llenarSelect('filtro_asesor', data.asesores, 'id_asesor', 'asesor', 'asesor');
+            llenarSelect('filtro_carrera', data.carreras, 'id_programa', 'programa');
+            llenarSelect('filtro_horario', data.horarios, 'id_jornada', 'jornada');
+            llenarSelect('filtro_estado', data.estados, 'id_estado', 'estado');
+            llenarSelect('filtro_asesor', data.asesores, 'id_asesor', 'asesor');
         })
-        .catch(err => console.error(err));
+        .catch(console.error);
 }
 
-function llenarSelect(idSelect, datos, valueKey, textKey, datasetKey) {
+function llenarSelect(id, datos, valueKey, textKey) {
 
-    const select = document.getElementById(idSelect);
-    if (!select || !Array.isArray(datos)) return;
+    const select = document.getElementById(id);
+    if (!select) return;
 
     select.innerHTML = `<option value="">Seleccione</option>`;
 
-    datos.forEach(item => {
-        const option = document.createElement('option');
-        option.value = item[valueKey];
-        option.textContent = item[textKey];
-        option.dataset[datasetKey] = item[textKey];
-        select.appendChild(option);
+    datos.forEach(d => {
+        const opt = document.createElement('option');
+        opt.value = d[valueKey];
+        opt.textContent = d[textKey];
+        select.appendChild(opt);
     });
 }
 
 function getValoresSelect(id) {
     const select = document.getElementById(id);
-    return Array.from(select.selectedOptions).map(opt => opt.value);
+    return select ? Array.from(select.selectedOptions).map(o => o.value) : [];
 }
 
 /* ===========================
@@ -337,18 +343,15 @@ function getValoresSelect(id) {
 =========================== */
 function validarYCargarTabla() {
 
-    const carrera = getValoresSelect('filtro_carrera');
-    const horario = getValoresSelect('filtro_horario');
-    const estado = getValoresSelect('filtro_estado');
-    const asesor = getValoresSelect('filtro_asesor');
+    const filtrosOK = [
+        'filtro_carrera',
+        'filtro_horario',
+        'filtro_estado',
+        'filtro_asesor'
+    ].every(id => getValoresSelect(id).length);
 
-    if (carrera.length && horario.length && estado.length && asesor.length) {
-        cargarTablaLeads();
-    } else {
-        limpiarTabla('Seleccione al menos una opción por filtro');
-    }
+    filtrosOK ? cargarTablaLeads() : limpiarTabla('Seleccione todos los filtros');
 }
-
 
 /* ===========================
    CARGAR TABLA
@@ -358,36 +361,17 @@ function cargarTablaLeads() {
     const datos = new FormData();
     datos.append('accion', 'listar_leads_filtrados');
 
-    getValoresSelect('filtro_carrera')
-        .forEach(v => datos.append('carrera[]', v));
+    ['filtro_carrera','filtro_horario','filtro_estado','filtro_asesor']
+        .forEach(id => getValoresSelect(id).forEach(v => datos.append(id+'[]', v)));
 
-    getValoresSelect('filtro_horario')
-        .forEach(v => datos.append('horario[]', v));
-
-    getValoresSelect('filtro_estado')
-        .forEach(v => datos.append('estado[]', v));
-
-    getValoresSelect('filtro_asesor')
-        .forEach(v => datos.append('asesor[]', v));
-
-    fetch('ajax/ajax.php', {
-            method: 'POST',
-            body: datos
-        })
+    fetch('ajax/ajax.php', { method:'POST', body:datos })
         .then(res => res.json())
-        .then(data => {
-            pintarTabla(data);
-            iniciarDataTable();
-        })
-        .catch(err => {
-            console.error(err);
-            limpiarTabla('Error al cargar datos');
-        });
+        .then(pintarTabla)
+        .catch(() => limpiarTabla('Error al cargar datos'));
 }
 
-
 /* ===========================
-   PINTAR TABLA + DATASET
+   PINTAR TABLA
 =========================== */
 function pintarTabla(leads) {
 
@@ -400,20 +384,15 @@ function pintarTabla(leads) {
 
     tbody.innerHTML = '';
 
-    if (!Array.isArray(leads) || !leads.length) {
-        tbody.innerHTML = `
-            <tr>
-                <td colspan="5" class="text-center">No hay resultados</td>
-            </tr>`;
+    if (!leads.length) {
+        limpiarTabla('No hay resultados');
         return;
     }
 
     leads.forEach(l => {
 
         const tr = document.createElement('tr');
-
-        const nombreCompleto = tr.dataset.cliente = l.cliente || '';
-        const cliente = nombreCompleto.trim().split(' ')[0];
+        tr.dataset.cliente = l.cliente;
         tr.dataset.asesor = l.asesor;
         tr.dataset.carrera = l.carrera;
         tr.dataset.jornada = l.jornada;
@@ -421,7 +400,7 @@ function pintarTabla(leads) {
 
         tr.innerHTML = `
             <td>${l.id_lead}</td>
-            <td>${cliente}</td>
+            <td>${l.cliente.split(' ')[0]}</td>
             <td>${l.numero}</td>
             <td>${l.asesor}</td>
             <td class="mensaje-col text-muted">Seleccione un tema</td>
@@ -429,6 +408,8 @@ function pintarTabla(leads) {
 
         tbody.appendChild(tr);
     });
+
+    iniciarDataTable();
 }
 
 /* ===========================
@@ -437,19 +418,14 @@ function pintarTabla(leads) {
 function iniciarDataTable() {
 
     tablaLeads = $('#tabla_leads').DataTable({
-        responsive: true,
-        pageLength: 10,
-        ordering: true,
-        lengthChange: false,
-        language: {
-            search: "Buscar:",
-            zeroRecords: "No hay resultados",
-            info: "Mostrando _START_ a _END_ de _TOTAL_",
-            infoEmpty: "Sin registros",
-            paginate: {
-                next: "Siguiente",
-                previous: "Anterior"
-            }
+        responsive:true,
+        pageLength:10,
+        lengthChange:false,
+        language:{
+            search:"Buscar:",
+            zeroRecords:"No hay resultados",
+            info:"Mostrando _START_ a _END_ de _TOTAL_",
+            paginate:{ next:"Siguiente", previous:"Anterior" }
         }
     });
 }
@@ -457,7 +433,7 @@ function iniciarDataTable() {
 /* ===========================
    LIMPIAR TABLA
 =========================== */
-function limpiarTabla(mensaje) {
+function limpiarTabla(msg) {
 
     if (tablaLeads) {
         tablaLeads.destroy();
@@ -465,127 +441,71 @@ function limpiarTabla(mensaje) {
     }
 
     document.querySelector('#tabla_leads tbody').innerHTML = `
-        <tr>
-            <td colspan="5" class="text-center text-muted">
-                ${mensaje}
-            </td>
-        </tr>`;
+        <tr><td colspan="5" class="text-center text-muted">${msg}</td></tr>`;
 }
 
 /* ===========================
-   GENERAR MENSAJES POR TEMA
+   GENERAR MENSAJES
 =========================== */
 function generarMensajesPorTema() {
 
     const tema = this.value;
-    const url = document.getElementById('url').value || '';
+    const url = document.getElementById('url')?.value || '';
 
     if (!mensajesPorTema[tema] || !tablaLeads) return;
 
-    // 🔥 Recorrer TODAS las filas (no solo las visibles)
-    tablaLeads.rows().every(function() {
+    tablaLeads.rows().every(function () {
 
-        const tr = this.node(); // fila real (DOM)
-        if (!tr) return;
+        const tr = this.node();
+        const cliente = tr.dataset.cliente.split(' ')[0];
 
-        const nombreCompleto = tr.dataset.cliente || '';
-        const cliente = nombreCompleto.trim().split(' ')[0];
-
-        let mensaje = mensajesPorTema[tema]
+        const mensaje = mensajesPorTema[tema]
             .replace('{{cliente}}', cliente)
             .replace('{{asesor}}', tr.dataset.asesor)
             .replace('{{carrera}}', tr.dataset.carrera)
             .replace('{{jornada}}', tr.dataset.jornada)
-            .replace('{{url}}', url);
+            .replace('{{url}}', url)
+            .replace('{{foco}}', foco);
 
-        // Guardar en dataset
         tr.dataset.mensaje = mensaje;
-
-        // Actualizar celda visual
-        const mensajeCol = tr.querySelector('.mensaje-col');
-        if (mensajeCol) {
-            mensajeCol.textContent = mensaje;
-            mensajeCol.classList.remove('text-muted');
-        }
+        tr.querySelector('.mensaje-col').textContent = mensaje;
+        tr.querySelector('.mensaje-col').classList.remove('text-muted');
     });
 }
 
-function mostrarLoader(texto = 'Procesando...') {
-    const loader = document.getElementById('loaderFoco');
-    const txt = document.getElementById('loaderTexto');
-
-    if (txt) txt.textContent = texto;
-    loader.classList.remove('d-none');
-}
-
-function ocultarLoader() {
-    document.getElementById('loaderFoco')
-        .classList.add('d-none');
-}
-
-
-document.getElementById('btn_guardar_mensajes')
-    .addEventListener('click', guardarMensajes);
-
+/* ===========================
+   GUARDAR MENSAJES
+=========================== */
 function guardarMensajes() {
 
-    if (!tablaLeads) {
-        alert('No hay datos para guardar');
-        return;
-    }
+    if (!tablaLeads) return alert('No hay mensajes');
 
     const mensajes = [];
 
-    tablaLeads.rows().every(function() {
+    tablaLeads.rows().every(function () {
         const tr = this.node();
-        if (!tr || !tr.dataset.mensaje) return;
-
-        mensajes.push({
-            id_lead: tr.children[0].textContent.trim(),
-            numero: tr.children[2].textContent.trim(),
-            cliente: tr.dataset.cliente,
-            asesor: tr.dataset.asesor,
-            mensaje: tr.dataset.mensaje
-        });
+        if (tr.dataset.mensaje) {
+            mensajes.push({
+                id_lead: tr.children[0].textContent,
+                numero: tr.children[2].textContent,
+                mensaje: tr.dataset.mensaje
+            });
+        }
     });
 
-    if (!mensajes.length) {
-        alert('No hay mensajes generados');
-        return;
-    }
-
-    // 🔥 MOSTRAR LOADER
-    mostrarLoader('Enviando SMS, por favor espera...');
+    if (!mensajes.length) return alert('No hay mensajes generados');
 
     const datos = new FormData();
     datos.append('accion', 'guardar_mensajes_rst');
     datos.append('mensajes', JSON.stringify(mensajes));
-    datos.append('fecha', document.getElementById('programar').value);
 
-    fetch('ajax/ajax.php', {
-            method: 'POST',
-            body: datos
-        })
+    fetch('ajax/ajax.php', { method:'POST', body:datos })
         .then(res => res.json())
-        .then(resp => {
-
-            ocultarLoader(); // ✅ OCULTAR LOADER
-
-            if (resp.ok) {
-                alert(`✔ Mensajes enviados correctamente (${resp.enviados})`);
-            } else {
-                alert('❌ Error al enviar mensajes');
-                console.error(resp);
-            }
-        })
-        .catch(err => {
-
-            ocultarLoader(); // ✅ OCULTAR LOADER TAMBIÉN EN ERROR
-            console.error(err);
-            alert('❌ Error de servidor');
-        });
+        .then(r => alert(r.ok ? '✔ Mensajes enviados' : '❌ Error'))
+        .catch(() => alert('❌ Error servidor'));
 }
 </script>
+
 
 
 <!-- ========================

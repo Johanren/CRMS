@@ -565,13 +565,13 @@ class focoModels
                 ON lh.carrera_id = fd.prog_fde
             AND lh.horario_id = fd.jorn_fde
             AND lh.cod_emp = f.emp_foc
-            AND lh.estado_leads_id NOT IN (6,7,8)
+           
 
             /* Leads solo carrera (horario distinto o NULL) */
             LEFT JOIN leads ls
                 ON ls.carrera_id = fd.prog_fde
             AND ls.cod_emp = f.emp_foc
-            AND ls.estado_leads_id NOT IN (6,7,8)
+            
             AND (
                     ls.horario_id <> fd.jorn_fde
                     OR ls.horario_id IS NULL
