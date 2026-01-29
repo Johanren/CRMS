@@ -534,127 +534,91 @@ class focoModels
         ];
     }
 
-    public static function catalogoFiltroMensaje() {
+    public static function catalogoFiltroMensaje()
+    {
+
         $cod_emp = $_SESSION['cod_emp'];
-        $foco = $_SESSION['foco'];
+        $foco    = $_SESSION['foco'];
 
-    $sql = "
-        SELECT
-                h.descripcion AS jornada,
-                h.id_horario AS id_jornada,
-                p.desc_pro AS programa,
-                p.cod_pro AS id_programa,
-                elh.nombre AS estado,
-                elh.id_estado_leads AS id_estado,
-                us.nombres AS asesor,
-                us.id_user AS id_asesor
+        $conn = new Conexion();
+        $pdo  = $conn->conectar();
 
-            FROM foco_detalle fd
-            INNER JOIN foco f 
-                ON f.id_foc = fd.foc_fde
-            AND f.emp_foc = fd.emp_fde
-
-            INNER JOIN programa p 
-                ON p.cod_pro = fd.prog_fde
-
-            INNER JOIN horario h 
-                ON h.id_horario = fd.jorn_fde
-
-            /* Leads con horario correcto */
-            LEFT JOIN leads lh
-                ON lh.carrera_id = fd.prog_fde
-            AND lh.horario_id = fd.jorn_fde
-            AND lh.cod_emp = f.emp_foc
-           
-
-            /* Leads solo carrera (horario distinto o NULL) */
-            LEFT JOIN leads ls
-                ON ls.carrera_id = fd.prog_fde
-            AND ls.cod_emp = f.emp_foc
-            
-            AND (
-                    ls.horario_id <> fd.jorn_fde
-                    OR ls.horario_id IS NULL
-            )
-            
-            LEFT JOIN estado_leads elh ON
-            
-            elh.id_estado_leads = lh.estado_leads_id
-            
-            LEFT JOIN estado_leads els ON
-            
-            elh.id_estado_leads = ls.estado_leads_id
-            
-            LEFT JOIN user us ON
-            
-            us.id_user = lh.user_id
-
-            WHERE 
-                f.emp_foc = $cod_emp
-                AND f.id_foc = $foco
-
-            GROUP BY
-                h.descripcion,
-                p.desc_pro,
-                fd.cup_fde,
-                fd.ven_fde,
-                fd.rein_fde,
-                f.nom_foc,
-                f.fini_foc,
-                f.ffin_foc
-
-            ORDER BY
-                h.descripcion,
-                p.desc_pro;
+        /* ==========================
+       CARRERAS
+    ========================== */
+        $sqlCarreras = "
+        SELECT DISTINCT
+            p.cod_pro   AS id_programa,
+            p.desc_pro  AS programa
+        FROM programa p
+        WHERE p.emp_pro = $cod_emp
+        ORDER BY p.desc_pro
     ";
 
-    $conn = new Conexion();
-    $pdo = $conn->conectar();
-    $stmt = $pdo->query($sql);
-    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $carreras = $pdo->query($sqlCarreras)->fetchAll(PDO::FETCH_ASSOC);
 
-    $carreras = [];
-    $horarios = [];
-    $estados  = [];
-    $asesores = [];
 
-    foreach ($rows as $r) {
+        /* ==========================
+       HORARIOS
+    ========================== */
+        $sqlHorarios = "
+        SELECT DISTINCT
+            h.id_horario AS id_jornada,
+            h.descripcion AS jornada
+        FROM horario h
+        ORDER BY h.descripcion
+    ";
 
-        if ($r['id_programa']) {
-            $carreras[$r['id_programa']] = [
-                'id_programa' => $r['id_programa'],
-                'programa'    => $r['programa']
-            ];
-        }
+        $horarios = $pdo->query($sqlHorarios)->fetchAll(PDO::FETCH_ASSOC);
 
-        if ($r['id_jornada']) {
-            $horarios[$r['id_jornada']] = [
-                'id_jornada' => $r['id_jornada'],
-                'jornada'    => $r['jornada']
-            ];
-        }
 
-        if ($r['estado']) {
-            $estados[$r['estado']] = [
-                'id_estado' => $r['id_estado'],
-                'estado' => $r['estado']
-            ];
-        }
+        /* ==========================
+       ESTADOS (TODOS)
+    ========================== */
+        $sqlEstados = "
+        SELECT
+            id_estado_leads AS id_estado,
+            nombre          AS estado
+        FROM estado_leads
+        ORDER BY nombre
+    ";
 
-        if ($r['asesor']) {
-            $asesores[$r['asesor']] = [
-                'id_asesor' => $r['id_asesor'],
-                'asesor' => $r['asesor']
-            ];
-        }
+        $estados = $pdo->query($sqlEstados)->fetchAll(PDO::FETCH_ASSOC);
+
+
+        /* ==========================
+       ASESORES (Sandra y Yalile)
+    ========================== */
+        $sqlAsesores = "
+        SELECT DISTINCT
+            u.id_user AS id_asesor,
+            u.nombres AS asesor
+        FROM user u
+        INNER JOIN leads l
+            ON l.user_id = u.id_user
+        INNER JOIN foco_detalle fd
+            ON fd.prog_fde = l.carrera_id
+           AND fd.jorn_fde = l.horario_id
+        INNER JOIN foco f
+            ON f.id_foc = fd.foc_fde
+           AND f.emp_foc = fd.emp_fde
+        WHERE f.emp_foc = $cod_emp
+          AND f.id_foc  = $foco
+          AND u.nombres IN ('Sandra', 'Yalile')
+        ORDER BY u.nombres
+    ";
+
+        $asesores = $pdo->query($sqlAsesores)->fetchAll(PDO::FETCH_ASSOC);
+
+
+        /* ==========================
+       RETURN (NO CAMBIA)
+    ========================== */
+        return [
+            'carreras' => $carreras,
+            'horarios' => $horarios,
+            'estados'  => $estados,
+            'asesores' => $asesores
+        ];
     }
-
-    return [
-        'carreras' => array_values($carreras),
-        'horarios' => array_values($horarios),
-        'estados'  => array_values($estados),
-        'asesores' => array_values($asesores)
-    ];
-}
-
 }

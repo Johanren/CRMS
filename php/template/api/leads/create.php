@@ -13,6 +13,9 @@ $nombres = $data['nombres'];
 $apellidos = $data['apellidos'];
 $carrera_id = $data['carrera_id'];
 $horario_id = $data['horario_id'];
+$utm_source = $data['utm_source'];
+$utm_medium = $data['utm_medium'];
+$utm_campaign = $data['utm_campaign'];
 
 /* 1️⃣ Buscar cliente */
 $sql = "SELECT id_cliente FROM cliente 
@@ -68,8 +71,8 @@ $foco = $stmt->fetchColumn();
 
 /* 5️⃣ Crear lead */
 $sql = "INSERT INTO leads
-(user_id, cliente_id, carrera_id, horario_id, foco, cod_emp, fecha_creacion)
-VALUES (?,?,?,?,?,?,NOW())";
+(user_id, cliente_id, carrera_id, horario_id, foco, cod_emp, utm_source, utm_medium, utm_campaign, fecha_creacion)
+VALUES (?,?,?,?,?,?,?,?,?,NOW())";
 $stmt = $conn->prepare($sql);
 $stmt->execute([
     $asesor['user_id'],
@@ -77,7 +80,10 @@ $stmt->execute([
     $carrera_id,
     $horario_id,
     $foco,
-    $cod_emp
+    $cod_emp,
+    $utm_source,
+    $utm_medium,
+    $utm_campaign,
 ]);
 
 echo json_encode([
