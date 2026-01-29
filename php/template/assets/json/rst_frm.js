@@ -67,9 +67,11 @@ function inicializarDataTableRst(data) {
         { data: "cliente_nombre", title: "Cliente" },
         { data: "cliente_telefono", title: "Teléfono" },
         { data: "asesor_nombre", title: "Asesor RST" },
+        { data: "tipo_nom", title: "Tipo Transferencia" },
         { data: "obs_rst", title: "Observación" },
         { data: "asesor_nombre_lead", title: "Asesor" },
-        { data: "estado_leads", title: "Estado" }
+        { data: "estado_leads", title: "Estado" },
+        { data: "nota", title: "Notas" }
     ];
 
     const table = $(tableId).DataTable({
@@ -93,13 +95,13 @@ function inicializarDataTableRst(data) {
         },
 
         // 🔹 Crear filtros por columna
-        initComplete: function() {
+        initComplete: function () {
             const api = this.api();
 
             // Clonar header
             $(tableId + ' thead tr').clone(true).appendTo(tableId + ' thead');
 
-            $(tableId + ' thead tr:eq(1) th').each(function(i) {
+            $(tableId + ' thead tr:eq(1) th').each(function (i) {
                 $(this).html(
                     `<input type="text"
                         class="form-control form-control-sm"
@@ -107,7 +109,7 @@ function inicializarDataTableRst(data) {
                     />`
                 );
 
-                $('input', this).on('keyup change clear', function() {
+                $('input', this).on('keyup change clear', function () {
                     if (api.column(i).search() !== this.value) {
                         api.column(i).search(this.value).draw();
                     }
@@ -147,53 +149,77 @@ function getUnique(arr, key) {
     return [...new Set(arr.map(i => i[key]))]
 }
 
+function getUniqueBy(arr, key) {
+    return [...new Set(arr.map(i => i[key]).filter(v => v !== null))];
+}
+
 function construirTablaDias(data) {
     const loader = document.getElementById("loaderFoco");
 
     try {
         loader.classList.remove("d-none");
-        const dias = [...new Set(data.map(d => d.dia))].sort((a, b) => a - b)
-        const asesores = getUnique(data, 'asesor')
-        const asesoresRTS = getUnique(data, 'asesorRTS')
+
+        const dias = [...new Set(data.map(d => d.dia))].sort((a, b) => a - b);
+        const asesores = getUnique(data, 'asesor');
+        const asesoresRTS = getUnique(data, 'asesorRTS');
+        const tipos = getUniqueBy(data, 'tipo_nom');
 
         let html = `
-    <div class="table-responsive-excel">
-    <table class="table-excel">
+        <div class="table-responsive-excel">
+        <table class="table-excel">
         <thead>
             <tr>
-                <th>DÍA</th>`
-        html += `<th>RTS ASIGNADO</th>`
-        asesores.forEach(a => html += `<th>${a}</th>`)
-        html += `<th>Total</th></tr></thead><tbody>`
+                <th>DÍA</th>
+                <th>RTS ASIGNADO</th>`;
 
-        let totalGeneral = Array(asesores.length).fill(0)
-        let totalMes = 0
+        asesores.forEach(a => html += `<th>${a}</th>`);
+        tipos.forEach(t => html += `<th>${t}</th>`);
+        html += `<th>Total</th></tr></thead><tbody>`;
+
+        let totalAsesores = Array(asesores.length).fill(0);
+        let totalTipos = Array(tipos.length).fill(0);
+        let totalMes = 0;
 
         dias.forEach(dia => {
-            let totalDia = 0
-            html += `<tr><td>${dia}</td>`
-            asesoresRTS.forEach(a => html += `<td>${a}</td>`)
+            let totalDia = 0;
+            html += `<tr><td>${dia}</td><td>${asesoresRTS[0] ?? ''}</td>`;
+
+            // 🔹 Por asesor
             asesores.forEach((asesor, i) => {
-                const reg = data.find(r => r.dia == dia && r.asesor == asesor)
-                const val = reg ? parseInt(reg.total) : 0
-                totalDia += val
-                totalGeneral[i] += val
-                html += `<td>${val}</td>`
-            })
-            totalMes += totalDia
-            html += `<td><b>${totalDia}</b></td></tr>`
-        })
+                const suma = data
+                    .filter(r => r.dia == dia && r.asesor === asesor)
+                    .reduce((a, b) => a + Number(b.total), 0);
 
-        /* FILA TOTAL FINAL */
-        html += `<tr class="table-total"><td>TOTAL</td>`
-        html += `<td></td>`
-        totalGeneral.forEach(t => html += `<td>${t}</td>`)
-        html += `<td>${totalMes}</td></tr>`
+                totalAsesores[i] += suma;
+                totalDia += suma;
+                html += `<td>${suma}</td>`;
+            });
 
-        html += `</tbody></table></div>`
-        document.getElementById('tablaDias').innerHTML = html
+            // 🔹 Por tipo
+            tipos.forEach((tipo, i) => {
+                const sumaTipo = data
+                    .filter(r => r.dia == dia && r.tipo_nom === tipo)
+                    .reduce((a, b) => a + Number(b.tipo), 0);
+
+                totalTipos[i] += sumaTipo;
+                html += `<td>${sumaTipo}</td>`;
+            });
+
+            totalMes += totalDia;
+            html += `<td><b>${totalDia}</b></td></tr>`;
+        });
+
+        /* TOTAL FINAL */
+        html += `<tr class="table-total"><td colspan="2">TOTAL</td>`;
+        totalAsesores.forEach(t => html += `<td>${t}</td>`);
+        totalTipos.forEach(t => html += `<td>${t}</td>`);
+        html += `<td>${totalMes}</td></tr>`;
+
+        html += `</tbody></table></div>`;
+        document.getElementById('tablaDias').innerHTML = html;
+
     } catch (e) {
-        console.error("Error card leads:", e);
+        console.error(e);
     } finally {
         loader.classList.add("d-none");
     }
@@ -205,86 +231,69 @@ function construirTablaEstados(data) {
     try {
         loader.classList.remove("d-none");
 
-        if (!Array.isArray(data) || data.length === 0) {
-            document.getElementById("tablaEstados").innerHTML = "<p>No hay datos</p>";
-            return;
-        }
+        const estadosMap = {};
+        data.forEach(r => estadosMap[r.estado] = r.id);
 
-        // 🔹 ESTADOS LIMPIOS (reconstruidos siempre desde data)
-        const estados = [...new Map(
-            data.map(d => [
-                Number(d.id),
-                { id: Number(d.id), nombre: d.estado }
-            ])
-        ).values()].sort((a, b) => a.id - b.id);
-
-        // 🔹 Asesores únicos
-        const asesores = [...new Set(data.map(d => d.asesor))];
+        const estados = Object.keys(estadosMap);
+        const asesores = getUnique(data, 'asesor');
+        const tipos = getUniqueBy(data, 'tipo_nom');
 
         let html = `
         <div class="table-responsive-excel">
         <table class="table-excel">
-            <thead>
-                <tr>
-                    <th>Asesor</th>`;
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>ESTADO</th>`;
 
-        estados.forEach(e => html += `<th>${e.nombre}</th>`);
-        html += `<th>Total</th></tr>
-            </thead><tbody>`;
+        asesores.forEach(a => html += `<th>${a}</th>`);
+        tipos.forEach(t => html += `<th>${t}</th>`);
+        html += `<th>Total</th></tr></thead><tbody>`;
 
-        let totalPorEstado = Array(estados.length).fill(0);
-        let totalGeneral = 0;
+        let totalAsesores = Array(asesores.length).fill(0);
+        let totalTipos = Array(tipos.length).fill(0);
+        let totalEstados = 0;
 
-        // 🔹 Filas por asesor
-        asesores.forEach(asesor => {
-            let totalAsesor = 0;
-            html += `<tr><td>${asesor}</td>`;
+        estados.forEach(estado => {
+            let totalEstado = 0;
+            html += `<tr><td>${estadosMap[estado]}</td><td>${estado}</td>`;
 
-            estados.forEach((estado, i) => {
+            // 🔹 Por asesor
+            asesores.forEach((asesor, i) => {
+                const suma = data
+                    .filter(r => r.estado === estado && r.asesor === asesor)
+                    .reduce((a, b) => a + Number(b.total), 0);
 
-                // 🔥 SUMA REAL (no find)
-                const val = data
-                    .filter(r =>
-                        Number(r.id) === estado.id &&
-                        r.asesor === asesor
-                    )
-                    .reduce((sum, r) => sum + Number(r.total), 0);
-
-                totalAsesor += val;
-                totalPorEstado[i] += val;
-
-                html += `<td>${val}</td>`;
+                totalAsesores[i] += suma;
+                totalEstado += suma;
+                html += `<td>${suma}</td>`;
             });
 
-            totalGeneral += totalAsesor;
-            html += `<td><b>${totalAsesor}</b></td></tr>`;
+            // 🔹 Por tipo
+            tipos.forEach((tipo, i) => {
+                const sumaTipo = data
+                    .filter(r => r.estado === estado && r.tipo_nom === tipo)
+                    .reduce((a, b) => a + Number(b.tipo), 0);
+
+                totalTipos[i] += sumaTipo;
+                html += `<td>${sumaTipo}</td>`;
+            });
+
+            totalEstados += totalEstado;
+            html += `<td><b>${totalEstado}</b></td></tr>`;
         });
 
-        // 🔹 TOTAL
-        html += `<tr class="table-total">
-            <td><b>Total</b></td>`;
-        totalPorEstado.forEach(t => html += `<td><b>${t}</b></td>`);
-        html += `<td><b>${totalGeneral}</b></td></tr>`;
-
-        // 🔹 PORCENTAJE
-        html += `<tr class="table-porcentaje">
-            <td><b>%</b></td>`;
-
-        let sumaPorcentaje = 0;
-        totalPorEstado.forEach(t => {
-            const p = totalGeneral ? (t / totalGeneral) * 100 : 0;
-            sumaPorcentaje += p;
-            html += `<td>${p.toFixed(1)}%</td>`;
-        });
-
-        html += `<td>${sumaPorcentaje.toFixed(0)}%</td></tr>`;
+        /* TOTAL FINAL */
+        html += `<tr class="table-total"><td colspan="2">TOTAL</td>`;
+        totalAsesores.forEach(t => html += `<td>${t}</td>`);
+        totalTipos.forEach(t => html += `<td>${t}</td>`);
+        html += `<td>${totalEstados}</td></tr>`;
 
         html += `</tbody></table></div>`;
-
-        document.getElementById("tablaEstados").innerHTML = html;
+        document.getElementById('tablaEstados').innerHTML = html;
 
     } catch (e) {
-        console.error("Error resumen estados:", e);
+        console.error(e);
     } finally {
         loader.classList.add("d-none");
     }

@@ -133,6 +133,15 @@
                 <label>Observaciones / Datos Importantes</label>
                 <textarea name="observaciones" class="form-control" rows="4"></textarea>
             </div>
+
+            <div class="mb-3">
+                <label class="required">Tipo de transferencia</label>
+                <select name="tip_tras" id="tip_tras" class="form-select" required>
+                    <option value="">Seleccione el tipo</option>
+                    <option value="1">Llamada</option>
+                    <option value="2">WhatsApp</option>
+                </select>
+            </div>
             <input type="hidden" id="id_lead" name="id_lead">
             <input type="hidden" id="cod_emp" name="cod_emp" value="1">
             <input type="hidden" id="cliente_id" name="cliente_id">

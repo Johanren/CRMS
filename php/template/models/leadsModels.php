@@ -761,8 +761,8 @@ class LeadsModels
     public static function registrarObservacion($data)
     {
         $sql = "INSERT INTO rst_frm
-            (lead_id, obs_rst, user_id, cod_emp)
-            VALUES (:lead, :obs, :user, :cod_emp)";
+            (lead_id, obs_rst, tipo_trans_id, user_id, cod_emp)
+            VALUES (:lead, :obs, :tip_tras, :user, :cod_emp)";
 
         $conn = new Conexion();
         $stmt = $conn->conectar()->prepare($sql);
@@ -770,6 +770,7 @@ class LeadsModels
         return $stmt->execute([
             ":lead"    => $data["lead_id"],
             ":obs"     => $data["obs"],
+            ":tip_tras"     => $data["tip_tras"],
             ":user"    => $data["usuario"],
             ":cod_emp" => $data["cod_emp"]
         ]);
@@ -793,12 +794,16 @@ class LeadsModels
             CONCAT(u.nombres, ' ', u.apellidos) AS asesor_nombre,
             CONCAT(ul.nombres, ' ', ul.apellidos) AS asesor_nombre_lead,
 			el.nombre AS estado_leads,
-            r.cod_emp
+            r.cod_emp,
+            tp.des_tipo_trans AS tipo_nom,
+            n.desc_not AS nota
         FROM rst_frm r
         LEFT JOIN leads l ON l.id_lead = r.lead_id
         LEFT JOIN cliente c ON c.id_cliente = l.cliente_id
         LEFT JOIN user u ON u.id_user = r.user_id
         LEFT JOIN user ul ON ul.id_user = l.user_id
+        LEFT JOIN tipo_trans tp ON tp.id_tipo_trans = r.tipo_trans_id
+        LEFT JOIN nota n ON n.id_lead = l.id_lead
         INNER JOIN estado_leads el ON el.id_estado_leads = l.estado_leads_id
         WHERE r.cod_emp = ?;
     ";
@@ -885,17 +890,39 @@ class LeadsModels
             DAY(r.fecha) AS dia,
             CONCAT(u.nombres, ' ', u.apellidos) AS asesor,
             CONCAT(ur.nombres, ' ', ur.apellidos) AS asesorRTS,
-            COUNT(*) AS total
-            FROM rst_frm r
-            LEFT JOIN user ur ON ur.id_user = r.user_id
-            LEFT JOIN leads l ON r.lead_id = l.id_lead
-            LEFT JOIN user u ON u.id_user = l.user_id
-            WHERE r.cod_emp = ?
-            AND MONTH(r.fecha) = ?
-            AND YEAR(r.fecha) = ?
-            GROUP BY dia, asesor, asesorRTS
-            ORDER BY dia;
-    ";
+
+            COUNT(*) AS total,
+
+            SUM(
+                CASE 
+                    WHEN tp.id_tipo_trans IS NOT NULL THEN 1
+                    ELSE 0
+                END
+            ) AS tipo,
+
+            tp.des_tipo_trans AS tipo_nom
+
+        FROM rst_frm r
+        LEFT JOIN user ur 
+            ON ur.id_user = r.user_id
+        LEFT JOIN leads l 
+            ON r.lead_id = l.id_lead
+        LEFT JOIN user u 
+            ON u.id_user = l.user_id
+        LEFT JOIN tipo_trans tp 
+            ON tp.id_tipo_trans = r.tipo_trans_id
+
+        WHERE r.cod_emp = ?
+        AND MONTH(r.fecha) = ?
+        AND YEAR(r.fecha) = ?
+
+        GROUP BY
+            dia,
+            asesor,
+            asesorRTS
+
+        ORDER BY dia;
+        ";
 
         $stmtDia = $pdo->prepare($sqlPorDia);
         $stmtDia->execute([$codEmp, $mes, $anio]);
@@ -909,16 +936,42 @@ class LeadsModels
             CONCAT(u.nombres, ' ', u.apellidos) AS asesor,
             el.nombre AS estado,
             el.ord_eld AS id,
-            COUNT(*) AS total
+
+            COUNT(*) AS total,
+
+            SUM(
+                CASE 
+                    WHEN r.tipo_trans_id IS NOT NULL THEN 1
+                    ELSE 0
+                END
+            ) AS tipo,
+
+            tp.des_tipo_trans AS tipo_nom
+
             FROM rst_frm r
-            LEFT JOIN leads l ON r.lead_id = l.id_lead
-            LEFT JOIN user u ON u.id_user = l.user_id
-            LEFT JOIN estado_leads el ON el.id_estado_leads = l.estado_leads_id
+            LEFT JOIN leads l 
+                ON r.lead_id = l.id_lead
+            LEFT JOIN user u 
+                ON u.id_user = l.user_id
+            LEFT JOIN estado_leads el 
+                ON el.id_estado_leads = l.estado_leads_id
+            LEFT JOIN tipo_trans tp 
+                ON tp.id_tipo_trans = r.tipo_trans_id
+
             WHERE r.cod_emp = ?
             AND MONTH(r.fecha) = ?
             AND YEAR(r.fecha) = ?
-            GROUP BY asesor, el.id_estado_leads, el.nombre, el.ord_eld
+
+            GROUP BY
+                asesor,
+                el.id_estado_leads,
+                el.nombre,
+                el.ord_eld,
+                tp.id_tipo_trans,
+                tp.des_tipo_trans
+
             ORDER BY el.ord_eld ASC;
+
     ";
 
         $stmtEstado = $pdo->prepare($sqlPorEstado);

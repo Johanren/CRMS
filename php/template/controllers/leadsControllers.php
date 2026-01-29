@@ -165,6 +165,7 @@ class LeadsControllers
             "horario"        => $_POST["horario"],
             "usuario"        => $_POST["user"],
             "obs"            => $_POST["observaciones"],
+            "tip_tras"       => $_POST["tip_tras"],
             "user_id"        => $user_id,
             "cod_emp"        => $_POST["cod_emp"]
         ];

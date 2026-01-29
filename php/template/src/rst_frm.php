@@ -118,9 +118,11 @@
                                 <th>Cliente</th>
                                 <th>Teléfono</th>
                                 <th>Asesor RST</th>
+                                <th>Tipo Transferencia</th>
                                 <th>Observación</th>
                                 <th>Asesor</th>
                                 <th>Estado</th>
+                                <th>Notas</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
