@@ -54,8 +54,8 @@ document.addEventListener("DOMContentLoaded", () => {
                         if (document.getElementById("horario"))
                             document.getElementById("horario").value = c.horario_id || "";
 
-                        if (document.getElementById("cod_emp"))
-                            document.getElementById("cod_emp").value = c.cod_emp || "";
+                        //if (document.getElementById("cod_emp"))
+                            //document.getElementById("cod_emp").value = c.cod_emp || "";
                     }
                 }
 

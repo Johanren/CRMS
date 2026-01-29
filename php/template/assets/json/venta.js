@@ -1,3 +1,6 @@
+function obtenerPaginaActual() {
+    return window.location.pathname.split('/').pop();
+}
 window.Filtros = {
     obtener: function () {
         let texto = "";
@@ -43,7 +46,6 @@ function exportarExcel(tipo) {
 
     window.location.href = "ajax/exportar_excel.php?" + params.toString();
 }
-
 async function cargarTablaFoco() {
 
     const datos = new FormData();
@@ -1152,10 +1154,15 @@ document.addEventListener("click", async function (e) {
     }
 });
 /* ===================== INIT ===================== */
-
+if (obtenerPaginaActual() === 'venta.php') {
 document.addEventListener("DOMContentLoaded", cargarTablaFoco);
+}
+if (obtenerPaginaActual() === 'index.php') {
 document.addEventListener("DOMContentLoaded", cargarTablaFocoReporte);
+}
+if (obtenerPaginaActual() === 'resultado_foco.php') {
 document.addEventListener("DOMContentLoaded", cargarTablaFocoResultado);
+}
 
 function calcularTotalCupos() {
     const ventas = parseInt(document.getElementById('cupoVentaFoco').value) || 0;

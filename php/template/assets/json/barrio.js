@@ -194,6 +194,13 @@ function listarBarrioUl() {
         });
 }
 
-listarBarrio();
-listarBarrioOption();
-listarBarrioUl();
+function obtenerPaginaActual() {
+    return window.location.pathname.split('/').pop();
+}
+if (obtenerPaginaActual() === 'barrio.php') {
+    listarBarrio();
+}
+if (obtenerPaginaActual() === 'leads.php' || obtenerPaginaActual() === 'leads-detals.php' || obtenerPaginaActual() === 'leads-list.php') {
+    listarBarrioOption();
+    listarBarrioUl();
+}

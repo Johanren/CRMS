@@ -192,7 +192,13 @@ function listarCiudUl() {
             }
         });
 }
-
-listarCiud();
-listarCiudOption();
-listarCiudUl();
+function obtenerPaginaActual() {
+    return window.location.pathname.split('/').pop();
+}
+if (obtenerPaginaActual() === 'ciudad.php') {
+    listarCiud();
+}
+if (obtenerPaginaActual() === 'leads.php' || obtenerPaginaActual() === 'leads-detals.php' || obtenerPaginaActual() === 'leads-list.php' || obtenerPaginaActual() === 'barrio.php') {
+    listarCiudOption();
+    listarCiudUl();
+}

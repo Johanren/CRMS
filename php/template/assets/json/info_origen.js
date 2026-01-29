@@ -192,9 +192,16 @@ function listarDeparUl() {
         });
 }
 
-listarDeparOption();
-listarDepart();
-listarDeparUl();
+function obtenerPaginaActual() {
+    return window.location.pathname.split('/').pop();
+}
+if (obtenerPaginaActual() === 'info_origen.php') {
+    listarDepart();
+}
+if (obtenerPaginaActual() === 'leads.php' || obtenerPaginaActual() === 'leads-detals.php' || obtenerPaginaActual() === 'leads-list.php' || obtenerPaginaActual() === 'ciudad.php') {
+    listarDeparOption();
+    listarDeparUl();
+}
 
 //Estado leads
 
@@ -399,10 +406,12 @@ function listarCampanaIl() {
         });
 }
 
-listarEst_leads();
-listarEst_leadsOption();
-listarEst_leadsIl();
-listarCampanaIl();
+if (obtenerPaginaActual() === 'leads.php' || obtenerPaginaActual() === 'leads-list.php' || obtenerPaginaActual() === 'lead-reports.php' || obtenerPaginaActual() === 'contacts.php') {
+    listarEst_leads();
+    listarEst_leadsOption();
+    listarEst_leadsIl();
+    listarCampanaIl();
+}
 
 //Campañas
 
@@ -415,7 +424,10 @@ function listarCampanaOption() {
             }
         });
 }
-listarCampanaOption();
+
+if (obtenerPaginaActual() === 'leads.php' || obtenerPaginaActual() === 'leads-list.php' || obtenerPaginaActual() === 'lead-details.php') {
+    listarCampanaOption();
+}
 
 $('#departamento').on('change', function () {
     let id_dep = $(this).val();

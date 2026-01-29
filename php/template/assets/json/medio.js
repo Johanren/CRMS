@@ -191,6 +191,13 @@ function listarMdsLi() {
         });
 }
 
-listarMdo();
-listarMdsOption();
-listarMdsLi();
+function obtenerPaginaActual() {
+    return window.location.pathname.split('/').pop();
+}
+if (obtenerPaginaActual() === 'medio.php') {
+    listarMdo();
+}
+if (obtenerPaginaActual() === 'leads.php' || obtenerPaginaActual() === 'leads-list.php' || obtenerPaginaActual() === 'leads-details.php') {
+    listarMdsOption();
+    listarMdsLi();
+}

@@ -222,6 +222,13 @@ function listarCarreraLIi() {
         });
 }
 
-listarCarr();
-listarCarreraOption();
-listarCarreraLIi();
+function obtenerPaginaActual() {
+    return window.location.pathname.split('/').pop();
+}
+if (obtenerPaginaActual() === 'programa.php') {
+    listarCarr();
+}
+if (obtenerPaginaActual() === 'venta.php' || obtenerPaginaActual() === 'index.php' || obtenerPaginaActual() === 'leads.php' || obtenerPaginaActual() === 'leads-detals.php' || obtenerPaginaActual() === 'leads-list.php' || obtenerPaginaActual() === 'contacts.php' || obtenerPaginaActual() === 'lead-reports.php') {
+    listarCarreraOption();
+    listarCarreraLIi();
+}

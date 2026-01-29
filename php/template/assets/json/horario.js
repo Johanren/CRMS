@@ -191,6 +191,13 @@ function listarHrsUl() {
         });
 }
 
-listarHrs();
-listarHrsOption();
-listarHrsUl();
+function obtenerPaginaActual() {
+    return window.location.pathname.split('/').pop();
+}
+if (obtenerPaginaActual() === 'jornada.php') {
+    listarHrs();
+}
+if (obtenerPaginaActual() === 'venta.php' || obtenerPaginaActual() === 'index.php' || obtenerPaginaActual() === 'leads.php' || obtenerPaginaActual() === 'leads-detals.php' || obtenerPaginaActual() === 'leads-list.php' || obtenerPaginaActual() === 'contacts.php' || obtenerPaginaActual() === 'lead-reports.php') {
+    listarHrsUl();
+    listarHrsOption();
+}

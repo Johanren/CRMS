@@ -57,16 +57,16 @@ function inicializarDataTableRol(rol) {
 }
 
 if (document.getElementById("formRol")) {
-    document.getElementById("formRol").addEventListener("submit", function(e) {
+    document.getElementById("formRol").addEventListener("submit", function (e) {
         e.preventDefault();
 
         let datos = new FormData(this);
         datos.append("accion", "registrar_rol");
 
         fetch("ajax/ajax.php", {
-                method: "POST",
-                body: datos
-            })
+            method: "POST",
+            body: datos
+        })
             .then(res => res.json())
             .then(data => {
 
@@ -98,9 +98,9 @@ window.editarRol = (id) => {
     datos.append("id", id);
 
     fetch("ajax/ajax.php", {
-            method: "POST",
-            body: datos
-        })
+        method: "POST",
+        body: datos
+    })
         .then(res => res.json())
         .then(data => {
 
@@ -136,7 +136,7 @@ window.editarRol = (id) => {
 };
 
 if (document.getElementById("btnCerrarOffcanvas-rol")) {
-    document.getElementById("btnCerrarOffcanvas-rol").addEventListener("click", function() {
+    document.getElementById("btnCerrarOffcanvas-rol").addEventListener("click", function () {
         document.getElementById("formRol").reset();
         document.getElementById("title-canvas-rol").textContent = "Nuevo Rol";
         document.getElementById("btn-canvas-rol").textContent = "Crear";
@@ -150,9 +150,9 @@ window.eliminarRol = (id) => {
     datos.append("id", id);
 
     fetch("ajax/ajax.php", {
-            method: "POST",
-            body: datos
-        })
+        method: "POST",
+        body: datos
+    })
         .then(res => res.json())
         .then(data => {
 
@@ -181,5 +181,10 @@ function listarRolOption() {
         });
 }
 
-listarRolOption();
-listarRol();
+function obtenerPaginaActual() {
+    return window.location.pathname.split('/').pop();
+}
+if (obtenerPaginaActual() === 'roles-permissions.php') {
+    listarRol();
+    listarRolOption();
+}

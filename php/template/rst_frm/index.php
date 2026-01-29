@@ -134,7 +134,7 @@
                 <textarea name="observaciones" class="form-control" rows="4"></textarea>
             </div>
             <input type="hidden" id="id_lead" name="id_lead">
-            <input type="hidden" id="cod_emp" name="cod_emp">
+            <input type="hidden" id="cod_emp" name="cod_emp" value="1">
             <input type="hidden" id="cliente_id" name="cliente_id">
             <button type="submit" class="btn btn-primary w-100">
                 Registrar Lead

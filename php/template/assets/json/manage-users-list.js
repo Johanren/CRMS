@@ -62,7 +62,7 @@ function inicializarDataTableUser(rol) {
 }
 
 if (document.getElementById("formUser")) {
-    document.getElementById("formUser").addEventListener("submit", function(e) {
+    document.getElementById("formUser").addEventListener("submit", function (e) {
         e.preventDefault();
 
         let datos = new FormData(this);
@@ -75,9 +75,9 @@ if (document.getElementById("formUser")) {
         }
 
         fetch("ajax/ajax.php", {
-                method: "POST",
-                body: datos
-            })
+            method: "POST",
+            body: datos
+        })
             .then(res => res.json())
             .then(data => {
 
@@ -109,9 +109,9 @@ window.editarUser = (id) => {
     datos.append("id", id);
 
     fetch("ajax/ajax.php", {
-            method: "POST",
-            body: datos
-        })
+        method: "POST",
+        body: datos
+    })
         .then(res => res.json())
         .then(data => {
 
@@ -155,7 +155,7 @@ window.editarUser = (id) => {
 };
 
 if (document.getElementById("btnCerrarOffcanvas-user")) {
-    document.getElementById("btnCerrarOffcanvas-user").addEventListener("click", function() {
+    document.getElementById("btnCerrarOffcanvas-user").addEventListener("click", function () {
         document.getElementById("formUser").reset();
         document.getElementById("title-canvas-user").textContent = "Nuevo Usuario";
         document.getElementById("btn-canvas-user").textContent = "Crear";
@@ -169,9 +169,9 @@ window.eliminarUser = (id) => {
     datos.append("id", id);
 
     fetch("ajax/ajax.php", {
-            method: "POST",
-            body: datos
-        })
+        method: "POST",
+        body: datos
+    })
         .then(res => res.json())
         .then(data => {
 
@@ -210,7 +210,13 @@ function listarUserUl() {
         });
 }
 
-
-listarUserOption();
-listarUser();
-listarUserUl();
+function obtenerPaginaActual() {
+    return window.location.pathname.split('/').pop();
+}
+if (obtenerPaginaActual() === 'manage-users.php') {
+    listarUserOption();
+}
+if (obtenerPaginaActual() === 'rst_frm.php' || obtenerPaginaActual() === 'rst_frm_dia.php' || obtenerPaginaActual() === 'leads.php' || obtenerPaginaActual() === 'leads-list.php' || obtenerPaginaActual() === 'index.php' || obtenerPaginaActual() === 'lead-reports.php') {
+    listarUser();
+    listarUserUl();
+}
