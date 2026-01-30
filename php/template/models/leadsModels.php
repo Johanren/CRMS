@@ -805,7 +805,11 @@ class LeadsModels
         LEFT JOIN tipo_trans tp ON tp.id_tipo_trans = r.tipo_trans_id
         LEFT JOIN nota n ON n.id_lead = l.id_lead
         INNER JOIN estado_leads el ON el.id_estado_leads = l.estado_leads_id
-        WHERE r.cod_emp = ?;
+        WHERE r.cod_emp = ?
+            GROUP BY
+            r.cod_rst,
+            r.fecha,
+            r.obs_rst;
     ";
 
         $params = [$_SESSION['cod_emp'] ?? $_GET['cod_emp']];
