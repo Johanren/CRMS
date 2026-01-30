@@ -937,16 +937,7 @@ class LeadsModels
             el.nombre AS estado,
             el.ord_eld AS id,
 
-            COUNT(*) AS total,
-
-            SUM(
-                CASE 
-                    WHEN r.tipo_trans_id IS NOT NULL THEN 1
-                    ELSE 0
-                END
-            ) AS tipo,
-
-            tp.des_tipo_trans AS tipo_nom
+            COUNT(*) AS total
 
             FROM rst_frm r
             LEFT JOIN leads l 
@@ -955,8 +946,6 @@ class LeadsModels
                 ON u.id_user = l.user_id
             LEFT JOIN estado_leads el 
                 ON el.id_estado_leads = l.estado_leads_id
-            LEFT JOIN tipo_trans tp 
-                ON tp.id_tipo_trans = r.tipo_trans_id
 
             WHERE r.cod_emp = ?
             AND MONTH(r.fecha) = ?
@@ -966,9 +955,7 @@ class LeadsModels
                 asesor,
                 el.id_estado_leads,
                 el.nombre,
-                el.ord_eld,
-                tp.id_tipo_trans,
-                tp.des_tipo_trans
+                el.ord_eld
 
             ORDER BY el.ord_eld ASC;
 

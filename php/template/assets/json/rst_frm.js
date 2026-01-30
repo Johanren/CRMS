@@ -160,62 +160,77 @@ function construirTablaDias(data) {
         loader.classList.remove("d-none");
 
         const dias = [...new Set(data.map(d => d.dia))].sort((a, b) => a - b);
-        const asesores = getUnique(data, 'asesor');
-        const asesoresRTS = getUnique(data, 'asesorRTS');
-        const tipos = getUniqueBy(data, 'tipo_nom');
+        const asesores = [...new Set(data.map(d => d.asesor))];
+        const rts = data[0]?.asesorRTS ?? '';
 
         let html = `
         <div class="table-responsive-excel">
         <table class="table-excel">
         <thead>
             <tr>
-                <th>DÍA</th>
-                <th>RTS ASIGNADO</th>`;
+                <th rowspan="2">DÍA</th>
+                <th rowspan="2">RTS ASIGNADO</th>`;
 
-        asesores.forEach(a => html += `<th>${a}</th>`);
-        tipos.forEach(t => html += `<th>${t}</th>`);
-        html += `<th>Total</th></tr></thead><tbody>`;
+        asesores.forEach(a => {
+            html += `<th colspan="2">${a}</th>`;
+        });
 
-        let totalAsesores = Array(asesores.length).fill(0);
-        let totalTipos = Array(tipos.length).fill(0);
+        html += `<th rowspan="2">Total</th></tr><tr>`;
+
+        asesores.forEach(() => {
+            html += `<th>Llamada</th><th>WhatsApp</th>`;
+        });
+
+        html += `</tr></thead><tbody>`;
+
+        let totalesAsesor = {};
+        asesores.forEach(a => totalesAsesor[a] = { Llamada: 0, WhatsApp: 0 });
+
         let totalMes = 0;
 
         dias.forEach(dia => {
             let totalDia = 0;
-            html += `<tr><td>${dia}</td><td>${asesoresRTS[0] ?? ''}</td>`;
+            html += `<tr><td>${dia}</td><td>${rts}</td>`;
 
-            // 🔹 Por asesor
-            asesores.forEach((asesor, i) => {
-                const suma = data
-                    .filter(r => r.dia == dia && r.asesor === asesor)
-                    .reduce((a, b) => a + Number(b.total), 0);
+            asesores.forEach(asesor => {
+                let llamada = 0;
+                let whatsapp = 0;
 
-                totalAsesores[i] += suma;
-                totalDia += suma;
-                html += `<td>${suma}</td>`;
-            });
+                data.filter(r => r.dia == dia && r.asesor === asesor)
+                    .forEach(r => {
+                        if (!r.tipo_nom) {
+                            llamada += Number(r.total);
+                        } else if (r.tipo_nom === 'Llamada') {
+                            llamada += Number(r.tipo);
+                        } else if (r.tipo_nom === 'WhatsApp') {
+                            whatsapp += Number(r.tipo);
+                        }
+                    });
 
-            // 🔹 Por tipo
-            tipos.forEach((tipo, i) => {
-                const sumaTipo = data
-                    .filter(r => r.dia == dia && r.tipo_nom === tipo)
-                    .reduce((a, b) => a + Number(b.tipo), 0);
+                totalesAsesor[asesor].Llamada += llamada;
+                totalesAsesor[asesor].WhatsApp += whatsapp;
 
-                totalTipos[i] += sumaTipo;
-                html += `<td>${sumaTipo}</td>`;
+                const subtotal = llamada + whatsapp;
+                totalDia += subtotal;
+
+                html += `<td>${llamada}</td><td>${whatsapp}</td>`;
             });
 
             totalMes += totalDia;
             html += `<td><b>${totalDia}</b></td></tr>`;
         });
 
-        /* TOTAL FINAL */
+        /* FILA TOTAL */
         html += `<tr class="table-total"><td colspan="2">TOTAL</td>`;
-        totalAsesores.forEach(t => html += `<td>${t}</td>`);
-        totalTipos.forEach(t => html += `<td>${t}</td>`);
-        html += `<td>${totalMes}</td></tr>`;
 
+        asesores.forEach(a => {
+            html += `<td>${totalesAsesor[a].Llamada}</td>`;
+            html += `<td>${totalesAsesor[a].WhatsApp}</td>`;
+        });
+
+        html += `<td>${totalMes}</td></tr>`;
         html += `</tbody></table></div>`;
+
         document.getElementById('tablaDias').innerHTML = html;
 
     } catch (e) {
@@ -231,69 +246,70 @@ function construirTablaEstados(data) {
     try {
         loader.classList.remove("d-none");
 
+        // 🔹 Estados únicos con su ID
         const estadosMap = {};
-        data.forEach(r => estadosMap[r.estado] = r.id);
+        data.forEach(r => {
+            estadosMap[r.estado] = r.id;
+        });
 
         const estados = Object.keys(estadosMap);
         const asesores = getUnique(data, 'asesor');
-        const tipos = getUniqueBy(data, 'tipo_nom');
 
         let html = `
         <div class="table-responsive-excel">
-        <table class="table-excel">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>ESTADO</th>`;
+            <table class="table-excel">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>ESTADO</th>`;
 
         asesores.forEach(a => html += `<th>${a}</th>`);
-        tipos.forEach(t => html += `<th>${t}</th>`);
-        html += `<th>Total</th></tr></thead><tbody>`;
+        html += `<th>Total</th></tr>
+                </thead>
+                <tbody>`;
 
-        let totalAsesores = Array(asesores.length).fill(0);
-        let totalTipos = Array(tipos.length).fill(0);
+        let totalGeneral = Array(asesores.length).fill(0);
         let totalEstados = 0;
 
         estados.forEach(estado => {
             let totalEstado = 0;
-            html += `<tr><td>${estadosMap[estado]}</td><td>${estado}</td>`;
 
-            // 🔹 Por asesor
+            html += `
+                <tr>
+                    <td>${estadosMap[estado]}</td>
+                    <td>${estado}</td>`;
+
             asesores.forEach((asesor, i) => {
-                const suma = data
-                    .filter(r => r.estado === estado && r.asesor === asesor)
-                    .reduce((a, b) => a + Number(b.total), 0);
+                const reg = data.find(r => r.estado === estado && r.asesor === asesor);
+                const val = reg ? parseInt(reg.total) : 0;
 
-                totalAsesores[i] += suma;
-                totalEstado += suma;
-                html += `<td>${suma}</td>`;
-            });
+                totalEstado += val;
+                totalGeneral[i] += val;
 
-            // 🔹 Por tipo
-            tipos.forEach((tipo, i) => {
-                const sumaTipo = data
-                    .filter(r => r.estado === estado && r.tipo_nom === tipo)
-                    .reduce((a, b) => a + Number(b.tipo), 0);
-
-                totalTipos[i] += sumaTipo;
-                html += `<td>${sumaTipo}</td>`;
+                html += `<td>${val}</td>`;
             });
 
             totalEstados += totalEstado;
             html += `<td><b>${totalEstado}</b></td></tr>`;
         });
 
-        /* TOTAL FINAL */
-        html += `<tr class="table-total"><td colspan="2">TOTAL</td>`;
-        totalAsesores.forEach(t => html += `<td>${t}</td>`);
-        totalTipos.forEach(t => html += `<td>${t}</td>`);
+        /* FILA TOTAL */
+        html += `
+            <tr class="table-total">
+                <td colspan="2">TOTAL</td>`;
+
+        totalGeneral.forEach(t => html += `<td>${t}</td>`);
         html += `<td>${totalEstados}</td></tr>`;
 
-        html += `</tbody></table></div>`;
+        html += `
+                </tbody>
+            </table>
+        </div>`;
+
         document.getElementById('tablaEstados').innerHTML = html;
 
     } catch (e) {
-        console.error(e);
+        console.error("Error card leads:", e);
     } finally {
         loader.classList.add("d-none");
     }
