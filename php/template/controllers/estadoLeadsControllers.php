@@ -32,8 +32,8 @@ class EstadoLeadsControllersControllers
         }
     }
 
-    public static function getEstados() {
-        return EstadoLeadsModels::getEstados();
+    public static function getEstados($tipo) {
+        return EstadoLeadsModels::getEstados($tipo);
     }
 
 }

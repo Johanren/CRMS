@@ -852,7 +852,7 @@ if (isset($_GET['accion'])) {
             echo json_encode(["option" => $option]);
             break;
         case 'getEstados':
-            echo json_encode($esta_leads->getEstados());
+            echo json_encode($esta_leads->getEstados($_GET['tipo']));
             break;
         /*LEADS */
         case 'getLeads':

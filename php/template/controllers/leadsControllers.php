@@ -152,48 +152,148 @@ class LeadsControllers
         }
     }
 
+    public static function consultarClienteLeadsTele($dato)
+    {
+        $resp = LeadsModels::consultarClienteLeadsTele($dato);
+
+        if ($resp) {
+            return [
+                "status" => "existe",
+                "message" => "El cliente ya se encuentra registrado.",
+                "cliente" => $resp,
+            ];
+        } else {
+            return [
+                "status" => "no_existe",
+                "message" => "Cliente no encontrado."
+            ];
+        }
+    }
+
     public static function actualizarLeadCompleto($data)
     {
-        $asesor = LeadsModels::obtenerAsesorConMenosLeads($data);
-        $user_id = $asesor['user_id'];
 
-        $data = [
-            "lead_id"        => $_POST["id_lead"],
-            "acudiente"      => $_POST["nombre_acudiente"],
-            "tel_acudiente"  => $_POST["telefono_acudiente"],
-            "carrera"        => $_POST["carrera"],
-            "horario"        => $_POST["horario"],
-            "usuario"        => $_POST["user"],
-            "obs"            => $_POST["observaciones"],
-            "tip_tras"       => $_POST["tip_tras"],
-            "user_id"        => $user_id,
-            "cod_emp"        => $_POST["cod_emp"]
-        ];
+        if (empty($_POST['cliente_id'])) {
 
-        $okUpdate = LeadsModels::actualizarLeadYCliente($data);
-        $okObs    = LeadsModels::registrarObservacion($data);
+            $nombreCompleto = trim($_POST['nombre_estudiante'] ?? '');
 
-        NotifiacionesControllers::crearNotifiacion([
-            'user_id'    => $user_id,
-            'titulo'     => 'Nuevo Lead Asignado RST',
-            'mensaje'    => 'Se ha asignado lead desde RST',
-            'modulo'     => 'leads-details.php',
-            'referencia' => json_encode([
-                'id' => $_POST["id_lead"],
-                'id_cliente' => $_POST['cliente_id']
-            ])
-        ]);
+            $nombres = '';
+            $apellidos = '';
 
-        if ($okUpdate && $okObs) {
-            echo json_encode([
-                "status" => "ok",
-                "message" => "Lead y cliente actualizados correctamente"
+            if ($nombreCompleto !== '') {
+
+                // 🔹 Quitar espacios dobles
+                $partes = array_values(array_filter(explode(' ', $nombreCompleto)));
+
+                $total = count($partes);
+
+                if ($total >= 4) {
+                    // Primeras 2 → nombres | Últimas 2 → apellidos
+                    $nombres   = $partes[0] . ' ' . $partes[1];
+                    $apellidos = $partes[$total - 2] . ' ' . $partes[$total - 1];
+                } elseif ($total === 3) {
+                    // 2 nombres | 1 apellido
+                    $nombres   = $partes[0] . ' ' . $partes[1];
+                    $apellidos = $partes[2];
+                } elseif ($total === 2) {
+                    // 1 nombre | 1 apellido
+                    $nombres   = $partes[0];
+                    $apellidos = $partes[1];
+                } elseif ($total === 1) {
+                    // Solo nombre
+                    $nombres   = $partes[0];
+                    $apellidos = '';
+                }
+            }
+
+            $data = [
+                "cod_emp"     => $_POST['cod_emp'],
+                "nombresLeads"      => $nombres,
+                "apellidosLeads"    => $apellidos,
+                "telefonoLeads"     => $_POST['celular_estudiante_tele'],
+                "correoLeads"       => $_POST['email'],
+                "direLeads"        => $_POST['dire'],
+                "carrera"     => $_POST["carrera"],
+                "horario"     => $_POST["horario"],
+                "medio"     => 0,
+                "fuente"     => 0,
+                "usuario"     => $_POST["user"],
+                "obs"         => $_POST["observaciones"],
+                "tip_tras"    => $_POST["tip_tras"],
+                "bd_rst"        => 2
+            ];
+            
+            $id_cliente = ClienteModels::agregarCliente($data);
+
+            $id_lead = LeadsModels::agregarLeads($data, $id_cliente, $_POST['user_id'], $_POST['estado_lead_id']);
+            $data['lead_id'] = $id_lead;
+            $okObs    = LeadsModels::registrarObservacion($data);
+
+            NotifiacionesControllers::crearNotifiacion([
+                'user_id'    => $_POST['user_id'],
+                'titulo'     => 'Nuevo Lead Asignado RST TELECOMUNICAICONES',
+                'mensaje'    => 'Se ha asignado lead desde RST TELECOMUNICAICONES',
+                'modulo'     => 'leads-details.php',
+                'referencia' => json_encode([
+                    'id' => $_POST["id_lead"],
+                    'id_cliente' => $_POST['cliente_id']
+                ])
             ]);
+
+            if ($okObs) {
+                echo json_encode([
+                    "status" => "ok",
+                    "message" => "lead creado y cliente creado"
+                ]);
+            } else {
+                echo json_encode([
+                    "status" => "error",
+                    "message" => "Error al actualizar la información"
+                ]);
+            }
         } else {
-            echo json_encode([
-                "status" => "error",
-                "message" => "Error al actualizar la información"
+            $asesor = LeadsModels::obtenerAsesorConMenosLeads($data);
+            $user_id = $asesor['user_id'];
+
+            $data = [
+                "lead_id"        => $_POST["id_lead"],
+                "acudiente"      => $_POST["nombre_acudiente"],
+                "tel_acudiente"  => $_POST["telefono_acudiente"],
+                "carrera"        => $_POST["carrera"],
+                "horario"        => $_POST["horario"],
+                "usuario"        => $_POST["user"],
+                "obs"            => $_POST["observaciones"],
+                "tip_tras"       => $_POST["tip_tras"],
+                "user_id"        => $user_id,
+                "cod_emp"        => $_POST["cod_emp"],
+                "bd_rst"        => 1
+            ];
+
+            $okUpdate = LeadsModels::actualizarLeadYCliente($data);
+            $okObs    = LeadsModels::registrarObservacion($data);
+
+            NotifiacionesControllers::crearNotifiacion([
+                'user_id'    => $user_id,
+                'titulo'     => 'Nuevo Lead Asignado RST',
+                'mensaje'    => 'Se ha asignado lead desde RST',
+                'modulo'     => 'leads-details.php',
+                'referencia' => json_encode([
+                    'id' => $_POST["id_lead"],
+                    'id_cliente' => $_POST['cliente_id']
+                ])
             ]);
+
+            if ($okUpdate && $okObs) {
+                echo json_encode([
+                    "status" => "ok",
+                    "message" => "Lead y cliente actualizados correctamente"
+                ]);
+            } else {
+                echo json_encode([
+                    "status" => "error",
+                    "message" => "Error al actualizar la información"
+                ]);
+            }
         }
     }
 
@@ -207,8 +307,8 @@ class LeadsControllers
         return LeadsModels::listarReporteRstDia($mes, $anio);
     }
 
-    public static function listarLeadsFiltradosMensaje($carrera, $horario, $estado, $asesor, $numero) {
+    public static function listarLeadsFiltradosMensaje($carrera, $horario, $estado, $asesor, $numero)
+    {
         return LeadsModels::listarLeadsFiltradosMensaje($carrera, $horario, $estado, $asesor, $numero);
     }
-
 }

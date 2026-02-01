@@ -50,11 +50,12 @@ class EstadoLeadsModels
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public static function getEstados() {
-        $sql = "SELECT * FROM estado_leads ORDER BY ord_eld";
+    public static function getEstados($tipo) {
+        $sql = "SELECT * FROM estado_leads WHERE tipo_eld = ? ORDER BY ord_eld";
         $conn = new Conexion();
         $conectar = $conn->conectar();
         $stmt = $conectar->prepare($sql);
+        $stmt->bindParam(1, $tipo);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }

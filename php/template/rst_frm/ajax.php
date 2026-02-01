@@ -51,6 +51,10 @@ if (isset($_POST['accion'])) {
             $valor = trim($_POST["valor"]);
             echo json_encode($leads->consultarClienteLeads($valor));
             break;
+        case 'buscar_cliente_tele':
+            $valor = trim($_POST["valor"]);
+            echo json_encode($leads->consultarClienteLeadsTele($valor));
+            break;
         case 'actualizar_lead':
             $leads->actualizarLeadCompleto('');
             break;

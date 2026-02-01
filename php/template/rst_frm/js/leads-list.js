@@ -1,62 +1,64 @@
 document.addEventListener("DOMContentLoaded", () => {
-    ["celular_estudiante"].forEach(id => {
-        const campo = document.getElementById(id);
+
+    const campos = [
+        {
+            id: "celular_estudiante",
+            accion: "buscar_cliente_leads",
+            campoTelefono: "celular_estudiante"
+        },
+        {
+            id: "celular_estudiante_tele",
+            accion: "buscar_cliente_tele",
+            campoTelefono: "celular_estudiante_tele"
+        }
+    ];
+
+    campos.forEach(cfg => {
+        const campo = document.getElementById(cfg.id);
 
         if (!campo) {
-            console.warn(`Elemento no encontrado: ${id}`);
+            console.warn(`Elemento no encontrado: ${cfg.id}`);
             return;
         }
 
-        campo.addEventListener("blur", async function() {
+        campo.addEventListener("blur", async function () {
             let valor = this.value.trim();
-            if (valor === "") return;
+            if (!valor) return;
 
             const datos = new FormData();
-            datos.append("accion", "buscar_cliente_leads");
+            datos.append("accion", cfg.accion);
             datos.append("valor", valor);
 
             try {
-                let response = await fetch("ajax.php", {
+                const response = await fetch("ajax.php", {
                     method: "POST",
                     body: datos
                 });
 
-                let data = await response.json();
+                const data = await response.json();
 
                 if (data.status === "existe") {
-
                     Swal.fire("Usuario Encontrado", data.message, "success");
 
-                    if (data.cliente && data.cliente.length > 0) {
-                        let c = data.cliente[0]; // 👈 CLAVE
+                    // 🔥 Soporta array o objeto
+                    const c = Array.isArray(data.cliente)
+                        ? data.cliente[0]
+                        : data.cliente?.data || data.cliente;
 
-                        if (document.getElementById("id_lead"))
-                            document.getElementById("id_lead").value = c.id_lead || "";
+                    if (!c) return;
 
-                        if (document.getElementById("cliente_id"))
-                            document.getElementById("cliente_id").value = c.cliente_id || "";
-
-                        if (document.getElementById("nombre_estudiante"))
-                            document.getElementById("nombre_estudiante").value = c.nombre || "";
-
-                        if (document.getElementById("celular_estudiante"))
-                            document.getElementById("celular_estudiante").value = c.telefono_principal || "";
-
-                        if (document.getElementById("nombre_acudiente"))
-                            document.getElementById("nombre_acudiente").value = c.acudiente || "";
-
-                        if (document.getElementById("telefono_acudiente"))
-                            document.getElementById("telefono_acudiente").value = c.tel_acudiente || "";
-
-                        if (document.getElementById("carrera"))
-                            document.getElementById("carrera").value = c.carrera_id || "";
-
-                        if (document.getElementById("horario"))
-                            document.getElementById("horario").value = c.horario_id || "";
-
-                        //if (document.getElementById("cod_emp"))
-                            //document.getElementById("cod_emp").value = c.cod_emp || "";
-                    }
+                    setValue("id_lead", c.id_lead);
+                    setValue("cliente_id", c.cliente_id);
+                    setValue("estado_lead_id", c.estado_lead);
+                    setValue("user_id", c.user_id);
+                    setValue("nombre_estudiante", c.nombre);
+                    setValue(cfg.campoTelefono, c.telefono_principal);
+                    setValue("nombre_acudiente", c.acudiente);
+                    setValue("telefono_acudiente", c.tel_acudiente);
+                    setValue("email", c.email);
+                    setValue("dire", c.dire);
+                    setValue("carrera", c.carrera_id);
+                    setValue("horario", c.horario_id);
                 }
 
             } catch (error) {
@@ -65,37 +67,51 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
+    // 🔹 Submit único
+    const form = document.getElementById("mainForm");
+    if (form) {
+        form.addEventListener("submit", async function (e) {
+            e.preventDefault();
 
-    document.getElementById("mainForm").addEventListener("submit", async function(e) {
-        e.preventDefault();
+            const datos = new FormData(this);
+            datos.append("accion", "actualizar_lead");
 
-        const datos = new FormData(this);
-        datos.append("accion", "actualizar_lead");
+            const usuario = document.getElementById("user")?.value;
 
-        const usuario = document.getElementById("user").value;
-
-        if (!usuario) {
-            Swal.fire("Asignación obligatoria", "Debe seleccionar un asesor", "warning");
-            return;
-        }
-
-        try {
-            const resp = await fetch("ajax.php", {
-                method: "POST",
-                body: datos
-            });
-
-            const json = await resp.json();
-
-            if (json.status === "ok") {
-                Swal.fire("Correcto", json.message, "success");
-                this.reset();
-            } else {
-                Swal.fire("Error", json.message, "error");
+            if (!usuario) {
+                Swal.fire("Asignación obligatoria", "Debe seleccionar un asesor", "warning");
+                return;
             }
 
-        } catch (error) {
-            console.error(error);
-        }
-    });
+            try {
+                const resp = await fetch("ajax.php", {
+                    method: "POST",
+                    body: datos
+                });
+
+                const json = await resp.json();
+
+                if (json.status === "ok") {
+                    Swal.fire("Correcto", json.message, "success");
+                    this.reset();
+                } else {
+                    Swal.fire("Error", json.message, "error");
+                }
+
+            } catch (error) {
+                console.error(error);
+            }
+        });
+    }
+
 });
+
+/* ===========================
+   Helpers
+=========================== */
+function setValue(id, value) {
+    const el = document.getElementById(id);
+    if (el && value !== undefined && value !== null) {
+        el.value = value;
+    }
+}

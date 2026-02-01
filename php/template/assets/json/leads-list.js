@@ -1078,7 +1078,7 @@ async function cargarContactGrid() {
    1. Cargar ESTADOS desde PHP
 ================================ */
 async function cargarEstados() {
-    const res = await fetch("ajax/ajax.php?accion=getEstados");
+    const res = await fetch("ajax/ajax.php?accion=getEstados&tipo=1");
     return await res.json();
 }
 

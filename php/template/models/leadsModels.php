@@ -14,7 +14,7 @@ class LeadsModels
         $sourceField   = !empty($data['sourceField'])   ? $data['sourceField']   : "directo";
         $mediumField   = !empty($data['mediumField'])   ? $data['mediumField']   : "ninguno";
         $campaignField = !empty($data['campaignField']) ? $data['campaignField'] : "general";
-
+        
         $stmt->bindParam(1, $id_user);
         $stmt->bindParam(2, $id);
         $stmt->bindParam(3, $data["infoLeads"]);
@@ -732,6 +732,72 @@ class LeadsModels
         return "error";
     }
 
+    public static function consultarClienteLeadsTele($valor)
+    {
+        $conn = new Conexion();
+        $conectar = $conn->conectar();
+
+        // 🔹 1️⃣ Buscar primero en leads + cliente
+        $sql1 = "SELECT 
+                CONCAT(c.nombres, ' ', c.apellidos) AS nombre,
+                c.telefono_principal,
+                c.acudiente,
+                c.tel_acudiente,
+                l.carrera_id,
+                l.horario_id,
+                l.id_lead,
+                l.cod_emp,
+                l.cliente_id
+            FROM leads l
+            INNER JOIN cliente c ON c.id_cliente = l.cliente_id
+            WHERE c.telefono_principal = ?
+            LIMIT 1";
+
+        $stmt1 = $conectar->prepare($sql1);
+        $stmt1->bindParam(1, $valor);
+        $stmt1->execute();
+
+        $resultado = $stmt1->fetch(PDO::FETCH_ASSOC);
+
+        // ✅ Si existe en leads, retornamos
+        if ($resultado) {
+            return [
+                "origen" => "leads",
+                "data" => $resultado
+            ];
+        }
+
+        // 🔹 2️⃣ Si no existe, buscar en telemercadeo
+        $sql2 = "SELECT 
+                CONCAT(nom_con, ' ', ape_con) AS nombre,
+                telefono AS telefono_principal,
+                cod_car_con AS carrera_id,
+                cod_hor_con AS horario_id,
+                estado_lead_id AS estado_lead,
+                user_id,
+                email,
+                dir_con AS dire
+            FROM telemercadeo
+            WHERE telefono = ?
+            LIMIT 1";
+
+        $stmt2 = $conectar->prepare($sql2);
+        $stmt2->bindParam(1, $valor);
+        $stmt2->execute();
+
+        $resultadoTele = $stmt2->fetch(PDO::FETCH_ASSOC);
+
+        if ($resultadoTele) {
+            return [
+                "origen" => "telemercadeo",
+                "data" => $resultadoTele
+            ];
+        }
+
+        // ❌ No encontrado en ninguna
+        return false;
+    }
+
     public static function actualizarLeadYCliente($data)
     {
         $sql = "UPDATE leads l
@@ -761,8 +827,8 @@ class LeadsModels
     public static function registrarObservacion($data)
     {
         $sql = "INSERT INTO rst_frm
-            (lead_id, obs_rst, tipo_trans_id, user_id, cod_emp)
-            VALUES (:lead, :obs, :tip_tras, :user, :cod_emp)";
+            (lead_id, obs_rst, tipo_trans_id, user_id, cod_emp, bd_rst)
+            VALUES (:lead, :obs, :tip_tras, :user, :cod_emp, :bd_rst)";
 
         $conn = new Conexion();
         $stmt = $conn->conectar()->prepare($sql);
@@ -772,7 +838,8 @@ class LeadsModels
             ":obs"     => $data["obs"],
             ":tip_tras"     => $data["tip_tras"],
             ":user"    => $data["usuario"],
-            ":cod_emp" => $data["cod_emp"]
+            ":cod_emp" => $data["cod_emp"],
+            ":bd_rst" => $data["bd_rst"]
         ]);
     }
 
