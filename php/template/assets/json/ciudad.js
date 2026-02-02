@@ -198,7 +198,7 @@ function obtenerPaginaActual() {
 if (obtenerPaginaActual() === 'ciudad.php') {
     listarCiud();
 }
-if (obtenerPaginaActual() === 'leads.php' || obtenerPaginaActual() === 'leads-detals.php' || obtenerPaginaActual() === 'leads-list.php' || obtenerPaginaActual() === 'barrio.php') {
+if (obtenerPaginaActual() === 'leads.php' || obtenerPaginaActual() === 'leads-details.php' || obtenerPaginaActual() === 'leads-list.php' || obtenerPaginaActual() === 'barrio.php') {
     listarCiudOption();
     listarCiudUl();
 }

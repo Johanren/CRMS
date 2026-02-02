@@ -200,7 +200,7 @@ function obtenerPaginaActual() {
 if (obtenerPaginaActual() === 'barrio.php') {
     listarBarrio();
 }
-if (obtenerPaginaActual() === 'leads.php' || obtenerPaginaActual() === 'leads-detals.php' || obtenerPaginaActual() === 'leads-list.php') {
+if (obtenerPaginaActual() === 'leads.php' || obtenerPaginaActual() === 'leads-details.php' || obtenerPaginaActual() === 'leads-list.php') {
     listarBarrioOption();
     listarBarrioUl();
 }

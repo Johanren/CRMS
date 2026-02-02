@@ -106,9 +106,7 @@ const main = async () => {
         console.log('🟢 WhatsApp conectado correctamente')
     })
 
-    QRPortalWeb(
-        
-    )
+    QRPortalWeb()
 }
 
 main()

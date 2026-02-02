@@ -198,7 +198,7 @@ function obtenerPaginaActual() {
 if (obtenerPaginaActual() === 'info_origen.php') {
     listarDepart();
 }
-if (obtenerPaginaActual() === 'leads.php' || obtenerPaginaActual() === 'leads-detals.php' || obtenerPaginaActual() === 'leads-list.php' || obtenerPaginaActual() === 'ciudad.php') {
+if (obtenerPaginaActual() === 'leads.php' || obtenerPaginaActual() === 'leads-details.php' || obtenerPaginaActual() === 'leads-list.php' || obtenerPaginaActual() === 'ciudad.php') {
     listarDeparOption();
     listarDeparUl();
 }
