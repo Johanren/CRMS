@@ -28,9 +28,9 @@ const logStep = (label, data = null) => {
 const flowLead = addKeyword(EVENTS.WELCOME)
 
     .addAnswer(
-        `👋 ¡Buenos días!
-Gracias por comunicarte con el *Instituto Multitech* 🤝
-Por favor indícame tu *nombre completo* 😃`,
+        `HOLA ¡¡👋 buen día. Gracias por comunicarte con el instituto Multitech, 
+        iniciamos clases el 23 de febrero, por favor me brindas tu *nombre completo*
+        para ayudarte con una atención personalizada 😃🤝`,
         { capture: true },
         async (ctx, { state, flowDynamic }) => {
 
@@ -49,8 +49,8 @@ Por favor indícame tu *nombre completo* 😃`,
             })
 
             await flowDynamic([
-                `Mucho gusto *${cliente.nombres}* 😊`,
-                `Mi nombre es *${asesor.nombres}*, asesora institucional.`,
+                `Mucho gusto *${cliente.nombres}*, mi nombre es *${asesor.nombres}* asesora institucional, 
+                Nuestros Programas Técnicos Laborales en Auxiliar: (Mostrar la carreras que tenemos en el foco)`,
                 `Te voy a enviar nuestras técnicas disponibles 📚`
             ])
         })
