@@ -959,6 +959,7 @@ class LeadsModels
         $sqlPorDia = "
         SELECT
             DAY(r.fecha) AS dia,
+            MONTH(r.fecha) AS mes,
             CONCAT(u.nombres, ' ', u.apellidos) AS asesor,
             CONCAT(ur.nombres, ' ', ur.apellidos) AS asesorRTS,
 
@@ -991,7 +992,7 @@ class LeadsModels
             asesor,
             asesorRTS
 
-        ORDER BY dia;
+        ORDER BY mes DESC;
         ";
         /*AND MONTH(r.fecha) = ?
         AND YEAR(r.fecha) = ? 

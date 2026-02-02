@@ -160,9 +160,26 @@ function construirTablaDias(data) {
     try {
         loader.classList.remove("d-none");
 
-        const dias = [...new Set(data.map(d => d.dia))].sort((a, b) => a - b);
+        const mesesMap = {
+            1: 'Enero', 2: 'Febrero', 3: 'Marzo', 4: 'Abril',
+            5: 'Mayo', 6: 'Junio', 7: 'Julio', 8: 'Agosto',
+            9: 'Septiembre', 10: 'Octubre', 11: 'Noviembre', 12: 'Diciembre'
+        };
+
         const asesores = [...new Set(data.map(d => d.asesor))];
         const rts = data[0]?.asesorRTS ?? '';
+
+        // 👉 Agrupar datos por mes
+        const datosPorMes = {};
+        data.forEach(r => {
+            if (!datosPorMes[r.mes]) datosPorMes[r.mes] = [];
+            datosPorMes[r.mes].push(r);
+        });
+
+        // 👉 Ordenar meses
+        const mesesOrdenados = Object.keys(datosPorMes)
+            .map(Number)
+            .sort((a, b) => a - b);
 
         let html = `
         <div class="table-responsive-excel">
@@ -187,49 +204,69 @@ function construirTablaDias(data) {
         let totalesAsesor = {};
         asesores.forEach(a => totalesAsesor[a] = { Llamada: 0, WhatsApp: 0 });
 
-        let totalMes = 0;
+        let totalMesGeneral = 0;
 
-        dias.forEach(dia => {
-            let totalDia = 0;
-            html += `<tr><td>${dia}</td><td>${rts}</td>`;
+        // 👉 Recorrer meses ordenados
+        mesesOrdenados.forEach(mes => {
+            const mesNombre = mesesMap[mes];
+            const registrosMes = datosPorMes[mes];
 
-            asesores.forEach(asesor => {
-                let llamada = 0;
-                let whatsapp = 0;
+            // Obtener días únicos del mes
+            const dias = [...new Set(registrosMes.map(r => r.dia))]
+                .sort((a, b) => a - b);
 
-                data.filter(r => r.dia == dia && r.asesor === asesor)
-                    .forEach(r => {
-                        if (!r.tipo_nom) {
-                            llamada += Number(r.total);
-                        } else if (r.tipo_nom === 'Llamada') {
-                            llamada += Number(r.tipo);
-                        } else if (r.tipo_nom === 'WhatsApp') {
-                            whatsapp += Number(r.tipo);
-                        }
-                    });
+            // 👉 Fila separadora del mes
+            html += `
+                <tr class="table-mes">
+                    <td colspan="${asesores.length * 2 + 3}">
+                        <b>${mesNombre.toUpperCase()}</b>
+                    </td>
+                </tr>`;
 
-                totalesAsesor[asesor].Llamada += llamada;
-                totalesAsesor[asesor].WhatsApp += whatsapp;
+            dias.forEach(dia => {
+                let totalDia = 0;
 
-                const subtotal = llamada + whatsapp;
-                totalDia += subtotal;
+                html += `<tr><td>${dia} - ${mesNombre}</td><td>${rts}</td>`;
 
-                html += `<td>${llamada}</td><td>${whatsapp}</td>`;
+                asesores.forEach(asesor => {
+                    let llamada = 0;
+                    let whatsapp = 0;
+
+                    registrosMes
+                        .filter(r => r.dia === dia && r.asesor === asesor)
+                        .forEach(r => {
+                            if (!r.tipo_nom) {
+                                llamada += Number(r.total);
+                            } else if (r.tipo_nom === 'Llamada') {
+                                llamada += Number(r.tipo);
+                            } else if (r.tipo_nom === 'WhatsApp') {
+                                whatsapp += Number(r.tipo);
+                            }
+                        });
+
+                    totalesAsesor[asesor].Llamada += llamada;
+                    totalesAsesor[asesor].WhatsApp += whatsapp;
+
+                    const subtotal = llamada + whatsapp;
+                    totalDia += subtotal;
+
+                    html += `<td>${llamada}</td><td>${whatsapp}</td>`;
+                });
+
+                totalMesGeneral += totalDia;
+                html += `<td><b>${totalDia}</b></td></tr>`;
             });
-
-            totalMes += totalDia;
-            html += `<td><b>${totalDia}</b></td></tr>`;
         });
 
-        /* FILA TOTAL */
-        html += `<tr class="table-total"><td colspan="2">TOTAL</td>`;
+        // 👉 Totales finales
+        html += `<tr class="table-total"><td colspan="2">TOTAL GENERAL</td>`;
 
         asesores.forEach(a => {
             html += `<td>${totalesAsesor[a].Llamada}</td>`;
             html += `<td>${totalesAsesor[a].WhatsApp}</td>`;
         });
 
-        html += `<td>${totalMes}</td></tr>`;
+        html += `<td>${totalMesGeneral}</td></tr>`;
         html += `</tbody></table></div>`;
 
         document.getElementById('tablaDias').innerHTML = html;
