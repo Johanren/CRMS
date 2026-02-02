@@ -58,6 +58,7 @@ app.listen(3001, () => {
 const flowCommands = addKeyword(['test'])
     .addAnswer('✅ Bot operativo')
 
+console.log('version 1.1')
 
 const main = async () => {
     const adapterDB = new JsonFileAdapter()
