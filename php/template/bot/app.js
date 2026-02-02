@@ -1,7 +1,7 @@
 const { createBot, createProvider, createFlow, addKeyword } = require('@bot-whatsapp/bot')
 const QRPortalWeb = require('@bot-whatsapp/portal')
 const BaileysProvider = require('@bot-whatsapp/provider/baileys')
-const JsonFileAdapter = require('@bot-whatsapp/database/json')
+/*const JsonFileAdapter = /require('@bot-whatsapp/database/json') node 18*/ const { JsonFileAdapter } = require('@bot-whatsapp/database') //node 20
 
 const express = require('express')
 const cors = require('cors')
