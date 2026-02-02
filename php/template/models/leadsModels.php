@@ -14,7 +14,7 @@ class LeadsModels
         $sourceField   = !empty($data['sourceField'])   ? $data['sourceField']   : "directo";
         $mediumField   = !empty($data['mediumField'])   ? $data['mediumField']   : "ninguno";
         $campaignField = !empty($data['campaignField']) ? $data['campaignField'] : "general";
-        
+
         $stmt->bindParam(1, $id_user);
         $stmt->bindParam(2, $id);
         $stmt->bindParam(3, $data["infoLeads"]);
@@ -984,8 +984,7 @@ class LeadsModels
             ON tp.id_tipo_trans = r.tipo_trans_id
 
         WHERE r.cod_emp = ?
-        AND MONTH(r.fecha) = ?
-        AND YEAR(r.fecha) = ?
+        
 
         GROUP BY
             dia,
@@ -994,9 +993,11 @@ class LeadsModels
 
         ORDER BY dia;
         ";
-
+        /*AND MONTH(r.fecha) = ?
+        AND YEAR(r.fecha) = ? 
+        , $mes, $anio*/
         $stmtDia = $pdo->prepare($sqlPorDia);
-        $stmtDia->execute([$codEmp, $mes, $anio]);
+        $stmtDia->execute([$codEmp]);
         $porDia = $stmtDia->fetchAll(PDO::FETCH_ASSOC);
 
         /* =====================================================
@@ -1019,8 +1020,7 @@ class LeadsModels
                 ON el.id_estado_leads = l.estado_leads_id
 
             WHERE r.cod_emp = ?
-            AND MONTH(r.fecha) = ?
-            AND YEAR(r.fecha) = ?
+            
 
             GROUP BY
                 asesor,
@@ -1031,9 +1031,11 @@ class LeadsModels
             ORDER BY el.ord_eld ASC;
 
     ";
-
+        /*AND MONTH(r.fecha) = ?
+            AND YEAR(r.fecha) = ? 
+            , $mes, $anio*/
         $stmtEstado = $pdo->prepare($sqlPorEstado);
-        $stmtEstado->execute([$codEmp, $mes, $anio]);
+        $stmtEstado->execute([$codEmp]);
         $porEstado = $stmtEstado->fetchAll(PDO::FETCH_ASSOC);
 
         /* =====================================================

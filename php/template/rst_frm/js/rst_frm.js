@@ -261,46 +261,44 @@ function construirTablaEstados(data) {
             <table class="table-excel">
                 <thead>
                     <tr>
-                        <th>ID</th>
-                        <th>ESTADO</th>`;
+                        <th>ASESOR</th>`;
 
-        asesores.forEach(a => html += `<th>${a}</th>`);
+        estados.forEach(e => html += `<th>${e}</th>`);
         html += `<th>Total</th></tr>
                 </thead>
                 <tbody>`;
 
-        let totalGeneral = Array(asesores.length).fill(0);
-        let totalEstados = 0;
+        let totalEstados = Array(estados.length).fill(0);
+        let totalGeneral = 0;
 
-        estados.forEach(estado => {
-            let totalEstado = 0;
+        asesores.forEach(asesor => {
+            let totalAsesor = 0;
 
             html += `
                 <tr>
-                    <td>${estadosMap[estado]}</td>
-                    <td>${estado}</td>`;
+                    <td><b>${asesor}</b></td>`;
 
-            asesores.forEach((asesor, i) => {
-                const reg = data.find(r => r.estado === estado && r.asesor === asesor);
+            estados.forEach((estado, i) => {
+                const reg = data.find(r => r.asesor === asesor && r.estado === estado);
                 const val = reg ? parseInt(reg.total) : 0;
 
-                totalEstado += val;
-                totalGeneral[i] += val;
+                totalAsesor += val;
+                totalEstados[i] += val;
 
                 html += `<td>${val}</td>`;
             });
 
-            totalEstados += totalEstado;
-            html += `<td><b>${totalEstado}</b></td></tr>`;
+            totalGeneral += totalAsesor;
+            html += `<td><b>${totalAsesor}</b></td></tr>`;
         });
 
         /* FILA TOTAL */
         html += `
             <tr class="table-total">
-                <td colspan="2">TOTAL</td>`;
+                <td>TOTAL</td>`;
 
-        totalGeneral.forEach(t => html += `<td>${t}</td>`);
-        html += `<td>${totalEstados}</td></tr>`;
+        totalEstados.forEach(t => html += `<td>${t}</td>`);
+        html += `<td>${totalGeneral}</td></tr>`;
 
         html += `
                 </tbody>

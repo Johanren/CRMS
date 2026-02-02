@@ -99,7 +99,7 @@
             
             <div class="mb-3">
                 <label class="required">Celular del Estudiante</label>
-                <input type="text" name="celular_estudiante" id="celular_estudiante" class="form-control" required>
+                <input type="text" name="celular_estudiante_tele" id="celular_estudiante_tele" class="form-control" required>
             </div>
 
             <div class="mb-3">
@@ -115,6 +115,16 @@
             <div class="mb-3">
                 <label>Teléfono del Acudiente (Opcional)</label>
                 <input type="tel" name="telefono_acudiente" id="telefono_acudiente" class="form-control">
+            </div>
+
+            <div class="mb-3">
+                <label>Correo</label>
+                <input type="text" name="email" id="email" class="form-control">
+            </div>
+
+            <div class="mb-3">
+                <label>Direccion</label>
+                <input type="tel" name="dire" id="dire" class="form-control">
             </div>
 
             <div class="mb-3">
@@ -140,9 +150,12 @@
                     <option value="">Seleccione el tipo</option>
                     <option value="1">Llamada</option>
                     <option value="2">WhatsApp</option>
+                    <option value="3">Base de datos</option>
                 </select>
             </div>
             <input type="hidden" id="id_lead" name="id_lead">
+            <input type="hidden" id="estado_lead_id" name="estado_lead_id">
+            <input type="hidden" id="user_id" name="user_id">
             <input type="hidden" id="cod_emp" name="cod_emp" value="1">
             <input type="hidden" id="cliente_id" name="cliente_id">
             <button type="submit" class="btn btn-primary w-100">
