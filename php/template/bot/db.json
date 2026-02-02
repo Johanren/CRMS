@@ -1,14 +1,14 @@
 [
   {
-    "ref": "3d63d960-6af8-42b9-a9e7-6a32ba1536dc",
-    "keyword": "f8335dc70dc767116124e9c55e401170",
+    "ref": "58f5421c-c56b-40aa-91b4-40bf164b6a74",
+    "keyword": "876066e3acfda701c22bfd109bf27f5f",
     "answer": "Hola",
     "options": {},
     "from": "204659503456322@lid",
     "refSerialize": "c22e4066d61d81721def9b25d8a397e8"
   },
   {
-    "ref": "aad9bbbd-4766-443c-bc1f-f2400858e5a2",
+    "ref": "aa3370af-b181-449b-a1c1-2ecc14db7044",
     "keyword": "c22e4066d61d81721def9b25d8a397e8",
     "answer": "Hola",
     "options": {},
@@ -16,8 +16,8 @@
     "refSerialize": "c22e4066d61d81721def9b25d8a397e8"
   },
   {
-    "ref": "ans_207c11a0-d4bb-4b8d-8927-0bb4d7b769cd",
-    "keyword": "key_b76877d5-dd1e-4b7c-b07e-7c35cc9c067a",
+    "ref": "ans_5f4e78a5-718e-4448-a9f7-57d9aa4d37c6",
+    "keyword": "key_c37e42ff-eaf9-496a-b60a-7f2f1013b12d",
     "answer": "👋 ¡Buenos días!\nGracias por comunicarte con el *Instituto Multitech* 🤝\nPor favor indícame tu *nombre completo* 😃",
     "options": {
       "media": null,
@@ -31,19 +31,19 @@
       "keyword": {},
       "callback": true
     },
-    "refSerialize": "876066e3acfda701c22bfd109bf27f5f",
+    "refSerialize": "9d34247c6a9fba914ca416332f32af2c",
     "from": "204659503456322@lid"
   },
   {
-    "ref": "f9e6d1ea-6a2d-4229-8808-4c7072c23ad3",
-    "keyword": "876066e3acfda701c22bfd109bf27f5f",
+    "ref": "0ba57a55-9203-4843-a9d6-bb8baf5d3278",
+    "keyword": "9d34247c6a9fba914ca416332f32af2c",
     "answer": "Jogan Felipe Rengifo Solarte",
     "options": {},
     "from": "204659503456322@lid",
     "refSerialize": "c6bf68d7703d51fa052802a988e90f28"
   },
   {
-    "ref": "fcbfea58-4449-48fe-bbf9-e9f4c47c717c",
+    "ref": "f6756101-9d79-4f65-b80f-b9aa111d866b",
     "keyword": null,
     "answer": "Mucho gusto *Jogan Felipe* 😊",
     "options": {
@@ -56,7 +56,7 @@
     "refSerialize": "007f99b7025ce96977401c0d8044e29c"
   },
   {
-    "ref": "4f0a5480-969a-4bd4-944c-e7bfdbfa2629",
+    "ref": "2bb48e3e-1858-402f-bfa3-cd07224d190e",
     "keyword": null,
     "answer": "Mi nombre es *YALILE*, asesora institucional.",
     "options": {
@@ -69,7 +69,7 @@
     "refSerialize": "185894016600495903844fd287cf69e0"
   },
   {
-    "ref": "e0d3246f-8ef6-4af9-ad5c-c8248fd5e9ee",
+    "ref": "63013de1-f046-4954-a50b-3eb7fb81eaf5",
     "keyword": null,
     "answer": "Te voy a enviar nuestras técnicas disponibles 📚",
     "options": {
@@ -82,8 +82,8 @@
     "refSerialize": "5971211064473719fb8370b0f5d26078"
   },
   {
-    "ref": "ans_2af3bb1e-4825-4a99-b48f-9b4097ed018e",
-    "keyword": "ans_207c11a0-d4bb-4b8d-8927-0bb4d7b769cd",
+    "ref": "ans_d5dd25f3-a906-4599-b01d-13263a35436e",
+    "keyword": "ans_5f4e78a5-718e-4448-a9f7-57d9aa4d37c6",
     "answer": "📚 *Nuestros Programas Técnicos Laborales:*",
     "options": {
       "media": null,
@@ -97,11 +97,11 @@
       "keyword": {},
       "callback": true
     },
-    "refSerialize": "bf7cc14dff8ec5499442f3362e045b05",
+    "refSerialize": "0ff88edd8e8c11870d44ff3474257b62",
     "from": "204659503456322@lid"
   },
   {
-    "ref": "b7860880-d588-4543-83e9-ed53731087db",
+    "ref": "41d0402e-627b-4816-a95c-187f9b16b8a0",
     "keyword": null,
     "answer": "1. GENERAL\n2. CONTABILIDAD\n3. DISEÑO GRAFICO\n4. PRIMERA INFANCIA\n5. ADMINISTRATIVA\n6. SISTEMAS\n7. MERCADEO\n8. SISTEMAS INTEGRADOS DE GESTION\n9. SEGURIDAD OCUPACIONAL\n10. GESTION DOCUMENTAL\n11. LOGISTICA Y DISTRIBUCCION\n12. TECNICO PROMOTOR TURISTICO\n\n✍️ Responde con el número del programa.",
     "options": {
@@ -114,8 +114,8 @@
     "refSerialize": "3f6c5c7bac3dbfd4e6abee787daf8b34"
   },
   {
-    "ref": "ans_f9aa3500-f4f7-4aea-958a-c2ce2a6ebe9e",
-    "keyword": "ans_2af3bb1e-4825-4a99-b48f-9b4097ed018e",
+    "ref": "ans_fed3484f-83a2-4770-be35-2de044fa27ce",
+    "keyword": "ans_d5dd25f3-a906-4599-b01d-13263a35436e",
     "answer": "⌛ *Esperando tu selección...*",
     "options": {
       "media": null,
@@ -129,19 +129,19 @@
       "keyword": {},
       "callback": true
     },
-    "refSerialize": "fae19f6612c60f1ad3f52116cf4143da",
+    "refSerialize": "a590d56dddc00c643a1f480d54b74046",
     "from": "204659503456322@lid"
   },
   {
-    "ref": "1e23d65e-84bc-4a94-b152-bacf7f2a48ce",
-    "keyword": "fae19f6612c60f1ad3f52116cf4143da",
-    "answer": "1",
+    "ref": "8cfc76ae-cf6c-4752-be2e-bfa97b080000",
+    "keyword": "a590d56dddc00c643a1f480d54b74046",
+    "answer": "12",
     "options": {},
     "from": "204659503456322@lid",
-    "refSerialize": "290236b1d481a790a200ea6e94b2122a"
+    "refSerialize": "94f78b77a379a4c827d8475b4b808aac"
   },
   {
-    "ref": "b59d598e-e5f0-4304-b29f-fd55546bb347",
+    "ref": "589e1653-79f6-4f93-a158-9e5b35aa9086",
     "keyword": null,
     "answer": "📄 Cargando folleto...",
     "options": {
@@ -154,7 +154,7 @@
     "refSerialize": "a49b00cb1952eb5535e19f490fd98298"
   },
   {
-    "ref": "07404692-ee03-408a-b957-f0e80b9e9b02",
+    "ref": "42138754-49ba-471c-906f-cfc8e71a64c3",
     "keyword": null,
     "answer": "⚠️ El folleto no está disponible.",
     "options": {
@@ -167,7 +167,7 @@
     "refSerialize": "0746f73873c6db7a170d54b4b5cb61a9"
   },
   {
-    "ref": "e8daf5ca-583a-41e9-b06b-18dc392dcfeb",
+    "ref": "d71712dc-26c9-43af-afa6-a7e6a34a795a",
     "keyword": null,
     "answer": "¿Qué deseas hacer ahora?\n1️⃣ Elegir otra carrera\n2️⃣ *Listo*",
     "options": {
@@ -180,188 +180,16 @@
     "refSerialize": "e5a62fdb2de9ef27153edecfd5f2e693"
   },
   {
-    "ref": "05610fd8-fb92-41ad-b25c-0a52c0468a70",
-    "keyword": "290236b1d481a790a200ea6e94b2122a",
-    "answer": "1",
-    "options": {},
-    "from": "204659503456322@lid",
-    "refSerialize": "290236b1d481a790a200ea6e94b2122a"
-  },
-  {
-    "ref": "ans_207c11a0-d4bb-4b8d-8927-0bb4d7b769cd",
-    "keyword": "key_b76877d5-dd1e-4b7c-b07e-7c35cc9c067a",
-    "answer": "👋 ¡Buenos días!\nGracias por comunicarte con el *Instituto Multitech* 🤝\nPor favor indícame tu *nombre completo* 😃",
-    "options": {
-      "media": null,
-      "buttons": [],
-      "capture": true,
-      "child": null,
-      "delay": 0,
-      "idle": null,
-      "ref": null,
-      "nested": [],
-      "keyword": {},
-      "callback": true
-    },
-    "refSerialize": "876066e3acfda701c22bfd109bf27f5f",
-    "from": "204659503456322@lid"
-  },
-  {
-    "ref": "9ab0fac1-4d9b-4f44-865c-c3bf61910087",
-    "keyword": "876066e3acfda701c22bfd109bf27f5f",
-    "answer": "Hola",
-    "options": {},
-    "from": "204659503456322@lid",
-    "refSerialize": "c22e4066d61d81721def9b25d8a397e8"
-  },
-  {
-    "ref": "cc6d45b8-1ad0-4789-891a-f1b8d3a5fd70",
-    "keyword": null,
-    "answer": "Mucho gusto *Jogan Felipe* 😊",
-    "options": {
-      "media": null,
-      "buttons": [],
-      "capture": false,
-      "delay": 0
-    },
-    "from": "204659503456322@lid",
-    "refSerialize": "007f99b7025ce96977401c0d8044e29c"
-  },
-  {
-    "ref": "aa0cff15-8a2d-42e5-ac0b-49a5987a5114",
-    "keyword": null,
-    "answer": "Mi nombre es *YALILE*, asesora institucional.",
-    "options": {
-      "media": null,
-      "buttons": [],
-      "capture": false,
-      "delay": 0
-    },
-    "from": "204659503456322@lid",
-    "refSerialize": "185894016600495903844fd287cf69e0"
-  },
-  {
-    "ref": "d53896d6-8924-4fcc-933d-c9a4f238d020",
-    "keyword": null,
-    "answer": "Te voy a enviar nuestras técnicas disponibles 📚",
-    "options": {
-      "media": null,
-      "buttons": [],
-      "capture": false,
-      "delay": 0
-    },
-    "from": "204659503456322@lid",
-    "refSerialize": "5971211064473719fb8370b0f5d26078"
-  },
-  {
-    "ref": "ans_2af3bb1e-4825-4a99-b48f-9b4097ed018e",
-    "keyword": "ans_207c11a0-d4bb-4b8d-8927-0bb4d7b769cd",
-    "answer": "📚 *Nuestros Programas Técnicos Laborales:*",
-    "options": {
-      "media": null,
-      "buttons": [],
-      "capture": false,
-      "child": null,
-      "delay": 0,
-      "idle": null,
-      "ref": null,
-      "nested": [],
-      "keyword": {},
-      "callback": true
-    },
-    "refSerialize": "bf7cc14dff8ec5499442f3362e045b05",
-    "from": "204659503456322@lid"
-  },
-  {
-    "ref": "275d9357-a3a4-45ba-96eb-005448e28890",
-    "keyword": null,
-    "answer": "1. GENERAL\n2. CONTABILIDAD\n3. DISEÑO GRAFICO\n4. PRIMERA INFANCIA\n5. ADMINISTRATIVA\n6. SISTEMAS\n7. MERCADEO\n8. SISTEMAS INTEGRADOS DE GESTION\n9. SEGURIDAD OCUPACIONAL\n10. GESTION DOCUMENTAL\n11. LOGISTICA Y DISTRIBUCCION\n12. TECNICO PROMOTOR TURISTICO\n\n✍️ Responde con el número del programa.",
-    "options": {
-      "media": null,
-      "buttons": [],
-      "capture": false,
-      "delay": 0
-    },
-    "from": "204659503456322@lid",
-    "refSerialize": "3f6c5c7bac3dbfd4e6abee787daf8b34"
-  },
-  {
-    "ref": "ans_f9aa3500-f4f7-4aea-958a-c2ce2a6ebe9e",
-    "keyword": "ans_2af3bb1e-4825-4a99-b48f-9b4097ed018e",
-    "answer": "⌛ *Esperando tu selección...*",
-    "options": {
-      "media": null,
-      "buttons": [],
-      "capture": true,
-      "child": null,
-      "delay": 0,
-      "idle": null,
-      "ref": null,
-      "nested": [],
-      "keyword": {},
-      "callback": true
-    },
-    "refSerialize": "fae19f6612c60f1ad3f52116cf4143da",
-    "from": "204659503456322@lid"
-  },
-  {
-    "ref": "7e00aba2-6f56-422f-851e-acf779cf0d3c",
-    "keyword": "fae19f6612c60f1ad3f52116cf4143da",
-    "answer": "8",
-    "options": {},
-    "from": "204659503456322@lid",
-    "refSerialize": "ad0fe515710a36c1342447aa4310b0ea"
-  },
-  {
-    "ref": "2fed6ff0-0acf-4b29-afeb-84ec50d3b543",
-    "keyword": null,
-    "answer": "📄 Cargando folleto...",
-    "options": {
-      "media": null,
-      "buttons": [],
-      "capture": false,
-      "delay": 0
-    },
-    "from": "204659503456322@lid",
-    "refSerialize": "a49b00cb1952eb5535e19f490fd98298"
-  },
-  {
-    "ref": "2c575c46-e7f6-4cd9-be03-518c1fbba9ba",
-    "keyword": null,
-    "answer": "⚠️ El folleto no está disponible.",
-    "options": {
-      "media": null,
-      "buttons": [],
-      "capture": false,
-      "delay": 0
-    },
-    "from": "204659503456322@lid",
-    "refSerialize": "0746f73873c6db7a170d54b4b5cb61a9"
-  },
-  {
-    "ref": "5e2fd0a9-f8f4-4eac-98bd-7d52088f85cc",
-    "keyword": null,
-    "answer": "¿Qué deseas hacer ahora?\n1️⃣ Elegir otra carrera\n2️⃣ *Listo*",
-    "options": {
-      "media": null,
-      "buttons": [],
-      "capture": false,
-      "delay": 0
-    },
-    "from": "204659503456322@lid",
-    "refSerialize": "e5a62fdb2de9ef27153edecfd5f2e693"
-  },
-  {
-    "ref": "76d3e273-b351-425e-8b6a-ee8f3268f749",
-    "keyword": "ad0fe515710a36c1342447aa4310b0ea",
+    "ref": "da9f3aba-8bd3-4e5c-ba50-96116c87d68e",
+    "keyword": "94f78b77a379a4c827d8475b4b808aac",
     "answer": "2",
     "options": {},
     "from": "204659503456322@lid",
     "refSerialize": "2294c3d08b53a6effa5df696a15b9d30"
   },
   {
-    "ref": "ans_207c11a0-d4bb-4b8d-8927-0bb4d7b769cd",
-    "keyword": "key_b76877d5-dd1e-4b7c-b07e-7c35cc9c067a",
+    "ref": "ans_5f4e78a5-718e-4448-a9f7-57d9aa4d37c6",
+    "keyword": "key_c37e42ff-eaf9-496a-b60a-7f2f1013b12d",
     "answer": "👋 ¡Buenos días!\nGracias por comunicarte con el *Instituto Multitech* 🤝\nPor favor indícame tu *nombre completo* 😃",
     "options": {
       "media": null,
@@ -375,7 +203,7 @@
       "keyword": {},
       "callback": true
     },
-    "refSerialize": "876066e3acfda701c22bfd109bf27f5f",
+    "refSerialize": "9d34247c6a9fba914ca416332f32af2c",
     "from": "204659503456322@lid"
   }
 ]
