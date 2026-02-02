@@ -81,6 +81,13 @@ const startApi = async () => {
     })
 }
 
+const startQR = async () => {
+    const qrPort = await getFreePort(3002)
+
+    QRPortalWeb({ port: qrPort })
+    console.log(`📷 QR Portal en http://localhost:${qrPort}`)
+}
+
 
 const main = async () => {
     const adapterDB = new JsonFileAdapter()
