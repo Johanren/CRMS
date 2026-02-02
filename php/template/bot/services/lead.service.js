@@ -1,178 +1,112 @@
 const mysql = require('mysql2/promise')
 
-console.log('📦 lead.service.js cargado')
-
 const pool = mysql.createPool({
-    host: '185.214.126.8',
-    user: 'u941333950_ucrm',
-    password: '0^v8j$~hH',
-    database: 'u941333950_crm'
+    host: '195.35.61.37',
+    user: 'u941333950_crm_dev',
+    password: 'HG9;@#B?d4',
+    database: 'u941333950_crm_dev'
 })
 
-pool.getConnection()
-    .then(() => console.log('✅ MySQL conectado'))
-    .catch(err => console.error('❌ Error MySQL:', err))
+/* ============================
+   CLIENTE
+============================ */
 
-async function obtenerEmpresas() {
-    console.log('➡️ obtenerEmpresas() ejecutado')
+async function buscarOCrearCliente(nombreCompleto, telefono) {
 
-    const [rows] = await pool.query(
-        'SELECT id_emp AS id, nom_emp AS nombre FROM empresa'
+    const [existente] = await pool.query(
+        `SELECT id_cliente, nombres, apellidos 
+         FROM cliente 
+         WHERE telefono_principal = ?
+         LIMIT 1`,
+        [telefono]
     )
 
-    console.log('📊 Empresas encontradas:', rows.length)
-    console.log(rows)
+    if (existente.length) {
+        return { ...existente[0], esNuevo: false }
+    }
 
+    const partes = nombreCompleto.split(' ')
+    const nombres = partes.slice(0, 2).join(' ')
+    const apellidos = partes.slice(2).join(' ') || ''
+
+    const [insert] = await pool.query(
+        `INSERT INTO cliente (nombres, apellidos, telefono_principal)
+         VALUES (?, ?, ?)`,
+        [nombres, apellidos, telefono]
+    )
+
+    return {
+        id_cliente: insert.insertId,
+        nombres,
+        apellidos,
+        esNuevo: true
+    }
+}
+
+/* ============================
+   ASESOR
+============================ */
+
+async function obtenerAsesorDisponible(cod_emp) {
+
+    const [rows] = await pool.query(`
+        SELECT u.id_user, u.nombres, COUNT(l.id_lead) AS total
+        FROM user u
+        INNER JOIN user_role ur ON ur.id_rol = u.rol_id
+        LEFT JOIN leads l ON l.user_id = u.id_user AND l.cod_emp = ?
+        WHERE ur.activo = 1
+        GROUP BY u.id_user
+        ORDER BY total ASC
+        LIMIT 1
+    `, [cod_emp])
+
+    return rows[0]
+}
+
+/* ============================
+   PROGRAMAS
+============================ */
+
+async function obtenerProgramasPorEmpresa(cod_emp) {
+    const [rows] = await pool.query(
+        `SELECT cod_pro AS id, desc_pro AS nombre
+         FROM programa
+         WHERE emp_pro = ? AND act_pro = 1`,
+        [cod_emp]
+    )
     return rows
 }
 
-async function obtenerProgramasPorEmpresa(empresaId) {
-    console.log('➡️ obtenerProgramasPorEmpresa()', empresaId)
+/* ============================
+   LEAD FINAL
+============================ */
 
-    if (!empresaId) {
-        console.warn('⚠️ empresaId vacío')
-        return []
-    }
-
-    const [rows] = await pool.query(
-        'SELECT cod_pro AS id, desc_pro AS nombre FROM programa WHERE emp_pro = ? AND act_pro = 1',
-        [empresaId]
+async function guardarLeadFinal(data) {
+    await pool.query(
+        `INSERT INTO leads 
+        (user_id, cliente_id, carrera_id, estado_leads_id, cod_emp)
+        VALUES (?, ?, ?, 1, ?)`,
+        [data.user_id, data.cliente_id, data.carrera_id, data.cod_emp]
     )
-
-    console.log('📊 Programas encontrados:', rows.length)
-    console.log(rows)
-
-    return rows
 }
 
-async function guardarLead(data) {
+/* ============================
+   NOTIFICACIÓN CRM
+============================ */
 
-    console.log('➡️ guardarLead() ejecutado')
-    console.log('📦 Data recibida:', data)
-
-    const conn = await pool.getConnection()
-    console.log('🔗 Conexión obtenida')
-
-    try {
-        await conn.beginTransaction()
-        console.log('🟡 Transacción iniciada')
-        const {
-            identificacion,
-            nombres,
-            apellidos,
-            telefono,
-            email,
-            carrera_id,
-            cod_emp
-        } = data
-
-        /* =====================================================
-           1️⃣ CLIENTE (buscar o crear)
-        ===================================================== */
-
-        const [clienteExistente] = await conn.query(
-            `SELECT id_cliente 
-             FROM cliente 
-             WHERE identificacion = ? OR telefono_principal = ?
-             LIMIT 1`,
-            [identificacion, telefono]
-        )
-
-        let cliente_id
-
-        if (clienteExistente.length > 0) {
-            cliente_id = clienteExistente[0].id_cliente
-        } else {
-            const [clienteInsert] = await conn.query(
-                `INSERT INTO cliente 
-                (identificacion, nombres, apellidos, telefono_principal, email)
-                VALUES (?, ?, ?, ?, ?)`,
-                [identificacion, nombres, apellidos, telefono, email]
-            )
-
-            cliente_id = clienteInsert.insertId
-        }
-
-        /* =====================================================
-           2️⃣ ASESOR CON MENOS LEADS
-        ===================================================== */
-
-        let user_id = null
-
-        const [asesorConMenosLeads] = await conn.query(
-            `SELECT l.user_id, COUNT(*) AS total
-             FROM leads l
-             INNER JOIN user u ON u.id_user = l.user_id
-             INNER JOIN user_role ur ON ur.id_rol = u.rol_id
-             WHERE l.cod_emp = ?
-               AND ur.activo = 1
-             GROUP BY l.user_id
-             ORDER BY total ASC
-             LIMIT 1`,
-            [cod_emp]
-        )
-
-        if (asesorConMenosLeads.length > 0) {
-            user_id = asesorConMenosLeads[0].user_id
-        } else {
-            const [asesorFallback] = await conn.query(
-                `SELECT u.id_user
-                 FROM user u
-                 INNER JOIN user_role r ON u.rol_id = r.id_rol
-                 WHERE r.nombre_rol LIKE '%asesor%'
-                   AND r.activo = 1
-                 ORDER BY u.id_user ASC
-                 LIMIT 1`
-            )
-
-            if (asesorFallback.length > 0) {
-                user_id = asesorFallback[0].id_user
-            }
-        }
-
-        /* =====================================================
-           3️⃣ INSERT LEAD
-        ===================================================== */
-
-        const [leadInsert] = await conn.query(
-            `INSERT INTO leads
-            (user_id, cliente_id, carrera_id, estado_leads_id, cod_emp, utm_source, utm_medium, utm_campaign)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-            [
-                user_id,
-                cliente_id,
-                carrera_id,
-                1,                // estado_leads_id
-                cod_emp,
-                'whatsapp',
-                'bot',
-                'chat'
-            ]
-        )
-
-        await conn.query(
-            `INSERT INTO chat_conversaciones (lead_id, user_id)
-            VALUES (?, ?)`,
-            [leadInsert.insertId, user_id]
-        )
-
-        await conn.commit()
-        console.log('🟢 Transacción confirmada')
-        return {
-            success: true,
-            lead_id: leadInsert.insertId,
-            cliente_id,
-            user_id
-        }
-
-    } catch (error) {
-        console.error('🔥 ERROR en guardarLead:', error)
-        await conn.rollback()
-        throw error
-    } finally {
-        conn.release()
-        console.log('🔓 Conexión liberada')
-    }
+async function crearNotificacionCRM(data) {
+    await pool.query(
+        `INSERT INTO notificaciones 
+        (user_id, titulo, mensaje, modulo, referencia)
+        VALUES (?, ?, ?, ?, ?)`,
+        [
+            data.user_id,
+            data.titulo,
+            data.mensaje,
+            data.modulo,
+            data.referencia
+        ]
+    )
 }
 
 async function obtenerLeadPorConversacion(conversacion_id) {
@@ -244,4 +178,12 @@ async function guardarMensajeCliente(telefono, mensaje) {
     }
 }
 
-module.exports = { guardarLead, obtenerEmpresas, obtenerProgramasPorEmpresa, guardarMensajeCliente, obtenerLeadPorConversacion }
+module.exports = {
+    buscarOCrearCliente,
+    obtenerAsesorDisponible,
+    obtenerProgramasPorEmpresa,
+    guardarLeadFinal,
+    crearNotificacionCRM,
+    obtenerLeadPorConversacion,
+    guardarMensajeCliente
+}

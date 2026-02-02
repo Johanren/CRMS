@@ -1,261 +1,152 @@
 const { addKeyword, EVENTS } = require('@bot-whatsapp/bot')
-const { guardarLead, obtenerEmpresas, obtenerProgramasPorEmpresa } = require('../services/lead.service')
+const path = require('path')
+const fs = require('fs')
 
-const TIMEOUT_MINUTES = 5
+const {
+    buscarOCrearCliente,
+    obtenerAsesorDisponible,
+    obtenerProgramasPorEmpresa,
+    guardarLeadFinal,
+    crearNotificacionCRM
+} = require('../services/lead.service')
 
-const isTimeout = (state) => {
-    const last = state.lastInteraction || Date.now()
-    return Date.now() - last > TIMEOUT_MINUTES * 60 * 1000
-}
+const COD_EMPRESA = 1
 
-const resetFlow = async (state, flowDynamic, msg = '🔄 Reiniciamos la conversación.') => {
-    await state.clear()
-    await flowDynamic([
-        msg,
-        'Escríbenos cualquier mensaje para comenzar de nuevo 👋'
-    ])
-}
+const limpiarTelefono = (jid) =>
+    jid.replace('@s.whatsapp.net', '').replace(/^57/, '')
 
-const touch = async (state) => {
-    await state.update({ lastInteraction: Date.now() })
-}
+const normalizarNombrePDF = (nombre) =>
+    nombre.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().trim()
 
-const logStep = (step) => {
-    console.log(`📍 FLOW STEP -> ${step}`)
+const logStep = (label, data = null) => {
+    console.log('\n==============================')
+    console.log(`🧭 ${label}`)
+    if (data) console.log(JSON.stringify(data, null, 2))
+    console.log('==============================\n')
 }
 
 const flowLead = addKeyword(EVENTS.WELCOME)
 
     .addAnswer(
-        '👋 Hola, ¿cómo estás?\n¿Buscas *Envision*?',
-        { capture: true },
-        async (ctx, { state }) => {
-            logStep('1️⃣ Saludo')
-            await state.update({ step: 'empresa' })
-            await touch(state)
-        }
-    )
-
-    // =====================
-    // 🏢 EMPRESAS
-    // =====================
-    .addAnswer(
-        '🏢 Cargando empresas...',
-        null,
-        async (_, { state, flowDynamic }) => {
-            if (isTimeout(await state.getMyState())) {
-                return resetFlow(state, flowDynamic, '⌛ Pasó mucho tiempo.')
-            }
-
-            const empresas = await obtenerEmpresas()
-
-            if (!empresas?.length) {
-                await flowDynamic('❌ No hay empresas disponibles.')
-                return
-            }
-
-            let texto = '🏢 Elige la empresa:\n\n'
-            empresas.forEach((e, i) => texto += `${i + 1}. ${e.nombre}\n`)
-            texto += '\n✍️ Responde con el número.'
-
-            await state.update({ empresas, step: 'empresa' })
-            await flowDynamic(texto)
-        }
-    )
-
-    .addAnswer(
-        '👇 Número de la empresa',
+        `👋 ¡Buenos días!
+Gracias por comunicarte con el *Instituto Multitech* 🤝
+Por favor indícame tu *nombre completo* 😃`,
         { capture: true },
         async (ctx, { state, flowDynamic }) => {
-            const data = await state.getMyState()
-            await touch(state)
 
-            if (data.step !== 'empresa') {
-                return resetFlow(state, flowDynamic)
-            }
+            const telefono = limpiarTelefono(ctx.from)
+            const nombre = ctx.body.trim()
 
-            const opcion = parseInt(ctx.body)
-            if (!data.empresas || isNaN(opcion) || opcion < 1 || opcion > data.empresas.length) {
-                await flowDynamic('❌ Opción inválida. Escribe solo el número.')
-                return
-            }
+            const cliente = await buscarOCrearCliente(nombre, telefono)
+            const asesor = await obtenerAsesorDisponible(COD_EMPRESA)
 
-            const empresa = data.empresas[opcion - 1]
             await state.update({
-                empresa_id: empresa.id,
-                empresa: empresa.nombre,
-                step: 'nombres'
+                step: 'programas',
+                cliente_id: cliente.id_cliente,
+                cliente_nombre: `${cliente.nombres} ${cliente.apellidos}`,
+                user_id: asesor.id_user,
+                asesor_nombre: asesor.nombres
             })
-
-            await flowDynamic('🧑 Escribe tus *nombres*:')
-        }
-    )
-
-    // =====================
-    // 🧑 NOMBRES
-    // =====================
-    .addAnswer(
-        null,
-        { capture: true },
-        async (ctx, { state, flowDynamic }) => {
-            const data = await state.getMyState()
-            await touch(state)
-
-            if (data.step !== 'nombres' || ctx.body.length < 2) {
-                await flowDynamic('❌ Nombre inválido. Intenta nuevamente.')
-                return
-            }
-
-            await state.update({ nombres: ctx.body, step: 'apellidos' })
-            await flowDynamic('🧑 Escribe tus *apellidos*:')
-        }
-    )
-
-    // =====================
-    // 🧑 APELLIDOS
-    // =====================
-    .addAnswer(
-        null,
-        { capture: true },
-        async (ctx, { state, flowDynamic }) => {
-            const data = await state.getMyState()
-            await touch(state)
-
-            if (data.step !== 'apellidos' || ctx.body.length < 2) {
-                await flowDynamic('❌ Apellidos inválidos.')
-                return
-            }
-
-            await state.update({ apellidos: ctx.body, step: 'cedula' })
-            await flowDynamic('🆔 Número de cédula:')
-        }
-    )
-
-    // =====================
-    // 🆔 CÉDULA
-    // =====================
-    .addAnswer(
-        null,
-        { capture: true },
-        async (ctx, { state, flowDynamic }) => {
-            const data = await state.getMyState()
-            await touch(state)
-
-            if (data.step !== 'cedula' || !/^\d{5,15}$/.test(ctx.body)) {
-                await flowDynamic('❌ Cédula inválida. Solo números.')
-                return
-            }
-
-            await state.update({ cedula: ctx.body, step: 'email' })
-            await flowDynamic('📧 Correo electrónico:')
-        }
-    )
-
-    // =====================
-    // 📧 EMAIL
-    // =====================
-    .addAnswer(
-        null,
-        { capture: true },
-        async (ctx, { state, flowDynamic }) => {
-            const data = await state.getMyState()
-            await touch(state)
-
-            if (
-                data.step !== 'email' ||
-                !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(ctx.body)
-            ) {
-                await flowDynamic('❌ Correo inválido.')
-                return
-            }
-
-            await state.update({ email: ctx.body, step: 'programa' })
-        }
-    )
-
-    // =====================
-    // 📚 PROGRAMAS
-    // =====================
-    .addAnswer(
-        '📚 Cargando programas...',
-        null,
-        async (_, { state, flowDynamic }) => {
-            const data = await state.getMyState()
-            if (data.step !== 'programa') return
-
-            const programas = await obtenerProgramasPorEmpresa(data.empresa_id)
-            if (!programas?.length) {
-                await flowDynamic('❌ No hay programas.')
-                return
-            }
-
-            let texto = '📚 Elige el programa:\n\n'
-            programas.forEach((p, i) => texto += `${i + 1}. ${p.nombre}\n`)
-            texto += '\n✍️ Responde con el número.'
-
-            await state.update({ programas, step: 'programa_select' })
-            await flowDynamic(texto)
-        }
-    )
-
-    .addAnswer(
-        null,
-        { capture: true },
-        async (ctx, { state, flowDynamic }) => {
-            const data = await state.getMyState()
-            await touch(state)
-
-            const opcion = parseInt(ctx.body)
-            if (
-                data.step !== 'programa_select' ||
-                isNaN(opcion) ||
-                opcion < 1 ||
-                opcion > data.programas.length
-            ) {
-                await flowDynamic('❌ Opción inválida.')
-                return
-            }
-
-            const programa = data.programas[opcion - 1]
-            await state.update({
-                programa_id: programa.id,
-                programa: programa.nombre,
-                step: 'guardar'
-            })
-        }
-    )
-
-    // =====================
-    // 💾 GUARDAR + CRM
-    // =====================
-    .addAnswer(
-        '✅ Registrando información...',
-        null,
-        async (ctx, { state, flowDynamic }) => {
-            const data = await state.getMyState()
-
-            await guardarLead({
-                identificacion: data.cedula,
-                nombres: data.nombres,
-                apellidos: data.apellidos,
-                telefono: ctx.from,
-                email: data.email,
-                carrera_id: data.programa_id,
-                cod_emp: data.empresa_id
-            })
-
-            // 🔗 HOOK CRM
-            // await axios.post('https://tu-crm/api/leads', data)
 
             await flowDynamic([
-                '🎉 ¡Registro exitoso!',
-                'Un asesor se comunicará contigo.',
-                '🕐 Gracias por confiar en Envision.'
+                `Mucho gusto *${cliente.nombres}* 😊`,
+                `Mi nombre es *${asesor.nombres}*, asesora institucional.`,
+                `Te voy a enviar nuestras técnicas disponibles 📚`
             ])
+        })
 
-            await state.clear()
-        }
-    )
+    .addAnswer(
+        '📚 *Nuestros Programas Técnicos Laborales:*',
+        null,
+        async (_, { state, flowDynamic }) => {
 
+            const programas = await obtenerProgramasPorEmpresa(COD_EMPRESA)
+
+            let texto = ''
+            programas.forEach((p, i) => texto += `${i + 1}. ${p.nombre}\n`)
+            texto += '\n✍️ Responde con el número del programa.'
+
+            await state.update({ step: 'seleccion_programa', programas })
+            await flowDynamic(texto)
+        })
+
+    .addAnswer(
+        '⌛ *Esperando tu selección...*',
+        { capture: true },
+        async (ctx, { state, flowDynamic }) => {
+
+            const data = await state.getMyState()
+            const msg = ctx.body.trim().toLowerCase()
+
+            logStep('INPUT', { step: data.step, msg })
+
+            /* ===== SELECCIÓN ===== */
+            if (data.step === 'seleccion_programa') {
+
+                const opcion = parseInt(msg)
+                if (isNaN(opcion) || opcion < 1 || opcion > data.programas.length) {
+                    await flowDynamic('❌ Opción inválida.')
+                    return
+                }
+
+                const programa = data.programas[opcion - 1]
+
+                await state.update({
+                    step: 'confirmacion',
+                    programa_id: programa.id,
+                    programa_nombre: programa.nombre
+                })
+
+                await flowDynamic('📄 Cargando folleto...')
+
+                const pdfName = normalizarNombrePDF(programa.nombre) + '.pdf'
+                const pdfPath = path.join(process.cwd(), 'pdf', pdfName)
+
+                if (fs.existsSync(pdfPath)) {
+                    await flowDynamic({
+                        body: `📄 *${programa.nombre}*`,
+                        media: pdfPath,
+                        delay: 800
+                    })
+                } else {
+                    await flowDynamic('⚠️ El folleto no está disponible.')
+                }
+
+                await flowDynamic(
+                    `¿Qué deseas hacer ahora?
+1️⃣ Elegir otra carrera
+2️⃣ *Listo*`
+                )
+                return
+            }
+
+            /* ===== CONFIRMACIÓN ===== */
+            if (data.step === 'confirmacion') {
+
+                if (msg === '1') {
+                    await state.update({ step: 'programas' })
+                    await flowDynamic('Perfecto 😊 volvamos a las carreras.')
+                    return
+                }
+
+                if (msg === '2' || msg === 'listo') {
+                    await guardarLeadFinal({
+                        cliente_id: data.cliente_id,
+                        user_id: data.user_id,
+                        carrera_id: data.programa_id,
+                        cod_emp: COD_EMPRESA
+                    })
+
+                    await flowDynamic([
+                        '✅ *Registro completado*',
+                        'Un asesor continuará tu proceso.',
+                        'Gracias por confiar en Multitech 🤝'
+                    ])
+
+                    await state.clear()
+                    logStep('FLOW FINALIZADO')
+                }
+            }
+        })
 
 module.exports = { flowLead }
