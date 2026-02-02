@@ -58,36 +58,6 @@ app.listen(3001, () => {
 const flowCommands = addKeyword(['test'])
     .addAnswer('✅ Bot operativo')
 
-const net = require('net')
-
-const getFreePort = (startPort = 3000) => {
-    return new Promise((resolve) => {
-        const server = net.createServer()
-        server.listen(startPort, () => {
-            const { port } = server.address()
-            server.close(() => resolve(port))
-        })
-        server.on('error', () => {
-            resolve(getFreePort(startPort + 1))
-        })
-    })
-}
-
-const startApi = async () => {
-    const port = await getFreePort(3001)
-
-    app.listen(port, () => {
-        console.log(`🚀 API WhatsApp en http://localhost:${port}`)
-    })
-}
-
-const startQR = async () => {
-    const qrPort = await getFreePort(3002)
-
-    QRPortalWeb({ port: qrPort })
-    console.log(`📷 QR Portal en http://localhost:${qrPort}`)
-}
-
 
 const main = async () => {
     const adapterDB = new JsonFileAdapter()
@@ -97,12 +67,13 @@ const main = async () => {
         flowLead
     ])
 
+    //Provider con versión fija
     const adapterProvider = createProvider(
         BaileysProvider,
         { version: [2, 3000, 1027934701] }
     )
 
-    // 🩹 Parche LID / grupos
+    //PARCHE LID / WEB / GRUPOS
     const originalSendMessage =
         adapterProvider.sendMessage.bind(adapterProvider)
 
@@ -123,6 +94,7 @@ const main = async () => {
         return originalSendMessage(to, content, options)
     }
 
+    // ✅ 3. Crear bot
     createBot({
         flow: adapterFlow,
         provider: adapterProvider,
@@ -134,8 +106,9 @@ const main = async () => {
         console.log('🟢 WhatsApp conectado correctamente')
     })
 
-    await startApi()
-    await startQR()
+    QRPortalWeb(
+        
+    )
 }
 
 main()
