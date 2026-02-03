@@ -78,16 +78,57 @@ async function obtenerProgramasPorEmpresa(cod_emp) {
 }
 
 /* ============================
+   PROGRAMAS y HORARIOS
+============================ */
+
+async function obtenerProgramasYHorariosPorFoco(emp_foc, id_foc) {
+    const [rows] = await pool.query(`
+        SELECT
+            fd.prog_fde AS programa_id,
+            p.desc_pro AS programa,
+            fd.jorn_fde AS horario_id,
+            h.descripcion AS horario
+        FROM foco_detalle fd
+        INNER JOIN programa p ON p.cod_pro = fd.prog_fde
+        INNER JOIN horario h ON h.id_horario = fd.jorn_fde
+        INNER JOIN foco f ON f.id_foc = fd.foc_fde
+        WHERE f.emp_foc = ? AND f.id_foc = ?
+        ORDER BY p.desc_pro, h.descripcion
+    `, [emp_foc, id_foc])
+
+    // Agrupar por programa
+    const data = {}
+    rows.forEach(r => {
+        if (!data[r.programa_id]) {
+            data[r.programa_id] = {
+                id: r.programa_id,
+                nombre: r.programa,
+                horarios: []
+            }
+        }
+        data[r.programa_id].horarios.push({
+            id: r.horario_id,
+            nombre: r.horario
+        })
+    })
+
+    return Object.values(data)
+}
+
+/* ============================
    LEAD FINAL
 ============================ */
 
 async function guardarLeadFinal(data) {
-    await pool.query(
+    const [result] = await pool.query(
         `INSERT INTO leads 
-        (user_id, cliente_id, carrera_id, estado_leads_id, cod_emp)
-        VALUES (?, ?, ?, 1, ?)`,
-        [data.user_id, data.cliente_id, data.carrera_id, data.cod_emp]
+        (user_id, cliente_id, carrera_id, horario_id, estado_leads_id, cod_emp, utm_source, utm_medium, utm_campaign)
+        VALUES (?, ?, ?, ? , ? , ? ,?,?,?)`,
+        [data.user_id, data.cliente_id, data.carrera_id, data.horario_id, data.estado_leads_id, data.cod_emp, 'whatsapp', 'bot', 'chat']
     )
+
+    // Retornamos el ID generado
+    return result.insertId
 }
 
 /* ============================
@@ -185,5 +226,6 @@ module.exports = {
     guardarLeadFinal,
     crearNotificacionCRM,
     obtenerLeadPorConversacion,
-    guardarMensajeCliente
+    guardarMensajeCliente,
+    obtenerProgramasYHorariosPorFoco
 }

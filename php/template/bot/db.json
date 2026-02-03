@@ -1,8 +1,16 @@
 [
   {
-    "ref": "ans_cb68aac3-3259-4f07-ae0e-c66532c26896",
-    "keyword": "key_f2783ad5-ec8c-4101-ae7f-c9585fdaeabb",
-    "answer": "HOLA ¡¡👋 buen día. Gracias por comunicarte con el instituto Multitech, \n        iniciamos clases el 23 de febrero, por favor me brindas tu *nombre completo*\n        para ayudarte con una atención personalizada 😃🤝",
+    "ref": "090d35de-15e6-4992-8800-fbfdea58f344",
+    "keyword": "2294c3d08b53a6effa5df696a15b9d30",
+    "answer": "Hola",
+    "options": {},
+    "from": "204659503456322@lid",
+    "refSerialize": "c22e4066d61d81721def9b25d8a397e8"
+  },
+  {
+    "ref": "ans_614ade33-83be-4458-a14c-e2b0d75a368b",
+    "keyword": "key_ec02c4f5-361e-4ee6-ba2a-824094a3464d",
+    "answer": "HOLA ¡¡👋 buen día.\nGracias por comunicarte con el instituto *Multitech*,\n📅 iniciamos clases el *23 de febrero*.\n\nPor favor indícame tu *nombre completo* para brindarte una atención personalizada 😃🤝",
     "options": {
       "media": null,
       "buttons": [],
@@ -15,21 +23,40 @@
       "keyword": {},
       "callback": true
     },
-    "refSerialize": "f524261513d05d6ee77b242a86d64ae4",
+    "refSerialize": "4a729703225cc94d72bcdd87a66d5d86",
+    "from": "204659503456322@lid"
+  },
+  {
+    "ref": "ans_614ade33-83be-4458-a14c-e2b0d75a368b",
+    "keyword": "key_ec02c4f5-361e-4ee6-ba2a-824094a3464d",
+    "answer": "HOLA ¡¡👋 buen día.\nGracias por comunicarte con el instituto *Multitech*,\n📅 iniciamos clases el *23 de febrero*.\n\nPor favor indícame tu *nombre completo* para brindarte una atención personalizada 😃🤝",
+    "options": {
+      "media": null,
+      "buttons": [],
+      "capture": true,
+      "child": null,
+      "delay": 0,
+      "idle": null,
+      "ref": null,
+      "nested": [],
+      "keyword": {},
+      "callback": true
+    },
+    "refSerialize": "4a729703225cc94d72bcdd87a66d5d86",
     "from": "154193755115584@lid"
   },
   {
-    "ref": "72f5f7b0-ef93-4db6-b571-cc8f4dbabd9a",
-    "keyword": "f524261513d05d6ee77b242a86d64ae4",
+    "ref": "02ea502c-0a57-4de7-a667-4a724435f040",
+    "keyword": "4a729703225cc94d72bcdd87a66d5d86",
     "answer": "Veimar",
     "options": {},
     "from": "154193755115584@lid",
     "refSerialize": "b69d5c7a6fb178af662067802ae3f6b2"
   },
   {
-    "ref": "43870268-5f08-4778-ad53-76926f010541",
+    "ref": "c7f0ca52-f487-4ce3-ad18-6d1a9af40ee2",
     "keyword": null,
-    "answer": "Mucho gusto *Veimar*, mi nombre es *YALILE* asesora institucional, \n                Nuestros Programas Técnicos Laborales en Auxiliar: (Mostrar la carreras que tenemos en el foco)",
+    "answer": "Mucho gusto *Veimar* 😊\nMi nombre es *YALILE*.\n\n🎓 *Programas:* \n1. CONTABILIDAD\n2. DISEÑO GRAFICO\n3. PRIMERA INFANCIA\n4. ADMINISTRATIVA\n5. SISTEMAS\n6. MERCADEO\n7. SEGURIDAD OCUPACIONAL\n\n✍️ Responde con el *número*",
     "options": {
       "media": null,
       "buttons": [],
@@ -37,57 +64,12 @@
       "delay": 0
     },
     "from": "154193755115584@lid",
-    "refSerialize": "db0f5a0d450cb9242f383648ce2a0584"
+    "refSerialize": "eff96f5b1bd79d33bc3d798b6ac35e1a"
   },
   {
-    "ref": "00b3bb9f-1ba3-41a6-a909-2c15a9a80805",
-    "keyword": null,
-    "answer": "Te voy a enviar nuestras técnicas disponibles 📚",
-    "options": {
-      "media": null,
-      "buttons": [],
-      "capture": false,
-      "delay": 0
-    },
-    "from": "154193755115584@lid",
-    "refSerialize": "fdea2746a14dba6beb8a1b0532629b2b"
-  },
-  {
-    "ref": "ans_f439b7ad-4ab7-4b5e-8780-a77e5e96e80d",
-    "keyword": "ans_cb68aac3-3259-4f07-ae0e-c66532c26896",
-    "answer": "📚 *Nuestros Programas Técnicos Laborales:*",
-    "options": {
-      "media": null,
-      "buttons": [],
-      "capture": false,
-      "child": null,
-      "delay": 0,
-      "idle": null,
-      "ref": null,
-      "nested": [],
-      "keyword": {},
-      "callback": true
-    },
-    "refSerialize": "ffcb4911c4cbddb6055ce37da42feaf0",
-    "from": "154193755115584@lid"
-  },
-  {
-    "ref": "3f5fdc78-7039-4ef3-9b18-2a4773af814f",
-    "keyword": null,
-    "answer": "1. GENERAL\n2. CONTABILIDAD\n3. DISEÑO GRAFICO\n4. PRIMERA INFANCIA\n5. ADMINISTRATIVA\n6. SISTEMAS\n7. MERCADEO\n8. SISTEMAS INTEGRADOS DE GESTION\n9. SEGURIDAD OCUPACIONAL\n10. GESTION DOCUMENTAL\n11. LOGISTICA Y DISTRIBUCCION\n12. TECNICO PROMOTOR TURISTICO\n\n✍️ Responde con el número del programa.",
-    "options": {
-      "media": null,
-      "buttons": [],
-      "capture": false,
-      "delay": 0
-    },
-    "from": "154193755115584@lid",
-    "refSerialize": "3f6c5c7bac3dbfd4e6abee787daf8b34"
-  },
-  {
-    "ref": "ans_bb3664e1-ecb5-4d59-987b-a19b13b5bc50",
-    "keyword": "ans_f439b7ad-4ab7-4b5e-8780-a77e5e96e80d",
-    "answer": "⌛ *Esperando tu selección...*",
+    "ref": "ans_dc44a16d-ebef-4ee7-9406-f476e61874b5",
+    "keyword": "ans_614ade33-83be-4458-a14c-e2b0d75a368b",
+    "answer": "Esperando selección de programa...",
     "options": {
       "media": null,
       "buttons": [],
@@ -100,7 +82,108 @@
       "keyword": {},
       "callback": true
     },
-    "refSerialize": "a4d790e1a99bed062aaf71416843a079",
+    "refSerialize": "2451a1adb03c9a0230c5f782f997e736",
     "from": "154193755115584@lid"
+  },
+  {
+    "ref": "f013efc4-dc1f-407c-a221-7e63fee63572",
+    "keyword": "2451a1adb03c9a0230c5f782f997e736",
+    "answer": "6",
+    "options": {},
+    "from": "154193755115584@lid",
+    "refSerialize": "a7c49181ef3046656ea8ab317c4adca7"
+  },
+  {
+    "ref": "eb07815b-29c7-484c-8427-728a5a07fb05",
+    "keyword": null,
+    "answer": "📚 *MERCADEO* - Horarios:\n\n1. L - V NOCHE\n\n✍️ Responde con el *número del horario*",
+    "options": {
+      "media": null,
+      "buttons": [],
+      "capture": false,
+      "delay": 0
+    },
+    "from": "154193755115584@lid",
+    "refSerialize": "5fc54b0510745a9849f29ad3e55ebf6e"
+  },
+  {
+    "ref": "ans_0f136952-f370-4767-9e00-bcd16e947121",
+    "keyword": "ans_dc44a16d-ebef-4ee7-9406-f476e61874b5",
+    "answer": "Esperando selección de horario...",
+    "options": {
+      "media": null,
+      "buttons": [],
+      "capture": true,
+      "child": null,
+      "delay": 0,
+      "idle": null,
+      "ref": null,
+      "nested": [],
+      "keyword": {},
+      "callback": true
+    },
+    "refSerialize": "c027990971ebbcbcf264d55864f3fadd",
+    "from": "154193755115584@lid"
+  },
+  {
+    "ref": "82300b1f-27b5-42a7-a198-78bfc054429e",
+    "keyword": "c027990971ebbcbcf264d55864f3fadd",
+    "answer": "1",
+    "options": {},
+    "from": "154193755115584@lid",
+    "refSerialize": "290236b1d481a790a200ea6e94b2122a"
+  },
+  {
+    "ref": "ea12dd1d-2968-475f-b1dd-1c110f3830d3",
+    "keyword": null,
+    "answer": "💰 *Formas de pago:*\n1️⃣ Contado\n2️⃣ Crédito\n\nResponde 1 o 2",
+    "options": {
+      "media": null,
+      "buttons": [],
+      "capture": false,
+      "delay": 0
+    },
+    "from": "154193755115584@lid",
+    "refSerialize": "a81ce449f8908a22088a791179be88e9"
+  },
+  {
+    "ref": "ans_18f1c957-17cb-4506-a882-38573f471903",
+    "keyword": "ans_0f136952-f370-4767-9e00-bcd16e947121",
+    "answer": "Esperando método de pago...",
+    "options": {
+      "media": null,
+      "buttons": [],
+      "capture": true,
+      "child": null,
+      "delay": 0,
+      "idle": null,
+      "ref": null,
+      "nested": [],
+      "keyword": {},
+      "callback": true
+    },
+    "refSerialize": "7a65cbba246777aa40d550cabe321abc",
+    "from": "154193755115584@lid"
+  },
+  {
+    "ref": "32e89bcf-5ded-416e-8eac-18920e29f5e5",
+    "keyword": "7a65cbba246777aa40d550cabe321abc",
+    "answer": "2",
+    "options": {},
+    "from": "154193755115584@lid",
+    "refSerialize": "2294c3d08b53a6effa5df696a15b9d30"
+  },
+  {
+    "ref": "658eaca2-a0e3-44b6-bcff-3cf693d13091",
+    "keyword": null,
+    "answer": "✅ *¡Gracias!* Información enviada a YALILE.",
+    "options": {
+      "media": null,
+      "buttons": [],
+      "capture": false,
+      "delay": 0
+    },
+    "from": "154193755115584@lid",
+    "refSerialize": "357077f4dd287d58db44c66f0caa8cb6"
   }
 ]

@@ -1,152 +1,139 @@
 const { addKeyword, EVENTS } = require('@bot-whatsapp/bot')
-const path = require('path')
-const fs = require('fs')
 
 const {
     buscarOCrearCliente,
     obtenerAsesorDisponible,
-    obtenerProgramasPorEmpresa,
+    obtenerProgramasYHorariosPorFoco,
     guardarLeadFinal,
     crearNotificacionCRM
 } = require('../services/lead.service')
 
+/* =========================
+   CONFIG
+========================= */
 const COD_EMPRESA = 1
+const ID_FOCO = 55
 
-const limpiarTelefono = (jid) =>
+const limpiarTelefono = jid =>
     jid.replace('@s.whatsapp.net', '').replace(/^57/, '')
 
-const normalizarNombrePDF = (nombre) =>
-    nombre.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().trim()
-
-const logStep = (label, data = null) => {
-    console.log('\n==============================')
-    console.log(`🧭 ${label}`)
-    if (data) console.log(JSON.stringify(data, null, 2))
-    console.log('==============================\n')
+/* =========================
+   HELPERS
+========================= */
+const extraerNumero = (texto = '') => {
+    const match = texto.match(/\d+/)
+    return match ? parseInt(match[0]) : null
 }
 
+/* =========================
+   FLOW
+========================= */
 const flowLead = addKeyword(EVENTS.WELCOME)
-
     .addAnswer(
-        `HOLA ¡¡👋 buen día. Gracias por comunicarte con el instituto Multitech, 
-        iniciamos clases el 23 de febrero, por favor me brindas tu *nombre completo*
-        para ayudarte con una atención personalizada 😃🤝`,
+        `HOLA ¡¡👋 buen día.
+Gracias por comunicarte con el instituto *Multitech*,
+📅 iniciamos clases el *23 de febrero*.
+
+Por favor indícame tu *nombre completo* para brindarte una atención personalizada 😃🤝`,
         { capture: true },
         async (ctx, { state, flowDynamic }) => {
-
             const telefono = limpiarTelefono(ctx.from)
             const nombre = ctx.body.trim()
 
             const cliente = await buscarOCrearCliente(nombre, telefono)
             const asesor = await obtenerAsesorDisponible(COD_EMPRESA)
+            const programas = await obtenerProgramasYHorariosPorFoco(COD_EMPRESA, ID_FOCO)
 
             await state.update({
-                step: 'programas',
                 cliente_id: cliente.id_cliente,
-                cliente_nombre: `${cliente.nombres} ${cliente.apellidos}`,
+                cliente_nombre: cliente.nombres,
                 user_id: asesor.id_user,
-                asesor_nombre: asesor.nombres
+                asesor_nombre: asesor.nombres,
+                programas
             })
 
-            await flowDynamic([
-                `Mucho gusto *${cliente.nombres}*, mi nombre es *${asesor.nombres}* asesora institucional, 
-                Nuestros Programas Técnicos Laborales en Auxiliar: (Mostrar la carreras que tenemos en el foco)`,
-                `Te voy a enviar nuestras técnicas disponibles 📚`
-            ])
-        })
+            let msg = `Mucho gusto *${cliente.nombres}* 😊\nMi nombre es *${asesor.nombres}*.\n\n🎓 *Programas:* \n`
+            programas.forEach((p, i) => { msg += `${i + 1}. ${p.nombre}\n` })
+            msg += `\n✍️ Responde con el *número*`
 
+            await flowDynamic(msg)
+        }
+    )
     .addAnswer(
-        '📚 *Nuestros Programas Técnicos Laborales:*',
-        null,
-        async (_, { state, flowDynamic }) => {
-
-            const programas = await obtenerProgramasPorEmpresa(COD_EMPRESA)
-
-            let texto = ''
-            programas.forEach((p, i) => texto += `${i + 1}. ${p.nombre}\n`)
-            texto += '\n✍️ Responde con el número del programa.'
-
-            await state.update({ step: 'seleccion_programa', programas })
-            await flowDynamic(texto)
-        })
-
-    .addAnswer(
-        '⌛ *Esperando tu selección...*',
+        'Esperando selección de programa...',
         { capture: true },
-        async (ctx, { state, flowDynamic }) => {
-
+        async (ctx, { state, flowDynamic, fallBack }) => {
+            const opcion = extraerNumero(ctx.body)
             const data = await state.getMyState()
-            const msg = ctx.body.trim().toLowerCase()
 
-            logStep('INPUT', { step: data.step, msg })
+            if (!opcion || opcion < 1 || opcion > data.programas.length) {
+                return fallBack('❌ Opción inválida, intenta nuevamente.')
+            }
 
-            /* ===== SELECCIÓN ===== */
-            if (data.step === 'seleccion_programa') {
+            const programa = data.programas[opcion - 1]
+            await state.update({ programa })
 
-                const opcion = parseInt(msg)
-                if (isNaN(opcion) || opcion < 1 || opcion > data.programas.length) {
-                    await flowDynamic('❌ Opción inválida.')
-                    return
-                }
+            let msg = `📚 *${programa.nombre}* - Horarios:\n\n`
+            programa.horarios.forEach((h, i) => { msg += `${i + 1}. ${h.nombre}\n` })
+            msg += `\n✍️ Responde con el *número del horario*`
 
-                const programa = data.programas[opcion - 1]
+            await flowDynamic(msg)
+        }
+    )
+    .addAnswer(
+        'Esperando selección de horario...',
+        { capture: true },
+        async (ctx, { state, flowDynamic, fallBack }) => {
+            const opcion = extraerNumero(ctx.body)
+            const data = await state.getMyState()
 
-                await state.update({
-                    step: 'confirmacion',
-                    programa_id: programa.id,
-                    programa_nombre: programa.nombre
+            if (!opcion || opcion < 1 || opcion > data.programa.horarios.length) {
+                return fallBack('❌ Horario inválido, elige uno de la lista.')
+            }
+
+            const horario = data.programa.horarios[opcion - 1]
+            await state.update({ horario })
+
+            await flowDynamic(`💰 *Formas de pago:*\n1️⃣ Contado\n2️⃣ Crédito\n\nResponde 1 o 2`)
+        }
+    )
+    .addAnswer(
+        'Esperando método de pago...',
+        { capture: true },
+        async (ctx, { state, flowDynamic, fallBack }) => {
+            const opcion = extraerNumero(ctx.body)
+            const data = await state.getMyState()
+
+            if (![1, 2].includes(opcion)) {
+                return fallBack('❌ Opción inválida, responde 1 o 2.')
+            }
+
+            // ... dentro del flujo, en la parte final
+            const lead_id = await guardarLeadFinal({
+                user_id: data.user_id,
+                cliente_id: data.cliente_id,
+                carrera_id: data.programa.id,
+                horario_id: data.horario.id,
+                estado_leads_id: 2,
+                cod_emp: COD_EMPRESA
+            })
+
+            // Ahora enviamos la notificación usando ese lead_id
+            await crearNotificacionCRM({
+                user_id: data.user_id,
+                titulo: '🔥 Nuevo Lead Interesado',
+                mensaje: `${data.cliente_nombre} en ${data.programa.nombre}`,
+                modulo: 'leads-details.php',
+                // Usamos el ID recién creado aquí
+                referencia: JSON.stringify({
+                    id: lead_id,
+                    id_cliente: data.cliente_id
                 })
+            })
 
-                await flowDynamic('📄 Cargando folleto...')
-
-                const pdfName = normalizarNombrePDF(programa.nombre) + '.pdf'
-                const pdfPath = path.join(process.cwd(), 'pdf', pdfName)
-
-                if (fs.existsSync(pdfPath)) {
-                    await flowDynamic({
-                        body: `📄 *${programa.nombre}*`,
-                        media: pdfPath,
-                        delay: 800
-                    })
-                } else {
-                    await flowDynamic('⚠️ El folleto no está disponible.')
-                }
-
-                await flowDynamic(
-                    `¿Qué deseas hacer ahora?
-1️⃣ Elegir otra carrera
-2️⃣ *Listo*`
-                )
-                return
-            }
-
-            /* ===== CONFIRMACIÓN ===== */
-            if (data.step === 'confirmacion') {
-
-                if (msg === '1') {
-                    await state.update({ step: 'programas' })
-                    await flowDynamic('Perfecto 😊 volvamos a las carreras.')
-                    return
-                }
-
-                if (msg === '2' || msg === 'listo') {
-                    await guardarLeadFinal({
-                        cliente_id: data.cliente_id,
-                        user_id: data.user_id,
-                        carrera_id: data.programa_id,
-                        cod_emp: COD_EMPRESA
-                    })
-
-                    await flowDynamic([
-                        '✅ *Registro completado*',
-                        'Un asesor continuará tu proceso.',
-                        'Gracias por confiar en Multitech 🤝'
-                    ])
-
-                    await state.clear()
-                    logStep('FLOW FINALIZADO')
-                }
-            }
-        })
+            await flowDynamic(`✅ *¡Gracias!* Información enviada a ${data.asesor_nombre}.`)
+            await state.clear()
+        }
+    )
 
 module.exports = { flowLead }
