@@ -157,6 +157,7 @@ $jsonData = json_encode($postData, JSON_UNESCAPED_UNICODE);
                             <option value="ingreso">Ingreso</option>
                             <option value="empo">Empoderar</option>
                             <option value="bono">Bono</option>
+                            <option value="incentivo">Incentivo</option>
                         </select>
                     </div>
                 </form>

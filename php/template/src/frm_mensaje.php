@@ -65,6 +65,7 @@
                                     <option value="2">Ingreso</option>
                                     <option value="3">Empoderar</option>
                                     <option value="4">Bono</option>
+                                    <option value="5">Inventivo</option>
                                 </select>
                             </div>
 
@@ -152,6 +153,7 @@
                                 <option value="2">Ingreso</option>
                                 <option value="3">Empoderar</option>
                                 <option value="4">Bono</option>
+                                <option value="5">Insentivo</option>
                             </select>
                         </div>
 
@@ -188,7 +190,8 @@ Aquí no solo estudias: puedes trabajar y generar ingresos.
 
     4: `{{cliente}}, al matricularte en Multitech recibes un BONO de $500.000
 para que un familiar o amigo estudie (Excel Certificado).
-¿Te explico? {{asesor}} {{url}}`
+¿Te explico? {{asesor}} {{url}}`,
+    5: `{{cliente}}, Técnico laboral en {{carrera}}, en MULTITECH creemos en ti, apoyamos y te garantizamos buenos INGRESOS, conversamos? {{asesor}} {{url}}`,
 };
 
 document.getElementById('tema_mensaje').addEventListener('change', function() {

@@ -6,13 +6,15 @@ const JsonFileAdapter = require('@bot-whatsapp/database/json')
 const express = require('express')
 const cors = require('cors')
 
-const { flowLead } = require('./flows/lead.flow')
+const { flowLead, flowInactividadLead } = require('./flows/lead.flow')
+const { flowInfancia, flowHorarios, flowInactividad } = require('./flows/campana.flow')
 const { flowCapture } = require('./flows/capture.flow')
 
 const {
     guardarMensajeCliente,
     obtenerLeadPorConversacion
 } = require('./services/lead.service')
+
 
 // =======================
 // 🌐 API EXPRESS
@@ -65,7 +67,11 @@ const main = async () => {
 
     const adapterFlow = createFlow([
         flowCommands,
-        flowLead
+        flowLead,
+        flowInactividadLead,
+        flowInfancia,
+        flowHorarios,
+        flowInactividad
     ])
 
     //Provider con versión fija

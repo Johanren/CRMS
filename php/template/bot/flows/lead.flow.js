@@ -14,6 +14,24 @@ const {
 const COD_EMPRESA = 1
 const ID_FOCO = 55
 
+const timers = {}
+
+const stopInactivity = (from) => {
+    if (timers[from]) clearTimeout(timers[from])
+}
+
+const startInactivity = (from, ctx, { gotoFlow, state }) => {
+    stopInactivity(from)
+    timers[from] = setTimeout(async () => {
+        console.log(`⏳ Inactividad en: ${from}`)
+        await state.clear()
+        return gotoFlow(flowInactividadLead)
+    }, 300000) 
+}
+
+const flowInactividadLead = addKeyword(EVENTS.ACTION)
+    .addAnswer('⏳ Tu sesión ha expirado por inactividad. Si aún deseas información, por favor escribe de nuevo.')
+
 const limpiarTelefono = jid =>
     jid.replace('@s.whatsapp.net', '').replace(/^57/, '')
 
@@ -36,7 +54,7 @@ Gracias por comunicarte con el instituto *Multitech*,
 
 Por favor indícame tu *nombre completo* para brindarte una atención personalizada 😃🤝`,
         { capture: true },
-        async (ctx, { state, flowDynamic }) => {
+        async (ctx, { state, flowDynamic, gotoFlow }) => {
             const telefono = limpiarTelefono(ctx.from)
             const nombre = ctx.body.trim()
 
@@ -57,12 +75,13 @@ Por favor indícame tu *nombre completo* para brindarte una atención personaliz
             msg += `\n✍️ Responde con el *número*`
 
             await flowDynamic(msg)
+            startInactivity(ctx.from, ctx, { gotoFlow, state })
         }
     )
     .addAnswer(
         'Esperando selección de programa...',
         { capture: true },
-        async (ctx, { state, flowDynamic, fallBack }) => {
+        async (ctx, { state, flowDynamic, fallBack, gotoFlow }) => {
             const opcion = extraerNumero(ctx.body)
             const data = await state.getMyState()
 
@@ -78,12 +97,13 @@ Por favor indícame tu *nombre completo* para brindarte una atención personaliz
             msg += `\n✍️ Responde con el *número del horario*`
 
             await flowDynamic(msg)
+            startInactivity(ctx.from, ctx, { gotoFlow, state })
         }
     )
     .addAnswer(
         'Esperando selección de horario...',
         { capture: true },
-        async (ctx, { state, flowDynamic, fallBack }) => {
+        async (ctx, { state, flowDynamic, fallBack, gotoFlow }) => {
             const opcion = extraerNumero(ctx.body)
             const data = await state.getMyState()
 
@@ -95,6 +115,7 @@ Por favor indícame tu *nombre completo* para brindarte una atención personaliz
             await state.update({ horario })
 
             await flowDynamic(`💰 *Formas de pago:*\n1️⃣ Contado\n2️⃣ Crédito\n\nResponde 1 o 2`)
+            startInactivity(ctx.from, ctx, { gotoFlow, state })
         }
     )
     .addAnswer(
@@ -136,4 +157,4 @@ Por favor indícame tu *nombre completo* para brindarte una atención personaliz
         }
     )
 
-module.exports = { flowLead }
+module.exports = { flowLead, flowInactividadLead }
