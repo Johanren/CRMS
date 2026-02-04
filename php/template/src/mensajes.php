@@ -160,6 +160,20 @@ $jsonData = json_encode($postData, JSON_UNESCAPED_UNICODE);
                             <option value="incentivo">Incentivo</option>
                         </select>
                     </div>
+
+
+                    <div class="col-md-12 mt-3 d-none" id="wrapper-opciones">
+                        <div class="card shadow-sm border-info">
+                            <div class="card-header bg-info text-white py-2 d-flex justify-content-between align-items-center">
+                                <small class="text-uppercase fw-bold">Varias variantes detectadas: Seleccione una</small>
+                                <span class="badge bg-white text-info" id="contador-variantes">0</span>
+                            </div>
+                            <div class="card-body p-0">
+                                <div id="contenedor-opciones-mensaje" class="list-group list-group-flush custom-scroll" style="max-height: 250px; overflow-y: auto;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </form>
 
                 <div class="col-md-2">
@@ -237,21 +251,6 @@ $jsonData = json_encode($postData, JSON_UNESCAPED_UNICODE);
 
     <?php require_once '../partials/footer.php'; ?>
 
-</div>
-
-<div class="modal fade" id="modalSeleccionMensaje" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Selecciona una variante de mensaje</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div id="contenedor-opciones-mensaje" class="list-group">
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
 
 <script>
@@ -453,29 +452,51 @@ $jsonData = json_encode($postData, JSON_UNESCAPED_UNICODE);
     =========================== */
     function generarMensajesPorTema() {
         const tema = document.getElementById('tema_mensaje')?.value;
-        if (!tema || !mensajesPorTema[tema] || !tablaLeads) return;
+        const contenedor = document.getElementById('contenedor-opciones-mensaje');
+        const wrapper = document.getElementById('wrapper-opciones');
+        const contador = document.getElementById('contador-variantes');
+
+        // Si no hay tema seleccionado, ocultamos todo y salimos
+        if (!tema || !mensajesPorTema[tema]) {
+            wrapper.classList.add('d-none');
+            contenedor.innerHTML = '';
+            return;
+        }
 
         const opciones = mensajesPorTema[tema];
+        contenedor.innerHTML = '';
 
         if (opciones.length > 1) {
-            // Abrir modal para elegir versión
-            const contenedor = document.getElementById('contenedor-opciones-mensaje');
-            contenedor.innerHTML = '';
+            // MOSTRAR PANEL: Hay 2 o más mensajes
+            wrapper.classList.remove('d-none');
+            contador.textContent = `${opciones.length} variantes`;
 
             opciones.forEach((msg, index) => {
                 const btn = document.createElement('button');
                 btn.type = "button";
-                btn.className = "list-group-item list-group-item-action mb-2 border rounded";
-                btn.innerHTML = `<strong>Opción ${index + 1}:</strong><br><small>${msg.substring(0, 120)}...</small>`;
-                btn.onclick = () => aplicarMensajeALaTabla(msg);
+                btn.className = "list-group-item list-group-item-action opcion-mensaje d-flex align-items-start gap-3 py-3";
+
+                btn.innerHTML = `
+                <div class="badge rounded-pill bg-info mt-1">${index + 1}</div>
+                <div class="flex-grow-1">
+                    <p class="mb-0 text-dark" style="font-size: 0.88rem; line-height: 1.5;">${msg}</p>
+                </div>
+            `;
+
+                btn.onclick = function() {
+                    document.querySelectorAll('.opcion-mensaje').forEach(el => el.classList.remove('active-selection'));
+                    btn.classList.add('active-selection');
+                    aplicarMensajeALaTabla(msg);
+                };
+
                 contenedor.appendChild(btn);
             });
-
-            const modalMsg = new bootstrap.Modal(document.getElementById('modalSeleccionMensaje'));
-            modalMsg.show();
         } else {
-            // Solo hay uno, aplicar directo
-            aplicarMensajeALaTabla(opciones[0]);
+            // OCULTAR Y PROCESAR: Solo hay 1 mensaje (o ninguno extrañamente)
+            wrapper.classList.add('d-none');
+            if (opciones.length === 1) {
+                aplicarMensajeALaTabla(opciones[0]);
+            }
         }
     }
 

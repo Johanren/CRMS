@@ -63,57 +63,39 @@ const flowCommands = addKeyword(['test'])
 console.log('version 1.1')
 
 const main = async () => {
-    const adapterDB = new JsonFileAdapter()
+    try {
+        console.log('--- Iniciando Adaptadores ---');
+        const adapterDB = new JsonFileAdapter();
+        const adapterFlow = createFlow([flowCommands, flowLead, flowInactividadLead, flowInfancia, flowHorarios, flowInactividad]);
 
-    const adapterFlow = createFlow([
-        flowCommands,
-        flowLead,
-        flowInactividadLead,
-        flowInfancia,
-        flowHorarios,
-        flowInactividad
-    ])
+        console.log('--- Configurando Provider ---');
+        const adapterProvider = createProvider(BaileysProvider, {
+            version: [2, 3000, 1027934701],
+            writeQR: true,
+        });
 
-    //Provider con versión fija
-    const adapterProvider = createProvider(
-        BaileysProvider,
-        { version: [2, 3000, 1027934701] }
-    )
+        // Agrega este log para saber si el provider emite algo
+        adapterProvider.on('qr', (qr) => {
+            console.log('🔥 NUEVO QR GENERADO:', qr);
+        });
 
-    //PARCHE LID / WEB / GRUPOS
-    const originalSendMessage =
-        adapterProvider.sendMessage.bind(adapterProvider)
+        adapterProvider.on('auth_failure', (msg) => {
+            console.error('❌ ERROR DE AUTENTICACIÓN:', msg);
+        });
 
-    adapterProvider.sendMessage = async (to, content, options = {}) => {
-        const jid = `${to}`
+        console.log('--- Creando Bot ---');
+        await createBot({
+            flow: adapterFlow,
+            provider: adapterProvider,
+            database: adapterDB,
+        });
 
-        if (jid.endsWith('@g.us') || jid.endsWith('@lid')) {
-            const provider = adapterProvider
-            options = { ...options, ...options?.options }
+        console.log('--- Bot Creado, esperando QR... ---');
+        QRPortalWeb({ port: 3005 });
 
-            if (options?.media) {
-                return provider.sendMedia(jid, options.media, content)
-            }
-
-            return provider.sendText(jid, content)
-        }
-
-        return originalSendMessage(to, content, options)
+    } catch (error) {
+        console.error('💥 ERROR CRÍTICO EN MAIN:', error);
     }
-
-    // ✅ 3. Crear bot
-    createBot({
-        flow: adapterFlow,
-        provider: adapterProvider,
-        database: adapterDB,
-    })
-
-    adapterProvider.on('ready', (instance) => {
-        sock = instance.sock
-        console.log('🟢 WhatsApp conectado correctamente')
-    })
-
-    QRPortalWeb()
 }
 
 main()
