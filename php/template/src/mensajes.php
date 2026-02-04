@@ -239,6 +239,21 @@ $jsonData = json_encode($postData, JSON_UNESCAPED_UNICODE);
 
 </div>
 
+<div class="modal fade" id="modalSeleccionMensaje" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Selecciona una variante de mensaje</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="contenedor-opciones-mensaje" class="list-group">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     let tablaLeads = null;
 
@@ -246,14 +261,13 @@ $jsonData = json_encode($postData, JSON_UNESCAPED_UNICODE);
        VARIABLES GLOBALES
     =========================== */
     const foco = <?php session_start();
-                    echo json_encode($_SESSION['foco']); ?>;
-    let mensajesPorTema = {};
+                    echo json_encode($_SESSION['foco'] ?? '55'); ?>;
+    let mensajesPorTema = {}; // Ahora almacenará arrays de mensajes
 
     /* ===========================
-       CARGAR MENSAJES POR TEMA
+       CARGAR MENSAJES POR TEMA (SOPORTA MÚLTIPLES)
     =========================== */
     function cargarMensajesPorTema() {
-
         const datos = new FormData();
         datos.append('accion', 'listar_mensajes_parametrizados');
 
@@ -264,7 +278,13 @@ $jsonData = json_encode($postData, JSON_UNESCAPED_UNICODE);
             .then(res => res.json())
             .then(data => {
                 mensajesPorTema = {};
-                data.forEach(item => mensajesPorTema[item.tipo] = item.mensaje);
+                data.forEach(item => {
+                    // Si el tipo no existe en nuestro objeto, lo inicializamos como array
+                    if (!mensajesPorTema[item.tipo]) {
+                        mensajesPorTema[item.tipo] = [];
+                    }
+                    mensajesPorTema[item.tipo].push(item.mensaje);
+                });
                 return true;
             })
             .catch(() => false);
@@ -274,7 +294,6 @@ $jsonData = json_encode($postData, JSON_UNESCAPED_UNICODE);
        DOM READY
     =========================== */
     document.addEventListener('DOMContentLoaded', async () => {
-
         await cargarMensajesPorTema();
         cargarFiltrosRST();
 
@@ -284,21 +303,15 @@ $jsonData = json_encode($postData, JSON_UNESCAPED_UNICODE);
             if (el) el.addEventListener('change', validarYCargarTabla);
         });
 
-        document.getElementById('filtro_numero')
-            ?.addEventListener('input', validarYCargarTabla);
-
-        document.getElementById('tema_mensaje')
-            ?.addEventListener('change', generarMensajesPorTema);
-
-        document.getElementById('btn_guardar_mensajes')
-            ?.addEventListener('click', guardarMensajes);
+        document.getElementById('filtro_numero')?.addEventListener('input', validarYCargarTabla);
+        document.getElementById('tema_mensaje')?.addEventListener('change', generarMensajesPorTema);
+        document.getElementById('btn_guardar_mensajes')?.addEventListener('click', guardarMensajes);
     });
 
     /* ===========================
-       CARGAR FILTROS
+       LÓGICA DE FILTROS Y TABLA
     =========================== */
     function cargarFiltrosRST() {
-
         const datos = new FormData();
         datos.append('accion', 'catalogo_filtros_mensaje');
 
@@ -316,10 +329,8 @@ $jsonData = json_encode($postData, JSON_UNESCAPED_UNICODE);
     }
 
     function llenarSelect(id, datos, valueKey, textKey) {
-
         const select = document.getElementById(id);
         if (!select) return;
-
         select.innerHTML = `<option value="">Seleccione</option>`;
         datos.forEach(d => {
             const opt = document.createElement('option');
@@ -331,24 +342,13 @@ $jsonData = json_encode($postData, JSON_UNESCAPED_UNICODE);
 
     function getValoresSelect(id) {
         const select = document.getElementById(id);
-        return select ? Array.from(select.selectedOptions).map(o => o.value) : [];
+        return select ? Array.from(select.selectedOptions).map(o => o.value).filter(v => v !== "") : [];
     }
 
-    /* ===========================
-       VALIDAR FILTROS
-    =========================== */
     function validarYCargarTabla() {
-
         const numero = document.getElementById('filtro_numero')?.value.trim();
+        const filtros = ['filtro_carrera', 'filtro_horario', 'filtro_estado', 'filtro_asesor'];
 
-        const filtros = [
-            'filtro_carrera',
-            'filtro_horario',
-            'filtro_estado',
-            'filtro_asesor'
-        ];
-
-        // 🔥 SI HAY NÚMERO
         if (numero) {
             filtros.forEach(id => {
                 const el = document.getElementById(id);
@@ -361,37 +361,25 @@ $jsonData = json_encode($postData, JSON_UNESCAPED_UNICODE);
             return;
         }
 
-        // 🔄 SI NO HAY NÚMERO
         filtros.forEach(id => {
             const el = document.getElementById(id);
             if (el) el.disabled = false;
         });
 
-        const filtrosOK = filtros.every(id => getValoresSelect(id).length);
-
-        filtrosOK
-            ?
-            cargarTablaLeads() :
-            limpiarTabla('Seleccione todos los filtros o busque por número');
+        const filtrosOK = filtros.every(id => getValoresSelect(id).length > 0);
+        filtrosOK ? cargarTablaLeads() : limpiarTabla('Seleccione todos los filtros o busque por número');
     }
 
-    /* ===========================
-       CARGAR TABLA
-    =========================== */
     function cargarTablaLeads() {
-
         const datos = new FormData();
         datos.append('accion', 'listar_leads_filtrados');
-
         const numero = document.getElementById('filtro_numero')?.value.trim();
 
         if (numero) {
             datos.append('numero', numero);
         } else {
             ['filtro_carrera', 'filtro_horario', 'filtro_estado', 'filtro_asesor']
-            .forEach(id => getValoresSelect(id)
-                .forEach(v => datos.append(id + '[]', v))
-            );
+            .forEach(id => getValoresSelect(id).forEach(v => datos.append(id + '[]', v)));
         }
 
         fetch('ajax/ajax.php', {
@@ -403,57 +391,43 @@ $jsonData = json_encode($postData, JSON_UNESCAPED_UNICODE);
             .catch(() => limpiarTabla('Error al cargar datos'));
     }
 
-    /* ===========================
-       PINTAR TABLA
-    =========================== */
     function pintarTabla(leads) {
-
         const tbody = document.querySelector('#tabla_leads tbody');
-
         if (tablaLeads) {
             tablaLeads.destroy();
             tablaLeads = null;
         }
-
         tbody.innerHTML = '';
 
-        if (!leads.length) {
+        if (!leads || !leads.length) {
             limpiarTabla('No hay resultados');
             return;
         }
 
         leads.forEach(l => {
-
             const tr = document.createElement('tr');
             tr.dataset.cliente = l.cliente;
             tr.dataset.asesor = l.asesor;
-            tr.dataset.carrera = l.carrera;
+            tr.dataset.carrera = l.programa || l.carrera; // Manejo de alias
             tr.dataset.jornada = l.jornada;
             tr.dataset.mensaje = '';
 
             tr.innerHTML = `
-            <td>${l.id_lead}</td>
-            <td>${l.cliente.split(' ')[0]}</td>
-            <td>${l.numero}</td>
-            <td>${l.asesor}</td>
-            <td class="mensaje-col text-muted">Seleccione un tema</td>
-        `;
-
+                <td>${l.id_lead}</td>
+                <td>${l.cliente.split(' ')[0]}</td>
+                <td>${l.numero}</td>
+                <td>${l.asesor}</td>
+                <td class="mensaje-col text-muted italic">Seleccione un tema</td>
+            `;
             tbody.appendChild(tr);
         });
-
         iniciarDataTable();
     }
 
-    /* ===========================
-       DATATABLE
-    =========================== */
     function iniciarDataTable() {
-
         tablaLeads = $('#tabla_leads').DataTable({
             responsive: true,
             pageLength: 10,
-            lengthChange: false,
             language: {
                 search: "Buscar:",
                 zeroRecords: "No hay resultados",
@@ -466,72 +440,97 @@ $jsonData = json_encode($postData, JSON_UNESCAPED_UNICODE);
         });
     }
 
-    /* ===========================
-       LIMPIAR TABLA
-    =========================== */
     function limpiarTabla(msg) {
-
         if (tablaLeads) {
             tablaLeads.destroy();
             tablaLeads = null;
         }
-
-        document.querySelector('#tabla_leads tbody').innerHTML = `
-        <tr><td colspan="5" class="text-center text-muted">${msg}</td></tr>`;
+        document.querySelector('#tabla_leads tbody').innerHTML = `<tr><td colspan="5" class="text-center text-muted">${msg}</td></tr>`;
     }
 
     /* ===========================
-       GENERAR MENSAJES
+       GESTIÓN DE MENSAJES (MODAL O DIRECTO)
     =========================== */
     function generarMensajesPorTema() {
-
         const tema = document.getElementById('tema_mensaje')?.value;
+        if (!tema || !mensajesPorTema[tema] || !tablaLeads) return;
+
+        const opciones = mensajesPorTema[tema];
+
+        if (opciones.length > 1) {
+            // Abrir modal para elegir versión
+            const contenedor = document.getElementById('contenedor-opciones-mensaje');
+            contenedor.innerHTML = '';
+
+            opciones.forEach((msg, index) => {
+                const btn = document.createElement('button');
+                btn.type = "button";
+                btn.className = "list-group-item list-group-item-action mb-2 border rounded";
+                btn.innerHTML = `<strong>Opción ${index + 1}:</strong><br><small>${msg.substring(0, 120)}...</small>`;
+                btn.onclick = () => aplicarMensajeALaTabla(msg);
+                contenedor.appendChild(btn);
+            });
+
+            const modalMsg = new bootstrap.Modal(document.getElementById('modalSeleccionMensaje'));
+            modalMsg.show();
+        } else {
+            // Solo hay uno, aplicar directo
+            aplicarMensajeALaTabla(opciones[0]);
+        }
+    }
+
+    function aplicarMensajeALaTabla(plantilla) {
         const url = document.getElementById('url')?.value || '';
 
-        if (!mensajesPorTema[tema] || !tablaLeads) return;
-
+        // Iterar sobre todas las filas del DataTable (incluso las no visibles)
         tablaLeads.rows().every(function() {
-
             const tr = this.node();
-            const cliente = tr.dataset.cliente.split(' ')[0];
+            const nombreCliente = tr.dataset.cliente.split(' ')[0];
 
-            const mensaje = mensajesPorTema[tema]
-                .replace('{{cliente}}', cliente)
-                .replace('{{asesor}}', tr.dataset.asesor)
-                .replace('{{carrera}}', tr.dataset.carrera)
-                .replace('{{jornada}}', tr.dataset.jornada)
-                .replace('{{url}}', url)
-                .replace('{{foco}}', foco);
+            // Reemplazo global para todas las etiquetas
+            const mensajeFinal = plantilla
+                .replace(/{{cliente}}/g, nombreCliente)
+                .replace(/{{asesor}}/g, tr.dataset.asesor)
+                .replace(/{{carrera}}/g, tr.dataset.carrera)
+                .replace(/{{jornada}}/g, tr.dataset.jornada)
+                .replace(/{{url}}/g, url)
+                .replace(/{{foco}}/g, foco);
 
-            tr.dataset.mensaje = mensaje;
-            tr.querySelector('.mensaje-col').textContent = mensaje;
-            tr.querySelector('.mensaje-col').classList.remove('text-muted');
+            tr.dataset.mensaje = mensajeFinal;
+            const col = tr.querySelector('.mensaje-col');
+            if (col) {
+                col.textContent = mensajeFinal;
+                col.classList.remove('text-muted');
+            }
         });
+
+        // Cerrar modal si existe instancia
+        const modalEl = document.getElementById('modalSeleccionMensaje');
+        const modalInst = bootstrap.Modal.getInstance(modalEl);
+        if (modalInst) modalInst.hide();
     }
 
     /* ===========================
-       GUARDAR MENSAJES
+       GUARDAR / ENVIAR
     =========================== */
     function guardarMensajes() {
-
-        if (!tablaLeads) return alert('No hay mensajes');
+        if (!tablaLeads) return alert('No hay datos en la tabla');
 
         const mensajes = [];
-
         tablaLeads.rows().every(function() {
             const tr = this.node();
-            if (tr.dataset.mensaje) {
+            if (tr.dataset.mensaje && tr.dataset.mensaje !== '') {
                 mensajes.push({
                     id_lead: tr.children[0].textContent,
                     numero: tr.children[2].textContent,
                     mensaje: tr.dataset.mensaje,
-                    cliente: tr.dataset.cliente.split(' ')[0],
+                    cliente: tr.dataset.cliente,
                     asesor: tr.dataset.asesor
                 });
             }
         });
 
-        if (!mensajes.length) return alert('No hay mensajes generados');
+        if (!mensajes.length) return alert('Primero seleccione un tema para generar los mensajes');
 
         const datos = new FormData();
         datos.append('accion', 'guardar_mensajes_rst');
@@ -542,8 +541,8 @@ $jsonData = json_encode($postData, JSON_UNESCAPED_UNICODE);
                 body: datos
             })
             .then(res => res.json())
-            .then(r => alert(r.ok ? '✔ Mensajes enviados' : '❌ Error'))
-            .catch(() => alert('❌ Error servidor'));
+            .then(r => alert(r.ok ? '✔ Mensajes guardados correctamente' : '❌ Error al guardar'))
+            .catch(() => alert('❌ Error de conexión con el servidor'));
     }
 </script>
 

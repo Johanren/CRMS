@@ -1,138 +1,23 @@
 [
   {
-    "ref": "8ece0b94-fedc-4488-9fb3-2e7b60a4b76a",
-    "keyword": "8ca549b0b121776896acbd4cda54535f",
-    "answer": "contabilidad",
+    "ref": "7ebbbef6-fd41-4fc3-806a-12ba1686e762",
+    "keyword": "e63ca558ec6258879582cbe8194fc039",
+    "answer": "HOLA",
     "options": {},
     "from": "204659503456322@lid",
-    "refSerialize": "0cb92cf19f4bccb5277b010ba34506d2"
+    "refSerialize": "aadddc437caab1683462d9cceecd042a"
   },
   {
-    "ref": "ans_2148451a-5355-4177-b1b5-4352937f2f39",
-    "keyword": "key_16fbc338-d25b-4a33-af52-e7181b139c2c",
-    "answer": "__call_action__",
-    "options": {
-      "media": null,
-      "buttons": [],
-      "capture": false,
-      "child": null,
-      "delay": 0,
-      "idle": null,
-      "ref": null,
-      "nested": [],
-      "keyword": {},
-      "callback": true
-    },
-    "refSerialize": "38ba1a842c48a3ea8dad9687fb3c6c94",
-    "from": "204659503456322@lid"
-  },
-  {
-    "ref": "0a97fcfc-ec39-4447-b0f4-a2ffdd169d96",
-    "keyword": null,
-    "answer": "¡Hola! 👋 Veo que te interesa nuestra carrera de *CONTABILIDAD*. 🎓",
-    "options": {
-      "media": null,
-      "buttons": [],
-      "capture": false,
-      "delay": 0
-    },
-    "from": "204659503456322@lid",
-    "refSerialize": "e3cfd05a6e3f436b684cedb509a980f3"
-  },
-  {
-    "ref": "84a72440-1fac-4f0d-a1b2-a921d20f51b8",
-    "keyword": null,
-    "answer": "¡Qué gusto verte de nuevo, *Jogan Felipe*! 😊",
-    "options": {
-      "media": null,
-      "buttons": [],
-      "capture": false,
-      "delay": 0
-    },
-    "from": "204659503456322@lid",
-    "refSerialize": "ad585871a58bcaa287a32bbc0dddf3cc"
-  },
-  {
-    "ref": "ans_7f50cbf9-eb4e-4d19-8526-41fbd92a33ea",
-    "keyword": "key_1d288eaf-ec1f-440f-848a-1ac119691eaa",
-    "answer": "Buscando horarios disponibles...",
-    "options": {
-      "media": null,
-      "buttons": [],
-      "capture": false,
-      "child": null,
-      "delay": 0,
-      "idle": null,
-      "ref": null,
-      "nested": [],
-      "keyword": {},
-      "callback": true
-    },
-    "refSerialize": "09a428ba7cc6a0c5df22691b5f9653d2",
-    "from": "204659503456322@lid"
-  },
-  {
-    "ref": "ans_4a4a4fd0-1dbb-42d3-848d-ee2eb679a7b0",
-    "keyword": "ans_7f50cbf9-eb4e-4d19-8526-41fbd92a33ea",
-    "answer": "Escribe el número aquí:",
-    "options": {
-      "media": null,
-      "buttons": [],
-      "capture": true,
-      "child": null,
-      "delay": 0,
-      "idle": null,
-      "ref": null,
-      "nested": [],
-      "keyword": {},
-      "callback": true
-    },
-    "refSerialize": "4a70c2347efc3906401ddfa336354d84",
-    "from": "204659503456322@lid"
-  },
-  {
-    "ref": "e8f8798b-94fb-4e00-9982-de2097524984",
-    "keyword": null,
-    "answer": "Mucho gusto *Jogan Felipe*, te atenderá *YALILE*. 😊\n\nPara *CONTABILIDAD*, tenemos estos horarios disponibles:\n1. L - V MAÑANA\n2. L - V NOCHE\n3. sabado tarde\n\nResponde con el *número* del horario que prefieras.",
-    "options": {
-      "media": null,
-      "buttons": [],
-      "capture": false,
-      "delay": 0
-    },
-    "from": "204659503456322@lid",
-    "refSerialize": "b51d2bd827d54af90755cb409df0fa5b"
-  },
-  {
-    "ref": "ans_f8aaa3b8-0dbc-4d18-8829-34d814b4d923",
-    "keyword": "key_1308065a-635e-4fed-9e40-7c2b5ffcf2f6",
-    "answer": "⏳ Tu sesión ha expirado por inactividad. Si aún deseas información, por favor escribe de nuevo.",
-    "options": {
-      "media": null,
-      "buttons": [],
-      "capture": false,
-      "child": null,
-      "delay": 0,
-      "idle": null,
-      "ref": null,
-      "nested": [],
-      "keyword": {},
-      "callback": false
-    },
-    "refSerialize": "0458f212ec0c3a541aa2cb3f3bdc6901",
-    "from": "204659503456322@lid"
-  },
-  {
-    "ref": "bf58d9dc-55ae-482a-8ee6-2e721f318549",
-    "keyword": "0458f212ec0c3a541aa2cb3f3bdc6901",
-    "answer": "hola",
+    "ref": "752aa91a-afc7-4024-93e1-fc9c39539242",
+    "keyword": "aadddc437caab1683462d9cceecd042a",
+    "answer": "h",
     "options": {},
     "from": "204659503456322@lid",
-    "refSerialize": "79e7fc16f7fb85373fd25a99390f44c0"
+    "refSerialize": "a2cca0ed61e3f559db82e10e7123e4bd"
   },
   {
-    "ref": "ans_7053a3c1-30f0-418d-9335-bbbdd165b2a4",
-    "keyword": "key_7d793537-6a80-4fb3-8f51-2a6273860020",
+    "ref": "ans_8eb08f22-7734-4433-93c9-0b57c5422922",
+    "keyword": "key_474f8229-1a8a-4a3d-84ef-1366071822b7",
     "answer": "HOLA ¡¡👋 buen día.\nGracias por comunicarte con el instituto *Multitech*,\n📅 iniciamos clases el *23 de febrero*.\n\nPor favor indícame tu *nombre completo* para brindarte una atención personalizada 😃🤝",
     "options": {
       "media": null,
@@ -146,7 +31,194 @@
       "keyword": {},
       "callback": true
     },
-    "refSerialize": "7c8933d05b16e22f6381cc0e1a4e4d9a",
+    "refSerialize": "b33ecd294625c37a6bcacda6c05608be",
     "from": "204659503456322@lid"
+  },
+  {
+    "ref": "1201aee6-0440-4f70-b6b1-016e374fa81b",
+    "keyword": "b33ecd294625c37a6bcacda6c05608be",
+    "answer": "Jogan Felipe Rengifo SOlarte",
+    "options": {},
+    "from": "204659503456322@lid",
+    "refSerialize": "4a580c9b98b6badbf8cd2c09d9115378"
+  },
+  {
+    "ref": "7255faaa-64bf-4314-b770-85c7a61efca5",
+    "keyword": null,
+    "answer": "Mucho gusto *Jogan Felipe* 😊\nMi nombre es *YALILE*.\n\n🎓 *Programas:* \n1. CONTABILIDAD\n2. DISEÑO GRAFICO\n3. PRIMERA INFANCIA\n4. ADMINISTRATIVA\n5. SISTEMAS\n6. MERCADEO\n7. SEGURIDAD OCUPACIONAL\n\n✍️ Responde con el *número*",
+    "options": {
+      "media": null,
+      "buttons": [],
+      "capture": false,
+      "delay": 0
+    },
+    "from": "204659503456322@lid",
+    "refSerialize": "a80693f2a23a61e71a1c62e8695972f4"
+  },
+  {
+    "ref": "ans_f6864607-7f16-4a40-bbd1-1cf01d33d64e",
+    "keyword": "ans_8eb08f22-7734-4433-93c9-0b57c5422922",
+    "answer": "Esperando selección de programa...",
+    "options": {
+      "media": null,
+      "buttons": [],
+      "capture": true,
+      "child": null,
+      "delay": 0,
+      "idle": null,
+      "ref": null,
+      "nested": [],
+      "keyword": {},
+      "callback": true
+    },
+    "refSerialize": "6da16d57e036e145745cbafec6fcce11",
+    "from": "204659503456322@lid"
+  },
+  {
+    "ref": "1e6b18cd-b796-4a37-b4eb-6e7bdfa51bb8",
+    "keyword": "6da16d57e036e145745cbafec6fcce11",
+    "answer": "1",
+    "options": {},
+    "from": "204659503456322@lid",
+    "refSerialize": "290236b1d481a790a200ea6e94b2122a"
+  },
+  {
+    "ref": "6dc091aa-fcb6-42c0-9f13-f89f7114add0",
+    "keyword": null,
+    "answer": "📚 *CONTABILIDAD* - Horarios:\n\n1. L - V MAÑANA\n2. L - V NOCHE\n3. sabado tarde\n\n✍️ Responde con el *número del horario*",
+    "options": {
+      "media": null,
+      "buttons": [],
+      "capture": false,
+      "delay": 0
+    },
+    "from": "204659503456322@lid",
+    "refSerialize": "3ae189e0c14c163b071824ab0a795e00"
+  },
+  {
+    "ref": "ans_48fcde6e-5d8f-4bf1-9f36-d6311e943a38",
+    "keyword": "ans_f6864607-7f16-4a40-bbd1-1cf01d33d64e",
+    "answer": "Esperando selección de horario...",
+    "options": {
+      "media": null,
+      "buttons": [],
+      "capture": true,
+      "child": null,
+      "delay": 0,
+      "idle": null,
+      "ref": null,
+      "nested": [],
+      "keyword": {},
+      "callback": true
+    },
+    "refSerialize": "a9c177843f60004c382793a71bdd9ae5",
+    "from": "204659503456322@lid"
+  },
+  {
+    "ref": "fbf499b2-d43f-4cd1-902c-cfe1126f7895",
+    "keyword": "a9c177843f60004c382793a71bdd9ae5",
+    "answer": "2",
+    "options": {},
+    "from": "204659503456322@lid",
+    "refSerialize": "2294c3d08b53a6effa5df696a15b9d30"
+  },
+  {
+    "ref": "8a8c73c7-f2c5-4b9e-a7f2-425fb651932b",
+    "keyword": null,
+    "answer": "💰 *Formas de pago:*\n1️⃣ Contado\n2️⃣ Crédito\n\nResponde 1 o 2",
+    "options": {
+      "media": null,
+      "buttons": [],
+      "capture": false,
+      "delay": 0
+    },
+    "from": "204659503456322@lid",
+    "refSerialize": "a81ce449f8908a22088a791179be88e9"
+  },
+  {
+    "ref": "ans_611e06b9-beee-4a8c-be7c-d755c598d6c3",
+    "keyword": "ans_48fcde6e-5d8f-4bf1-9f36-d6311e943a38",
+    "answer": "Esperando método de pago...",
+    "options": {
+      "media": null,
+      "buttons": [],
+      "capture": true,
+      "child": null,
+      "delay": 0,
+      "idle": null,
+      "ref": null,
+      "nested": [],
+      "keyword": {},
+      "callback": true
+    },
+    "refSerialize": "edc2760f63e5368d4ad1d7084c918f08",
+    "from": "204659503456322@lid"
+  },
+  {
+    "ref": "2299c374-5310-4728-9f8c-daeab29a5552",
+    "keyword": "edc2760f63e5368d4ad1d7084c918f08",
+    "answer": "2",
+    "options": {},
+    "from": "204659503456322@lid",
+    "refSerialize": "2294c3d08b53a6effa5df696a15b9d30"
+  },
+  {
+    "ref": "657b404c-7694-4ca5-9165-7f7017802896",
+    "keyword": null,
+    "answer": "✅ *¡Gracias!* Información enviada a YALILE.",
+    "options": {
+      "media": null,
+      "buttons": [],
+      "capture": false,
+      "delay": 0
+    },
+    "from": "204659503456322@lid",
+    "refSerialize": "357077f4dd287d58db44c66f0caa8cb6"
+  },
+  {
+    "ref": "ans_b86b6b00-68cf-41a3-a66a-13840f9d84c1",
+    "keyword": "key_eecc014c-3a9e-4a06-92ed-a24c20d4576b",
+    "answer": "⏳ Tu sesión ha expirado por inactividad. Si aún deseas información, por favor escribe de nuevo.",
+    "options": {
+      "media": null,
+      "buttons": [],
+      "capture": false,
+      "child": null,
+      "delay": 0,
+      "idle": null,
+      "ref": null,
+      "nested": [],
+      "keyword": {},
+      "callback": false
+    },
+    "refSerialize": "0bff92a06ece1fa99200b8ec17a84d90",
+    "from": "204659503456322@lid"
+  },
+  {
+    "ref": "ans_8eb08f22-7734-4433-93c9-0b57c5422922",
+    "keyword": "key_474f8229-1a8a-4a3d-84ef-1366071822b7",
+    "answer": "HOLA ¡¡👋 buen día.\nGracias por comunicarte con el instituto *Multitech*,\n📅 iniciamos clases el *23 de febrero*.\n\nPor favor indícame tu *nombre completo* para brindarte una atención personalizada 😃🤝",
+    "options": {
+      "media": null,
+      "buttons": [],
+      "capture": true,
+      "child": null,
+      "delay": 0,
+      "idle": null,
+      "ref": null,
+      "nested": [],
+      "keyword": {},
+      "callback": true
+    },
+    "refSerialize": "b33ecd294625c37a6bcacda6c05608be",
+    "from": "154193755115584@lid"
+  },
+  {
+    "ref": "3d9935f5-ee84-49c0-9978-1e2133bfa2fe",
+    "keyword": "b33ecd294625c37a6bcacda6c05608be",
+    "answer": "Veimar",
+    "options": {},
+    "from": "154193755115584@lid",
+    "refSerialize": "b69d5c7a6fb178af662067802ae3f6b2"
   }
 ]
