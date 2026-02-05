@@ -67,19 +67,19 @@ try {
     $mail->Port = 465;
     $mail->CharSet = "UTF-8";
     $mail->isHTML(true);
-    $mail->setFrom("crmdelta@envision.com.co", "Multitech");
+    $mail->setFrom("crmdelta@envision.com.co", "Multicomputo");
 
     // 1) ESTUDIANTE
     $mail->clearAllRecipients();
     $mail->addAddress($email, $nombres);
-    $mail->Subject = "¡Gracias por tu registro en Multitech!";
+    $mail->Subject = "¡Gracias por tu registro en Multicomputo!";
     $mail->Body = loadTemplate("estudiante.html", $vars);
     $mail->send();
 
     // 2) ADMINISTRADOR
     $mail->clearAllRecipients();
     $mail->addAddress("lpereira@multicomputo.com.co");
-    $mail->Subject = "Nuevo lead registrado – Multitech";
+    $mail->Subject = "Nuevo lead registrado – Multicomputo";
     $mail->Body = loadTemplate("administrador.html", $vars);
     $mail->send();
 
