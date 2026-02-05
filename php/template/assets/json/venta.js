@@ -681,10 +681,10 @@ function activarPorcentajeResumen(leadsData) {
             }
 
             /* ================= LEADS - RESTANTE ================= */
-            const leadsRestante = leads - restante;
+            const leadsRestante = leads / restante;
             const tdLeadsRestante = tr.querySelector(".col-leads-restante");
             if (tdLeadsRestante) {
-                tdLeadsRestante.textContent = leadsRestante;
+                tdLeadsRestante.textContent = Math.round(leadsRestante);
                 totalLeadsRestante += leadsRestante;
             }
 

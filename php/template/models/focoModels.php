@@ -254,10 +254,10 @@ class focoModels
             AND lh.cod_emp = f.emp_foc
             AND lh.estado_leads_id NOT IN (6,7,8)
             ";
-        if ($_SESSION['rol'] !== 'Admin') {
+        /*if ($_SESSION['rol'] !== 'Admin') {
             $sql .= "
             AND lh.user_id = :user_id";
-        }
+        }*/
         $sql .= "
             LEFT JOIN leads lv
             ON lv.carrera_id = fd.prog_fde
@@ -270,7 +270,7 @@ class focoModels
             ";
         if ($_SESSION['rol'] !== 'Admin') {
             $sql .= "
-            AND lv.user_id = ':user_id";
+            AND lv.user_id = :user_id";
         }
         $sql .= "
             /* Leads solo carrera (horario distinto o NULL) */
