@@ -59,9 +59,19 @@
                                             </div>
                                             <div class="filter-set-content">
                                                 <div class="filter-set-content-head">
-                                                    <a href="#" class="collapsed" data-bs-toggle="collapse" data-bs-target="#collapseCarrera" aria-expanded="false" aria-controls="collapseThree">Estado</a>
+                                                    <a href="#" class="collapsed" data-bs-toggle="collapse" data-bs-target="#collapseCarrera" aria-expanded="false" aria-controls="collapseThree">Carrera</a>
                                                 </div>
                                                 <div class="filter-set-contents accordion-collapse collapse" id="collapseCarrera" data-bs-parent="#accordionExample">
+                                                    <div class="filter-content-list bg-light rounded border p-2 shadow mt-2">
+                                                        <div id="listar_filtro_carrera" class="overflow-x-auto"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="filter-set-content">
+                                                <div class="filter-set-content-head">
+                                                    <a href="#" class="collapsed" data-bs-toggle="collapse" data-bs-target="#collapseEstado" aria-expanded="false" aria-controls="collapseThree">Estado</a>
+                                                </div>
+                                                <div class="filter-set-contents accordion-collapse collapse" id="collapseEstado" data-bs-parent="#accordionExample">
                                                     <div class="filter-content-list bg-light rounded border p-2 shadow mt-2">
                                                         <div id="listar_filtro_estado" class="overflow-x-auto"></div>
                                                     </div>
@@ -155,6 +165,7 @@ require_once '../partials/main.php'; ?>
             }
             let asesor = [...document.querySelectorAll(".filtro-asesor:checked")].map(c => c.value);
             let estados = [...document.querySelectorAll(".filtro-estado:checked")].map(c => c.value);
+            let carrera = [...document.querySelectorAll(".filtro-carrera:checked")].map(c => c.value);
             let fecha_inicio = window.fecha_inicio || "";
             let fecha_fin = window.fecha_fin || "";
 
@@ -162,6 +173,7 @@ require_once '../partials/main.php'; ?>
                 texto,
                 asesor,
                 estados,
+                carrera,
                 fecha_inicio,
                 fecha_fin
             };
@@ -181,6 +193,7 @@ require_once '../partials/main.php'; ?>
         if (f.texto !== "") params.append("texto", f.texto);
         if (f.asesor.length > 0) params.append("asesor", JSON.stringify(f.asesor));
         if (f.estados.length > 0) params.append("estados", JSON.stringify(f.estados));
+        if (f.carrera.length > 0) params.append("carrera", JSON.stringify(f.carrera));
         if (f.fecha_inicio !== "") params.append("fecha_inicio", f.fecha_inicio);
         if (f.fecha_fin !== "") params.append("fecha_fin", f.fecha_fin);
 
@@ -219,22 +232,26 @@ require_once '../partials/main.php'; ?>
             return;
         }
 
-        // 1. Extraer encabezados únicos (Horarios) y filas (Programas)
+        // 1. Extraer encabezados únicos y filas
         const horariosSet = new Set();
         const programasSet = new Set();
 
         data.forEach(item => {
-            const h = item.horario || "(En blanco)";
+            // UNIFICACIÓN: Si es null, vacío o "(En blanco)", lo movemos a "Por Confirmar"
+            let h = item.horario;
+            if (!h || h === "" || h.toLowerCase() === "(en blanco)") {
+                h = "Por Confirmar";
+            }
+
             const p = item.programa || "SIN PROGRAMA";
             horariosSet.add(h);
             programasSet.add(p);
         });
 
-        // Convertir a arrays y ordenar para consistencia
         const encabezadosHorarios = Array.from(horariosSet).sort();
         const programas = Array.from(programasSet).sort();
 
-        // 2. Mapear los datos para acceso rápido: matriz[programa][horario] = total
+        // 2. Mapear los datos a la matriz
         const matriz = {};
         programas.forEach(p => {
             matriz[p] = {};
@@ -243,50 +260,56 @@ require_once '../partials/main.php'; ?>
 
         data.forEach(item => {
             const p = item.programa || "SIN PROGRAMA";
-            const h = item.horario || "(En blanco)";
+            // Aplicamos la misma lógica de unificación aquí
+            let h = item.horario;
+            if (!h || h === "" || h.toLowerCase() === "(en blanco)") {
+                h = "Por Confirmar";
+            }
             matriz[p][h] += parseInt(item.total_leads);
         });
 
-        // 3. Construir el HTML de la tabla
+        // 3. Construir el HTML con clases de centrado (text-center)
         let html = `<table class="table table-bordered table-striped table-sm">
-        <thead class="thead-dark">
+        <thead class="thead-dark text-center">
             <tr>
-                <th>Programa / Horario</th>
+                <th class="text-start">Programa / Horario</th>
                 ${encabezadosHorarios.map(h => `<th>${h}</th>`).join('')}
                 <th>Total General</th>
             </tr>
         </thead>
         <tbody>`;
 
-        let totalColumnas = {}; // Para el "Total General" de abajo
+        let totalColumnas = {};
         encabezadosHorarios.forEach(h => totalColumnas[h] = 0);
         let granTotal = 0;
 
         programas.forEach(p => {
             let totalFila = 0;
-            html += `<tr><td><strong>${p}</strong></td>`;
+            // Nombre del programa alineado a la izquierda para mejor lectura
+            html += `<tr><td class="text-start"><strong>${p}</strong></td>`;
 
             encabezadosHorarios.forEach(h => {
                 const valor = matriz[p][h];
-                html += `<td>${valor > 0 ? valor : ''}</td>`;
+                // Centramos los números
+                html += `<td class="text-center">${valor > 0 ? valor : ''}</td>`;
                 totalFila += valor;
                 totalColumnas[h] += valor;
             });
 
-            html += `<td class="table-secondary"><strong>${totalFila}</strong></td></tr>`;
+            html += `<td class="table-secondary text-center"><strong>${totalFila}</strong></td></tr>`;
             granTotal += totalFila;
         });
 
-        // 4. Fila de Totales Generales (Pie de tabla)
+        // 4. Fila de Totales Generales centrado
         html += `</tbody>
-        <tfoot class="table-dark text-black">
+        <tfoot class="table-dark text-center">
             <tr>
-                <td><strong>Total general</strong></td>
-                ${encabezadosHorarios.map(h => `<td>${totalColumnas[h]}</td>`).join('')}
-                <td><strong>${granTotal}</strong></td>
-            </tr>
-        </tfoot>
-    </table>`;
+                <td class="text-start"><strong>Total general</strong></td>
+                ${encabezadosHorarios.map(h => `<td><strong>${totalColumnas[h]}</strong></td>`).join('')}
+                    <td><strong>${granTotal}</strong></td>
+                </tr>
+            </tfoot>
+            </table>`;
 
         contenedor.innerHTML = html;
     }

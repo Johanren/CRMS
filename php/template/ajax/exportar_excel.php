@@ -69,7 +69,7 @@ $tipo = $_GET["tipo"] ?? "leads";
 
 $texto        = $_GET["texto"] ?? "";
 $asesor       = json_decode($_GET["asesor"] ?? "[]");
-$carreras     = json_decode($_GET["carreras"] ?? "[]");
+$carreras     = json_decode($_GET["carreras"] ?? $_GET["carrera"] ?? "[]");
 $horario      = json_decode($_GET["horario"] ?? "[]");
 $interes      = json_decode($_GET["interes"] ?? "[]");
 $medio        = json_decode($_GET["medio"] ?? "[]");
@@ -491,7 +491,7 @@ switch ($tipo) {
 
     case "CRMS_lead":
         // 1. Obtener la data del modelo
-        $data = LeadsControllers::listarReporteCRMLeads($asesor, $carreras);
+        $data = LeadsControllers::listarReporteCRMLeads($asesor, $carreras, $estados);
 
         if (empty($data)) {
             die("No hay datos para exportar.");

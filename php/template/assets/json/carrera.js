@@ -228,7 +228,7 @@ function obtenerPaginaActual() {
 if (obtenerPaginaActual() === 'programa.php') {
     listarCarr();
 }
-if (obtenerPaginaActual() === 'venta.php' || obtenerPaginaActual() === 'index.php' || obtenerPaginaActual() === 'leads.php' || obtenerPaginaActual() === 'leads-details.php' || obtenerPaginaActual() === 'leads-list.php' || obtenerPaginaActual() === 'contacts.php' || obtenerPaginaActual() === 'lead-reports.php' ) {
+if (obtenerPaginaActual() === 'reporte_lead.php' || obtenerPaginaActual() === 'venta.php' || obtenerPaginaActual() === 'index.php' || obtenerPaginaActual() === 'leads.php' || obtenerPaginaActual() === 'leads-details.php' || obtenerPaginaActual() === 'leads-list.php' || obtenerPaginaActual() === 'contacts.php' || obtenerPaginaActual() === 'lead-reports.php' ) {
     listarCarreraOption();
     listarCarreraLIi();
 }

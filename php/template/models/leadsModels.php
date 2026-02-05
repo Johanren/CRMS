@@ -1113,12 +1113,14 @@ class LeadsModels
 
     public static function listarReporteCRMLeads(
         $asesor = [],
-        $carrera = []
+        $carrera = [],
+        $estados = []
     ) {
         $sql = "
         SELECT 
         p.desc_pro AS programa, 
         h.descripcion AS horario, 
+        h.id_horario,
         COUNT(l.id_lead) AS total_leads
         FROM `leads` l
         LEFT JOIN programa p ON p.cod_pro = l.carrera_id
@@ -1136,6 +1138,7 @@ class LeadsModels
     ============================ */
         $todosVacios = (
             empty($asesor) &&
+            empty($estados) &&
             empty($carrera)
         );
 
@@ -1162,9 +1165,15 @@ class LeadsModels
             $params = array_merge($params, $asesor);
         }
 
+        if (!empty($estados)) {
+            $placeholders = implode(",", array_fill(0, count($estados), "?"));
+            $sql .= " AND et.nombre IN ($placeholders)";
+            $params = array_merge($params, $estados);
+        }
+
         if (!empty($carrera)) {
             $placeholders = implode(",", array_fill(0, count($carrera), "?"));
-            $sql .= " AND et.nombre IN ($placeholders)";
+            $sql .= " AND p.desc_pro IN ($placeholders)";
             $params = array_merge($params, $carrera);
         }
 

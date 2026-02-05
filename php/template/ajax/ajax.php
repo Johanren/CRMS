@@ -959,8 +959,9 @@ if (isset($_GET['accion'])) {
 
             $asesor = isset($_GET['asesor']) ? json_decode($_GET['asesor']) : [];
             $carrera = isset($_GET['carrera']) ? json_decode($_GET['carrera']) : [];
+            $estados = isset($_GET['estados']) ? json_decode($_GET['estados']) : [];
 
-            echo json_encode($leads->listarReporteCRMLeads($asesor, $carrera));
+            echo json_encode($leads->listarReporteCRMLeads($asesor, $carrera, $estados));
             break;
         /*Notas */
         case 'listarNotas':
