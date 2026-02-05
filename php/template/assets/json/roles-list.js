@@ -186,5 +186,7 @@ function obtenerPaginaActual() {
 }
 if (obtenerPaginaActual() === 'roles-permissions.php') {
     listarRol();
+}
+if (obtenerPaginaActual() === 'manage-users.php') {
     listarRolOption();
 }

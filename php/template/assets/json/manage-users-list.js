@@ -216,7 +216,7 @@ function obtenerPaginaActual() {
 if (obtenerPaginaActual() === 'manage-users.php') {
     listarUserOption();
 }
-if (obtenerPaginaActual() === 'rst_frm.php' || obtenerPaginaActual() === 'rst_frm_dia.php' || obtenerPaginaActual() === 'leads.php' || obtenerPaginaActual() === 'leads-list.php' || obtenerPaginaActual() === 'index.php' || obtenerPaginaActual() === 'lead-reports.php') {
+if (obtenerPaginaActual() === 'rst_frm.php' || obtenerPaginaActual() === 'rst_frm_dia.php' || obtenerPaginaActual() === 'leads.php' || obtenerPaginaActual() === 'leads-list.php' || obtenerPaginaActual() === 'index.php' || obtenerPaginaActual() === 'lead-reports.php' || obtenerPaginaActual() == 'manage-users.php') {
     listarUser();
     listarUserUl();
 }
