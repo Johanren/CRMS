@@ -473,10 +473,10 @@ switch ($tipo) {
 
         exportarExcel("Leads_por_Campaign_clic", $data, $columnas);
         break;
-    
+
     case "rst_frm":
 
-        $data = LeadsControllers::listarReporteRst($texto,$asesor);
+        $data = LeadsControllers::listarReporteRst($texto, $asesor);
 
         $columnas = [
             "fecha" => "Fecha",
@@ -488,7 +488,102 @@ switch ($tipo) {
 
         exportarExcel("RST", $data, $columnas);
         break;
-    
+
+    case "CRMS_lead":
+        // 1. Obtener la data del modelo
+        $data = LeadsControllers::listarReporteCRMLeads($asesor, $carreras);
+
+        if (empty($data)) {
+            die("No hay datos para exportar.");
+        }
+
+        // 2. Procesar la data para crear la matriz (Pivot)
+        $programas = [];
+        $horarios = [];
+        $matriz = [];
+
+        foreach ($data as $row) {
+            $p = $row['programa'] ?? '(En blanco)';
+            $h = $row['horario'] ?? '(Sin horario)';
+            $cant = (int)$row['total_leads'];
+
+            $programas[$p] = $p;
+            $horarios[$h] = $h;
+            $matriz[$p][$h] = $cant;
+        }
+
+        ksort($programas);
+        ksort($horarios);
+
+        // 3. Crear el Spreadsheet
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // --- ENCABEZADOS ---
+        $sheet->setCellValue("A1", "Programa / Horario");
+        $col = 2;
+        foreach ($horarios as $h) {
+            $sheet->setCellValueByColumnAndRow($col, 1, $h);
+            $col++;
+        }
+        $sheet->setCellValueByColumnAndRow($col, 1, "Total General");
+        $colFinal = $col;
+
+        // --- CUERPO ---
+        $fila = 2;
+        $totalesColumnas = array_fill(2, count($horarios), 0);
+        $granTotal = 0;
+
+        foreach ($programas as $p) {
+            $sheet->setCellValue("A{$fila}", $p);
+            $col = 2;
+            $totalFila = 0;
+
+            foreach ($horarios as $h) {
+                $valor = $matriz[$p][$h] ?? 0;
+                if ($valor > 0) {
+                    $sheet->setCellValueByColumnAndRow($col, $fila, $valor);
+                }
+                $totalFila += $valor;
+                $totalesColumnas[$col] += $valor;
+                $col++;
+            }
+
+            // Total al final de la fila
+            $sheet->setCellValueByColumnAndRow($col, $fila, $totalFila);
+            $granTotal += $totalFila;
+            $fila++;
+        }
+
+        // --- FILA DE TOTALES (PIE) ---
+        $sheet->setCellValue("A{$fila}", "Total general");
+        $col = 2;
+        foreach ($totalesColumnas as $totalCol) {
+            $sheet->setCellValueByColumnAndRow($col, $fila, $totalCol);
+            $col++;
+        }
+        $sheet->setCellValueByColumnAndRow($col, $fila, $granTotal);
+
+        // --- ESTILOS ---
+        $lastColLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colFinal);
+
+        // Bordes y alineación
+        $sheet->getStyle("A1:{$lastColLetter}{$fila}")->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+        $sheet->getStyle("A1:{$lastColLetter}1")->getFont()->setBold(true);
+        $sheet->getStyle("A{$fila}:{$lastColLetter}{$fila}")->getFont()->setBold(true);
+
+        // Auto-ajustar columnas
+        foreach (range('A', $lastColLetter) as $columnID) {
+            $sheet->getColumnDimension($columnID)->setAutoSize(true);
+        }
+
+        // --- DESCARGA ---
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="Reporte_CRMS_Leads.xlsx"');
+        $writer = new Xlsx($spreadsheet);
+        $writer->save("php://output");
+        exit;
+        break;
 
     default:
         die("Tipo de reporte no válido");

@@ -406,7 +406,7 @@ function listarCampanaIl() {
         });
 }
 
-if (obtenerPaginaActual() === 'leads.php' || obtenerPaginaActual() === 'leads-list.php' || obtenerPaginaActual() === 'lead-reports.php' || obtenerPaginaActual() === 'contacts.php') {
+if (obtenerPaginaActual() === 'reporte_lead.php' || obtenerPaginaActual() === 'leads.php' || obtenerPaginaActual() === 'leads-list.php' || obtenerPaginaActual() === 'lead-reports.php' || obtenerPaginaActual() === 'contacts.php') {
     listarEst_leads();
     listarEst_leadsOption();
     listarEst_leadsIl();

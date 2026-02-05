@@ -955,6 +955,13 @@ if (isset($_GET['accion'])) {
         case 'reporte_leads_gestionado':
             echo json_encode($leads->reporte_leads_gestionado());
             break;
+        case 'reporte_CRMS_lead':
+
+            $asesor = isset($_GET['asesor']) ? json_decode($_GET['asesor']) : [];
+            $carrera = isset($_GET['carrera']) ? json_decode($_GET['carrera']) : [];
+
+            echo json_encode($leads->listarReporteCRMLeads($asesor, $carrera));
+            break;
         /*Notas */
         case 'listarNotas':
             echo json_encode($notas->listarNotasId($_GET['id']));
@@ -1038,7 +1045,6 @@ if (isset($_GET['accion'])) {
 
             echo json_encode($leads->listarReporteRstDia($mes, $anio));
             break;
-
         default:
     }
 }

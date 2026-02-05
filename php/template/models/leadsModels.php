@@ -1110,4 +1110,80 @@ class LeadsModels
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public static function listarReporteCRMLeads(
+        $asesor = [],
+        $carrera = []
+    ) {
+        $sql = "
+        SELECT 
+        p.desc_pro AS programa, 
+        h.descripcion AS horario, 
+        COUNT(l.id_lead) AS total_leads
+        FROM `leads` l
+        LEFT JOIN programa p ON p.cod_pro = l.carrera_id
+        LEFT JOIN horario h ON h.id_horario = l.horario_id
+        INNER JOIN user u ON u.id_user = l.user_id
+        LEFT JOIN estado_leads et ON et.id_estado_leads = l.estado_leads_id
+        WHERE 1
+            AND l.cod_emp = ?
+        ";
+
+        $params = [$_SESSION['cod_emp'] ?? $_GET['cod_emp']];
+
+        /* ===========================
+       VALIDAR SI TODOS LOS FILTROS ESTÁN VACÍOS
+    ============================ */
+        $todosVacios = (
+            empty($asesor) &&
+            empty($carrera)
+        );
+
+        /* ===========================
+        FILTRO POR ROL
+        ============================ */
+        /*if (isset($_SESSION['rol'])) {
+            if ($_SESSION['rol'] !== 'Admin' && $todosVacios) {
+                $sql .= " AND r.user_id = ?";
+                $params[] = $_SESSION['user_id'];
+            }
+        }
+
+            $buscar = "%$texto%";
+            array_push($params, $buscar, $buscar, $buscar);
+        }*/
+
+        /* ===========================
+        FILTRO POR ASESOR
+        ============================ */
+        if (!empty($asesor)) {
+            $placeholders = implode(",", array_fill(0, count($asesor), "?"));
+            $sql .= " AND l.user_id IN ($placeholders)";
+            $params = array_merge($params, $asesor);
+        }
+
+        if (!empty($carrera)) {
+            $placeholders = implode(",", array_fill(0, count($carrera), "?"));
+            $sql .= " AND et.nombre IN ($placeholders)";
+            $params = array_merge($params, $carrera);
+        }
+
+        /* ===========================
+        ORDEN FINAL
+        ============================ */
+        $sql .= " GROUP BY 
+                p.desc_pro, 
+                h.descripcion;";
+
+        /* ===========================
+        EJECUCIÓN
+        ============================ */
+        $conn = new Conexion();
+        $pdo = $conn->conectar();
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($params);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
