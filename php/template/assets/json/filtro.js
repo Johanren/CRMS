@@ -211,7 +211,8 @@ function enviarFiltrosALeads(jornada, programa, tipo) {
             "Leads Activo",
             "Interesado",
             "En Decisión",
-            "Matricula en proceso"
+            "Matricula en proceso",
+            "Prospecto"
         ],
         fecha_inicio: "",
         fecha_fin: ""

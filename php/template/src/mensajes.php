@@ -100,25 +100,29 @@ $jsonData = json_encode($postData, JSON_UNESCAPED_UNICODE);
 
                     <div class="col-md-3">
                         <label class="form-label fw-bold">Carrera</label>
-                        <div id="filtro_carrera" class="border rounded p-2 bg-white" style="max-height: 150px; overflow-y: auto;">
+                        <div id="filtro_carrera" class="border rounded p-2 bg-white"
+                            style="max-height: 150px; overflow-y: auto;">
                         </div>
                     </div>
 
                     <div class="col-md-3">
                         <label class="form-label fw-bold">Horario</label>
-                        <div id="filtro_horario" class="border rounded p-2 bg-white" style="max-height: 150px; overflow-y: auto;">
+                        <div id="filtro_horario" class="border rounded p-2 bg-white"
+                            style="max-height: 150px; overflow-y: auto;">
                         </div>
                     </div>
 
                     <div class="col-md-3">
                         <label class="form-label fw-bold">Estado</label>
-                        <div id="filtro_estado" class="border rounded p-2 bg-white" style="max-height: 150px; overflow-y: auto;">
+                        <div id="filtro_estado" class="border rounded p-2 bg-white"
+                            style="max-height: 150px; overflow-y: auto;">
                         </div>
                     </div>
 
                     <div class="col-md-3">
                         <label class="form-label fw-bold">Asesor</label>
-                        <div id="filtro_asesor" class="border rounded p-2 bg-white" style="max-height: 150px; overflow-y: auto;">
+                        <div id="filtro_asesor" class="border rounded p-2 bg-white"
+                            style="max-height: 150px; overflow-y: auto;">
                         </div>
                     </div>
 
@@ -152,12 +156,15 @@ $jsonData = json_encode($postData, JSON_UNESCAPED_UNICODE);
 
                     <div class="col-md-12 mt-3 d-none" id="wrapper-opciones">
                         <div class="card shadow-sm border-info">
-                            <div class="card-header bg-info text-white py-2 d-flex justify-content-between align-items-center">
-                                <small class="text-uppercase fw-bold">Varias variantes detectadas: Seleccione una</small>
+                            <div
+                                class="card-header bg-info text-white py-2 d-flex justify-content-between align-items-center">
+                                <small class="text-uppercase fw-bold">Varias variantes detectadas: Seleccione
+                                    una</small>
                                 <span class="badge bg-white text-info" id="contador-variantes">0</span>
                             </div>
                             <div class="card-body p-0">
-                                <div id="contenedor-opciones-mensaje" class="list-group list-group-flush custom-scroll" style="max-height: 250px; overflow-y: auto;">
+                                <div id="contenedor-opciones-mensaje" class="list-group list-group-flush custom-scroll"
+                                    style="max-height: 250px; overflow-y: auto;">
                                 </div>
                             </div>
                         </div>
@@ -228,6 +235,11 @@ $jsonData = json_encode($postData, JSON_UNESCAPED_UNICODE);
         /* ===== UTIL ===== */
         .d-none {
             display: none;
+        }
+
+        #filtro_horario,
+        #filtro_estado {
+            text-transform: uppercase;
         }
     </style>
     <div id="loaderFoco" class="loader-overlay d-none">
@@ -316,31 +328,32 @@ $jsonData = json_encode($postData, JSON_UNESCAPED_UNICODE);
     }
 
     /* ===========================
-    AJUSTE: GENERAR CHECKBOXES EN LUGAR DE SELECTS
-=========================== */
+        AJUSTE: GENERAR CHECKBOXES EN LUGAR DE SELECTS
+    =========================== */
     function llenarSelect(id, datos, valueKey, textKey) {
         const contenedor = document.getElementById(id);
         if (!contenedor) return;
 
-        contenedor.innerHTML = ''; // Limpiar
+        contenedor.innerHTML = '';
 
         datos.forEach(d => {
             const div = document.createElement('div');
-            div.className = 'form-check small'; // Pequeños para que quepan más
+            div.className = 'form-check small';
 
             const input = document.createElement('input');
             input.type = 'checkbox';
-            input.className = 'form-check-input filtro-check'; // Clase para capturar el evento
+            input.className = 'form-check-input filtro-check';
             input.value = d[valueKey];
             input.id = `chk_${id}_${d[valueKey]}`;
 
-            // Listener para disparar la carga de la tabla al marcar/desmarcar
             input.addEventListener('change', validarYCargarTabla);
 
             const label = document.createElement('label');
             label.className = 'form-check-label';
             label.htmlFor = input.id;
-            label.textContent = d[textKey];
+
+            // AJUSTE AQUÍ: Convertir el texto a mayúsculas
+            label.textContent = d[textKey] ? d[textKey].toUpperCase() : '';
 
             div.appendChild(input);
             div.appendChild(label);
@@ -433,17 +446,19 @@ $jsonData = json_encode($postData, JSON_UNESCAPED_UNICODE);
             const tr = document.createElement('tr');
             tr.dataset.cliente = l.cliente;
             tr.dataset.asesor = l.asesor;
-            tr.dataset.carrera = l.programa || l.carrera; // Manejo de alias
-            tr.dataset.jornada = l.jornada;
+            tr.dataset.carrera = (l.programa || l.carrera || '').toUpperCase(); // Opcional: Carrera en mayúsculas
+
+            // AJUSTE AQUÍ: Jornada (Horario) en mayúsculas para el dataset
+            tr.dataset.jornada = (l.jornada || '').toUpperCase();
             tr.dataset.mensaje = '';
 
             tr.innerHTML = `
-                <td>${l.id_lead}</td>
-                <td>${l.cliente.split(' ')[0]}</td>
-                <td>${l.numero}</td>
-                <td>${l.asesor}</td>
-                <td class="mensaje-col text-muted italic">Seleccione un tema</td>
-            `;
+            <td>${l.id_lead}</td>
+            <td>${l.cliente.split(' ')[0]}</td>
+            <td>${l.numero}</td>
+            <td>${l.asesor}</td>
+            <td class="mensaje-col text-muted italic">Seleccione un tema</td>
+        `;
             tbody.appendChild(tr);
         });
         iniciarDataTable();
@@ -470,7 +485,8 @@ $jsonData = json_encode($postData, JSON_UNESCAPED_UNICODE);
             tablaLeads.destroy();
             tablaLeads = null;
         }
-        document.querySelector('#tabla_leads tbody').innerHTML = `<tr><td colspan="5" class="text-center text-muted">${msg}</td></tr>`;
+        document.querySelector('#tabla_leads tbody').innerHTML =
+            `<tr><td colspan="5" class="text-center text-muted">${msg}</td></tr>`;
     }
 
     /* ===========================
@@ -500,7 +516,8 @@ $jsonData = json_encode($postData, JSON_UNESCAPED_UNICODE);
             opciones.forEach((msg, index) => {
                 const btn = document.createElement('button');
                 btn.type = "button";
-                btn.className = "list-group-item list-group-item-action opcion-mensaje d-flex align-items-start gap-3 py-3";
+                btn.className =
+                    "list-group-item list-group-item-action opcion-mensaje d-flex align-items-start gap-3 py-3";
 
                 btn.innerHTML = `
                 <div class="badge rounded-pill bg-info mt-1">${index + 1}</div>
@@ -510,7 +527,8 @@ $jsonData = json_encode($postData, JSON_UNESCAPED_UNICODE);
             `;
 
                 btn.onclick = function() {
-                    document.querySelectorAll('.opcion-mensaje').forEach(el => el.classList.remove('active-selection'));
+                    document.querySelectorAll('.opcion-mensaje').forEach(el => el.classList.remove(
+                        'active-selection'));
                     btn.classList.add('active-selection');
                     aplicarMensajeALaTabla(msg);
                 };

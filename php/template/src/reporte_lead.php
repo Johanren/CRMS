@@ -21,8 +21,12 @@
                 </nav>
             </div>
             <div class="gap-2 d-flex align-items-center flex-wrap">
-                <a href="javascript:void(0);" class="btn btn-icon btn-outline-light shadow" data-bs-toggle="tooltip" data-bs-placement="top" aria-label="Refresh" data-bs-original-title="Refresh"><i class="ti ti-refresh"></i></a>
-                <a href="javascript:void(0);" class="btn btn-icon btn-outline-light shadow" data-bs-toggle="tooltip" data-bs-placement="top" aria-label="Collapse" data-bs-original-title="Collapse" id="collapse-header"><i class="ti ti-transition-top"></i></a>
+                <a href="javascript:void(0);" class="btn btn-icon btn-outline-light shadow" data-bs-toggle="tooltip"
+                    data-bs-placement="top" aria-label="Refresh" data-bs-original-title="Refresh"><i
+                        class="ti ti-refresh"></i></a>
+                <a href="javascript:void(0);" class="btn btn-icon btn-outline-light shadow" data-bs-toggle="tooltip"
+                    data-bs-placement="top" aria-label="Collapse" data-bs-original-title="Collapse"
+                    id="collapse-header"><i class="ti ti-transition-top"></i></a>
             </div>
         </div>
         <!-- End Page Header -->
@@ -30,7 +34,9 @@
         <!-- card start -->
         <div class="card border-0 rounded-0">
             <div class="card-header d-flex align-items-center justify-content-between gap-2 flex-wrap">
-                <a href="javascript:void(0);" onclick="exportarExcel('CRMS_lead')" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#####download_report"><i class="ti ti-file-download me-1"></i>Descargar Reporte</a>
+                <a href="javascript:void(0);" onclick="exportarExcel('CRMS_lead')" class="btn btn-primary"
+                    data-bs-toggle="modal" data-bs-target="#####download_report"><i
+                        class="ti ti-file-download me-1"></i>Descargar Reporte</a>
             </div>
             <div class="card-body">
 
@@ -38,41 +44,57 @@
                 <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
                     <div class="d-flex align-items-center gap-2 flex-wrap">
                         <div class="dropdown">
-                            <a href="javascript:void(0);" class="btn btn-outline-light shadow px-2" data-bs-toggle="dropdown" data-bs-auto-close="outside"><i class="ti ti-filter me-2"></i>Filtrar<i class="ti ti-chevron-down ms-2"></i></a>
+                            <a href="javascript:void(0);" class="btn btn-outline-light shadow px-2"
+                                data-bs-toggle="dropdown" data-bs-auto-close="outside"><i
+                                    class="ti ti-filter me-2"></i>Filtrar<i class="ti ti-chevron-down ms-2"></i></a>
                             <div class="filter-dropdown-menu dropdown-menu dropdown-menu-lg p-0">
-                                <div class="filter-header d-flex align-items-center justify-content-between border-bottom">
+                                <div
+                                    class="filter-header d-flex align-items-center justify-content-between border-bottom">
                                     <h6 class="mb-0"><i class="ti ti-filter me-1"></i>Filtrar</h6>
-                                    <button type="button" class="btn-close close-filter-btn" data-bs-dismiss="dropdown-menu" aria-label="Close"></button>
+                                    <button type="button" class="btn-close close-filter-btn"
+                                        data-bs-dismiss="dropdown-menu" aria-label="Close"></button>
                                 </div>
                                 <div class="filter-set-view p-3">
                                     <div class="filter-set-view p-3">
                                         <div class="accordion" id="accordionExample">
                                             <div class="filter-set-content">
                                                 <div class="filter-set-content-head">
-                                                    <a href="#" class="collapsed" data-bs-toggle="collapse" data-bs-target="#collapseAsesor" aria-expanded="false" aria-controls="collapseThree">Asesor</a>
+                                                    <a href="#" class="collapsed" data-bs-toggle="collapse"
+                                                        data-bs-target="#collapseAsesor" aria-expanded="false"
+                                                        aria-controls="collapseThree">Asesor</a>
                                                 </div>
-                                                <div class="filter-set-contents accordion-collapse collapse" id="collapseAsesor" data-bs-parent="#accordionExample">
-                                                    <div class="filter-content-list bg-light rounded border p-2 shadow mt-2">
+                                                <div class="filter-set-contents accordion-collapse collapse"
+                                                    id="collapseAsesor" data-bs-parent="#accordionExample">
+                                                    <div
+                                                        class="filter-content-list bg-light rounded border p-2 shadow mt-2">
                                                         <div id="listar_filtro_user" class="overflow-x-auto"></div>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="filter-set-content">
                                                 <div class="filter-set-content-head">
-                                                    <a href="#" class="collapsed" data-bs-toggle="collapse" data-bs-target="#collapseCarrera" aria-expanded="false" aria-controls="collapseThree">Carrera</a>
+                                                    <a href="#" class="collapsed" data-bs-toggle="collapse"
+                                                        data-bs-target="#collapseCarrera" aria-expanded="false"
+                                                        aria-controls="collapseThree">Carrera</a>
                                                 </div>
-                                                <div class="filter-set-contents accordion-collapse collapse" id="collapseCarrera" data-bs-parent="#accordionExample">
-                                                    <div class="filter-content-list bg-light rounded border p-2 shadow mt-2">
+                                                <div class="filter-set-contents accordion-collapse collapse"
+                                                    id="collapseCarrera" data-bs-parent="#accordionExample">
+                                                    <div
+                                                        class="filter-content-list bg-light rounded border p-2 shadow mt-2">
                                                         <div id="listar_filtro_carrera" class="overflow-x-auto"></div>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="filter-set-content">
                                                 <div class="filter-set-content-head">
-                                                    <a href="#" class="collapsed" data-bs-toggle="collapse" data-bs-target="#collapseEstado" aria-expanded="false" aria-controls="collapseThree">Estado</a>
+                                                    <a href="#" class="collapsed" data-bs-toggle="collapse"
+                                                        data-bs-target="#collapseEstado" aria-expanded="false"
+                                                        aria-controls="collapseThree">Estado</a>
                                                 </div>
-                                                <div class="filter-set-contents accordion-collapse collapse" id="collapseEstado" data-bs-parent="#accordionExample">
-                                                    <div class="filter-content-list bg-light rounded border p-2 shadow mt-2">
+                                                <div class="filter-set-contents accordion-collapse collapse"
+                                                    id="collapseEstado" data-bs-parent="#accordionExample">
+                                                    <div
+                                                        class="filter-content-list bg-light rounded border p-2 shadow mt-2">
                                                         <div id="listar_filtro_estado" class="overflow-x-auto"></div>
                                                     </div>
                                                 </div>
@@ -89,42 +111,42 @@
 
                 <!-- Report List -->
                 <style>
-                    /* ===== LOADER ===== */
-                    .loader-overlay {
-                        position: fixed;
-                        inset: 0;
-                        background: rgba(255, 255, 255, 0.85);
-                        display: flex;
-                        flex-direction: column;
-                        justify-content: center;
-                        align-items: center;
-                        z-index: 9999;
-                    }
+                /* ===== LOADER ===== */
+                .loader-overlay {
+                    position: fixed;
+                    inset: 0;
+                    background: rgba(255, 255, 255, 0.85);
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    align-items: center;
+                    z-index: 9999;
+                }
 
-                    .loader-overlay p {
-                        margin-top: 10px;
-                        font-weight: bold;
-                    }
+                .loader-overlay p {
+                    margin-top: 10px;
+                    font-weight: bold;
+                }
 
-                    .spinner {
-                        width: 50px;
-                        height: 50px;
-                        border: 6px solid #ddd;
-                        border-top: 6px solid #007bff;
-                        border-radius: 50%;
-                        animation: spin 1s linear infinite;
-                    }
+                .spinner {
+                    width: 50px;
+                    height: 50px;
+                    border: 6px solid #ddd;
+                    border-top: 6px solid #007bff;
+                    border-radius: 50%;
+                    animation: spin 1s linear infinite;
+                }
 
-                    @keyframes spin {
-                        to {
-                            transform: rotate(360deg);
-                        }
+                @keyframes spin {
+                    to {
+                        transform: rotate(360deg);
                     }
+                }
 
-                    /* UTIL */
-                    .d-none {
-                        display: none;
-                    }
+                /* UTIL */
+                .d-none {
+                    display: none;
+                }
                 </style>
                 <div class="table-responsive custom-table">
                     <div id="rst_reports"></div>
@@ -156,132 +178,174 @@ $content = ob_get_clean();
 require_once '../partials/main.php'; ?>
 
 <script>
-    window.Filtros = {
-        obtener: function() {
-            let texto = "";
-            let inputBuscador = document.getElementById("buscador");
-            if (inputBuscador) {
-                texto = inputBuscador.value.toLowerCase();
-            }
-            let asesor = [...document.querySelectorAll(".filtro-asesor:checked")].map(c => c.value);
-            let estados = [...document.querySelectorAll(".filtro-estado:checked")].map(c => c.value);
-            let carrera = [...document.querySelectorAll(".filtro-carrera:checked")].map(c => c.value);
-            let fecha_inicio = window.fecha_inicio || "";
-            let fecha_fin = window.fecha_fin || "";
-
-            return {
-                texto,
-                asesor,
-                estados,
-                carrera,
-                fecha_inicio,
-                fecha_fin
-            };
+window.Filtros = {
+    obtener: function() {
+        let texto = "";
+        let inputBuscador = document.getElementById("buscador");
+        if (inputBuscador) {
+            texto = inputBuscador.value.toLowerCase();
         }
-    };
 
-    function listarReporteCRMS() {
-        const f = Filtros.obtener();
-        const params = new URLSearchParams();
+        let asesor = [...document.querySelectorAll(".filtro-asesor:checked")].map(c => c.value);
+        let carrera = [...document.querySelectorAll(".filtro-carrera:checked")].map(c => c.value);
 
-        // 1. Mostrar el Loader
-        const loader = document.getElementById("loaderFoco");
-        if (loader) loader.classList.remove("d-none");
+        // --- CAMBIO AQUÍ ---
+        // Buscamos los seleccionados
+        let estados = [...document.querySelectorAll(".filtro-estado:checked")].map(c => c.value);
 
-        params.append("accion", "reporte_CRMS_lead");
+        // Si no hay ninguno seleccionado (posible primera carga), forzamos los que necesitas
+        if (estados.length === 0 && !window.filtrosInicializados) {
+            estados = ['Nuevo Leads', 'Leads Activo', 'Interesado', 'En Decisión', 'Prospecto'];
+        }
+        // -------------------
 
-        if (f.texto !== "") params.append("texto", f.texto);
-        if (f.asesor.length > 0) params.append("asesor", JSON.stringify(f.asesor));
-        if (f.estados.length > 0) params.append("estados", JSON.stringify(f.estados));
-        if (f.carrera.length > 0) params.append("carrera", JSON.stringify(f.carrera));
-        if (f.fecha_inicio !== "") params.append("fecha_inicio", f.fecha_inicio);
-        if (f.fecha_fin !== "") params.append("fecha_fin", f.fecha_fin);
+        let fecha_inicio = window.fecha_inicio || "";
+        let fecha_fin = window.fecha_fin || "";
 
-        fetch("ajax/ajax.php?" + params.toString())
-            .then(res => res.json())
-            .then(data => {
-                if (document.getElementById("rst_reports")) {
-                    inicializarDataTableRst(data);
-                }
-            })
-            .catch(err => console.error("Error reporte rst:", err))
-            .finally(() => {
-                // 2. Ocultar el Loader (se ejecuta siempre, falle o tenga éxito)
-                if (loader) loader.classList.add("d-none");
-            });
+        return {
+            texto,
+            asesor,
+            estados,
+            carrera,
+            fecha_inicio,
+            fecha_fin
+        };
+    }
+};
+
+function listarReporteCRMS() {
+    const f = Filtros.obtener();
+    const params = new URLSearchParams();
+
+    // 1. Mostrar el Loader
+    const loader = document.getElementById("loaderFoco");
+    if (loader) loader.classList.remove("d-none");
+
+    params.append("accion", "reporte_CRMS_lead");
+
+    if (f.texto !== "") params.append("texto", f.texto);
+    if (f.asesor.length > 0) params.append("asesor", JSON.stringify(f.asesor));
+    if (f.estados.length > 0) params.append("estados", JSON.stringify(f.estados));
+    if (f.carrera.length > 0) params.append("carrera", JSON.stringify(f.carrera));
+    if (f.fecha_inicio !== "") params.append("fecha_inicio", f.fecha_inicio);
+    if (f.fecha_fin !== "") params.append("fecha_fin", f.fecha_fin);
+
+    fetch("ajax/ajax.php?" + params.toString())
+        .then(res => res.json())
+        .then(data => {
+            if (document.getElementById("rst_reports")) {
+                inicializarDataTableRst(data);
+            }
+        })
+        .catch(err => console.error("Error reporte rst:", err))
+        .finally(() => {
+            // 2. Ocultar el Loader (se ejecuta siempre, falle o tenga éxito)
+            if (loader) loader.classList.add("d-none");
+        });
+}
+
+document.addEventListener("change", function(e) {
+    if (e.target.classList.contains("filtro")) {
+        listarReporteCRMS();
+    }
+});
+
+document.addEventListener("input", function(e) {
+    if (e.target.id === "buscador") {
+        listarReporteCRMS();
+    }
+});
+
+// Función para marcar visualmente los estados deseados
+function marcarEstadosDefault() {
+    const estadosAMarcar = ['Nuevo Leads', 'Leads Activo', 'Interesado', 'En Decisión', 'Prospecto'];
+
+    // Buscamos todos los checkboxes de estado
+    const checkboxes = document.querySelectorAll('.filtro-estado');
+
+    checkboxes.forEach(chk => {
+        if (estadosAMarcar.includes(chk.value)) {
+            chk.checked = true;
+        }
+    });
+}
+
+// Creamos un observador para detectar cuando se cargue la lista en el div
+const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+        if (mutation.addedNodes.length) {
+            marcarEstadosDefault();
+        }
+    });
+});
+
+// Empezamos a observar el contenedor de los estados
+const targetNode = document.getElementById('listar_filtro_estado');
+if (targetNode) {
+    observer.observe(targetNode, {
+        childList: true
+    });
+}
+
+listarReporteCRMS();
+
+function inicializarDataTableRst(data) {
+    const contenedor = document.getElementById("rst_reports");
+    if (!data || data.length === 0) {
+        contenedor.innerHTML = "<div class='alert alert-warning'>No hay datos disponibles</div>";
+        return;
     }
 
-    document.addEventListener("change", function(e) {
-        if (e.target.classList.contains("filtro")) {
-            listarReporteCRMS();
+    const programasSet = new Set();
+    const mapaHorarios = {};
+
+    // 1. Procesar data y UNIFICAR categorías "vagas"
+    data.forEach(item => {
+        let idH = item.id_horario;
+        let nombreH = item.horario ? item.horario.toUpperCase() : "";
+
+        // Lógica de unificación: Por Confirmar, Sin Identificar, null o En blanco
+        if (!idH || !nombreH ||
+            nombreH === "POR CONFIRMAR" ||
+            nombreH === "SIN IDENTIFICAR" ||
+            nombreH === "(EN BLANCO)") {
+
+            idH = "99"; // Asignamos un ID alto para que salga al final
+            nombreH = "POR CONFIRMAR";
         }
+
+        mapaHorarios[idH] = nombreH;
+        programasSet.add(item.programa || "SIN PROGRAMA");
     });
 
-    document.addEventListener("input", function(e) {
-        if (e.target.id === "buscador") {
-            listarReporteCRMS();
-        }
+    // Ordenar IDs y preparar encabezados
+    const idsOrdenados = Object.keys(mapaHorarios).sort((a, b) => parseInt(a) - parseInt(b));
+    const encabezadosHorarios = idsOrdenados.map(id => mapaHorarios[id]);
+    const programas = Array.from(programasSet).sort();
+
+    // 2. Crear Matriz
+    const matriz = {};
+    programas.forEach(p => {
+        matriz[p] = {};
+        encabezadosHorarios.forEach(h => matriz[p][h] = 0);
     });
 
-    listarReporteCRMS();
+    data.forEach(item => {
+        const p = item.programa || "SIN PROGRAMA";
+        let nombreH = item.horario ? item.horario.toUpperCase() : "";
 
-    function inicializarDataTableRst(data) {
-        const contenedor = document.getElementById("rst_reports");
-        if (!data || data.length === 0) {
-            contenedor.innerHTML = "<div class='alert alert-warning'>No hay datos disponibles</div>";
-            return;
+        if (!item.id_horario || !nombreH ||
+            nombreH === "POR CONFIRMAR" ||
+            nombreH === "SIN IDENTIFICAR" ||
+            nombreH === "(EN BLANCO)") {
+            nombreH = "POR CONFIRMAR";
         }
 
-        const programasSet = new Set();
-        const mapaHorarios = {};
+        matriz[p][nombreH] += parseInt(item.total_leads);
+    });
 
-        // 1. Procesar data y UNIFICAR categorías "vagas"
-        data.forEach(item => {
-            let idH = item.id_horario;
-            let nombreH = item.horario ? item.horario.toUpperCase() : "";
-
-            // Lógica de unificación: Por Confirmar, Sin Identificar, null o En blanco
-            if (!idH || !nombreH ||
-                nombreH === "POR CONFIRMAR" ||
-                nombreH === "SIN IDENTIFICAR" ||
-                nombreH === "(EN BLANCO)") {
-
-                idH = "99"; // Asignamos un ID alto para que salga al final
-                nombreH = "POR CONFIRMAR";
-            }
-
-            mapaHorarios[idH] = nombreH;
-            programasSet.add(item.programa || "SIN PROGRAMA");
-        });
-
-        // Ordenar IDs y preparar encabezados
-        const idsOrdenados = Object.keys(mapaHorarios).sort((a, b) => parseInt(a) - parseInt(b));
-        const encabezadosHorarios = idsOrdenados.map(id => mapaHorarios[id]);
-        const programas = Array.from(programasSet).sort();
-
-        // 2. Crear Matriz
-        const matriz = {};
-        programas.forEach(p => {
-            matriz[p] = {};
-            encabezadosHorarios.forEach(h => matriz[p][h] = 0);
-        });
-
-        data.forEach(item => {
-            const p = item.programa || "SIN PROGRAMA";
-            let nombreH = item.horario ? item.horario.toUpperCase() : "";
-
-            if (!item.id_horario || !nombreH ||
-                nombreH === "POR CONFIRMAR" ||
-                nombreH === "SIN IDENTIFICAR" ||
-                nombreH === "(EN BLANCO)") {
-                nombreH = "POR CONFIRMAR";
-            }
-
-            matriz[p][nombreH] += parseInt(item.total_leads);
-        });
-
-        // 3. HTML con estilos de padding 5px 10px
-        let html = `
+    // 3. HTML con estilos de padding 5px 10px
+    let html = `
             <style>
                 #rst_reports .table td { padding: 5px 10px !important; vertical-align: middle; }
                 #rst_reports .table th { padding: 8px 10px !important; text-transform: uppercase; font-size: 0.75rem; }
@@ -297,27 +361,45 @@ require_once '../partials/main.php'; ?>
                 </thead>
                 <tbody>`;
 
-        let totalColumnas = {};
-        encabezadosHorarios.forEach(h => totalColumnas[h] = 0);
-        let granTotal = 0;
+    let totalColumnas = {};
+    encabezadosHorarios.forEach(h => totalColumnas[h] = 0);
+    let granTotal = 0;
 
-        programas.forEach(p => {
-            let totalFila = 0;
-            html += `<tr><td class="text-start"><strong>${p}</strong></td>`;
+    programas.forEach(p => {
+        let totalFila = 0;
+        html += `<tr><td class="text-start"><strong>${p}</strong></td>`;
 
-            encabezadosHorarios.forEach(h => {
-                const valor = matriz[p][h];
-                html += `<td class="text-center">${valor > 0 ? valor : '-'}</td>`;
-                totalFila += valor;
-                totalColumnas[h] += valor;
-            });
+        encabezadosHorarios.forEach(h => {
+            const valor = matriz[p][h];
 
-            html += `<td class="text-center bg-total-fila">${totalFila}</td></tr>`;
-            granTotal += totalFila;
+            // Si el valor es mayor a 0, hacemos la celda cliqueable
+            if (valor > 0) {
+                html += `
+                <td class="text-center text-primary fw-bold cursor-pointer" 
+                    onclick="enviarFiltrosALeads('${h}', '${p}', 'con_horario')">
+                    ${valor}
+                </td>`;
+            } else {
+                html += `<td class="text-center">-</td>`;
+            }
+
+            totalFila += valor;
+            totalColumnas[h] += valor;
         });
 
-        // 4. Totales finales
-        html += `</tbody>
+        // También podemos hacer que el total de la fila sea cliqueable (opcional)
+        html += `
+        <td class="text-center bg-total-fila text-primary fw-bold cursor-pointer" 
+            onclick="enviarFiltrosALeads('TODOS', '${p}', 'total_programa')">
+            ${totalFila}
+        </td>
+    </tr>`;
+
+        granTotal += totalFila;
+    });
+
+    // 4. Totales finales
+    html += `</tbody>
             <tfoot class="table-dark text-center text-black">
                 <tr>
                     <td class="text-start"><strong>TOTAL GENERAL</strong></td>
@@ -327,25 +409,25 @@ require_once '../partials/main.php'; ?>
             </tfoot>
         </table>`;
 
-        contenedor.innerHTML = html;
-    }
+    contenedor.innerHTML = html;
+}
 
-    function exportarExcel(tipo) {
-        const f = Filtros.obtener();
-        const params = new URLSearchParams();
+function exportarExcel(tipo) {
+    const f = Filtros.obtener();
+    const params = new URLSearchParams();
 
-        // Tipo de reporte (ej: "leads", "asesores", "campanas", etc.)
-        params.append("tipo", tipo);
+    // Tipo de reporte (ej: "leads", "asesores", "campanas", etc.)
+    params.append("tipo", tipo);
 
-        // Convertir filtros a parámetros GET
-        for (let k in f) {
-            if (Array.isArray(f[k]) && f[k].length > 0) {
-                params.append(k, JSON.stringify(f[k]));
-            } else if (f[k] !== "") {
-                params.append(k, f[k]);
-            }
+    // Convertir filtros a parámetros GET
+    for (let k in f) {
+        if (Array.isArray(f[k]) && f[k].length > 0) {
+            params.append(k, JSON.stringify(f[k]));
+        } else if (f[k] !== "") {
+            params.append(k, f[k]);
         }
-
-        window.location.href = "ajax/exportar_excel.php?" + params.toString();
     }
+
+    window.location.href = "ajax/exportar_excel.php?" + params.toString();
+}
 </script>
