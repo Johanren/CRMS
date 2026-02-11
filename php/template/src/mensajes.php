@@ -99,39 +99,27 @@ $jsonData = json_encode($postData, JSON_UNESCAPED_UNICODE);
                 <form id="frm_rst" class="row g-3 mb-4">
 
                     <div class="col-md-3">
-                        <label class="form-label">Carrera</label>
-                        <select class="form-select" id="filtro_carrera" multiple>
-                            <option value="">Todas</option>
-                            <option value="1">Ingeniería</option>
-                            <option value="2">Administración</option>
-                        </select>
+                        <label class="form-label fw-bold">Carrera</label>
+                        <div id="filtro_carrera" class="border rounded p-2 bg-white" style="max-height: 150px; overflow-y: auto;">
+                        </div>
                     </div>
 
                     <div class="col-md-3">
-                        <label class="form-label">Horario</label>
-                        <select class="form-select" id="filtro_horario" multiple>
-                            <option value="">Todos</option>
-                            <option value="mañana">Mañana</option>
-                            <option value="noche">Noche</option>
-                        </select>
+                        <label class="form-label fw-bold">Horario</label>
+                        <div id="filtro_horario" class="border rounded p-2 bg-white" style="max-height: 150px; overflow-y: auto;">
+                        </div>
                     </div>
 
-                    <div class="col-md-2">
-                        <label class="form-label">Estado</label>
-                        <select class="form-select" id="filtro_estado" multiple>
-                            <option value="">Todos</option>
-                            <option value="interesado">Interesado</option>
-                            <option value="seguimiento">Seguimiento</option>
-                        </select>
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold">Estado</label>
+                        <div id="filtro_estado" class="border rounded p-2 bg-white" style="max-height: 150px; overflow-y: auto;">
+                        </div>
                     </div>
 
-                    <div class="col-md-2">
-                        <label class="form-label">Asesor</label>
-                        <select class="form-select" id="filtro_asesor" multiple>
-                            <option value="">Todos</option>
-                            <option value="1">Sandra</option>
-                            <option value="2">Yalie</option>
-                        </select>
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold">Asesor</label>
+                        <div id="filtro_asesor" class="border rounded p-2 bg-white" style="max-height: 150px; overflow-y: auto;">
+                        </div>
                     </div>
 
                     <div class="col-md-2">
@@ -327,46 +315,84 @@ $jsonData = json_encode($postData, JSON_UNESCAPED_UNICODE);
             });
     }
 
+    /* ===========================
+    AJUSTE: GENERAR CHECKBOXES EN LUGAR DE SELECTS
+=========================== */
     function llenarSelect(id, datos, valueKey, textKey) {
-        const select = document.getElementById(id);
-        if (!select) return;
-        select.innerHTML = `<option value="">Seleccione</option>`;
+        const contenedor = document.getElementById(id);
+        if (!contenedor) return;
+
+        contenedor.innerHTML = ''; // Limpiar
+
         datos.forEach(d => {
-            const opt = document.createElement('option');
-            opt.value = d[valueKey];
-            opt.textContent = d[textKey];
-            select.appendChild(opt);
+            const div = document.createElement('div');
+            div.className = 'form-check small'; // Pequeños para que quepan más
+
+            const input = document.createElement('input');
+            input.type = 'checkbox';
+            input.className = 'form-check-input filtro-check'; // Clase para capturar el evento
+            input.value = d[valueKey];
+            input.id = `chk_${id}_${d[valueKey]}`;
+
+            // Listener para disparar la carga de la tabla al marcar/desmarcar
+            input.addEventListener('change', validarYCargarTabla);
+
+            const label = document.createElement('label');
+            label.className = 'form-check-label';
+            label.htmlFor = input.id;
+            label.textContent = d[textKey];
+
+            div.appendChild(input);
+            div.appendChild(label);
+            contenedor.appendChild(div);
         });
     }
 
+    /* ===========================
+        AJUSTE: LEER VALORES DE CHECKBOXES
+    =========================== */
     function getValoresSelect(id) {
-        const select = document.getElementById(id);
-        return select ? Array.from(select.selectedOptions).map(o => o.value).filter(v => v !== "") : [];
+        const contenedor = document.getElementById(id);
+        if (!contenedor) return [];
+
+        // Buscamos solo los inputs tipo checkbox que estén marcados
+        const seleccionados = contenedor.querySelectorAll('input[type="checkbox"]:checked');
+        return Array.from(seleccionados).map(cb => cb.value);
     }
 
+    /* ===========================
+        AJUSTE: VALIDACIÓN Y BLOQUEO
+    =========================== */
     function validarYCargarTabla() {
         const numero = document.getElementById('filtro_numero')?.value.trim();
-        const filtros = ['filtro_carrera', 'filtro_horario', 'filtro_estado', 'filtro_asesor'];
+        const filtrosIds = ['filtro_carrera', 'filtro_horario', 'filtro_estado', 'filtro_asesor'];
 
         if (numero) {
-            filtros.forEach(id => {
-                const el = document.getElementById(id);
-                if (el) {
-                    el.disabled = true;
-                    el.value = '';
-                }
+            // Si hay número, deshabilitamos todos los checkboxes
+            filtrosIds.forEach(id => {
+                document.querySelectorAll(`#${id} input`).forEach(cb => {
+                    cb.disabled = true;
+                    cb.checked = false;
+                });
             });
             cargarTablaLeads();
             return;
         }
 
-        filtros.forEach(id => {
-            const el = document.getElementById(id);
-            if (el) el.disabled = false;
+        // Habilitar checkboxes si no hay número
+        filtrosIds.forEach(id => {
+            document.querySelectorAll(`#${id} input`).forEach(cb => cb.disabled = false);
         });
 
-        const filtrosOK = filtros.every(id => getValoresSelect(id).length > 0);
-        filtrosOK ? cargarTablaLeads() : limpiarTabla('Seleccione todos los filtros o busque por número');
+        // Validar que al menos haya un check en cada grupo (si así lo requiere tu lógica)
+        // O simplemente cargar si hay algún filtro activo.
+        const algunFiltroActivo = filtrosIds.some(id => getValoresSelect(id).length > 0);
+
+        if (algunFiltroActivo || numero) {
+            cargarTablaLeads();
+        } else {
+            limpiarTabla('Seleccione filtros para cargar la lista');
+        }
     }
 
     function cargarTablaLeads() {

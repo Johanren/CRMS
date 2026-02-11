@@ -29,3 +29,19 @@ frio, medio y caliente
 8. agregar columan cod_emp para notas, archivos, comentario y calls
 
 9. terminar funcion actualizar.
+
+[3:31 p. m., 5/2/2026] feliperenjifoz: 
+Los REPORTES VAN ADAPTADOS PARA EL FOCO, QUE LOS FILTROS SEAN CARGADOS SEGÚN LA CARRERA, HORARIO Y ASESOR DEL FOCO
+
+//COLUMNA POR CONFIRMAR Y SKN IDENTIFICAR DEJARLO CON UNA SOLA COLUMNA.
+
+//MIRAR EN USER QUÉ SALGAN SOLO ASESORES, EN FILTRO Y QUE SEAN SOLO DE LA EMPRESA Y QUE ESTEN ACTIVOS
+
+QUE EN MENSAJES NO SOLO ENVIÉ LOS MENSAJES A LOS USUAIROS SINO TAMBIÉN AL ASESOR
+
+//QUE EN MENSAJES EN FILTSOS DEJARLOS EN CHECKS
+
+EN USER SE AGREGO UNA COLUMNA NUEVA QUE SE LLAMA URL Y QUE EN MENSAJES AL SELECCIONAR AL ASESOR SE ENVÍE LA ULR DEL ASESOR ASIGANDO DE CADA LEADS
+
+[3:34 p. m., 5/2/2026] feliperenjifoz: 
+En resultado foco debe tener filtros por asesor, programa, jornada y estado, y que en otra es que chulee los estados qué ya tenga el foco

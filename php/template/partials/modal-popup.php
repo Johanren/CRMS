@@ -34283,6 +34283,12 @@ $page = end( $link_array );
                             <input type="hidden" class="form-control" name="fotoUserActual" id="fotoUserActual" alt="">
                         </div>
                     </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">URL <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="urlUser" id="urlUser" alt="">
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="d-flex align-items-center justify-content-end">

@@ -5,6 +5,10 @@ class UserControllers{
         return UserModels::listarUser();
     }
 
+    public static function listarUserRST(){
+        return UserModels::listarUserRST();
+    }
+
     public static function listarUserDetails(){
         return UserModels::listarUserDetails();
     }

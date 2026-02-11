@@ -348,6 +348,7 @@
                                     <th>Correo</th>
                                     <th>Rol</th>
                                     <th>Empresa</th>
+                                    <th>URL</th>
                                     <th>Fecha Creacion</th>
                                     <th class="text-end no-sort">Accion</th>
                                 </tr>

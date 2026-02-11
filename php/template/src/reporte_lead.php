@@ -232,26 +232,34 @@ require_once '../partials/main.php'; ?>
             return;
         }
 
-        // 1. Extraer encabezados únicos y filas
-        const horariosSet = new Set();
         const programasSet = new Set();
+        const mapaHorarios = {};
 
+        // 1. Procesar data y UNIFICAR categorías "vagas"
         data.forEach(item => {
-            // UNIFICACIÓN: Si es null, vacío o "(En blanco)", lo movemos a "Por Confirmar"
-            let h = item.horario;
-            if (!h || h === "" || h.toLowerCase() === "(en blanco)") {
-                h = "Por Confirmar";
+            let idH = item.id_horario;
+            let nombreH = item.horario ? item.horario.toUpperCase() : "";
+
+            // Lógica de unificación: Por Confirmar, Sin Identificar, null o En blanco
+            if (!idH || !nombreH ||
+                nombreH === "POR CONFIRMAR" ||
+                nombreH === "SIN IDENTIFICAR" ||
+                nombreH === "(EN BLANCO)") {
+
+                idH = "99"; // Asignamos un ID alto para que salga al final
+                nombreH = "POR CONFIRMAR";
             }
 
-            const p = item.programa || "SIN PROGRAMA";
-            horariosSet.add(h);
-            programasSet.add(p);
+            mapaHorarios[idH] = nombreH;
+            programasSet.add(item.programa || "SIN PROGRAMA");
         });
 
-        const encabezadosHorarios = Array.from(horariosSet).sort();
+        // Ordenar IDs y preparar encabezados
+        const idsOrdenados = Object.keys(mapaHorarios).sort((a, b) => parseInt(a) - parseInt(b));
+        const encabezadosHorarios = idsOrdenados.map(id => mapaHorarios[id]);
         const programas = Array.from(programasSet).sort();
 
-        // 2. Mapear los datos a la matriz
+        // 2. Crear Matriz
         const matriz = {};
         programas.forEach(p => {
             matriz[p] = {};
@@ -260,24 +268,34 @@ require_once '../partials/main.php'; ?>
 
         data.forEach(item => {
             const p = item.programa || "SIN PROGRAMA";
-            // Aplicamos la misma lógica de unificación aquí
-            let h = item.horario;
-            if (!h || h === "" || h.toLowerCase() === "(en blanco)") {
-                h = "Por Confirmar";
+            let nombreH = item.horario ? item.horario.toUpperCase() : "";
+
+            if (!item.id_horario || !nombreH ||
+                nombreH === "POR CONFIRMAR" ||
+                nombreH === "SIN IDENTIFICAR" ||
+                nombreH === "(EN BLANCO)") {
+                nombreH = "POR CONFIRMAR";
             }
-            matriz[p][h] += parseInt(item.total_leads);
+
+            matriz[p][nombreH] += parseInt(item.total_leads);
         });
 
-        // 3. Construir el HTML con clases de centrado (text-center)
-        let html = `<table class="table table-bordered table-striped table-sm">
-        <thead class="thead-dark text-center">
-            <tr>
-                <th class="text-start">Programa / Horario</th>
-                ${encabezadosHorarios.map(h => `<th>${h}</th>`).join('')}
-                <th>Total General</th>
-            </tr>
-        </thead>
-        <tbody>`;
+        // 3. HTML con estilos de padding 5px 10px
+        let html = `
+            <style>
+                #rst_reports .table td { padding: 5px 10px !important; vertical-align: middle; }
+                #rst_reports .table th { padding: 8px 10px !important; text-transform: uppercase; font-size: 0.75rem; }
+                .bg-total-fila { background-color: #f1f1f1; font-weight: bold; }
+            </style>
+            <table class="table table-bordered table-striped table-hover table-sm">
+                <thead class="table-dark text-center">
+                    <tr>
+                        <th class="text-start">Programa / Horario</th>
+                        ${encabezadosHorarios.map(h => `<th>${h}</th>`).join('')}
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>`;
 
         let totalColumnas = {};
         encabezadosHorarios.forEach(h => totalColumnas[h] = 0);
@@ -285,31 +303,29 @@ require_once '../partials/main.php'; ?>
 
         programas.forEach(p => {
             let totalFila = 0;
-            // Nombre del programa alineado a la izquierda para mejor lectura
             html += `<tr><td class="text-start"><strong>${p}</strong></td>`;
 
             encabezadosHorarios.forEach(h => {
                 const valor = matriz[p][h];
-                // Centramos los números
-                html += `<td class="text-center">${valor > 0 ? valor : ''}</td>`;
+                html += `<td class="text-center">${valor > 0 ? valor : '-'}</td>`;
                 totalFila += valor;
                 totalColumnas[h] += valor;
             });
 
-            html += `<td class="table-secondary text-center"><strong>${totalFila}</strong></td></tr>`;
+            html += `<td class="text-center bg-total-fila">${totalFila}</td></tr>`;
             granTotal += totalFila;
         });
 
-        // 4. Fila de Totales Generales centrado
+        // 4. Totales finales
         html += `</tbody>
-        <tfoot class="table-dark text-center">
-            <tr>
-                <td class="text-start"><strong>Total general</strong></td>
-                ${encabezadosHorarios.map(h => `<td><strong>${totalColumnas[h]}</strong></td>`).join('')}
-                    <td><strong>${granTotal}</strong></td>
+            <tfoot class="table-dark text-center text-black">
+                <tr>
+                    <td class="text-start"><strong>TOTAL GENERAL</strong></td>
+                    ${encabezadosHorarios.map(h => `<td><strong>${totalColumnas[h]}</strong></td>`).join('')}
+                    <td style="background-color: #0d6efd;"><strong>${granTotal}</strong></td>
                 </tr>
             </tfoot>
-            </table>`;
+        </table>`;
 
         contenedor.innerHTML = html;
     }

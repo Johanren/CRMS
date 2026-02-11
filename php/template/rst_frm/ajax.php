@@ -101,6 +101,19 @@ if (isset($_POST['accion'])) {
             }
             echo json_encode(["option" => $option]);
             break;
+        case 'listar_user_option_rst':
+            $lista = $user->listarUserRST();
+            $option = "<option value=''>Seleccione Usuario</option>";
+            foreach ($lista as $a) {
+                if ($a['rol_id'] == 5) {
+
+                    $option .= "
+                    <option value='{$a['id_user']}'>{$a['nombres']} {$a['apellidos']}</option>
+                ";
+                }
+            }
+            echo json_encode(["option" => $option]);
+            break;
         case 'reporte_rst_frm':
 
             $texto = $_GET['texto'] ?? '';

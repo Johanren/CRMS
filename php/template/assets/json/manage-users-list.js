@@ -35,6 +35,7 @@ function inicializarDataTableUser(rol) {
             { "data": "email" },
             { "data": "nombre_rol" },
             { "data": "nom_emp" },
+            { "data": "url" },
             { "data": "fecha_creacion" },
             {
                 "render": (data, type, row) => `
@@ -130,6 +131,7 @@ window.editarUser = (id) => {
             document.getElementById("rolS").value = user.id_rol;
             document.getElementById("empre").value = user.cod_emp;
             document.getElementById("fotoUserActual").value = user.imagen;
+            document.getElementById("urlUser").value = user.url;
 
             // Guardar ID oculto
             if (!document.getElementById("user_id")) {

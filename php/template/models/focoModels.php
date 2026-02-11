@@ -594,19 +594,10 @@ class focoModels
             u.id_user AS id_asesor,
             u.nombres AS asesor
         FROM user u
-        INNER JOIN leads l
-            ON l.user_id = u.id_user
-        INNER JOIN foco_detalle fd
-            ON fd.prog_fde = l.carrera_id
-           AND fd.jorn_fde = l.horario_id
-        INNER JOIN foco f
-            ON f.id_foc = fd.foc_fde
-           AND f.emp_foc = fd.emp_fde
-        WHERE f.emp_foc = $cod_emp
-          AND f.id_foc  = $foco
-          AND u.nombres IN ('Sandra', 'Yalile')
-        ORDER BY u.nombres
-    ";
+        WHERE u.cod_emp = $cod_emp
+          AND u.rol_id IN ('1','3')
+        ORDER BY u.nombres;
+        ";
 
         $asesores = $pdo->query($sqlAsesores)->fetchAll(PDO::FETCH_ASSOC);
 
