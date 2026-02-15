@@ -475,7 +475,14 @@ async function cargarTablaFocoResultado() {
             <tr>
                 <td>${row.programa}</td>
                 <td>${row.jornada}</td>
-                <td>${row.con_horario}</td>
+                <td>
+                    <a href="javascript:void(0);" 
+                    class="abrir-mensajes-foco fw-bold text-primary"
+                    data-programa="${row.programa}"
+                    data-jornada="${row.jornada}">
+                    ${row.con_horario}
+                    </a>
+                </td>
                 <td class="col-cupos">0</td>
 
                 <!-- VENTAS -->
@@ -580,6 +587,49 @@ async function cargarTablaFocoResultado() {
         loader.classList.add("d-none");
     }
 }
+
+document.addEventListener("click", function (e) {
+    if (e.target.classList.contains("abrir-mensajes-foco")) {
+
+        const programa = e.target.dataset.programa;
+        const jornada = e.target.dataset.jornada;
+
+        const modal = new bootstrap.Modal(document.getElementById('modalMensajesFoco'));
+        modal.show();
+
+        // Esperamos a que el modal esté visible
+        setTimeout(() => {
+            abrirModuloMensajesDesdeFoco(programa, jornada);
+        }, 300);
+    }
+});
+
+async function abrirModuloMensajesDesdeFoco(programaNombre, jornadaNombre) {
+
+    await cargarMensajesPorTema();
+    await cargarFiltrosRST(); // Ahora sí espera correctamente
+
+    const checksCarrera = document.querySelectorAll('#filtro_carrera input[type="checkbox"]');
+
+    checksCarrera.forEach(cb => {
+        const label = cb.nextElementSibling?.textContent?.trim();
+        cb.checked = (label === programaNombre.toUpperCase());
+    });
+
+    const checksJornada = document.querySelectorAll('#filtro_horario input[type="checkbox"]');
+
+    checksJornada.forEach(cb => {
+        const label = cb.nextElementSibling?.textContent?.trim();
+        cb.checked = (label === jornadaNombre.toUpperCase());
+    });
+
+    ['filtro_estado', 'filtro_asesor'].forEach(id => {
+        document.querySelectorAll(`#${id} input`).forEach(cb => cb.checked = false);
+    });
+
+    validarYCargarTabla();
+}
+
 
 function activarPorcentajeResumen(leadsData) {
 
