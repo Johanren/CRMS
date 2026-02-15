@@ -349,7 +349,12 @@ if (isset($_POST['accion'])) {
             echo json_encode($foco->listarLeadsFocoDetalle());
             break;
         case 'leads_foco_resultado':
-            echo json_encode($foco->listarLeadsFocoResultado());
+
+            $asesor = isset($_POST['asesor']) ? json_decode($_POST['asesor']) : [];
+            $carrera = isset($_POST['carreras']) ? json_decode($_POST['carreras']) : [];
+            $estados = isset($_POST['estados']) ? json_decode($_POST['estados']) : [];
+
+            echo json_encode($foco->listarLeadsFocoResultado($asesor, $carrera, $estados));
             break;
 
         case 'catalogo_filtros_mensaje':

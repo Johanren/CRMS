@@ -384,16 +384,27 @@ async function cargarTablaFocoResultado() {
 
     const loader = document.getElementById("loaderFoco");
 
+    // --- LÓGICA DE FILTROS ---
+    const f = Filtros.obtener(); // Obtenemos los filtros seleccionados
+    const params = new FormData();
+    params.append("accion", "leads_foco_resultado");
+
+    // Agregamos los filtros al FormData si existen
+    if (f.texto !== "") params.append("texto", f.texto);
+    if (f.asesor && f.asesor.length > 0) params.append("asesor", JSON.stringify(f.asesor));
+    if (f.estados && f.estados.length > 0) params.append("estados", JSON.stringify(f.estados));
+    if (f.carreras && f.carreras.length > 0) params.append("carreras", JSON.stringify(f.carreras));
+    if (f.fecha_inicio !== "") params.append("fecha_inicio", f.fecha_inicio);
+    if (f.fecha_fin !== "") params.append("fecha_fin", f.fecha_fin);
+    // -------------------------
+
     try {
         loader.classList.remove("d-none");
 
-        /* ================= DATOS LEADS ================= */
-        const leadForm = new FormData();
-        leadForm.append("accion", "leads_foco_resultado");
-
+        /* ================= PETICIÓN CON FILTROS ================= */
         const leadRes = await fetch("ajax/ajax.php", {
             method: "POST",
-            body: leadForm
+            body: params // Enviamos el FormData con los filtros
         });
         const leadsData = await leadRes.json();
 
@@ -1155,13 +1166,18 @@ document.addEventListener("click", async function (e) {
 });
 /* ===================== INIT ===================== */
 if (obtenerPaginaActual() === 'venta.php') {
-document.addEventListener("DOMContentLoaded", cargarTablaFoco);
+    document.addEventListener("DOMContentLoaded", cargarTablaFoco);
 }
 if (obtenerPaginaActual() === 'index.php') {
-document.addEventListener("DOMContentLoaded", cargarTablaFocoReporte);
+    document.addEventListener("DOMContentLoaded", cargarTablaFocoReporte);
 }
 if (obtenerPaginaActual() === 'resultado_foco.php') {
-document.addEventListener("DOMContentLoaded", cargarTablaFocoResultado);
+    document.addEventListener("DOMContentLoaded", cargarTablaFocoResultado);
+    document.addEventListener("change", function (e) {
+        if (e.target.classList.contains("filtro")) {
+            cargarTablaFocoResultado();
+        }
+    });
 }
 
 function calcularTotalCupos() {

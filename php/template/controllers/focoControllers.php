@@ -25,8 +25,8 @@ class focoControllers
         return focoModels::listarLeadsFocoDetalle();
     }
 
-    public static function listarLeadsFocoResultado(){
-        return focoModels::listarLeadsFocoResultado();
+    public static function listarLeadsFocoResultado($asesor, $carrera, $estados){
+        return focoModels::listarLeadsFocoResultado($asesor, $carrera, $estados);
     }
 
     public static function reporteFocoActivoMatriz(){

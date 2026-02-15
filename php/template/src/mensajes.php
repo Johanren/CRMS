@@ -330,35 +330,58 @@ $jsonData = json_encode($postData, JSON_UNESCAPED_UNICODE);
     /* ===========================
         AJUSTE: GENERAR CHECKBOXES EN LUGAR DE SELECTS
     =========================== */
+    let urlsAsesores = {}; // Objeto global
+
     function llenarSelect(id, datos, valueKey, textKey) {
         const contenedor = document.getElementById(id);
         if (!contenedor) return;
-
         contenedor.innerHTML = '';
 
         datos.forEach(d => {
+            // Si el catálogo es de asesores, guardamos su URL asociada al ID
+            if (id === 'filtro_asesor') {
+                urlsAsesores[d.id_asesor] = d.url || '';
+            }
+
             const div = document.createElement('div');
             div.className = 'form-check small';
-
             const input = document.createElement('input');
             input.type = 'checkbox';
             input.className = 'form-check-input filtro-check';
             input.value = d[valueKey];
             input.id = `chk_${id}_${d[valueKey]}`;
-
-            input.addEventListener('change', validarYCargarTabla);
+            // Por esto:
+            input.addEventListener('change', () => {
+                if (id === 'filtro_asesor') {
+                    actualizarUrlPorAsesor(); // <--- Esto es lo que te falta llamar
+                }
+                validarYCargarTabla();
+            });
 
             const label = document.createElement('label');
             label.className = 'form-check-label';
             label.htmlFor = input.id;
-
-            // AJUSTE AQUÍ: Convertir el texto a mayúsculas
             label.textContent = d[textKey] ? d[textKey].toUpperCase() : '';
 
             div.appendChild(input);
             div.appendChild(label);
             contenedor.appendChild(div);
         });
+    }
+
+    function actualizarUrlPorAsesor() {
+        const asesoresSeleccionados = getValoresSelect('filtro_asesor');
+        const inputUrl = document.getElementById('url');
+
+        // Si solo hay UN asesor, le ayudamos al usuario poniendo su URL en el cuadro
+        if (asesoresSeleccionados.length === 1) {
+            const idAsesor = asesoresSeleccionados[0];
+            if (urlsAsesores[idAsesor]) {
+                inputUrl.value = urlsAsesores[idAsesor];
+            }
+        }
+        // Si hay más de uno, NO borramos el input, permitimos que el usuario decida 
+        // si quiere escribir una URL global o dejarlo vacío para que use las de cada asesor.
     }
 
     /* ===========================
@@ -446,9 +469,8 @@ $jsonData = json_encode($postData, JSON_UNESCAPED_UNICODE);
             const tr = document.createElement('tr');
             tr.dataset.cliente = l.cliente;
             tr.dataset.asesor = l.asesor;
-            tr.dataset.carrera = (l.programa || l.carrera || '').toUpperCase(); // Opcional: Carrera en mayúsculas
-
-            // AJUSTE AQUÍ: Jornada (Horario) en mayúsculas para el dataset
+            tr.dataset.id_asesor = l.id_asesor; // <--- GUARDAMOS EL ID AQUÍ
+            tr.dataset.carrera = (l.programa || l.carrera || '').toUpperCase();
             tr.dataset.jornada = (l.jornada || '').toUpperCase();
             tr.dataset.mensaje = '';
 
@@ -545,20 +567,28 @@ $jsonData = json_encode($postData, JSON_UNESCAPED_UNICODE);
     }
 
     function aplicarMensajeALaTabla(plantilla) {
-        const url = document.getElementById('url')?.value || '';
+        // Leemos lo que haya en el input manual
+        const urlManual = document.getElementById('url')?.value.trim();
 
-        // Iterar sobre todas las filas del DataTable (incluso las no visibles)
         tablaLeads.rows().every(function() {
             const tr = this.node();
+            const idAsesorFila = tr.dataset.id_asesor; // ID del asesor de este cliente específico
             const nombreCliente = tr.dataset.cliente.split(' ')[0];
 
-            // Reemplazo global para todas las etiquetas
+            /* LÓGICA DE PRIORIDAD:
+               1. Si el usuario escribió algo manualmente en el campo URL, usamos eso para todos.
+               2. Si el campo URL está vacío, buscamos la URL específica de este asesor en nuestro objeto global.
+            */
+            const urlFinal = (urlManual !== '') ?
+                urlManual :
+                (urlsAsesores[idAsesorFila] || '');
+
             const mensajeFinal = plantilla
                 .replace(/{{cliente}}/g, nombreCliente)
                 .replace(/{{asesor}}/g, tr.dataset.asesor)
                 .replace(/{{carrera}}/g, tr.dataset.carrera)
                 .replace(/{{jornada}}/g, tr.dataset.jornada)
-                .replace(/{{url}}/g, url)
+                .replace(/{{url}}/g, urlFinal)
                 .replace(/{{foco}}/g, foco);
 
             tr.dataset.mensaje = mensajeFinal;
@@ -568,11 +598,6 @@ $jsonData = json_encode($postData, JSON_UNESCAPED_UNICODE);
                 col.classList.remove('text-muted');
             }
         });
-
-        // Cerrar modal si existe instancia
-        const modalEl = document.getElementById('modalSeleccionMensaje');
-        const modalInst = bootstrap.Modal.getInstance(modalEl);
-        if (modalInst) modalInst.hide();
     }
 
     /* ===========================

@@ -125,6 +125,72 @@
                         }
                     </style>
                     <div class="card-body">
+                        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+                            <div class="d-flex align-items-center gap-2 flex-wrap">
+                                <div class="dropdown">
+                                    <a href="javascript:void(0);" class="btn btn-outline-light shadow px-2"
+                                        data-bs-toggle="dropdown" data-bs-auto-close="outside"><i
+                                            class="ti ti-filter me-2"></i>Filtrar<i class="ti ti-chevron-down ms-2"></i></a>
+                                    <div class="filter-dropdown-menu dropdown-menu dropdown-menu-lg p-0">
+                                        <div
+                                            class="filter-header d-flex align-items-center justify-content-between border-bottom">
+                                            <h6 class="mb-0"><i class="ti ti-filter me-1"></i>Filtrar</h6>
+                                            <button type="button" class="btn-close close-filter-btn"
+                                                data-bs-dismiss="dropdown-menu" aria-label="Close"></button>
+                                        </div>
+                                        <div class="filter-set-view p-3">
+                                            <div class="filter-set-view p-3">
+                                                <div class="accordion" id="accordionExample">
+                                                    <div class="filter-set-content">
+                                                        <div class="filter-set-content-head">
+                                                            <a href="#" class="collapsed" data-bs-toggle="collapse"
+                                                                data-bs-target="#collapseAsesor" aria-expanded="false"
+                                                                aria-controls="collapseThree">Asesor</a>
+                                                        </div>
+                                                        <div class="filter-set-contents accordion-collapse collapse"
+                                                            id="collapseAsesor" data-bs-parent="#accordionExample">
+                                                            <div
+                                                                class="filter-content-list bg-light rounded border p-2 shadow mt-2">
+                                                                <div id="listar_filtro_user" class="overflow-x-auto"></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="filter-set-content">
+                                                        <div class="filter-set-content-head">
+                                                            <a href="#" class="collapsed" data-bs-toggle="collapse"
+                                                                data-bs-target="#collapseCarrera" aria-expanded="false"
+                                                                aria-controls="collapseThree">Carrera</a>
+                                                        </div>
+                                                        <div class="filter-set-contents accordion-collapse collapse"
+                                                            id="collapseCarrera" data-bs-parent="#accordionExample">
+                                                            <div
+                                                                class="filter-content-list bg-light rounded border p-2 shadow mt-2">
+                                                                <div id="listar_filtro_carrera" class="overflow-x-auto"></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="filter-set-content">
+                                                        <div class="filter-set-content-head">
+                                                            <a href="#" class="collapsed" data-bs-toggle="collapse"
+                                                                data-bs-target="#collapseEstado" aria-expanded="false"
+                                                                aria-controls="collapseThree">Estado</a>
+                                                        </div>
+                                                        <div class="filter-set-contents accordion-collapse collapse"
+                                                            id="collapseEstado" data-bs-parent="#accordionExample">
+                                                            <div
+                                                                class="filter-content-list bg-light rounded border p-2 shadow mt-2">
+                                                                <div id="listar_filtro_estado" class="overflow-x-auto"></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div id="contenedor-botones"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <div class="contenedor-tabla-foco">
                             <table id="tablaFocoResultado">
                                 <thead></thead>

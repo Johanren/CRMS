@@ -210,56 +210,50 @@ class focoModels
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public static function listarLeadsFocoResultado()
-    {
+    public static function listarLeadsFocoResultado(
+        $asesor = [],
+        $carrera = [],
+        $estados = []
+    ) {
+
         $sql = "SELECT
-                h.descripcion AS jornada,
-                p.desc_pro AS programa,
-                p.val_pro AS valor_programa,
+            h.descripcion AS jornada,
+            p.desc_pro AS programa,
+            p.val_pro AS valor_programa,
 
-                /* foco_detalle */
-                fd.cup_fde AS cupos,
-                fd.ven_fde AS ventas,
-                fd.rein_fde AS reintegros,
+            fd.cup_fde AS cupos,
+            fd.ven_fde AS ventas,
+            fd.rein_fde AS reintegros,
 
-                /* foco */
-                f.nom_foc AS foco,
-                f.fini_foc AS fecha_inicio,
-                f.ffin_foc AS fecha_fin,
+            f.nom_foc AS foco,
+            f.fini_foc AS fecha_inicio,
+            f.ffin_foc AS fecha_fin,
 
-                /* Leads con horario EXACTO */
-                COUNT(DISTINCT lh.id_lead) AS con_horario,
+            COUNT(DISTINCT lh.id_lead) AS con_horario,
+            COUNT(DISTINCT ls.id_lead) AS solo_carrera,
+            COUNT(DISTINCT lv.id_lead) AS ventas_estado_6
 
-                /* Leads de la carrera pero con horario distinto o NULL */
-                COUNT(DISTINCT ls.id_lead) AS solo_carrera,
+        FROM foco_detalle fd
 
-                /* Ventas (solo estado 6) */
-                COUNT(DISTINCT lv.id_lead) AS ventas_estado_6
-
-            FROM foco_detalle fd
-            INNER JOIN foco f 
-                ON f.id_foc = fd.foc_fde
+        INNER JOIN foco f 
+            ON f.id_foc = fd.foc_fde
             AND f.emp_foc = fd.emp_fde
 
-            INNER JOIN programa p 
-                ON p.cod_pro = fd.prog_fde
+        INNER JOIN programa p 
+            ON p.cod_pro = fd.prog_fde
 
-            INNER JOIN horario h 
-                ON h.id_horario = fd.jorn_fde
+        INNER JOIN horario h 
+            ON h.id_horario = fd.jorn_fde
 
-            /* Leads con horario correcto */
-            LEFT JOIN leads lh
-                ON lh.carrera_id = fd.prog_fde
+        /* Leads con horario correcto */
+        LEFT JOIN leads lh
+            ON lh.carrera_id = fd.prog_fde
             AND lh.horario_id = fd.jorn_fde
             AND lh.cod_emp = f.emp_foc
             AND lh.estado_leads_id NOT IN (6,7,8)
-            ";
-        /*if ($_SESSION['rol'] !== 'Admin') {
-            $sql .= "
-            AND lh.user_id = :user_id";
-        }*/
-        $sql .= "
-            LEFT JOIN leads lv
+
+        /* Ventas estado 6 */
+        LEFT JOIN leads lv
             ON lv.carrera_id = fd.prog_fde
             AND lv.horario_id = fd.jorn_fde
             AND lv.cod_emp = f.emp_foc
@@ -267,60 +261,108 @@ class focoModels
             AND lv.Nfactura IS NOT NULL
             AND lv.valorF IS NOT NULL
             AND lv.metodoF IS NOT NULL
-            ";
-        if ($_SESSION['rol'] !== 'Admin') {
-            $sql .= "
-            AND lv.user_id = :user_id";
-        }
-        $sql .= "
-            /* Leads solo carrera (horario distinto o NULL) */
-            LEFT JOIN leads ls
-                ON ls.carrera_id = fd.prog_fde
+
+        /* Leads solo carrera */
+        LEFT JOIN leads ls
+            ON ls.carrera_id = fd.prog_fde
             AND ls.cod_emp = f.emp_foc
             AND ls.estado_leads_id NOT IN (6,7,8)
-            ";
-        if ($_SESSION['rol'] !== 'Admin') {
-            $sql .= "
-            AND ls.user_id = :user_id
-            ";
-        }
-        $sql .= "
             AND (
-                    ls.horario_id <> fd.jorn_fde
-                    OR ls.horario_id IS NULL
+                ls.horario_id <> fd.jorn_fde
+                OR ls.horario_id IS NULL
             )
 
-            WHERE 
-                f.emp_foc = :cod_emp
-                AND f.id_foc = :foco
+        WHERE 
+            f.emp_foc = ?
+            AND f.id_foc = ?
+    ";
 
-            GROUP BY
-                h.descripcion,
-                p.desc_pro,
-                fd.cup_fde,
-                fd.ven_fde,
-                fd.rein_fde,
-                f.nom_foc,
-                f.fini_foc,
-                f.ffin_foc
+        $params = [
+            $_SESSION["cod_emp"],
+            $_SESSION["foco"]
+        ];
 
-            ORDER BY
-                h.descripcion,
-                p.desc_pro;";
+        /* ============================
+       FILTRO POR ASESOR
+    ============================ */
+        if (!empty($asesor)) {
+            $placeholders = implode(",", array_fill(0, count($asesor), "?"));
+
+            $sql .= "
+        AND (
+            lh.user_id IN ($placeholders)
+            OR lv.user_id IN ($placeholders)
+            OR ls.user_id IN ($placeholders)
+        )";
+
+            $params = array_merge($params, $asesor, $asesor, $asesor);
+        } else {
+            if ($_SESSION['rol'] !== 'Admin') {
+                $sql .= "
+            AND (
+                lh.user_id = ?
+                OR lv.user_id = ?
+                OR ls.user_id = ?
+            )";
+                $params[] = $_SESSION['user_id'];
+                $params[] = $_SESSION['user_id'];
+                $params[] = $_SESSION['user_id'];
+            }
+        }
+
+        /* ============================
+       FILTRO POR ESTADO
+    ============================ */
+        if (!empty($estados)) {
+            $placeholders = implode(",", array_fill(0, count($estados), "?"));
+            $sql .= "
+        AND (
+            lh.estado_leads_id IN ($placeholders)
+            OR ls.estado_leads_id IN ($placeholders)
+            OR lv.estado_leads_id IN ($placeholders)
+        )";
+
+            $params = array_merge($params, $estados, $estados, $estados);
+        }
+
+        /* ============================
+       FILTRO POR CARRERA
+    ============================ */
+        if (!empty($carrera)) {
+            $placeholders = implode(",", array_fill(0, count($carrera), "?"));
+            $sql .= " AND p.desc_pro IN ($placeholders)";
+            $params = array_merge($params, $carrera);
+        }
+
+        /* ============================
+       GROUP BY
+    ============================ */
+        $sql .= "
+        GROUP BY
+            h.descripcion,
+            p.desc_pro,
+            p.val_pro,
+            fd.cup_fde,
+            fd.ven_fde,
+            fd.rein_fde,
+            f.nom_foc,
+            f.fini_foc,
+            f.ffin_foc
+
+        ORDER BY
+            h.descripcion,
+            p.desc_pro
+    ";
 
         $conn = new Conexion();
-        $conectar = $conn->conectar();
+        $pdo = $conn->conectar();
 
-        $stmt = $conectar->prepare($sql);
-        $stmt->bindParam(':cod_emp', $_SESSION["cod_emp"], PDO::PARAM_INT);
-        $stmt->bindParam(':foco', $_SESSION["foco"], PDO::PARAM_INT);
-        if ($_SESSION['rol'] !== 'Admin') {
-            $stmt->bindParam(':user_id', $_SESSION["user_id"], PDO::PARAM_INT);
-        }
-        $stmt->execute();
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($params);
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
 
     public static function actulizarFocoDetalle($data)
     {
@@ -592,7 +634,8 @@ class focoModels
         $sqlAsesores = "
         SELECT DISTINCT
             u.id_user AS id_asesor,
-            u.nombres AS asesor
+            u.nombres AS asesor,
+            u.url
         FROM user u
         WHERE u.cod_emp = $cod_emp
           AND u.rol_id IN ('1','3')
