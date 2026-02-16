@@ -372,8 +372,8 @@ class LeadsModels
         ============================ */
         if (!empty($horario)) {
             $placeholders = implode(",", array_fill(0, count($horario), "?"));
-            $sql .= " AND l.horario_id IN ($placeholders)";
-            $params = array_merge($params, $horario);
+            $sql .= " AND (l.horario_id IN ($placeholders) OR h.descripcion IN ($placeholders))";
+            $params = array_merge($params, $horario, $horario);
         }
 
         /* ===========================

@@ -380,212 +380,205 @@ async function cargarTablaFocoReporte() {
     }
 }
 
+// Variable global para controlar la cancelación de peticiones anteriores
+let abortController;
+
+/**
+ * Función principal optimizada.
+ * Implementa construcción de string eficiente y manejo de concurrencia.
+ */
 async function cargarTablaFocoResultado() {
+    // 1. Cancelar petición en curso si existe para evitar "cola" de procesos
+    if (abortController) {
+        abortController.abort();
+    }
+    abortController = new AbortController();
+    const { signal } = abortController;
 
     const loader = document.getElementById("loaderFoco");
+    const thead = document.querySelector("#tablaFocoResultado thead");
+    const tbody = document.querySelector("#tablaFocoResultado tbody");
 
     // --- LÓGICA DE FILTROS ---
-    const f = Filtros.obtener(); // Obtenemos los filtros seleccionados
+    const f = Filtros.obtener();
     const params = new FormData();
     params.append("accion", "leads_foco_resultado");
 
-    // Agregamos los filtros al FormData si existen
     if (f.texto !== "") params.append("texto", f.texto);
     if (f.asesor && f.asesor.length > 0) params.append("asesor", JSON.stringify(f.asesor));
     if (f.estados && f.estados.length > 0) params.append("estados", JSON.stringify(f.estados));
     if (f.carreras && f.carreras.length > 0) params.append("carreras", JSON.stringify(f.carreras));
     if (f.fecha_inicio !== "") params.append("fecha_inicio", f.fecha_inicio);
     if (f.fecha_fin !== "") params.append("fecha_fin", f.fecha_fin);
-    // -------------------------
 
     try {
         loader.classList.remove("d-none");
 
-        /* ================= PETICIÓN CON FILTROS ================= */
         const leadRes = await fetch("ajax/ajax.php", {
             method: "POST",
-            body: params // Enviamos el FormData con los filtros
+            body: params,
+            signal: signal // Asignamos la señal de aborto
         });
+
         const leadsData = await leadRes.json();
 
-        const thead = document.querySelector("#tablaFocoResultado thead");
-        const tbody = document.querySelector("#tablaFocoResultado tbody");
+        // --- CÁLCULOS INICIALES ---
         let cupos = [...new Set(leadsData.map(d => d.ventas))];
-        const totalLeads = leadsData.reduce((total, d) => {
-            return total + Number(d.con_horario || 0);
-        }, 0);
+        const totalLeads = leadsData.reduce((total, d) => total + Number(d.con_horario || 0), 0);
+        const totalVendi = leadsData.reduce((total, d) => total + Number(d.ventas_estado_6 || 0), 0);
 
-        const totalVendi = leadsData.reduce((total, d) => {
-            return total + Number(d.ventas_estado_6 || 0);
-        }, 0);
-
+        // --- RENDERIZADO DE THEAD ---
         thead.innerHTML = `
-
-            <!-- ================= FILA SUPERIOR RESUMEN ================= -->
             <tr class="fw-bold text-center">
-                <th id="resumenCupo1" style="cursor:pointer" colspan="1">${cupos[0]}</th>
+                <th id="resumenCupo1" style="cursor:pointer" colspan="1">${cupos[0] || 0}</th>
                 <th id="resumenPorcentaje" style="cursor:pointer" colspan="2">100%</th>
-                <th class="resumenCupo2" colspan="1">${cupos[0]}</th>
-
+                <th class="resumenCupo2" colspan="1">${cupos[0] || 0}</th>
                 <th colspan="6" class="bg-warning text-center">VENTAS</th>
                 <th colspan="6" class="bg-primary text-white text-center">REINTEGROS</th>
                 <th colspan="3" class="bg-info text-center">RESULTADOS</th>
             </tr>
-
-            <!-- ================= HEADER NIVEL 1 ================= -->
             <tr>
                 <th rowspan="2">Técnica</th>
                 <th rowspan="2">J</th>
                 <th rowspan="2">Leads</th>
                 <th rowspan="2">Cupos</th>
-            </tr>
-
-            <!-- ================= HEADER NIVEL 2 ================= -->
-            <tr>
-                <!-- VENTAS -->
                 <th rowspan="2">Meta</th>
                 <th rowspan="2">Vendido</th>
                 <th rowspan="2">Cumpl %</th>
                 <th rowspan="2">Faltan</th>
                 <th rowspan="2">Leads/Faltan</th>
                 <th rowspan="2" id="thValorPrograma" style="cursor:pointer">$</th>
-
-                <!-- REINTEGROS -->
                 <th rowspan="2">Meta</th>
                 <th rowspan="2">ADN</th>
                 <th rowspan="2">Reintegros</th>
                 <th rowspan="2">Cumpl %</th>
                 <th rowspan="2">Cupos</th>
                 <th rowspan="2"></th>
-
-                <!-- RESULTADOS -->
                 <th rowspan="2">Alumnos</th>
                 <th rowspan="2">Densidad</th>
                 <th rowspan="2">Faltan</th>
             </tr>
         `;
 
-
-        tbody.innerHTML = "";
-
-        /* ================= FILAS DE EJEMPLO ================= */
+        // --- RENDERIZADO DE TBODY (USANDO ACUMULADOR DE STRING) ---
+        // Esto es mucho más rápido que hacer innerHTML += en cada vuelta
+        let htmlRows = "";
 
         leadsData.forEach(row => {
-            tbody.innerHTML += `
+            htmlRows += `
             <tr>
                 <td>${row.programa}</td>
                 <td>${row.jornada}</td>
                 <td>
                     <a href="javascript:void(0);" 
-                    class="abrir-mensajes-foco fw-bold text-primary"
-                    data-programa="${row.programa}"
-                    data-jornada="${row.jornada}">
-                    ${row.con_horario}
+                       class="abrir-mensajes-foco fw-bold text-primary"
+                       data-programa="${row.programa}"
+                       data-jornada="${row.jornada}">
+                       ${row.con_horario}
                     </a>
                 </td>
                 <td class="col-cupos">0</td>
-
-                <!-- VENTAS -->
                 <td class="col-metas">0</td>
                 <td class="col-ventas" data-ventas="${row.ventas_estado_6}">${row.ventas_estado_6}</td>
                 <td class="col-resultado">0%</td>
                 <td class="col-restante">0</td>
                 <td class="col-leads-restante">0</td>
                 <td class="col-valor" data-valor="${row.valor_programa}"></td>
-
-                <!-- REINTEGROS -->
                 <td class="col-meta">0</td>
                 <td class="col-ADN" data-ADN="0">0</td>
                 <td class="col-reintegro" data-reintegro="0">0</td>
                 <td class="col-resulado-reintegro">0%</td>
                 <td class="col-cupo-reintegro">0</td>
                 <td class="col-cupo-ADN">0</td>
-
-                <!-- RESULTADOS -->
                 <td class="col-alumno">0</td>
                 <td class="col-densidad">0%</td>
                 <td class="col-falta">0</td>
-            </tr>
-        `;
+            </tr>`;
         });
 
-        /* ================= FILA TOTALES ================= */
-        tbody.innerHTML += `
+        // Fila Totales
+        htmlRows += `
         <tr class="fw-bold table-secondary">
             <td>Total Grupos</td>
             <td id="totalGrupo"></td>
             <td id="totalLeads">${totalLeads}</td>
             <td id="totalCupos">0</td>
-
             <td id="totalMeta">0</td>
             <td>${totalVendi}</td>
             <td id="totalCumpl">0</td>
             <td id="totalRestante">0</td>
             <td id="totalLeadsRestante">0</td>
             <td id="totalValor">0</td>
-
             <td id="totalMetaIntegro">0</td>
             <td>0</td>
             <td>0</td>
             <td id="totalCumIntegro">0</td>
             <td id="totalCupoIntegro">0</td>
             <td id="totalADN">0</td>
-
             <td id="totalAlumno">0</td>
             <td id="totalDensidad">0</td>
             <td id="totalFalta">0</td>
         </tr>
-    `;
-
-        /* ================= FILA ABAJO 1 ================= */
-        tbody.innerHTML += `
         <tr class="fw-bold table-secondary">
             <td>Alumnos x Grupo</td>
             <td id="totalalumnoPorciento"></td>
             <td id="totalAlumnosBajo"></td>
             <td id="totalDensidadPorciento1">0</td>
-
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
+            <td></td><td></td><td></td><td></td><td></td>
             <td id="totalValorPorcen">0</td>
-
             <td id="totalMetaPorcen">0</td>
             <td></td>
             <td>0%</td>
             <td colspan="2" id="totalCuposPorcen">0</td>
             <td></td>
-
             <td id="totalalumnoPorciento1">0</td>
             <td id="totalDensidadPorciento">0</td>
             <td id="totalFaltaPorciento">0</td>
         </tr>
-    `;
-
-        /* ================= FILA CUPOS ================= */
-        tbody.innerHTML += `
         <tr class="fw-bold table-secondary">
             <td></td>
-            <td id="">Ventas</td>
+            <td>Ventas</td>
             <td id="totalVendi" data-vendi="${totalVendi}">${totalVendi}</td>
             <td id="tdvalorVendi">0%</td>
         </tr>
         <tr class="fw-bold table-secondary">
             <td></td>
-            <td id="">Reintegros</td>
-            <td id="">0</td>
-            <td id="">0%</td>
-        </tr>
-    `;
+            <td>Reintegros</td>
+            <td>0</td>
+            <td>0%</td>
+        </tr>`;
+
+        // Inserción masiva en el DOM (Una sola operación)
+        tbody.innerHTML = htmlRows;
+
+        // Ejecutar lógicas adicionales
         activarPorcentajeResumen(leadsData);
         activarSeleccionFila("tablaFocoResultado");
+
     } catch (e) {
-        console.error("Error tabla foco:", e);
+        if (e.name === 'AbortError') {
+            console.log("Petición cancelada porque el usuario cambió los filtros rápidamente.");
+        } else {
+            console.error("Error tabla foco:", e);
+        }
     } finally {
-        loader.classList.add("d-none");
+        // Solo ocultamos el loader si no es una cancelación por nueva petición
+        if (!signal.aborted) {
+            loader.classList.add("d-none");
+        }
     }
+}
+
+/**
+ * DEBOUNCE: Esta es la clave para que los filtros no bloqueen la web.
+ * Envuelve tu llamada a los filtros con esta función.
+ */
+let timeoutFiltro;
+function manejarCambioFiltro() {
+    clearTimeout(timeoutFiltro);
+    timeoutFiltro = setTimeout(() => {
+        cargarTablaFocoResultado();
+    }, 500); // Espera 500ms después del último clic para ejecutar
 }
 
 document.addEventListener("click", function (e) {
@@ -594,42 +587,134 @@ document.addEventListener("click", function (e) {
         const programa = e.target.dataset.programa;
         const jornada = e.target.dataset.jornada;
 
-        const modal = new bootstrap.Modal(document.getElementById('modalMensajesFoco'));
-        modal.show();
+        console.log("Programa:", programa);
+        console.log("Jornada:", jornada);
 
-        // Esperamos a que el modal esté visible
-        setTimeout(() => {
-            abrirModuloMensajesDesdeFoco(programa, jornada);
-        }, 300);
+        // Mostrar contenedor inferior
+        const contenedor = document.getElementById("contenedorLeadsFoco");
+        contenedor.classList.remove("d-none");
+
+        // Guardar filtros globalmente
+        window.programaSeleccionado = programa;
+        window.jornadaSeleccionada = jornada;
+
+        // Cargar leads automáticamente
+        listarLeadsDesdeFoco(programa, jornada);
     }
 });
 
+function listarLeadsDesdeFoco(programaNombre, jornadaNombre) {
+
+    const params = new URLSearchParams();
+    params.append("accion", "listar_leads");
+
+    // Enviar como array estilo filtros normales
+    const carrerasArray = [programaNombre];
+    const horarioArray = [jornadaNombre];
+
+    params.append("carreras", JSON.stringify(carrerasArray));
+    params.append("horario", JSON.stringify(horarioArray));
+
+    fetch("ajax/ajax.php?" + params.toString())
+        .then(res => res.json())
+        .then(data => {
+            if (document.getElementById("leads_list")) {
+                inicializarDataTableLeads(data);
+            }
+        })
+        .catch(err => console.error("Error al listar leads:", err));
+}
+
+let tablaLeadsFoco = null;
+
+function inicializarDataTableLeads(data) {
+
+    if (tablaLeadsFoco) {
+        tablaLeadsFoco.destroy();
+        tablaLeadsFoco = null;
+    }
+
+    const tbody = document.querySelector("#leads_list tbody");
+    tbody.innerHTML = "";
+
+    if (!data || !data.length) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="7" class="text-center text-muted">
+                    No hay resultados
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
+    data.forEach(l => {
+        const tr = document.createElement("tr");
+
+        tr.innerHTML = `
+            <td>${l.nombres} ${l.apellidos}</td>
+            <td>${l.desc_pro}</td>
+            <td>${l.telefono_principal}</td>
+            <td>${l.estado}</td>
+            <td>${l.nombreAsesor}</td>
+            <td>${l.fecha_creacion}</td>
+        `;
+
+        tbody.appendChild(tr);
+    });
+
+    tablaLeadsFoco = $('#leads_list').DataTable({
+        responsive: true,
+        pageLength: 10
+    });
+}
+
+document.getElementById("btnAbrirModalMensajes")
+    ?.addEventListener("click", function () {
+
+        const modal = new bootstrap.Modal(
+            document.getElementById('modalMensajesFoco')
+        );
+
+        modal.show();
+
+        abrirModuloMensajesDesdeFoco(
+            window.programaSeleccionado,
+            window.jornadaSeleccionada
+        );
+    });
+
 async function abrirModuloMensajesDesdeFoco(programaNombre, jornadaNombre) {
-
+    // 1. Primero cargamos los datos y esperamos a que el DOM se construya
     await cargarMensajesPorTema();
-    await cargarFiltrosRST(); // Ahora sí espera correctamente
+    await cargarFiltrosRST(); // Ahora sí esperará porque pusimos el 'return' arriba
 
+    // 2. Una vez que llenarSelect() terminó de crear los inputs, buscamos y marcamos
     const checksCarrera = document.querySelectorAll('#filtro_carrera input[type="checkbox"]');
-
     checksCarrera.forEach(cb => {
         const label = cb.nextElementSibling?.textContent?.trim();
-        cb.checked = (label === programaNombre.toUpperCase());
+        // Usamos uppercase para comparar de forma segura
+        if (label === programaNombre.toUpperCase()) {
+            cb.checked = true;
+        }
     });
 
     const checksJornada = document.querySelectorAll('#filtro_horario input[type="checkbox"]');
-
     checksJornada.forEach(cb => {
         const label = cb.nextElementSibling?.textContent?.trim();
-        cb.checked = (label === jornadaNombre.toUpperCase());
+        if (label === jornadaNombre.toUpperCase()) {
+            cb.checked = true;
+        }
     });
 
+    // 3. Limpiar otros filtros
     ['filtro_estado', 'filtro_asesor'].forEach(id => {
         document.querySelectorAll(`#${id} input`).forEach(cb => cb.checked = false);
     });
 
+    // 4. Finalmente cargar la tabla con los filtros ya aplicados
     validarYCargarTabla();
 }
-
 
 function activarPorcentajeResumen(leadsData) {
 

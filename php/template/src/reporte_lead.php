@@ -155,6 +155,35 @@
                         <p>Cargando reporte...</p>
                     </div>
                 </div>
+                <div id="contenedorLeadsFoco" class="mt-4 d-none">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                            <h6 class="mb-0 fw-bold">
+                                Leads filtrados por Programa y Jornada
+                            </h6>
+
+                            <button id="btnAbrirModalMensajes" class="btn btn-primary btn-sm">
+                                Enviar mensajes
+                            </button>
+                        </div>
+
+                        <div class="card-body table-responsive">
+                            <table class="table table-nowrap" id="leads_list">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Nombre</th>
+                                        <th>Carrera</th>
+                                        <th>Telefono</th>
+                                        <th>Estado</th>
+                                        <th>Asesor</th>
+                                        <th>Fecha creación</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
                 <!-- /Contact List -->
 
             </div>
@@ -527,70 +556,8 @@ require_once '../partials/main.php'; ?>
     </table>`;
 
         contenedor.innerHTML = html;
-
-        // 5. Inicializar el evento Click para las celdas
-        asignarEventosCeldas();
     }
 
-    /**
-     * Función para manejar los clics en las celdas de la matriz
-     */
-    function asignarEventosCeldas() {
-        const celdas = document.querySelectorAll('.abrir-mensajes-foco, .bg-total-fila');
-        celdas.forEach(celda => {
-            celda.onclick = function() {
-                const programa = this.getAttribute('data-programa');
-                const jornada = this.getAttribute('data-jornada');
-
-                console.log(`Filtrando leads de: ${programa} - Jornada: ${jornada}`);
-
-                // Aquí llamas a tu función que abre el modal o filtra la tabla de leads
-                // Ejemplo: mostrarModalLeads(programa, jornada);
-            };
-        });
-    }
-
-    document.addEventListener("click", function(e) {
-        if (e.target.classList.contains("abrir-mensajes-foco")) {
-
-            const programa = e.target.dataset.programa;
-            const jornada = e.target.dataset.jornada;
-
-            const modal = new bootstrap.Modal(document.getElementById('modalMensajesFoco'));
-            modal.show();
-
-            // Esperamos a que el modal esté visible
-            setTimeout(() => {
-                abrirModuloMensajesDesdeFoco(programa, jornada);
-            }, 300);
-        }
-    });
-
-    async function abrirModuloMensajesDesdeFoco(programaNombre, jornadaNombre) {
-
-        await cargarMensajesPorTema();
-        await cargarFiltrosRST(); // Ahora sí espera correctamente
-
-        const checksCarrera = document.querySelectorAll('#filtro_carrera input[type="checkbox"]');
-
-        checksCarrera.forEach(cb => {
-            const label = cb.nextElementSibling?.textContent?.trim();
-            cb.checked = (label === programaNombre.toUpperCase());
-        });
-
-        const checksJornada = document.querySelectorAll('#filtro_horario input[type="checkbox"]');
-
-        checksJornada.forEach(cb => {
-            const label = cb.nextElementSibling?.textContent?.trim();
-            cb.checked = (label === jornadaNombre.toUpperCase());
-        });
-
-        ['filtro_estado', 'filtro_asesor'].forEach(id => {
-            document.querySelectorAll(`#${id} input`).forEach(cb => cb.checked = false);
-        });
-
-        validarYCargarTabla();
-    }
 
     function exportarExcel(tipo) {
         const f = Filtros.obtener();
@@ -616,11 +583,37 @@ require_once '../partials/main.php'; ?>
     /* ===========================
        VARIABLES GLOBALES
     =========================== */
-    const foco = 55;
-    let mensajesPorTema = {}; // Ahora almacenará arrays de mensajes
+    const foco = '55';
+    let mensajesPorTema = {};
+    let urlsAsesores = {}; // Objeto para mapear ID -> {url, nombre}
 
     /* ===========================
-       CARGAR MENSAJES POR TEMA (SOPORTA MÚLTIPLES)
+       DOM READY
+    =========================== */
+    document.addEventListener('DOMContentLoaded', async () => {
+        await cargarMensajesPorTema();
+        cargarFiltrosRST();
+
+        // Eventos para filtros
+        ['filtro_carrera', 'filtro_horario', 'filtro_estado', 'filtro_asesor']
+        .forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.addEventListener('change', validarYCargarTabla);
+        });
+
+        document.getElementById('filtro_numero')?.addEventListener('input', validarYCargarTabla);
+        document.getElementById('tema_mensaje')?.addEventListener('change', generarMensajesPorTema);
+        document.getElementById('btn_guardar_mensajes')?.addEventListener('click', guardarMensajes);
+
+        // Evento para actualizar mensajes si el usuario cambia la URL manualmente
+        document.getElementById('url')?.addEventListener('input', () => {
+            const btnActivo = document.querySelector('.opcion-mensaje.active-selection p');
+            if (btnActivo) aplicarMensajeALaTabla(btnActivo.textContent);
+        });
+    });
+
+    /* ===========================
+       CARGA DE DATOS (AJAX)
     =========================== */
     function cargarMensajesPorTema() {
         const datos = new FormData();
@@ -634,10 +627,7 @@ require_once '../partials/main.php'; ?>
             .then(data => {
                 mensajesPorTema = {};
                 data.forEach(item => {
-                    // Si el tipo no existe en nuestro objeto, lo inicializamos como array
-                    if (!mensajesPorTema[item.tipo]) {
-                        mensajesPorTema[item.tipo] = [];
-                    }
+                    if (!mensajesPorTema[item.tipo]) mensajesPorTema[item.tipo] = [];
                     mensajesPorTema[item.tipo].push(item.mensaje);
                 });
                 return true;
@@ -645,32 +635,12 @@ require_once '../partials/main.php'; ?>
             .catch(() => false);
     }
 
-    /* ===========================
-       DOM READY
-    =========================== */
-    document.addEventListener('DOMContentLoaded', async () => {
-        await cargarMensajesPorTema();
-        cargarFiltrosRST();
-
-        ['filtro_carrera', 'filtro_horario', 'filtro_estado', 'filtro_asesor']
-        .forEach(id => {
-            const el = document.getElementById(id);
-            if (el) el.addEventListener('change', validarYCargarTabla);
-        });
-
-        document.getElementById('filtro_numero')?.addEventListener('input', validarYCargarTabla);
-        document.getElementById('tema_mensaje')?.addEventListener('change', generarMensajesPorTema);
-        document.getElementById('btn_guardar_mensajes')?.addEventListener('click', guardarMensajes);
-    });
-
-    /* ===========================
-       LÓGICA DE FILTROS Y TABLA
-    =========================== */
     function cargarFiltrosRST() {
         const datos = new FormData();
         datos.append('accion', 'catalogo_filtros_mensaje');
 
-        return fetch('ajax/ajax.php', { // <-- IMPORTANTE: return
+        // Agregamos el "return" al inicio
+        return fetch('ajax/ajax.php', {
                 method: 'POST',
                 body: datos
             })
@@ -683,20 +653,18 @@ require_once '../partials/main.php'; ?>
             });
     }
 
-    /* ===========================
-        AJUSTE: GENERAR CHECKBOXES EN LUGAR DE SELECTS
-    =========================== */
-    let urlsAsesores = {}; // Objeto global
-
     function llenarSelect(id, datos, valueKey, textKey) {
         const contenedor = document.getElementById(id);
         if (!contenedor) return;
         contenedor.innerHTML = '';
 
         datos.forEach(d => {
-            // Si el catálogo es de asesores, guardamos su URL asociada al ID
+            // Guardar datos de asesores en el diccionario global
             if (id === 'filtro_asesor') {
-                urlsAsesores[d.id_asesor] = d.url || '';
+                urlsAsesores[d.id_asesor] = {
+                    url: d.url || '',
+                    nombre: (d.asesor || '').toUpperCase()
+                };
             }
 
             const div = document.createElement('div');
@@ -706,11 +674,9 @@ require_once '../partials/main.php'; ?>
             input.className = 'form-check-input filtro-check';
             input.value = d[valueKey];
             input.id = `chk_${id}_${d[valueKey]}`;
-            // Por esto:
+
             input.addEventListener('change', () => {
-                if (id === 'filtro_asesor') {
-                    actualizarUrlPorAsesor(); // <--- Esto es lo que te falta llamar
-                }
+                if (id === 'filtro_asesor') actualizarUrlPorAsesor();
                 validarYCargarTabla();
             });
 
@@ -725,42 +691,32 @@ require_once '../partials/main.php'; ?>
         });
     }
 
+    /* ===========================
+       LÓGICA DE NEGOCIO (URLS Y TABLA)
+    =========================== */
     function actualizarUrlPorAsesor() {
-        const asesoresSeleccionados = getValoresSelect('filtro_asesor');
+        const seleccionados = getValoresSelect('filtro_asesor');
         const inputUrl = document.getElementById('url');
 
-        // Si solo hay UN asesor, le ayudamos al usuario poniendo su URL en el cuadro
-        if (asesoresSeleccionados.length === 1) {
-            const idAsesor = asesoresSeleccionados[0];
-            if (urlsAsesores[idAsesor]) {
-                inputUrl.value = urlsAsesores[idAsesor];
-            }
+        // Si solo hay un asesor, ponemos su URL en el input para edición
+        if (seleccionados.length === 1) {
+            const id = seleccionados[0];
+            inputUrl.value = urlsAsesores[id] ? urlsAsesores[id].url : '';
         }
-        // Si hay más de uno, NO borramos el input, permitimos que el usuario decida 
-        // si quiere escribir una URL global o dejarlo vacío para que use las de cada asesor.
     }
 
-    /* ===========================
-        AJUSTE: LEER VALORES DE CHECKBOXES
-    =========================== */
     function getValoresSelect(id) {
         const contenedor = document.getElementById(id);
         if (!contenedor) return [];
-
-        // Buscamos solo los inputs tipo checkbox que estén marcados
         const seleccionados = contenedor.querySelectorAll('input[type="checkbox"]:checked');
         return Array.from(seleccionados).map(cb => cb.value);
     }
 
-    /* ===========================
-        AJUSTE: VALIDACIÓN Y BLOQUEO
-    =========================== */
     function validarYCargarTabla() {
         const numero = document.getElementById('filtro_numero')?.value.trim();
         const filtrosIds = ['filtro_carrera', 'filtro_horario', 'filtro_estado', 'filtro_asesor'];
 
         if (numero) {
-            // Si hay número, deshabilitamos todos los checkboxes
             filtrosIds.forEach(id => {
                 document.querySelectorAll(`#${id} input`).forEach(cb => {
                     cb.disabled = true;
@@ -771,20 +727,13 @@ require_once '../partials/main.php'; ?>
             return;
         }
 
-        // Habilitar checkboxes si no hay número
         filtrosIds.forEach(id => {
             document.querySelectorAll(`#${id} input`).forEach(cb => cb.disabled = false);
         });
 
-        // Validar que al menos haya un check en cada grupo (si así lo requiere tu lógica)
-        // O simplemente cargar si hay algún filtro activo.
-        const algunFiltroActivo = filtrosIds.some(id => getValoresSelect(id).length > 0);
-
-        if (algunFiltroActivo || numero) {
-            cargarTablaLeads();
-        } else {
-            limpiarTabla('Seleccione filtros para cargar la lista');
-        }
+        const algunFiltro = filtrosIds.some(id => getValoresSelect(id).length > 0);
+        if (algunFiltro) cargarTablaLeads();
+        else limpiarTabla('Seleccione filtros para cargar la lista');
     }
 
     function cargarTablaLeads() {
@@ -823,20 +772,26 @@ require_once '../partials/main.php'; ?>
 
         leads.forEach(l => {
             const tr = document.createElement('tr');
+
+            // BUSCAR ID DEL ASESOR para vincular la URL correcta
+            const idAsesor = Object.keys(urlsAsesores).find(key =>
+                urlsAsesores[key].nombre === (l.asesor || '').toUpperCase()
+            );
+
             tr.dataset.cliente = l.cliente;
             tr.dataset.asesor = l.asesor;
-            tr.dataset.id_asesor = l.id_asesor || ''; // <--- GUARDAMOS EL ID AQUÍ
-            tr.dataset.carrera = (l.programa || l.carrera || '').toUpperCase();
+            tr.dataset.id_asesor = idAsesor || '';
+            tr.dataset.carrera = (l.carrera || '').toUpperCase();
             tr.dataset.jornada = (l.jornada || '').toUpperCase();
             tr.dataset.mensaje = '';
 
             tr.innerHTML = `
-            <td>${l.id_lead}</td>
-            <td>${l.cliente.split(' ')[0]}</td>
-            <td>${l.numero}</td>
-            <td>${l.asesor}</td>
-            <td class="mensaje-col text-muted italic">Seleccione un tema</td>
-        `;
+                <td>${l.id_lead}</td>
+                <td>${l.cliente.split(' ')[0]}</td>
+                <td>${l.numero}</td>
+                <td>${l.asesor}</td>
+                <td class="mensaje-col text-muted italic">Seleccione un tema</td>
+            `;
             tbody.appendChild(tr);
         });
         iniciarDataTable();
@@ -848,12 +803,7 @@ require_once '../partials/main.php'; ?>
             pageLength: 10,
             language: {
                 search: "Buscar:",
-                zeroRecords: "No hay resultados",
-                info: "Mostrando _START_ a _END_ de _TOTAL_",
-                paginate: {
-                    next: "Siguiente",
-                    previous: "Anterior"
-                }
+                zeroRecords: "No hay resultados"
             }
         });
     }
@@ -868,7 +818,7 @@ require_once '../partials/main.php'; ?>
     }
 
     /* ===========================
-       GESTIÓN DE MENSAJES (MODAL O DIRECTO)
+       GESTIÓN DE MENSAJES
     =========================== */
     function generarMensajesPorTema() {
         const tema = document.getElementById('tema_mensaje')?.value;
@@ -876,7 +826,6 @@ require_once '../partials/main.php'; ?>
         const wrapper = document.getElementById('wrapper-opciones');
         const contador = document.getElementById('contador-variantes');
 
-        // Si no hay tema seleccionado, ocultamos todo y salimos
         if (!tema || !mensajesPorTema[tema]) {
             wrapper.classList.add('d-none');
             contenedor.innerHTML = '';
@@ -887,57 +836,50 @@ require_once '../partials/main.php'; ?>
         contenedor.innerHTML = '';
 
         if (opciones.length > 1) {
-            // MOSTRAR PANEL: Hay 2 o más mensajes
             wrapper.classList.remove('d-none');
             contador.textContent = `${opciones.length} variantes`;
 
             opciones.forEach((msg, index) => {
                 const btn = document.createElement('button');
                 btn.type = "button";
-                btn.className =
-                    "list-group-item list-group-item-action opcion-mensaje d-flex align-items-start gap-3 py-3";
-
+                btn.className = "list-group-item list-group-item-action opcion-mensaje d-flex align-items-start gap-3 py-3";
                 btn.innerHTML = `
-                <div class="badge rounded-pill bg-info mt-1">${index + 1}</div>
-                <div class="flex-grow-1">
-                    <p class="mb-0 text-dark" style="font-size: 0.88rem; line-height: 1.5;">${msg}</p>
-                </div>
-            `;
-
+                    <div class="badge rounded-pill bg-info mt-1">${index + 1}</div>
+                    <div class="flex-grow-1">
+                        <p class="mb-0 text-dark" style="font-size: 0.88rem;">${msg}</p>
+                    </div>`;
                 btn.onclick = function() {
-                    document.querySelectorAll('.opcion-mensaje').forEach(el => el.classList.remove(
-                        'active-selection'));
-                    btn.classList.add('active-selection');
+                    document.querySelectorAll('.opcion-mensaje').forEach(el => el.classList.remove('active-selection', 'bg-light'));
+                    btn.classList.add('active-selection', 'bg-light');
                     aplicarMensajeALaTabla(msg);
                 };
-
                 contenedor.appendChild(btn);
             });
-        } else {
-            // OCULTAR Y PROCESAR: Solo hay 1 mensaje (o ninguno extrañamente)
+        } else if (opciones.length === 1) {
             wrapper.classList.add('d-none');
-            if (opciones.length === 1) {
-                aplicarMensajeALaTabla(opciones[0]);
-            }
+            aplicarMensajeALaTabla(opciones[0]);
         }
     }
 
     function aplicarMensajeALaTabla(plantilla) {
-        // Leemos lo que haya en el input manual
+        const asesoresSeleccionados = getValoresSelect('filtro_asesor');
+        const cantidadAsesores = asesoresSeleccionados.length;
         const urlManual = document.getElementById('url')?.value.trim();
 
         tablaLeads.rows().every(function() {
             const tr = this.node();
-            const idAsesorFila = tr.dataset.id_asesor; // ID del asesor de este cliente específico
+            const idAsesorFila = tr.dataset.id_asesor;
             const nombreCliente = tr.dataset.cliente.split(' ')[0];
 
-            /* LÓGICA DE PRIORIDAD:
-               1. Si el usuario escribió algo manualmente en el campo URL, usamos eso para todos.
-               2. Si el campo URL está vacío, buscamos la URL específica de este asesor en nuestro objeto global.
-            */
-            const urlFinal = (urlManual !== '') ?
-                urlManual :
-                (urlsAsesores[idAsesorFila] || '');
+            // LOGICA REQUERIDA:
+            // Si hay 1 asesor: Prioridad al input manual.
+            // Si hay varios: Prioridad a la URL individual del catálogo.
+            let urlFinal = '';
+            if (cantidadAsesores === 1) {
+                urlFinal = urlManual;
+            } else {
+                urlFinal = (urlsAsesores[idAsesorFila] ? urlsAsesores[idAsesorFila].url : urlManual) || '';
+            }
 
             const mensajeFinal = plantilla
                 .replace(/{{cliente}}/g, nombreCliente)
@@ -956,16 +898,13 @@ require_once '../partials/main.php'; ?>
         });
     }
 
-    /* ===========================
-       GUARDAR / ENVIAR
-    =========================== */
     function guardarMensajes() {
         if (!tablaLeads) return alert('No hay datos en la tabla');
 
         const mensajes = [];
         tablaLeads.rows().every(function() {
             const tr = this.node();
-            if (tr.dataset.mensaje && tr.dataset.mensaje !== '') {
+            if (tr.dataset.mensaje) {
                 mensajes.push({
                     id_lead: tr.children[0].textContent,
                     numero: tr.children[2].textContent,
@@ -976,7 +915,7 @@ require_once '../partials/main.php'; ?>
             }
         });
 
-        if (!mensajes.length) return alert('Primero seleccione un tema para generar los mensajes');
+        if (!mensajes.length) return alert('Seleccione un tema primero');
 
         const datos = new FormData();
         datos.append('accion', 'guardar_mensajes_rst');
@@ -987,7 +926,7 @@ require_once '../partials/main.php'; ?>
                 body: datos
             })
             .then(res => res.json())
-            .then(r => alert(r.ok ? '✔ Mensajes guardados correctamente' : '❌ Error al guardar'))
-            .catch(() => alert('❌ Error de conexión con el servidor'));
+            .then(r => alert(r.ok ? '✔ Mensajes guardados' : '❌ Error'))
+            .catch(() => alert('❌ Error de conexión'));
     }
 </script>
