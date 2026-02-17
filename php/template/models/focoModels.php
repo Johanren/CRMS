@@ -216,71 +216,64 @@ class focoModels
         $estados = []
     ) {
 
-        $sql = "SELECT
-            h.descripcion AS jornada,
-            p.desc_pro AS programa,
-            p.val_pro AS valor_programa,
+        $sql = "
+    SELECT
+        h.descripcion AS jornada,
+        p.desc_pro AS programa,
+        p.val_pro AS valor_programa,
 
-            fd.cup_fde AS cupos,
-            fd.ven_fde AS ventas,
-            fd.rein_fde AS reintegros,
+        fd.cup_fde AS cupos,
+        fd.ven_fde AS ventas,
+        fd.rein_fde AS reintegros,
 
-            f.nom_foc AS foco,
-            f.fini_foc AS fecha_inicio,
-            f.ffin_foc AS fecha_fin,
-
-            COUNT(DISTINCT lh.id_lead) AS con_horario,
-            COUNT(DISTINCT ls.id_lead) AS solo_carrera,
-            COUNT(DISTINCT lv.id_lead) AS ventas_estado_6
-
-        FROM foco_detalle fd
-
-        INNER JOIN foco f 
-            ON f.id_foc = fd.foc_fde
-            AND f.emp_foc = fd.emp_fde
-
-        INNER JOIN programa p 
-            ON p.cod_pro = fd.prog_fde
-
-        INNER JOIN horario h 
-            ON h.id_horario = fd.jorn_fde
+        f.nom_foc AS foco,
+        f.fini_foc AS fecha_inicio,
+        f.ffin_foc AS fecha_fin,
 
         /* Leads con horario correcto */
-        LEFT JOIN leads lh
-            ON lh.carrera_id = fd.prog_fde
-            AND lh.horario_id = fd.jorn_fde
-            AND lh.cod_emp = f.emp_foc
-            AND lh.estado_leads_id NOT IN (6,7,8)
-
-        /* Ventas estado 6 */
-        LEFT JOIN leads lv
-            ON lv.carrera_id = fd.prog_fde
-            AND lv.horario_id = fd.jorn_fde
-            AND lv.cod_emp = f.emp_foc
-            AND lv.estado_leads_id = 6
-            AND lv.Nfactura IS NOT NULL
-            AND lv.valorF IS NOT NULL
-            AND lv.metodoF IS NOT NULL
+        COUNT(DISTINCT CASE 
+            WHEN l.estado_leads_id NOT IN (6,7,8)
+            AND l.horario_id = fd.jorn_fde
+            THEN l.id_lead
+        END) AS con_horario,
 
         /* Leads solo carrera */
-        LEFT JOIN leads ls
-            ON ls.carrera_id = fd.prog_fde
-            AND ls.cod_emp = f.emp_foc
-            AND ls.estado_leads_id NOT IN (6,7,8)
-            AND (
-                ls.horario_id <> fd.jorn_fde
-                OR ls.horario_id IS NULL
-            )
+        COUNT(DISTINCT CASE 
+            WHEN l.estado_leads_id NOT IN (6,7,8)
+            AND (l.horario_id <> fd.jorn_fde OR l.horario_id IS NULL)
+            THEN l.id_lead
+        END) AS solo_carrera,
 
-        INNER JOIN estado_leads et ON
-        (et.id_estado_leads = lh.estado_leads_id
-        OR et.id_estado_leads = ls.estado_leads_id
-         OR et.id_estado_leads = lv.estado_leads_id
-        )
+        /* Ventas estado 6 válidas */
+        COUNT(DISTINCT CASE 
+            WHEN l.estado_leads_id = 6
+            AND l.Nfactura IS NOT NULL
+            AND l.valorF IS NOT NULL
+            AND l.metodoF IS NOT NULL
+            AND l.horario_id = fd.jorn_fde
+            THEN l.id_lead
+        END) AS ventas_estado_6
 
-        WHERE 
-            f.emp_foc = ?
-            AND f.id_foc = ?
+    FROM foco_detalle fd
+
+    INNER JOIN foco f 
+        ON f.id_foc = fd.foc_fde
+        AND f.emp_foc = fd.emp_fde
+
+    INNER JOIN programa p 
+        ON p.cod_pro = fd.prog_fde
+
+    INNER JOIN horario h 
+        ON h.id_horario = fd.jorn_fde
+
+    /* UN SOLO JOIN A LEADS */
+    LEFT JOIN leads l
+        ON l.carrera_id = fd.prog_fde
+        AND l.cod_emp = f.emp_foc
+
+    WHERE 
+        f.emp_foc = ?
+        AND f.id_foc = ?
     ";
 
         $params = [
@@ -292,26 +285,14 @@ class focoModels
        FILTRO POR ASESOR
     ============================ */
         if (!empty($asesor)) {
+
             $placeholders = implode(",", array_fill(0, count($asesor), "?"));
-
-            $sql .= "
-        AND (
-            lh.user_id IN ($placeholders)
-            OR lv.user_id IN ($placeholders)
-            OR ls.user_id IN ($placeholders)
-        )";
-
-            $params = array_merge($params, $asesor, $asesor, $asesor);
+            $sql .= " AND l.user_id IN ($placeholders)";
+            $params = array_merge($params, $asesor);
         } else {
+
             if ($_SESSION['rol'] !== 'Admin') {
-                $sql .= "
-            AND (
-                lh.user_id = ?
-                OR lv.user_id = ?
-                OR ls.user_id = ?
-            )";
-                $params[] = $_SESSION['user_id'];
-                $params[] = $_SESSION['user_id'];
+                $sql .= " AND l.user_id = ?";
                 $params[] = $_SESSION['user_id'];
             }
         }
@@ -320,9 +301,16 @@ class focoModels
        FILTRO POR ESTADO
     ============================ */
         if (!empty($estados)) {
+
             $placeholders = implode(",", array_fill(0, count($estados), "?"));
+
             $sql .= "
-                AND et.nombre IN ($placeholders)";
+        AND l.estado_leads_id IN (
+            SELECT id_estado_leads 
+            FROM estado_leads 
+            WHERE nombre IN ($placeholders)
+        )";
+
             $params = array_merge($params, $estados);
         }
 
@@ -330,6 +318,7 @@ class focoModels
        FILTRO POR CARRERA
     ============================ */
         if (!empty($carrera)) {
+
             $placeholders = implode(",", array_fill(0, count($carrera), "?"));
             $sql .= " AND p.desc_pro IN ($placeholders)";
             $params = array_merge($params, $carrera);
@@ -339,20 +328,20 @@ class focoModels
        GROUP BY
     ============================ */
         $sql .= "
-        GROUP BY
-            h.descripcion,
-            p.desc_pro,
-            p.val_pro,
-            fd.cup_fde,
-            fd.ven_fde,
-            fd.rein_fde,
-            f.nom_foc,
-            f.fini_foc,
-            f.ffin_foc
+    GROUP BY
+        h.descripcion,
+        p.desc_pro,
+        p.val_pro,
+        fd.cup_fde,
+        fd.ven_fde,
+        fd.rein_fde,
+        f.nom_foc,
+        f.fini_foc,
+        f.ffin_foc
 
-        ORDER BY
-            h.descripcion,
-            p.desc_pro
+    ORDER BY
+        h.descripcion,
+        p.desc_pro
     ";
 
         $conn = new Conexion();
@@ -363,6 +352,7 @@ class focoModels
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
 
 
     public static function actulizarFocoDetalle($data)
