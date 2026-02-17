@@ -272,6 +272,12 @@ class focoModels
                 OR ls.horario_id IS NULL
             )
 
+        INNER JOIN estado_leads et ON
+        (et.id_estado_leads = lh.estado_leads_id
+        OR et.id_estado_leads = ls.estado_leads_id
+         OR et.id_estado_leads = lv.estado_leads_id
+        )
+
         WHERE 
             f.emp_foc = ?
             AND f.id_foc = ?
@@ -316,13 +322,8 @@ class focoModels
         if (!empty($estados)) {
             $placeholders = implode(",", array_fill(0, count($estados), "?"));
             $sql .= "
-        AND (
-            lh.estado_leads_id IN ($placeholders)
-            OR ls.estado_leads_id IN ($placeholders)
-            OR lv.estado_leads_id IN ($placeholders)
-        )";
-
-            $params = array_merge($params, $estados, $estados, $estados);
+                AND et.nombre IN ($placeholders)";
+            $params = array_merge($params, $estados);
         }
 
         /* ============================

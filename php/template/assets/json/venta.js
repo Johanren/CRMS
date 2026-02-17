@@ -574,13 +574,17 @@ async function cargarTablaFocoResultado() {
  * Envuelve tu llamada a los filtros con esta función.
  */
 let timeoutFiltro;
+
 function manejarCambioFiltro() {
     clearTimeout(timeoutFiltro);
     timeoutFiltro = setTimeout(() => {
         cargarTablaFocoResultado();
-    }, 500); // Espera 500ms después del último clic para ejecutar
+    }, 500);
 }
 
+/* ===============================
+   ABRIR LEADS DESDE FOCO
+=================================*/
 document.addEventListener("click", function (e) {
     if (e.target.classList.contains("abrir-mensajes-foco")) {
 
@@ -590,15 +594,12 @@ document.addEventListener("click", function (e) {
         console.log("Programa:", programa);
         console.log("Jornada:", jornada);
 
-        // Mostrar contenedor inferior
         const contenedor = document.getElementById("contenedorLeadsFoco");
         contenedor.classList.remove("d-none");
 
-        // Guardar filtros globalmente
         window.programaSeleccionado = programa;
         window.jornadaSeleccionada = jornada;
 
-        // Cargar leads automáticamente
         listarLeadsDesdeFoco(programa, jornada);
     }
 });
@@ -608,7 +609,6 @@ function listarLeadsDesdeFoco(programaNombre, jornadaNombre) {
     const params = new URLSearchParams();
     params.append("accion", "listar_leads");
 
-    // Enviar como array estilo filtros normales
     const carrerasArray = [programaNombre];
     const horarioArray = [jornadaNombre];
 
@@ -669,6 +669,9 @@ function inicializarDataTableLeads(data) {
     });
 }
 
+/* ===============================
+   ABRIR MODAL MENSAJES
+=================================*/
 document.getElementById("btnAbrirModalMensajes")
     ?.addEventListener("click", function () {
 
@@ -685,36 +688,65 @@ document.getElementById("btnAbrirModalMensajes")
     });
 
 async function abrirModuloMensajesDesdeFoco(programaNombre, jornadaNombre) {
-    // 1. Primero cargamos los datos y esperamos a que el DOM se construya
-    await cargarMensajesPorTema();
-    await cargarFiltrosRST(); // Ahora sí esperará porque pusimos el 'return' arriba
 
-    // 2. Una vez que llenarSelect() terminó de crear los inputs, buscamos y marcamos
+    await cargarMensajesPorTema();
+    await cargarFiltrosRST();
+
+    /* MARCAR CARRERA */
     const checksCarrera = document.querySelectorAll('#filtro_carrera input[type="checkbox"]');
     checksCarrera.forEach(cb => {
         const label = cb.nextElementSibling?.textContent?.trim();
-        // Usamos uppercase para comparar de forma segura
-        if (label === programaNombre.toUpperCase()) {
+        if (label === programaNombre?.toUpperCase()) {
             cb.checked = true;
         }
     });
 
+    /* MARCAR JORNADA */
     const checksJornada = document.querySelectorAll('#filtro_horario input[type="checkbox"]');
     checksJornada.forEach(cb => {
         const label = cb.nextElementSibling?.textContent?.trim();
-        if (label === jornadaNombre.toUpperCase()) {
+        if (label === jornadaNombre?.toUpperCase()) {
             cb.checked = true;
         }
     });
 
-    // 3. Limpiar otros filtros
+    /* LIMPIAR OTROS FILTROS */
     ['filtro_estado', 'filtro_asesor'].forEach(id => {
         document.querySelectorAll(`#${id} input`).forEach(cb => cb.checked = false);
     });
 
-    // 4. Finalmente cargar la tabla con los filtros ya aplicados
+    /* 🔥 SINCRONIZAR ASESORES DEL FILTRO SUPERIOR */
+    document.querySelectorAll('#listar_filtro_user input[type="checkbox"]:checked')
+        .forEach(cb => {
+            const equivalente = document.querySelector(
+                `#filtro_asesor input[type="checkbox"][value="${cb.value}"]`
+            );
+            if (equivalente) equivalente.checked = true;
+        });
+
     validarYCargarTabla();
 }
+
+/* ======================================================
+   🔥 SINCRONIZACIÓN AUTOMÁTICA FILTRO SUPERIOR → MODAL
+====================================================== */
+document.addEventListener("change", function (e) {
+
+    if (!e.target.closest("#listar_filtro_user")) return;
+    if (e.target.type !== "checkbox") return;
+
+    const valor = e.target.value;
+    const estaMarcado = e.target.checked;
+
+    const checkboxModal = document.querySelector(
+        `#filtro_asesor input[type="checkbox"][value="${valor}"]`
+    );
+
+    if (checkboxModal) {
+        checkboxModal.checked = estaMarcado;
+    }
+
+});
 
 function activarPorcentajeResumen(leadsData) {
 
