@@ -2490,6 +2490,88 @@ function renderActividad(a) {
 }
 
 /* ================================
+   Mensajes de texto
+================================ */
+
+function listarMensajeTexto() {
+
+    let f = new FormData();
+    f.append("accion", "listar_mensaje_texto");
+    f.append("id_lead", idLead);
+
+    fetch("ajax/ajax.php", {
+        method: "POST",
+        body: f
+    })
+        .then(r => r.json())
+        .then(data => {
+
+            let cont = document.getElementById("listaMensajeTexto");
+            cont.innerHTML = "";
+
+            if (!data || !data.length) {
+                cont.innerHTML = `
+                <div class="text-center text-muted py-4">
+                    No hay mensajes registrados
+                </div>
+            `;
+                return;
+            }
+
+            data.forEach(txt => {
+                cont.innerHTML += generarCardMensajeTexto(txt);
+            });
+        })
+        .catch(err => {
+            console.error("Error cargando mensajes:", err);
+        });
+}
+
+listarMensajeTexto();
+
+
+function generarCardMensajeTexto(c) {
+
+    // Convertir saltos de línea a <br>
+    const mensajeFormateado = c.mensaje.replace(/\n/g, "<br>");
+
+    return `
+        <div class="card mb-3 shadow-sm border-0">
+            <div class="card-body">
+
+                <div class="d-flex justify-content-between align-items-start mb-2">
+
+                    <div class="d-flex align-items-center">
+                        <span class="avatar avatar-md me-2 flex-shrink-0">
+                            <img src="assets/img/profiles/avatar-19.jpg" alt="avatar">
+                        </span>
+
+                        <div>
+                            <div class="fw-bold text-dark">
+                                ${c.asesor}
+                            </div>
+                            <small class="text-muted">
+                                Enviado a ${c.cliente} • ${c.fecha}
+                            </small>
+                        </div>
+                    </div>
+
+                    <span class="badge bg-success">
+                        Enviado
+                    </span>
+
+                </div>
+
+                <div class="mensaje-texto mt-2">
+                    ${mensajeFormateado}
+                </div>
+
+            </div>
+        </div>
+    `;
+}
+
+/* ================================
    Actividades
 ================================ */
 
@@ -2514,6 +2596,19 @@ async function listarLlamada() {
     return data; // <-- clave
 }
 
+async function listarMensajes() {
+    let f = new FormData();
+    f.append("accion", "listar_mensaje_texto");
+    f.append("id_lead", idLead);
+
+    const res = await fetch("ajax/ajax.php", {
+        method: "POST",
+        body: f
+    });
+
+    const data = await res.json();
+    return data;
+}
 
 async function listarProximasActividade() {
     let f = new FormData();
@@ -2545,16 +2640,17 @@ async function listarMotivos() {
 
 
 async function actualizarTimeline() {
-    // 🔥 Tus funciones ya devuelven datos, solo las llamamos
+
     const notas = await listarNota();
     const calls = await listarLlamada();
     const actividades = await listarProximasActividade();
     const motivos = await listarMotivos();
+    const mensajes = await listarMensajes(); // 👈 NUEVO
 
-    renderTimeline({ notas, calls, actividades, motivos });
+    renderTimeline({ notas, calls, actividades, motivos, mensajes });
 }
 
-function renderTimeline({ notas = [], calls = [], actividades = [], motivos = [] }) {
+function renderTimeline({ notas = [], calls = [], actividades = [], motivos = [], mensajes = [] }) {
 
     const container = document.getElementById("timeline-container");
     container.innerHTML = "";
@@ -2578,6 +2674,17 @@ function renderTimeline({ notas = [], calls = [], actividades = [], motivos = []
         hora: formatearHora(c.fecha_creacion_call),
         icono: "ti ti-phone",
         color: "bg-teal"
+    }));
+
+    const formattedMensajes = mensajes.map(m => ({
+        tipo: "mensaje",
+        fecha: m.fecha,
+        titulo: `Mensaje de ${m.asesor || "Usuario"}`,
+        descripcion: m.mensaje,
+        hora: formatearHora(m.fecha),
+        icono: "ti ti-message",
+        color: "bg-primary",
+        direccion: m.tipo_mensaje // "enviado" o "recibido"
     }));
 
     const formattedActs = actividades.map(a => ({
@@ -2604,7 +2711,7 @@ function renderTimeline({ notas = [], calls = [], actividades = [], motivos = []
     }));
 
     // Unir todo
-    let timeline = [...formattedNotas, ...formattedCalls, ...formattedActs, ...formattedMotivo];
+    let timeline = [...formattedNotas, ...formattedCalls, ...formattedMensajes, ...formattedActs, ...formattedMotivo];
 
     // Orden descendente
     timeline.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
@@ -2632,17 +2739,24 @@ function renderTimeline({ notas = [], calls = [], actividades = [], motivos = []
 }
 
 function tarjetaSimple(item) {
+
+    let alignment = "";
+    let extraClass = "";
+
+    if (item.tipo === "mensaje") {
+        alignment = item.direccion === "enviado" ? "ms-auto text-end" : "";
+        extraClass = item.direccion === "enviado" ? "bg-light" : "";
+    }
+
     return `
-        <div class="card border shadow-none mb-3 rounded-3">
-            <div class="card-body p-3">
+        <div class="card border shadow-none mb-3 rounded-3 ${alignment}">
+            <div class="card-body p-3 ${extraClass}">
                 <div class="d-flex flex-wrap row-gap-2 align-items-start">
-                    
-                    <!-- ICONO -->
+
                     <span class="avatar avatar-md flex-shrink-0 rounded me-3 ${item.color}">
                         <i class="${item.icono} fs-20 text-white"></i>
                     </span>
 
-                    <!-- TEXTO -->
                     <div class="flex-grow-1">
                         <h6 class="fw-medium fs-14 mb-1">${item.titulo}</h6>
 
@@ -2658,7 +2772,6 @@ function tarjetaSimple(item) {
         </div>
     `;
 }
-
 
 function tarjetaActividad(item) {
     return `
@@ -2754,11 +2867,11 @@ function enviarMensaje() {
             mensaje
         })
     })
-    .then(r => r.json())
-    .then(() => {
-        document.getElementById('mensaje').value = '';
-        cargarMensajes();
-    });
+        .then(r => r.json())
+        .then(() => {
+            document.getElementById('mensaje').value = '';
+            cargarMensajes();
+        });
 }
 
 actualizarTimeline();

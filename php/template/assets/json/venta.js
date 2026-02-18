@@ -582,20 +582,28 @@ function manejarCambioFiltro() {
     }, 500);
 }
 
-/* ===============================
-   ABRIR LEADS DESDE FOCO
-=================================*/
+/* ==========================================================
+   VARIABLES GLOBALES PARA MANTENER EL ESTADO
+   ========================================================== */
+window.programaSeleccionado = null;
+window.jornadaSeleccionada = null;
+window.estadosSeleccionadosNombres = []; 
+window.asesoresSeleccionadosIds = [];
+
+/* ==========================================================
+   1. ABRIR LEADS DESDE FOCO (TABLA PRINCIPAL)
+   ========================================================== */
 document.addEventListener("click", function (e) {
     if (e.target.classList.contains("abrir-mensajes-foco")) {
 
         const programa = e.target.dataset.programa;
         const jornada = e.target.dataset.jornada;
 
-        console.log("Programa:", programa);
-        console.log("Jornada:", jornada);
+        console.log("Programa seleccionado:", programa);
+        console.log("Jornada seleccionada:", jornada);
 
         const contenedor = document.getElementById("contenedorLeadsFoco");
-        contenedor.classList.remove("d-none");
+        if (contenedor) contenedor.classList.remove("d-none");
 
         window.programaSeleccionado = programa;
         window.jornadaSeleccionada = jornada;
@@ -605,147 +613,180 @@ document.addEventListener("click", function (e) {
 });
 
 function listarLeadsDesdeFoco(programaNombre, jornadaNombre) {
-
     const params = new URLSearchParams();
     params.append("accion", "listar_leads");
 
-    const carrerasArray = [programaNombre];
-    const horarioArray = [jornadaNombre];
+    // Lógica para Carreras y Horarios
+    let carrerasArray = (programaNombre !== "TODOS") ? [programaNombre] : [];
+    let horarioArray = (jornadaNombre !== "TODOS") ? [jornadaNombre] : [];
+
+    // 🔥 CAPTURA DE ESTADOS (Por Nombre/Label)
+    // Valores para el envío AJAX (basado en IDs)
+    const estadosValues = Array.from(document.querySelectorAll('#listar_filtro_estado input[type="checkbox"]:checked')).map(cb => cb.value);
+    window.estadosSeleccionadosNombres = estadosValues;
+
+    console.log("🚀 Nombres de estados capturados:", window.estadosSeleccionadosNombres);
+
+    // Captura de Asesores (Por ID/Value)
+    window.asesoresSeleccionadosIds = Array.from(document.querySelectorAll('#listar_filtro_user input[type="checkbox"]:checked'))
+        .map(cb => cb.value);
 
     params.append("carreras", JSON.stringify(carrerasArray));
     params.append("horario", JSON.stringify(horarioArray));
+    params.append("asesores", JSON.stringify(window.asesoresSeleccionadosIds));
+    params.append("estados", JSON.stringify(estadosValues));
 
     fetch("ajax/ajax.php?" + params.toString())
         .then(res => res.json())
         .then(data => {
             if (document.getElementById("leads_list")) {
                 inicializarDataTableLeads(data);
+                document.getElementById("contenedorLeadsFoco").scrollIntoView({ behavior: 'smooth' });
             }
         })
         .catch(err => console.error("Error al listar leads:", err));
 }
 
+/* ==========================================================
+   2. INICIALIZAR DATATABLE
+   ========================================================== */
 let tablaLeadsFoco = null;
-
 function inicializarDataTableLeads(data) {
-
     if (tablaLeadsFoco) {
         tablaLeadsFoco.destroy();
         tablaLeadsFoco = null;
     }
 
+    const spanContador = document.getElementById("contadorTotalLeads");
+    if (spanContador) spanContador.innerText = data ? data.length : 0;
+
     const tbody = document.querySelector("#leads_list tbody");
     tbody.innerHTML = "";
 
     if (!data || !data.length) {
-        tbody.innerHTML = `
-            <tr>
-                <td colspan="7" class="text-center text-muted">
-                    No hay resultados
-                </td>
-            </tr>
-        `;
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center text-muted">No hay resultados para esta selección</td></tr>`;
         return;
     }
 
+    const hoy = new Date().toISOString().split('T')[0];
+
     data.forEach(l => {
         const tr = document.createElement("tr");
+        const fueGestionadoHoy = l.fecha_ultima_gestion === hoy ?
+            '<span class="badge bg-success">OK</span>' :
+            '<span class="badge bg-secondary">Pendiente</span>';
+
+        const enlaceNombre = `
+            <a href="javascript:void(0)" 
+               onclick="abrirModalGestion('${l.id_lead}', '${l.id_cliente}')" 
+               class="text-primary fw-bold">
+               ${l.nombres} ${l.apellidos}
+            </a>`;
 
         tr.innerHTML = `
-            <td>${l.nombres} ${l.apellidos}</td>
+            <td>${enlaceNombre}</td>
             <td>${l.desc_pro}</td>
             <td>${l.telefono_principal}</td>
             <td>${l.estado}</td>
             <td>${l.nombreAsesor}</td>
             <td>${l.fecha_creacion}</td>
+            <td class="text-center">${fueGestionadoHoy}</td>
         `;
-
         tbody.appendChild(tr);
     });
 
     tablaLeadsFoco = $('#leads_list').DataTable({
         responsive: true,
-        pageLength: 10
+        pageLength: 10,
+        language: { "url": "//cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json" }
     });
 }
 
-/* ===============================
-   ABRIR MODAL MENSAJES
-=================================*/
-document.getElementById("btnAbrirModalMensajes")
-    ?.addEventListener("click", function () {
+function abrirModalGestion(idLead, idCliente) {
 
-        const modal = new bootstrap.Modal(
-            document.getElementById('modalMensajesFoco')
-        );
+    const url = `leads-details.php?id=${idLead}&id_cliente=${idCliente}&modal=1`;
 
-        modal.show();
+    document.getElementById('frameGestion').src = url;
 
-        abrirModuloMensajesDesdeFoco(
-            window.programaSeleccionado,
-            window.jornadaSeleccionada
-        );
-    });
+    const myModal = new bootstrap.Modal(
+        document.getElementById('modalGestionLead')
+    );
+
+    myModal.show();
+}
+
+/* ==========================================================
+   3. ABRIR MODAL MENSAJES (SINCRONIZACIÓN FINAL)
+   ========================================================== */
+document.getElementById("btnAbrirModalMensajes")?.addEventListener("click", function () {
+    const modalElement = document.getElementById('modalMensajesFoco');
+    if (!modalElement) return;
+
+    const modal = new bootstrap.Modal(modalElement);
+    modal.show();
+
+    abrirModuloMensajesDesdeFoco(window.programaSeleccionado, window.jornadaSeleccionada);
+});
 
 async function abrirModuloMensajesDesdeFoco(programaNombre, jornadaNombre) {
-
+    // 1️⃣ Esperamos carga de filtros del modal
     await cargarMensajesPorTema();
     await cargarFiltrosRST();
 
-    /* MARCAR CARRERA */
-    const checksCarrera = document.querySelectorAll('#filtro_carrera input[type="checkbox"]');
-    checksCarrera.forEach(cb => {
-        const label = cb.nextElementSibling?.textContent?.trim();
-        if (label === programaNombre?.toUpperCase()) {
+    console.log("Sincronizando filtros en modal...");
+
+    // 2️⃣ Marcar Carrera (Por Nombre)
+    document.querySelectorAll('#filtro_carrera input[type="checkbox"]').forEach(cb => {
+        const label = cb.nextElementSibling?.textContent?.trim().toUpperCase();
+        if (label === programaNombre?.toUpperCase()) cb.checked = true;
+    });
+
+    // 3️⃣ Marcar Jornada (Por Nombre)
+    document.querySelectorAll('#filtro_horario input[type="checkbox"]').forEach(cb => {
+        const label = cb.nextElementSibling?.textContent?.trim().toUpperCase();
+        if (label === jornadaNombre?.toUpperCase()) cb.checked = true;
+    });
+
+    // 4️⃣ 🔥 MARCAR ESTADOS (Réplica de lógica de Carrera - Por Nombre)
+    document.querySelectorAll('#filtro_estado input[type="checkbox"]').forEach(cb => {
+        cb.checked = false; // Reset
+        const labelModal = cb.nextElementSibling?.textContent?.trim().toUpperCase();
+        
+        // Comparamos el nombre del checkbox del modal contra nuestro array guardado
+        const existe = window.estadosSeleccionadosNombres.some(e => e.toUpperCase() === labelModal);
+        if (existe) {
             cb.checked = true;
+            console.log("Estado sincronizado:", labelModal);
         }
     });
 
-    /* MARCAR JORNADA */
-    const checksJornada = document.querySelectorAll('#filtro_horario input[type="checkbox"]');
-    checksJornada.forEach(cb => {
-        const label = cb.nextElementSibling?.textContent?.trim();
-        if (label === jornadaNombre?.toUpperCase()) {
-            cb.checked = true;
-        }
+    // 5️⃣ Marcar Asesores (Por ID)
+    document.querySelectorAll('#filtro_asesor input').forEach(cb => {
+        cb.checked = window.asesoresSeleccionadosIds.includes(cb.value);
     });
 
-    /* LIMPIAR OTROS FILTROS */
-    ['filtro_estado', 'filtro_asesor'].forEach(id => {
-        document.querySelectorAll(`#${id} input`).forEach(cb => cb.checked = false);
-    });
-
-    /* 🔥 SINCRONIZAR ASESORES DEL FILTRO SUPERIOR */
-    document.querySelectorAll('#listar_filtro_user input[type="checkbox"]:checked')
-        .forEach(cb => {
-            const equivalente = document.querySelector(
-                `#filtro_asesor input[type="checkbox"][value="${cb.value}"]`
-            );
-            if (equivalente) equivalente.checked = true;
-        });
-
-    validarYCargarTabla();
+    // 6️⃣ Cargar la tabla del modal
+    if (typeof validarYCargarTabla === "function") {
+        validarYCargarTabla();
+    }
 }
 
 /* ======================================================
-   🔥 SINCRONIZACIÓN AUTOMÁTICA FILTRO SUPERIOR → MODAL
+   4. SINCRONIZACIÓN EN TIEMPO REAL (OPCIONAL)
 ====================================================== */
 document.addEventListener("change", function (e) {
+    const container = e.target.closest("#listar_filtro_user, #listar_filtro_estado");
+    if (!container || e.target.type !== "checkbox") return;
 
-    if (!e.target.closest("#listar_filtro_user")) return;
-    if (e.target.type !== "checkbox") return;
-
-    const valor = e.target.value;
-    const estaMarcado = e.target.checked;
-
-    const checkboxModal = document.querySelector(
-        `#filtro_asesor input[type="checkbox"][value="${valor}"]`
-    );
-
-    if (checkboxModal) {
-        checkboxModal.checked = estaMarcado;
+    if (container.id === "listar_filtro_estado") {
+        window.estadosSeleccionadosNombres = Array.from(document.querySelectorAll('#listar_filtro_estado input[type="checkbox"]:checked'))
+            .map(cb => cb.nextElementSibling?.textContent?.trim() || "");
     }
-
+    
+    if (container.id === "listar_filtro_user") {
+        window.asesoresSeleccionadosIds = Array.from(document.querySelectorAll('#listar_filtro_user input[type="checkbox"]:checked'))
+            .map(cb => cb.value);
+    }
 });
 
 function activarPorcentajeResumen(leadsData) {

@@ -60,8 +60,9 @@
                                         <li class="<?php echo ($page == 'venta.php') ? 'active' : ''; ?>"><a href="venta.php"><span>Crear Foco</span></a></li>
                                         <li><a href="index.php" class="<?php echo ($page == 'index.php' || $page == '/') ? 'active' : ''; ?>">Visualizar Foco</a></li>
                                         <li><a href="resultado_foco.php" class="<?php echo ($page == 'resultado_foco.php' || $page == '/') ? 'active' : ''; ?>">Resultado Foco</a></li>
-                                        <li><a href="leads-dashboard.php" class="<?php echo ($page == 'leads-dashboard.php') ? 'active' : ''; ?>">Panel de control de clientes potenciales</a></li>
-                                        <li><a href="project-dashboard.php" class="<?php echo ($page == 'project-dashboard.php') ? 'active' : ''; ?>">Panel de control del proyecto</a></li>
+                                        <li><a href="prioridad.php" class="<?php echo ($page == 'prioridad.php' || $page == '/') ? 'active' : ''; ?>">Prioridad</a></li>
+                                        <!--<li><a href="leads-dashboard.php" class="<?php echo ($page == 'leads-dashboard.php') ? 'active' : ''; ?>">Panel de control de clientes potenciales</a></li>
+                                        <li><a href="project-dashboard.php" class="<?php echo ($page == 'project-dashboard.php') ? 'active' : ''; ?>">Panel de control del proyecto</a></li>-->
                                     </ul>
                                 </li>
                                 <!--<li class="submenu">
@@ -139,15 +140,15 @@
                                 </ul>
                             </li>
                             <?php } ?>
-                            <li class="<?php echo ($page == 'contacts.php' || $page == 'contacts-list.php' || $page == 'contact-details.php') ? 'active' : ''; ?>">
+                            <!--<li class="<?php echo ($page == 'contacts.php' || $page == 'contacts-list.php' || $page == 'contact-details.php') ? 'active' : ''; ?>">
                                 <a href="contacts.php"><i class="ti ti-user-up"></i><span>Contactos</span></a>
-                            </li>
+                            </li>-->
                             <!--<li class="<?php echo ($page == 'companies.php' || $page == 'companies-list.php' || $page == 'company-details.php') ? 'active' : ''; ?>">
                                 <a href="companies.php"><i class="ti ti-building-community"></i><span>Companies</span></a>-->
                     </li>
-                    <li class="<?php echo ($page == 'deals.php' || $page == 'deals-list.php' || $page == 'deals-details.php') ? 'active' : ''; ?>">
+                    <!--<li class="<?php echo ($page == 'deals.php' || $page == 'deals-list.php' || $page == 'deals-details.php') ? 'active' : ''; ?>">
                         <a href="deals.php"><i class="ti ti-medal"></i><span>Referidos</span></a>
-                    </li>
+                    </li>-->
                     <li class="<?php echo ($page == 'leads.php' || $page == 'leads-list.php' || $page == 'leads-details.php') ? 'active' : ''; ?>">
                         <a href="leads.php"><i class="ti ti-chart-arcs"></i><span>Leads</span></a>
                     </li>
@@ -197,8 +198,9 @@
                                 <i class="ti ti-report-analytics"></i><span>Herramientas</span><span class="menu-arrow"></span>
                             </a>
                             <ul>
-                                <li><a href="mensajes.php" class="<?php echo ($page == 'mensajes.php' || $page == '/') ? 'active' : ''; ?>">Mensaje</a></li>
-                                <li><a href="frm_mensaje.php" class="<?php echo ($page == 'frm_mensaje.php' || $page == '/') ? 'active' : ''; ?>">FRM mensaje</a></li>
+                                <li><a href="frm_mensaje.php" class="<?php echo ($page == 'frm_mensaje.php' || $page == '/') ? 'active' : ''; ?>">Crear Mensaje</a></li>
+                                <li><a href="mensajes.php" class="<?php echo ($page == 'mensajes.php' || $page == '/') ? 'active' : ''; ?>">Enviar Mensaje</a></li>
+                                <li><a href="reporte_mensajes.php" class="<?php echo ($page == 'mensajes.php' || $page == '/') ? 'active' : ''; ?>">Informe De Mensaje Enviados</a></li>
                             </ul>
                         </li>
                     </ul>
@@ -211,14 +213,14 @@
                                 <i class="ti ti-report-analytics"></i><span>Informes</span><span class="menu-arrow"></span>
                             </a>
                             <ul>
-                                <li><a href="index.php" class="<?php echo ($page == 'index.php' || $page == '/') ? 'active' : ''; ?>">Visualizar Foco</a></li>
+                                <!--<li><a href="index.php" class="<?php echo ($page == 'index.php' || $page == '/') ? 'active' : ''; ?>">Visualizar Foco</a></li>
                                 <li><a href="lead-reports.php" class="<?php echo ($page == 'lead-reports.php') ? 'active' : ''; ?>">Informes de clientes potenciales</a></li>
                                 <li><a href="leads-reports.php" class="<?php echo ($page == 'leads-reports.php') ? 'active' : ''; ?>">Informes de leads</a></li>
                                 <li><a href="contact-reports.php" class="<?php echo ($page == 'contact-reports.php') ? 'active' : ''; ?>">Informes de matriculados</a></li>
-                                <li><a href="dashboard.php" class="<?php echo ($page == 'dashboard.php') ? 'active' : ''; ?>">Informes por asesor</a></li>
-                                <li><a href="rst_frm.php" class="<?php echo ($page == 'rst_frm.php') ? 'active' : ''; ?>">Informes rst_frm</a></li>
-                                <li><a href="rst_frm_dia.php" class="<?php echo ($page == 'rst_frm_dia.php') ? 'active' : ''; ?>">Informes RST dia</a></li>
-                                <li><a href="reporte_lead.php" class="<?php echo ($page == 'reporte_lead.php') ? 'active' : ''; ?>">Informes CRMS Lead</a></li>
+                                <li><a href="dashboard.php" class="<?php echo ($page == 'dashboard.php') ? 'active' : ''; ?>">Informes por asesor</a></li>-->
+                                <li><a href="reporte_lead.php" class="<?php echo ($page == 'reporte_lead.php') ? 'active' : ''; ?>">CRMS Leads FOCO</a></li>
+                                <li><a href="rst_frm.php" class="<?php echo ($page == 'rst_frm.php') ? 'active' : ''; ?>">Informes RST</a></li>
+                                <li><a href="rst_frm_dia.php" class="<?php echo ($page == 'rst_frm_dia.php') ? 'active' : ''; ?>">Desempeño RST</a></li>
                                 <!--<li><a href="company-reports.php" class="<?php echo ($page == 'company-reports.php') ? 'active' : ''; ?>">Company Reports</a></li>
                                     <li><a href="project-reports.php" class="<?php echo ($page == 'project-reports.php') ? 'active' : ''; ?>">Project Reports</a></li>
                                     <li><a href="task-reports.php" class="<?php echo ($page == 'task-reports.php') ? 'active' : ''; ?>">Task Reports</a></li>-->

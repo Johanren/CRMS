@@ -4,11 +4,10 @@ foreach (glob("../../models/*.php") as $filename) {
 }
 
 $cod_emp = $_GET['cod_emp'];
-$prio = $_GET['dis_pro'];
 $conn = (new Conexion())->conectar();
 
-$sql = "SELECT cpr_pri, dpr_pri FROM prioridad WHERE emp_pri = ? AND pri_pri = ?";
+$sql = "SELECT cpr_pri, dpr_pri, cho_pri, dho_pri, pri_pri FROM prioridad WHERE emp_pri = ? ORDER BY `prioridad`.`pri_pri` DESC";
 $stmt = $conn->prepare($sql);
-$stmt->execute([$cod_emp, $prio]);
+$stmt->execute([$cod_emp]);
 
 echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));

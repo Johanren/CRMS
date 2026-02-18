@@ -3,9 +3,12 @@
 <!-- ========================
         Start Page Content
     ========================= -->
-
-<div class="page-wrapper">
-
+<?php
+$esModal = isset($_GET['modal']) && $_GET['modal'] == 1;
+?>
+<?php if (!$esModal): ?>
+    <div class="page-wrapper">
+    <?php endif; ?>
     <!-- Start Content -->
     <div class="content pb-0">
 
@@ -44,11 +47,11 @@
 
         <div class="row">
             <div class="col-md-12">
-
-                <div class="mb-3">
-                    <a href="leads.php"><i class="ti ti-arrow-narrow-left me-1"></i>Volver a Leads</a>
-                </div>
-
+                <?php if (!$esModal): ?>
+                    <div class="mb-3">
+                        <a href="leads.php"><i class="ti ti-arrow-narrow-left me-1"></i>Volver a Leads</a>
+                    </div>
+                <?php endif; ?>
                 <div class="card">
                     <div class="card-body pb-2">
                         <div class="d-flex align-items-center justify-content-between flex-wrap">
@@ -350,11 +353,11 @@
                                     <span class="d-md-inline-block"><i class="ti ti-phone me-1"></i>Llamadas</span>
                                 </a>
                             </li>
-                            <!--<li class="nav-item" role="presentation">
+                            <li class="nav-item" role="presentation">
                                 <a href="#tab_4" data-bs-toggle="tab" aria-expanded="false" class="nav-link border-3" aria-selected="false" tabindex="-1" role="tab">
-                                    <span class="d-md-inline-block"><i class="ti ti-file me-1"></i>Archivos</span>
+                                    <span class="d-md-inline-block"><i class="ti ti-file me-1"></i>Mensajes de texto</span>
                                 </a>
-                            </li>-->
+                            </li>
                             <li class="nav-item" role="presentation">
                                 <a href="#tab_6" data-bs-toggle="tab" aria-expanded="false" class="nav-link border-3" aria-selected="false" tabindex="-1" role="tab">
                                     <span class="d-md-inline-block"><i class="ti ti-mail-check me-1"></i>Proxima Actividad</span>
@@ -450,141 +453,10 @@
                     <div class="tab-pane fade" id="tab_4">
                         <div class="card">
                             <div class="card-header">
-                                <h5 class="fw-semibold mb-0">Files</h5>
+                                <h5 class="fw-semibold mb-0">Mensaje de texto</h5>
                             </div>
                             <div class="card-body">
-                                <div class="card border mb-3">
-                                    <div class="card-body pb-0">
-                                        <div class="row align-items-center">
-                                            <div class="col-md-8">
-                                                <div class="mb-3">
-                                                    <h6 class="mb-1">Manage Documents</h6>
-                                                    <p>Send customizable quotes, proposals and contracts to close deals faster.</p>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4 text-md-end">
-                                                <div class="mb-3">
-                                                    <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#new_file">Create Document</a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="card border shadow-none mb-3">
-                                    <div class="card-body pb-0">
-                                        <div class="row align-items-center">
-                                            <div class="col-md-8">
-                                                <div class="mb-3">
-                                                    <h6 class="fw-semibold fs-14 mb-1">Collier-Turner Proposal</h6>
-                                                    <p>Send customizable quotes, proposals and contracts to close deals faster.</p>
-                                                    <div class="d-flex align-items-center flex-wrap row-gap-2">
-                                                        <span class="avatar avatar-md me-2 flex-shrink-0">
-                                                            <img src="assets/img/profiles/avatar-21.jpg" alt="img" class="rounded-circle">
-                                                        </span>
-                                                        <div class="d-flex align-items-center">
-                                                            <p class="mb-0 me-2">Vaughan Lewis</p>
-                                                            <span class="badge bg-light text-body">Owner</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4 text-md-end">
-                                                <div class="mb-3 d-inline-flex align-items-center">
-                                                    <span class="badge badge-soft-danger me-1">Proposal</span>
-                                                    <span class="badge bg-info me-1">Draft</span>
-                                                    <div class="dropdown">
-                                                        <a href="#" class="action-icon btn btn-icon btn-sm btn-outline-light shadow" data-bs-toggle="dropdown" aria-expanded="false"><i class="ti ti-dots-vertical"></i></a>
-                                                        <div class="dropdown-menu dropdown-menu-right">
-                                                            <a class="dropdown-item" href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#delete_file">
-                                                                <i class="ti ti-trash me-1"></i>Delete
-                                                            </a>
-                                                            <a class="dropdown-item" href="javascript:void(0);">
-                                                                <i class="ti ti-download me-1"></i>Download
-                                                            </a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="card border shadow-none mb-3">
-                                    <div class="card-body pb-0">
-                                        <div class="row align-items-center">
-                                            <div class="col-md-8">
-                                                <div class="mb-3">
-                                                    <h6 class="fw-semibold fs-14 mb-1">Collier-Turner Proposal</h6>
-                                                    <p>Send customizable quotes, proposals and contracts to
-                                                        close deals faster.</p>
-                                                    <div class="d-flex align-items-center flex-wrap row-gap-2">
-                                                        <span class="avatar avatar-md me-2 flex-shrink-0">
-                                                            <img src="assets/img/profiles/avatar-01.jpg" alt="img" class="rounded-circle">
-                                                        </span>
-                                                        <div class="d-flex align-items-center">
-                                                            <p class="mb-0 me-2">Jessica Louise</p>
-                                                            <span class="badge bg-light text-body">Owner</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4 text-md-end">
-                                                <div class="mb-3 d-inline-flex align-items-center">
-                                                    <span class="badge badge-purple-light me-1">Quote</span>
-                                                    <span class="badge bg-success me-1">Sent</span>
-                                                    <div class="dropdown">
-                                                        <a href="#" class="action-icon btn btn-icon btn-sm btn-outline-light shadow" data-bs-toggle="dropdown" aria-expanded="false"><i class="ti ti-dots-vertical"></i></a>
-                                                        <div class="dropdown-menu dropdown-menu-right">
-                                                            <a class="dropdown-item" href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#delete_file">
-                                                                <i class="ti ti-trash me-1"></i>Delete
-                                                            </a>
-                                                            <a class="dropdown-item" href="javascript:void(0);">
-                                                                <i class="ti ti-download me-1"></i>Download
-                                                            </a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="card border shadow-none mb-0">
-                                    <div class="card-body pb-0">
-                                        <div class="row align-items-center">
-                                            <div class="col-md-8">
-                                                <div class="mb-3">
-                                                    <h6 class="fw-semibold fs-14 mb-1">Collier-Turner Proposal</h6>
-                                                    <p>Send customizable quotes, proposals and contracts to close deals faster.</p>
-                                                    <div class="d-flex align-items-center flex-wrap row-gap-2">
-                                                        <span class="avatar avatar-md me-2 flex-shrink-0">
-                                                            <img src="assets/img/profiles/avatar-22.jpg" alt="img" class="rounded-circle">
-                                                        </span>
-                                                        <div class="d-flex align-items-center">
-                                                            <p class="mb-0 me-2">Dawn Merhca</p>
-                                                            <span class="badge bg-light text-body">Owner</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4 text-md-end">
-                                                <div class="mb-3 d-inline-flex align-items-center">
-                                                    <span class="badge badge-danger-light me-1">Proposal</span>
-                                                    <span class="badge bg-pending priority-badge me-1">Draft</span>
-                                                    <div class="dropdown">
-                                                        <a href="#" class="action-icon btn btn-icon btn-sm btn-outline-light shadow" data-bs-toggle="dropdown" aria-expanded="false"><i class="ti ti-dots-vertical"></i></a>
-                                                        <div class="dropdown-menu dropdown-menu-right">
-                                                            <a class="dropdown-item" href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#delete_file">
-                                                                <i class="ti ti-trash me-1"></i>Delete
-                                                            </a>
-                                                            <a class="dropdown-item" href="javascript:void(0);">
-                                                                <i class="ti ti-download me-1"></i>Download
-                                                            </a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                                <div id="listaMensajeTexto"></div>
                             </div>
                         </div>
                     </div>
@@ -642,9 +514,9 @@
     <!-- End Content -->
 
     <?php require_once '../partials/footer.php'; ?>
-
-</div>
-
+    <?php if (!$esModal): ?>
+    </div>
+<?php endif; ?>
 <!-- ========================
         End Page Content
     ========================= -->

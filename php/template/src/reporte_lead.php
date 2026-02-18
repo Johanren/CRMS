@@ -166,7 +166,10 @@
                                 Enviar mensajes
                             </button>
                         </div>
-
+                        <div class="alert alert-info d-flex justify-content-between align-items-center">
+                            <strong>Resultados del filtro:</strong>
+                            <span class="badge bg-dark fs-12"><span id="contadorTotalLeads">0</span> Leads encontrados</span>
+                        </div>
                         <div class="card-body table-responsive">
                             <table class="table table-nowrap" id="leads_list">
                                 <thead class="table-light">
@@ -177,6 +180,7 @@
                                         <th>Estado</th>
                                         <th>Asesor</th>
                                         <th>Fecha creación</th>
+                                        <th>Gestion</th>
                                     </tr>
                                 </thead>
                                 <tbody></tbody>
@@ -301,6 +305,33 @@
                 </div>
             </div>
         </div>
+
+        <div class="modal fade" id="modalGestionLead" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered modal-xxl-custom">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <h5 class="modal-title">Gestión de Lead</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+
+                    <div class="modal-body p-0">
+                        <iframe id="frameGestion"
+                            src=""
+                            style="width:100%; height:80vh; border:none;">
+                        </iframe>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <style>
+            .modal-xxl-custom {
+                max-width: 95%;
+                width: 95%;
+            }
+        </style>
         <!-- card end -->
 
     </div>
@@ -318,28 +349,38 @@
 $content = ob_get_clean();
 
 require_once '../partials/main.php'; ?>
-
+<script>
+    window.usuarioSesion = <?php echo json_encode($_SESSION['user_id'] ?? null); ?>;
+</script>
 <script>
     window.Filtros = {
         obtener: function() {
+
             let texto = "";
             let inputBuscador = document.getElementById("buscador");
             if (inputBuscador) {
                 texto = inputBuscador.value.toLowerCase();
             }
 
-            let asesor = [...document.querySelectorAll(".filtro-asesor:checked")].map(c => c.value);
-            let carrera = [...document.querySelectorAll(".filtro-carrera:checked")].map(c => c.value);
+            let asesor = [...document.querySelectorAll(".filtro-asesor:checked")]
+                .map(c => c.value);
 
-            // --- CAMBIO AQUÍ ---
-            // Buscamos los seleccionados
-            let estados = [...document.querySelectorAll(".filtro-estado:checked")].map(c => c.value);
+            let carrera = [...document.querySelectorAll(".filtro-carrera:checked")]
+                .map(c => c.value);
 
-            // Si no hay ninguno seleccionado (posible primera carga), forzamos los que necesitas
+            let estados = [...document.querySelectorAll(".filtro-estado:checked")]
+                .map(c => c.value);
+
+            // ✅ DEFAULT ESTADOS
             if (estados.length === 0 && !window.filtrosInicializados) {
-                estados = ['Nuevo Leads', 'Leads Activo', 'Interesado', 'En Decisión', 'Prospecto'];
+                //estados = ['Nuevo Leads', 'Leads Activo', 'Interesado', 'En Decisión', 'Prospecto'];
+                estados = ['En Decisión'];
             }
-            // -------------------
+
+            // ✅ DEFAULT ASESOR (igual lógica que estados)
+            if (asesor.length === 0 && !window.filtrosInicializados && window.usuarioSesion) {
+                asesor = [window.usuarioSesion.toString()];
+            }
 
             let fecha_inicio = window.fecha_inicio || "";
             let fecha_fin = window.fecha_fin || "";
@@ -400,7 +441,8 @@ require_once '../partials/main.php'; ?>
 
     // Función para marcar visualmente los estados deseados
     function marcarEstadosDefault() {
-        const estadosAMarcar = ['Nuevo Leads', 'Leads Activo', 'Interesado', 'En Decisión', 'Prospecto'];
+        //const estadosAMarcar = ['Nuevo Leads', 'Leads Activo', 'Interesado', 'En Decisión', 'Prospecto'];
+        const estadosAMarcar = ['En Decisión'];
 
         // Buscamos todos los checkboxes de estado
         const checkboxes = document.querySelectorAll('.filtro-estado');
@@ -420,6 +462,35 @@ require_once '../partials/main.php'; ?>
             }
         });
     });
+
+    function marcarAsesorDefault() {
+
+        if (!window.usuarioSesion) return;
+
+        const checkboxes = document.querySelectorAll('.filtro-asesor');
+
+        checkboxes.forEach(chk => {
+            if (chk.value == window.usuarioSesion) {
+                chk.checked = true;
+            }
+        });
+    }
+
+    const observerAsesor = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            if (mutation.addedNodes.length) {
+                marcarAsesorDefault();
+            }
+        });
+    });
+
+    const targetAsesor = document.getElementById('listar_filtro_user');
+
+    if (targetAsesor) {
+        observerAsesor.observe(targetAsesor, {
+            childList: true
+        });
+    }
 
     // Empezamos a observar el contenedor de los estados
     const targetNode = document.getElementById('listar_filtro_estado');
@@ -441,18 +512,16 @@ require_once '../partials/main.php'; ?>
         const programasSet = new Set();
         const mapaHorarios = {};
 
-        // 1. Procesar data y UNIFICAR categorías "vagas"
+        // 1. Procesar data y UNIFICAR categorías de horarios
         data.forEach(item => {
             let idH = item.id_horario;
             let nombreH = item.horario ? item.horario.toUpperCase() : "";
 
-            // Lógica de unificación: Por Confirmar, Sin Identificar, null o En blanco
             if (!idH || !nombreH ||
                 nombreH === "POR CONFIRMAR" ||
                 nombreH === "SIN IDENTIFICAR" ||
                 nombreH === "(EN BLANCO)") {
-
-                idH = "99"; // ID alto para ordenamiento
+                idH = "99";
                 nombreH = "POR CONFIRMAR";
             }
 
@@ -460,7 +529,6 @@ require_once '../partials/main.php'; ?>
             programasSet.add(item.programa || "SIN PROGRAMA");
         });
 
-        // Ordenar IDs y preparar encabezados
         const idsOrdenados = Object.keys(mapaHorarios).sort((a, b) => parseInt(a) - parseInt(b));
         const encabezadosHorarios = idsOrdenados.map(id => mapaHorarios[id]);
         const programas = Array.from(programasSet).sort();
@@ -475,35 +543,31 @@ require_once '../partials/main.php'; ?>
         data.forEach(item => {
             const p = item.programa || "SIN PROGRAMA";
             let nombreH = item.horario ? item.horario.toUpperCase() : "";
-
-            if (!item.id_horario || !nombreH ||
-                nombreH === "POR CONFIRMAR" ||
-                nombreH === "SIN IDENTIFICAR" ||
-                nombreH === "(EN BLANCO)") {
+            if (!item.id_horario || !nombreH || nombreH === "POR CONFIRMAR") {
                 nombreH = "POR CONFIRMAR";
             }
-
             matriz[p][nombreH] += parseInt(item.total_leads);
         });
 
         // 3. Generar HTML de la Tabla
         let html = `
-        <style>
-            #rst_reports .table td { padding: 5px 10px !important; vertical-align: middle; }
-            #rst_reports .table th { padding: 8px 10px !important; text-transform: uppercase; font-size: 0.75rem; }
-            .bg-total-fila { background-color: #f1f1f1; font-weight: bold; }
-            .cursor-pointer { cursor: pointer; transition: background 0.2s; }
-            .cursor-pointer:hover { background-color: rgba(13, 110, 253, 0.1) !important; }
-        </style>
-        <table id="tabla_resumen_rst" class="table table-bordered table-striped table-hover table-sm">
-            <thead class="table-dark text-center">
-                <tr>
-                    <th class="text-start">Programa / Horario</th>
-                    ${encabezadosHorarios.map(h => `<th>${h}</th>`).join('')}
-                    <th>Total</th>
-                </tr>
-            </thead>
-            <tbody>`;
+    <style>
+        #rst_reports .table td { padding: 8px 12px !important; vertical-align: middle; }
+        #rst_reports .table th { padding: 10px !important; text-transform: uppercase; font-size: 0.75rem; }
+        .bg-total-fila { background-color: #f8f9fa !important; font-weight: bold; }
+        .bg-gran-total { background-color: #0d6efd !important; color: white !important; }
+        .cursor-pointer { cursor: pointer; transition: all 0.2s; }
+        .cursor-pointer:hover { background-color: rgba(13, 110, 253, 0.1) !important; transform: scale(1.02); }
+    </style>
+    <table id="tabla_resumen_rst" class="table table-bordered table-striped table-hover table-sm">
+        <thead class="table-dark text-center">
+            <tr>
+                <th class="text-start">Programa / Horario</th>
+                ${encabezadosHorarios.map(h => `<th>${h}</th>`).join('')}
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>`;
 
         let totalColumnas = {};
         encabezadosHorarios.forEach(h => totalColumnas[h] = 0);
@@ -515,44 +579,55 @@ require_once '../partials/main.php'; ?>
 
             encabezadosHorarios.forEach(h => {
                 const valor = matriz[p][h];
-
                 if (valor > 0) {
-                    // AQUÍ SE ASIGNAN LOS DATOS CORRECTAMENTE USANDO p y h
+                    // CELDA NORMAL: Filtra por Carrera específica y Horario específico
                     html += `
-                    <td class="abrir-mensajes-foco text-center text-primary fw-bold cursor-pointer"
-                        data-programa="${p}" 
-                        data-jornada="${h}">
-                        ${valor}
-                    </td>`;
+                <td class="abrir-mensajes-foco text-center text-primary fw-bold cursor-pointer"
+                    data-programa="${p}" 
+                    data-jornada="${h}">
+                    ${valor}
+                </td>`;
                 } else {
                     html += `<td class="text-center text-muted">-</td>`;
                 }
-
                 totalFila += valor;
                 totalColumnas[h] += valor;
             });
 
-            // Total de la fila (cliqueable para ver todo el programa)
+            // TOTAL FILA: Filtra por Carrera específica y TODOS los horarios
             html += `
-            <td class="text-center bg-total-fila text-primary fw-bold cursor-pointer" 
+            <td class="abrir-mensajes-foco text-center bg-total-fila text-primary fw-bold cursor-pointer" 
                 data-programa="${p}" 
                 data-jornada="TODOS">
                 ${totalFila}
             </td>
         </tr>`;
-
             granTotal += totalFila;
         });
 
-        // 4. Totales finales (Footer)
+        // 4. Footer con Totales de Columna y Gran Total
         html += `</tbody>
-        <tfoot class="table-dark text-center text-white text-black">
-            <tr>
-                <td class="text-start"><strong>TOTAL GENERAL</strong></td>
-                ${encabezadosHorarios.map(h => `<td><strong>${totalColumnas[h]}</strong></td>`).join('')}
-                <td style="background-color: #0d6efd;"><strong>${granTotal}</strong></td>
-            </tr>
-        </tfoot>
+    <tfoot class="table-secondary text-center">
+        <tr>
+            <td class="text-start"><strong>TOTAL GENERAL</strong></td>
+            ${encabezadosHorarios.map(h => {
+                const valCol = totalColumnas[h];
+                // TOTAL COLUMNA: Filtra por TODAS las carreras y un Horario específico
+                return `
+                <td class="abrir-mensajes-foco text-primary fw-bold cursor-pointer" 
+                    data-programa="TODOS" 
+                    data-jornada="${h}">
+                    ${valCol}
+                </td>`;
+            }).join('')}
+            
+            <td class="abrir-mensajes-foco bg-gran-total fw-bold cursor-pointer" 
+                data-programa="TODOS" 
+                data-jornada="TODOS">
+                ${granTotal}
+            </td>
+        </tr>
+    </tfoot>
     </table>`;
 
         contenedor.innerHTML = html;
@@ -635,11 +710,11 @@ require_once '../partials/main.php'; ?>
             .catch(() => false);
     }
 
-    function cargarFiltrosRST() {
+    async function cargarFiltrosRST() {
         const datos = new FormData();
         datos.append('accion', 'catalogo_filtros_mensaje');
 
-        // Agregamos el "return" al inicio
+        // Retornamos el fetch para poder usar 'await'
         return fetch('ajax/ajax.php', {
                 method: 'POST',
                 body: datos
@@ -650,6 +725,7 @@ require_once '../partials/main.php'; ?>
                 llenarSelect('filtro_horario', data.horarios, 'id_jornada', 'jornada');
                 llenarSelect('filtro_estado', data.estados, 'id_estado', 'estado');
                 llenarSelect('filtro_asesor', data.asesores, 'id_asesor', 'asesor');
+                return data; // Importante para el flujo async
             });
     }
 

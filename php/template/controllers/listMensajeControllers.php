@@ -15,4 +15,23 @@ class ListMensajeControllers{
         return ListMensajeModels::insertarMensajes($mensajes, $fechaProgramada);
     }
 
+    public static function listarMensajesRST($id){
+        return ListMensajeModels::listarMensajesRST($id);
+    }
+
+    public static function reporte1Mensajes()
+    {
+        return ListMensajeModels::reporte1Mensajes();
+    }
+
+    public static function reporte2Estados()
+    {
+        return ListMensajeModels::reporte2Estados();
+    }
+
+    public static function reporte3Asesores()
+    {
+        return ListMensajeModels::reporte3Asesores();
+    }
+
 }

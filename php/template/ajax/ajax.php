@@ -451,6 +451,9 @@ if (isset($_POST['accion'])) {
         case 'guardar_mensajes_rst':
             echo json_encode($lis_mensaje::guardarMensajesRST());
             break;
+        case 'listar_mensaje_texto':
+            echo json_encode($lis_mensaje::listarMensajesRST($_POST['id_lead']));
+            break;
         /*MENSAJE */
         case 'guardar_mensaje':
             echo json_encode($mensaje->agregarMensaje($_POST));
@@ -1051,6 +1054,19 @@ if (isset($_GET['accion'])) {
 
             echo json_encode($leads->listarReporteRstDia($mes, $anio));
             break;
+        /*Mensaje */
+        case 'reporte1_mensajes':
+            echo json_encode($lis_mensaje->reporte1Mensajes());
+            break;
+
+        case 'reporte2_estados':
+            echo json_encode($lis_mensaje->reporte2Estados());
+            break;
+
+        case 'reporte3_asesores':
+            echo json_encode($lis_mensaje->reporte3Asesores());
+            break;
+
         default:
     }
 }

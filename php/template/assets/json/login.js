@@ -26,7 +26,7 @@ document.getElementById("btnLogin").addEventListener("click", async(e) => {
         } else {
             window.location.href = "index.php";
         }*/
-       window.location.href = "resultado_foco.php";
+       window.location.href = "reporte_lead.php";
 
     } else {
         alert("Credenciales incorrectas");

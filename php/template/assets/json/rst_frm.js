@@ -322,16 +322,14 @@ async function cargarDashboard() {
         loader.classList.remove("d-none");
 
         // 🔹 Fetch en paralelo
-        const [rstRes, estadosRes] = await Promise.all([
-            fetch('ajax/ajax.php?accion=rst_frm_dia'),
-            fetch('ajax/ajax.php?accion=getEstados')
+        const [rstRes] = await Promise.all([
+            fetch('ajax/ajax.php?accion=rst_frm_dia')
         ]);
 
         const rstData = await rstRes.json();
-        const estadosCatalogo = await estadosRes.json();
 
         construirTablaDias(rstData.porDia);
-        construirTablaEstados(rstData.porEstado, estadosCatalogo);
+        construirTablaEstados(rstData.porEstado);
 
     } catch (e) {
         console.error("Error card leads:", e);
