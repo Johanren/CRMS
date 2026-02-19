@@ -292,9 +292,11 @@ class LeadsModels
         return "ok";
     }
 
-    public static function listarLeads($texto = "", $asesor = [], $carreras = [], $horario = [], $interes = [], $medio = [], $fuente = [], $campana = [], $accion = [], $departamento = [], $ciudad = [], $barrio = [], $estados = [], $fecha_inicio = [], $fecha_fin = [])
+    public static function listarLeads($texto = "", $asesor = [], $carreras = [], $horario = [], $interes = [], $medio = [], $fuente = [], $campana = [], $accion = [], $departamento = [], $ciudad = [], $barrio = [], $estados = [], $fecha_inicio = [], $fecha_fin = [], $tipo = '')
     {
-        $sql = "SELECT 
+
+        if (empty($tipo)) {
+            $sql = "SELECT 
                 l.*, 
                 c.nombres, 
                 c.apellidos, 
@@ -315,6 +317,29 @@ class LeadsModels
             LEFT JOIN estado_leads e ON e.id_estado_leads = l.estado_leads_id 
             LEFT JOIN horario h ON l.horario_id = h.id_horario
             WHERE l.cod_emp = ?";
+        } else {
+            $sql = "SELECT 
+                l.*, 
+                c.nombres, 
+                c.apellidos, 
+                c.email, 
+                c.telefono_principal, 
+                p.desc_pro,  
+                l.fecha_creacion, 
+                u.nombres AS nombreAsesor, 
+                u.apellidos AS apellidoAsesor,
+                h.descripcion AS horario,
+                e.nombre AS estado
+            FROM leads l 
+            INNER JOIN cliente c ON c.id_cliente = l.cliente_id 
+            INNER JOIN programa p ON p.cod_pro = l.carrera_id 
+            INNER JOIN user u ON u.id_user = l.user_id 
+            INNER JOIN estado_leads e ON e.id_estado_leads = l.estado_leads_id 
+            INNER JOIN horario h ON l.horario_id = h.id_horario
+            WHERE l.cod_emp = ?";
+        }
+
+
 
         $params = [$_SESSION['cod_emp']];
 
@@ -1126,10 +1151,11 @@ class LeadsModels
         h.id_horario,
         COUNT(l.id_lead) AS total_leads
         FROM `leads` l
-        LEFT JOIN programa p ON p.cod_pro = l.carrera_id
-        LEFT JOIN horario h ON h.id_horario = l.horario_id
+        INNER JOIN cliente c ON c.id_cliente = l.cliente_id 
+        INNER JOIN programa p ON p.cod_pro = l.carrera_id
+        INNER JOIN horario h ON h.id_horario = l.horario_id
         INNER JOIN user u ON u.id_user = l.user_id
-        LEFT JOIN estado_leads et ON et.id_estado_leads = l.estado_leads_id
+        INNER JOIN estado_leads et ON et.id_estado_leads = l.estado_leads_id
         WHERE 1
             AND l.cod_emp = ?
         ";

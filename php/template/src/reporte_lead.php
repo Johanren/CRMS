@@ -351,6 +351,7 @@ $content = ob_get_clean();
 require_once '../partials/main.php'; ?>
 <script>
     window.usuarioSesion = <?php echo json_encode($_SESSION['user_id'] ?? null); ?>;
+    window.usuarioRol = <?php echo json_encode($_SESSION['rol'] ?? null); ?>;
 </script>
 <script>
     window.Filtros = {
@@ -377,9 +378,11 @@ require_once '../partials/main.php'; ?>
                 estados = ['En Decisión'];
             }
 
-            // ✅ DEFAULT ASESOR (igual lógica que estados)
-            if (asesor.length === 0 && !window.filtrosInicializados && window.usuarioSesion) {
-                asesor = [window.usuarioSesion.toString()];
+            if (window.usuarioRol != "Admin") {
+                // ✅ DEFAULT ASESOR (igual lógica que estados)
+                if (asesor.length === 0 && !window.filtrosInicializados && window.usuarioSesion) {
+                    asesor = [window.usuarioSesion.toString()];
+                }
             }
 
             let fecha_inicio = window.fecha_inicio || "";
@@ -463,33 +466,37 @@ require_once '../partials/main.php'; ?>
         });
     });
 
-    function marcarAsesorDefault() {
+    if (window.usuarioRol != "Admin") {
 
-        if (!window.usuarioSesion) return;
+        function marcarAsesorDefault() {
 
-        const checkboxes = document.querySelectorAll('.filtro-asesor');
+            if (!window.usuarioSesion) return;
 
-        checkboxes.forEach(chk => {
-            if (chk.value == window.usuarioSesion) {
-                chk.checked = true;
-            }
+            const checkboxes = document.querySelectorAll('.filtro-asesor');
+
+            checkboxes.forEach(chk => {
+                if (chk.value == window.usuarioSesion) {
+                    chk.checked = true;
+                }
+            });
+        }
+
+        const observerAsesor = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.addedNodes.length) {
+                    marcarAsesorDefault();
+                }
+            });
         });
-    }
 
-    const observerAsesor = new MutationObserver((mutations) => {
-        mutations.forEach((mutation) => {
-            if (mutation.addedNodes.length) {
-                marcarAsesorDefault();
-            }
-        });
-    });
+        const targetAsesor = document.getElementById('listar_filtro_user');
 
-    const targetAsesor = document.getElementById('listar_filtro_user');
+        if (targetAsesor) {
+            observerAsesor.observe(targetAsesor, {
+                childList: true
+            });
+        }
 
-    if (targetAsesor) {
-        observerAsesor.observe(targetAsesor, {
-            childList: true
-        });
     }
 
     // Empezamos a observar el contenedor de los estados
@@ -499,6 +506,7 @@ require_once '../partials/main.php'; ?>
             childList: true
         });
     }
+
 
     listarReporteCRMS();
 
@@ -512,20 +520,31 @@ require_once '../partials/main.php'; ?>
         const programasSet = new Set();
         const mapaHorarios = {};
 
+        // --- FUNCIÓN DE NORMALIZACIÓN INTERNA ---
+        // Esto asegura que null, undefined, "SIN IDENTIFICAR", etc., se agrupen igual
+        const normalizarHorario = (id, nombre) => {
+            let n = (nombre || "").toUpperCase().trim();
+            if (!id || !n ||
+                n === "NULL" ||
+                n === "POR CONFIRMAR" ||
+                n === "SIN IDENTIFICAR" ||
+                n === "(EN BLANCO)") {
+                return {
+                    id: "99",
+                    nombre: "POR CONFIRMAR"
+                };
+            }
+            return {
+                id: id,
+                nombre: n
+            };
+        };
+
         // 1. Procesar data y UNIFICAR categorías de horarios
         data.forEach(item => {
-            let idH = item.id_horario;
-            let nombreH = item.horario ? item.horario.toUpperCase() : "";
+            const horarioNormalizado = normalizarHorario(item.id_horario, item.horario);
 
-            if (!idH || !nombreH ||
-                nombreH === "POR CONFIRMAR" ||
-                nombreH === "SIN IDENTIFICAR" ||
-                nombreH === "(EN BLANCO)") {
-                idH = "99";
-                nombreH = "POR CONFIRMAR";
-            }
-
-            mapaHorarios[idH] = nombreH;
+            mapaHorarios[horarioNormalizado.id] = horarioNormalizado.nombre;
             programasSet.add(item.programa || "SIN PROGRAMA");
         });
 
@@ -533,41 +552,43 @@ require_once '../partials/main.php'; ?>
         const encabezadosHorarios = idsOrdenados.map(id => mapaHorarios[id]);
         const programas = Array.from(programasSet).sort();
 
-        // 2. Crear Matriz de conteo
+        // 2. Crear Matriz de conteo inicializada en 0
         const matriz = {};
         programas.forEach(p => {
             matriz[p] = {};
             encabezadosHorarios.forEach(h => matriz[p][h] = 0);
         });
 
+        // Llenar matriz con los datos reales
         data.forEach(item => {
             const p = item.programa || "SIN PROGRAMA";
-            let nombreH = item.horario ? item.horario.toUpperCase() : "";
-            if (!item.id_horario || !nombreH || nombreH === "POR CONFIRMAR") {
-                nombreH = "POR CONFIRMAR";
+            const horarioNormalizado = normalizarHorario(item.id_horario, item.horario);
+            const nombreH = horarioNormalizado.nombre;
+
+            if (matriz[p] && matriz[p][nombreH] !== undefined) {
+                matriz[p][nombreH] += parseInt(item.total_leads) || 0;
             }
-            matriz[p][nombreH] += parseInt(item.total_leads);
         });
 
         // 3. Generar HTML de la Tabla
         let html = `
-    <style>
-        #rst_reports .table td { padding: 8px 12px !important; vertical-align: middle; }
-        #rst_reports .table th { padding: 10px !important; text-transform: uppercase; font-size: 0.75rem; }
-        .bg-total-fila { background-color: #f8f9fa !important; font-weight: bold; }
-        .bg-gran-total { background-color: #0d6efd !important; color: white !important; }
-        .cursor-pointer { cursor: pointer; transition: all 0.2s; }
-        .cursor-pointer:hover { background-color: rgba(13, 110, 253, 0.1) !important; transform: scale(1.02); }
-    </style>
-    <table id="tabla_resumen_rst" class="table table-bordered table-striped table-hover table-sm">
-        <thead class="table-dark text-center">
-            <tr>
-                <th class="text-start">Programa / Horario</th>
-                ${encabezadosHorarios.map(h => `<th>${h}</th>`).join('')}
-                <th>Total</th>
-            </tr>
-        </thead>
-        <tbody>`;
+            <style>
+                #rst_reports .table td { padding: 8px 12px !important; vertical-align: middle; }
+                #rst_reports .table th { padding: 10px !important; text-transform: uppercase; font-size: 0.75rem; }
+                .bg-total-fila { background-color: #f8f9fa !important; font-weight: bold; }
+                .bg-gran-total { background-color: #0d6efd !important; color: white !important; }
+                .cursor-pointer { cursor: pointer; transition: all 0.2s; }
+                .cursor-pointer:hover { background-color: rgba(13, 110, 253, 0.1) !important; transform: scale(1.02); }
+            </style>
+            <table id="tabla_resumen_rst" class="table table-bordered table-striped table-hover table-sm">
+                <thead class="table-dark text-center">
+                    <tr>
+                        <th class="text-start">Programa / Horario</th>
+                        ${encabezadosHorarios.map(h => `<th>${h}</th>`).join('')}
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>`;
 
         let totalColumnas = {};
         encabezadosHorarios.forEach(h => totalColumnas[h] = 0);
@@ -580,7 +601,6 @@ require_once '../partials/main.php'; ?>
             encabezadosHorarios.forEach(h => {
                 const valor = matriz[p][h];
                 if (valor > 0) {
-                    // CELDA NORMAL: Filtra por Carrera específica y Horario específico
                     html += `
                 <td class="abrir-mensajes-foco text-center text-primary fw-bold cursor-pointer"
                     data-programa="${p}" 
@@ -594,45 +614,41 @@ require_once '../partials/main.php'; ?>
                 totalColumnas[h] += valor;
             });
 
-            // TOTAL FILA: Filtra por Carrera específica y TODOS los horarios
             html += `
-            <td class="abrir-mensajes-foco text-center bg-total-fila text-primary fw-bold cursor-pointer" 
-                data-programa="${p}" 
-                data-jornada="TODOS">
-                ${totalFila}
-            </td>
-        </tr>`;
+                <td class="abrir-mensajes-foco text-center bg-total-fila text-primary fw-bold cursor-pointer" 
+                    data-programa="${p}" 
+                    data-jornada="TODOS">
+                    ${totalFila}
+                </td>
+            </tr>`;
             granTotal += totalFila;
         });
 
-        // 4. Footer con Totales de Columna y Gran Total
+        // 4. Footer con Totales
         html += `</tbody>
-    <tfoot class="table-secondary text-center">
-        <tr>
-            <td class="text-start"><strong>TOTAL GENERAL</strong></td>
-            ${encabezadosHorarios.map(h => {
-                const valCol = totalColumnas[h];
-                // TOTAL COLUMNA: Filtra por TODAS las carreras y un Horario específico
-                return `
-                <td class="abrir-mensajes-foco text-primary fw-bold cursor-pointer" 
-                    data-programa="TODOS" 
-                    data-jornada="${h}">
-                    ${valCol}
-                </td>`;
-            }).join('')}
-            
-            <td class="abrir-mensajes-foco bg-gran-total fw-bold cursor-pointer" 
-                data-programa="TODOS" 
-                data-jornada="TODOS">
-                ${granTotal}
-            </td>
-        </tr>
-    </tfoot>
-    </table>`;
+            <tfoot class="table-secondary text-center">
+                <tr>
+                    <td class="text-start"><strong>TOTAL GENERAL</strong></td>
+                    ${encabezadosHorarios.map(h => {
+                        const valCol = totalColumnas[h];
+                        return `
+                        <td class="abrir-mensajes-foco text-primary fw-bold cursor-pointer" 
+                            data-programa="TODOS" 
+                            data-jornada="${h}">
+                            ${valCol}
+                        </td>`;
+                    }).join('')}
+                    <td class="abrir-mensajes-foco bg-gran-total fw-bold cursor-pointer" 
+                        data-programa="TODOS" 
+                        data-jornada="TODOS">
+                        ${granTotal}
+                    </td>
+                </tr>
+            </tfoot>
+            </table>`;
 
         contenedor.innerHTML = html;
     }
-
 
     function exportarExcel(tipo) {
         const f = Filtros.obtener();

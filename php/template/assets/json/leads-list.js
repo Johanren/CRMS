@@ -1529,7 +1529,8 @@ async function listarLeadsId() {
 
     //document.getElementById("valorCarrera").textContent = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }).format(d.val_pro);
 
-    document.getElementById("asesorLeads").textContent = `${d.nombreAsesor} ${d.apellidoAsesor}`;
+    //document.getElementById("asesorLeads").textContent = `${d.nombreAsesor} ${d.apellidoAsesor}`;
+    document.getElementById("asesorLeads").textContent = `${d.nombreAsesor}`;
     cargarAsesoresDropdown();
     document.getElementById("carreraLead").textContent = d.desc_pro ?? 'Sin carrera';
     document.getElementById("carreraLead").dataset.id = d.carrera_id;
@@ -2849,6 +2850,81 @@ function agruparPorDia(lista) {
         grupos[key].push(item);
     });
     return grupos;
+}
+
+async function llamarModalMensaje() {
+
+    const telefono = document.getElementById("telefonoLeads")?.textContent.trim();
+    const nombreAsesor = document.getElementById("asesorLeads")?.textContent.trim()?.toUpperCase();
+    console.log(nombreAsesor);
+    const iframe = document.getElementById("frameGestion");
+    iframe.src = "mensajes.php?modal=1";
+
+    const modal = new bootstrap.Modal(
+        document.getElementById('modalGestionLead')
+    );
+    modal.show();
+
+    iframe.onload = function () {
+
+        const win = iframe.contentWindow;
+        const doc = win.document;
+
+        /* =============================
+           1️⃣ ESPERAR A QUE CARGUEN FILTROS
+        ============================= */
+
+        const esperarFiltros = setInterval(() => {
+
+            const contenedorAsesores = doc.getElementById("filtro_asesor");
+
+            // Cuando ya existan checkboxes dentro del filtro
+            if (contenedorAsesores && contenedorAsesores.querySelectorAll("input").length > 0) {
+
+                clearInterval(esperarFiltros);
+
+                /* =============================
+                   2️⃣ CARGAR TELÉFONO
+                ============================= */
+
+                const inputNumero = doc.getElementById("filtro_numero");
+
+                if (inputNumero && telefono) {
+                    inputNumero.value = telefono;
+                    inputNumero.dispatchEvent(new Event('input', { bubbles: true }));
+                }
+
+                /* =============================
+                3️⃣ MARCAR ASESOR POR NOMBRE
+                ============================= */
+                contenedorAsesores.querySelectorAll("input[type='checkbox']").forEach(cb => {
+                    // Intentamos 3 formas de obtener el nombre:
+                    // 1. Del texto del elemento padre (si el input está dentro de un label)
+                    // 2. Del hermano siguiente (si el label está al lado)
+                    // 3. Del atributo 'value' (a veces el nombre viene ahí)
+
+                    const textoPadre = cb.parentElement?.textContent?.trim()?.toUpperCase();
+                    const textoHermano = cb.nextElementSibling?.textContent?.trim()?.toUpperCase();
+
+                    // Comprobamos si el nombre del asesor está contenido en alguno de esos textos
+                    if (textoPadre?.includes(nombreAsesor) || textoHermano?.includes(nombreAsesor)) {
+                        cb.checked = true;
+                        cb.dispatchEvent(new Event('change', { bubbles: true }));
+                        console.log("✅ Asesor seleccionado:", nombreAsesor);
+                    }
+                });
+
+                /* =============================
+                   4️⃣ DISPARAR TABLA
+                ============================= */
+
+                if (typeof win.validarYCargarTabla === "function") {
+                    win.validarYCargarTabla();
+                }
+            }
+
+        }, 100); // revisa cada 100ms
+    };
 }
 
 /*=====

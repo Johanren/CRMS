@@ -101,7 +101,7 @@ $esModal = isset($_GET['modal']) && $_GET['modal'] == 1;
             </div>
 
             <!-- Contact Sidebar -->
-            <div class="col-xl-4">
+            <div class="col-xl-4" id="panelInfoCliente">
                 <div class="card">
                     <div class="card-body p-3">
                         <div class="d-flex align-items-center justify-content-between flex-wrap">
@@ -321,202 +321,247 @@ $esModal = isset($_GET['modal']) && $_GET['modal'] == 1;
                     </div>
                 </div>
             </div>
+            <?php if ($esModal): ?>
+                <script>
+                    document.getElementById("panelInfoCliente").classList.add("d-none");
+                </script>
+            <?php endif; ?>
             <!-- /Contact Sidebar -->
+            <?php if ($esModal): ?>
+                <div class="col-xl-12">
+                <?php elseif (!$esModal): ?>
+                    <div class="col-xl-8">
+                    <?php else: ?>
 
-            <!-- Contact Details -->
-            <div class="col-xl-8">
-                <div class="mb-3 pb-3 border-bottom">
-                    <h5 class="mb-3">Estado del leads principal</h5>
-                    <div id="estadoLeadsSecundarioSeguimiento"></div>
-                    <!--<div class="step bg-indigo">Not Contacted</div>
+                    <?php endif; ?>
+
+                    <!-- Contact Details -->
+
+                    <div class="mb-3 pb-3 border-bottom">
+                        <h5 class="mb-3">Estado del leads principal</h5>
+                        <div id="estadoLeadsSecundarioSeguimiento"></div>
+                        <!--<div class="step bg-indigo">Not Contacted</div>
                             <div class="step bg-cyan">Contacted</div>
                             <div class="step bg-success">Closed</div>
                             <div class="step bg-orange">Lost</div>
                             <div class="step bg-transparent"></div>-->
 
-                </div>
-                <div class="card mb-3">
-                    <div class="card-body pb-0 pt-2 px-2">
-                        <ul class="nav nav-tabs nav-bordered border-0 mb-0" role="tablist">
-                            <li class="nav-item" role="presentation">
-                                <a href="#tab_1" data-bs-toggle="tab" aria-expanded="false" class="nav-link active border-3" aria-selected="true" role="tab">
-                                    <span class="d-md-inline-block"><i class="ti ti-alarm-minus me-1"></i>Actividad</span>
-                                </a>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <a href="#tab_2" data-bs-toggle="tab" aria-expanded="true" class="nav-link border-3" aria-selected="false" role="tab" tabindex="-1">
-                                    <span class="d-md-inline-block"><i class="ti ti-notes me-1"></i>Notas</span>
-                                </a>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <a href="#tab_3" data-bs-toggle="tab" aria-expanded="false" class="nav-link border-3" aria-selected="false" tabindex="-1" role="tab">
-                                    <span class="d-md-inline-block"><i class="ti ti-phone me-1"></i>Llamadas</span>
-                                </a>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <a href="#tab_4" data-bs-toggle="tab" aria-expanded="false" class="nav-link border-3" aria-selected="false" tabindex="-1" role="tab">
-                                    <span class="d-md-inline-block"><i class="ti ti-file me-1"></i>Mensajes de texto</span>
-                                </a>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <a href="#tab_6" data-bs-toggle="tab" aria-expanded="false" class="nav-link border-3" aria-selected="false" tabindex="-1" role="tab">
-                                    <span class="d-md-inline-block"><i class="ti ti-mail-check me-1"></i>Proxima Actividad</span>
-                                </a>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <a href="#tab_5" data-bs-toggle="tab" aria-expanded="false" class="nav-link border-3" aria-selected="false" tabindex="-1" role="tab">
-                                    <span class="d-md-inline-block"><i class="ti ti-mail-check me-1"></i>Whatsapp</span>
-                                </a>
-                            </li>
-                        </ul>
                     </div>
-                </div>
-
-                <!-- Tab Content -->
-                <div class="tab-content pt-0">
-
-                    <!-- Activities -->
-                    <div class="tab-pane active show" id="tab_1">
-                        <div class="card">
-                            <div
-                                class="card-header d-flex align-items-center justify-content-between flex-wrap row-gap-3">
-                                <h5 class="fw-semibold mb-0">Activities</h5>
-                                <div class="dropdown">
-                                    <a href="javascript:void(0);" class="dropdown-toggle btn btn-outline-light px-2 shadow" data-bs-toggle="dropdown"><i class="ti ti-sort-ascending-2 me-2"></i>Sort By</a>
-                                    <div class="dropdown-menu">
-                                        <ul>
-                                            <li>
-                                                <a href="javascript:void(0);" class="dropdown-item">Newest</a>
-                                            </li>
-                                            <li>
-                                                <a href="javascript:void(0);" class="dropdown-item">Oldest</a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                            <div id="timeline-container" class="card-body"></div>
+                    <div class="card mb-3">
+                        <div class="card-body pb-0 pt-2 px-2">
+                            <ul class="nav nav-tabs nav-bordered border-0 mb-0" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <a href="#tab_1" data-bs-toggle="tab" aria-expanded="false" class="nav-link active border-3" aria-selected="true" role="tab">
+                                        <span class="d-md-inline-block"><i class="ti ti-alarm-minus me-1"></i>Actividad</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <a href="#tab_2" data-bs-toggle="tab" aria-expanded="true" class="nav-link border-3" aria-selected="false" role="tab" tabindex="-1">
+                                        <span class="d-md-inline-block"><i class="ti ti-notes me-1"></i>Notas</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <a href="#tab_3" data-bs-toggle="tab" aria-expanded="false" class="nav-link border-3" aria-selected="false" tabindex="-1" role="tab">
+                                        <span class="d-md-inline-block"><i class="ti ti-phone me-1"></i>Llamadas</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <a href="#tab_4" data-bs-toggle="tab" aria-expanded="false" class="nav-link border-3" aria-selected="false" tabindex="-1" role="tab">
+                                        <span class="d-md-inline-block"><i class="ti ti-file me-1"></i>Mensajes de texto</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <a href="#tab_6" data-bs-toggle="tab" aria-expanded="false" class="nav-link border-3" aria-selected="false" tabindex="-1" role="tab">
+                                        <span class="d-md-inline-block"><i class="ti ti-mail-check me-1"></i>Proxima Actividad</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <a href="#tab_5" data-bs-toggle="tab" aria-expanded="false" class="nav-link border-3" aria-selected="false" tabindex="-1" role="tab">
+                                        <span class="d-md-inline-block"><i class="ti ti-mail-check me-1"></i>Whatsapp</span>
+                                    </a>
+                                </li>
+                            </ul>
                         </div>
                     </div>
-                    <!-- /Activities -->
 
-                    <!-- Notes -->
-                    <div class="tab-pane fade" id="tab_2">
-                        <div class="card">
-                            <div
-                                class="card-header d-flex align-items-center justify-content-between flex-wrap row-gap-3">
-                                <h5 class="fw-semibold mb-0">Notas</h5>
-                                <div class="d-inline-flex align-items-center">
-                                    <div class="dropdown me-2">
-                                        <a href="javascript:void(0);" class="dropdown-toggle btn btn-outline-light px-2 shadow" data-bs-toggle="dropdown"><i class="ti ti-sort-ascending-2 me-2"></i>Ordenar Por</a>
+                    <!-- Tab Content -->
+                    <div class="tab-content pt-0">
+
+                        <!-- Activities -->
+                        <div class="tab-pane active show" id="tab_1">
+                            <div class="card">
+                                <div
+                                    class="card-header d-flex align-items-center justify-content-between flex-wrap row-gap-3">
+                                    <h5 class="fw-semibold mb-0">Activities</h5>
+                                    <div class="dropdown">
+                                        <a href="javascript:void(0);" class="dropdown-toggle btn btn-outline-light px-2 shadow" data-bs-toggle="dropdown"><i class="ti ti-sort-ascending-2 me-2"></i>Sort By</a>
                                         <div class="dropdown-menu">
                                             <ul>
                                                 <li>
-                                                    <a href="javascript:void(0);" class="dropdown-item">Más reciente</a>
+                                                    <a href="javascript:void(0);" class="dropdown-item">Newest</a>
                                                 </li>
                                                 <li>
-                                                    <a href="javascript:void(0);" class="dropdown-item">Más antiguo</a>
+                                                    <a href="javascript:void(0);" class="dropdown-item">Oldest</a>
                                                 </li>
                                             </ul>
                                         </div>
                                     </div>
-                                    <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#add_notes" class="link-primary fw-medium"><i class="ti ti-circle-plus me-1"></i>Agregar Nota</a>
                                 </div>
-                            </div>
-                            <div class="card-body">
-                                <div class="notes-activity">
-                                    <div id="contenedorNotas"></div>
-                                </div>
+                                <div id="timeline-container" class="card-body"></div>
                             </div>
                         </div>
-                    </div>
-                    <!-- /Notes -->
+                        <!-- /Activities -->
 
-                    <!-- Calls -->
-                    <div class="tab-pane fade" id="tab_3">
-                        <div class="card">
-                            <div
-                                class="card-header d-flex align-items-center justify-content-between flex-wrap row-gap-3">
-                                <h5 class="fw-semibold mb-0">Llamadas</h5>
-                                <div class="d-inline-flex align-items-center">
-                                    <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#create_call" class="link-primary fw-medium"><i class="ti ti-circle-plus me-1"></i>Agregar llamada</a>
+                        <!-- Notes -->
+                        <div class="tab-pane fade" id="tab_2">
+                            <div class="card">
+                                <div
+                                    class="card-header d-flex align-items-center justify-content-between flex-wrap row-gap-3">
+                                    <h5 class="fw-semibold mb-0">Notas</h5>
+                                    <div class="d-inline-flex align-items-center">
+                                        <div class="dropdown me-2">
+                                            <a href="javascript:void(0);" class="dropdown-toggle btn btn-outline-light px-2 shadow" data-bs-toggle="dropdown"><i class="ti ti-sort-ascending-2 me-2"></i>Ordenar Por</a>
+                                            <div class="dropdown-menu">
+                                                <ul>
+                                                    <li>
+                                                        <a href="javascript:void(0);" class="dropdown-item">Más reciente</a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="javascript:void(0);" class="dropdown-item">Más antiguo</a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#add_notes" class="link-primary fw-medium"><i class="ti ti-circle-plus me-1"></i>Agregar Nota</a>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="card-body">
-                                <div id="listaLlamadas"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- /Calls -->
-
-                    <!-- Files -->
-                    <div class="tab-pane fade" id="tab_4">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5 class="fw-semibold mb-0">Mensaje de texto</h5>
-                            </div>
-                            <div class="card-body">
-                                <div id="listaMensajeTexto"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- /Files -->
-
-                    <!-- Email -->
-                    <div class="tab-pane fade" id="tab_5">
-                        <div class="card h-100">
-                            <div class="card-header bg-success text-white">
-                                <h5 class="mb-0">💬 WhatsApp</h5>
-                            </div>
-
-                            <div class="card-body chat-body" id="chatMensajes"
-                                style="height:400px; overflow-y:auto;">
-                            </div>
-
-                            <div class="card-footer">
-                                <div class="input-group">
-                                    <input type="hidden" id="conversacion_id" value="<?= $_GET['id'] ?>">
-                                    <input type="text" id="mensaje" class="form-control"
-                                        placeholder="Escribe un mensaje...">
-                                    <button class="btn btn-success" onclick="enviarMensaje()">Enviar</button>
+                                <div class="card-body">
+                                    <div class="notes-activity">
+                                        <div id="contenedorNotas"></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <!-- /Email -->
+                        <!-- /Notes -->
 
-                    <div class="tab-pane fade" id="tab_6">
-                        <div class="card">
-                            <div
-                                class="card-header d-flex align-items-center justify-content-between flex-wrap row-gap-3">
-                                <h5 class="fw-semibold mb-0">Proxima Actividad</h5>
-                                <div class="d-inline-flex align-items-center">
-                                    <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#create_actividad" class="link-primary fw-medium"><i class="ti ti-circle-plus me-1"></i>Agregar Actividad</a>
+                        <!-- Calls -->
+                        <div class="tab-pane fade" id="tab_3">
+                            <div class="card">
+                                <div
+                                    class="card-header d-flex align-items-center justify-content-between flex-wrap row-gap-3">
+                                    <h5 class="fw-semibold mb-0">Llamadas</h5>
+                                    <div class="d-inline-flex align-items-center">
+                                        <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#create_call" class="link-primary fw-medium"><i class="ti ti-circle-plus me-1"></i>Agregar llamada</a>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div id="listaLlamadas"></div>
                                 </div>
                             </div>
-                            <div class="card-body">
-                                <div id="contenedorActividades"></div>
+                        </div>
+                        <!-- /Calls -->
 
+                        <!-- Files -->
+                        <div class="tab-pane fade" id="tab_4">
+                            <div class="card">
+                                <div
+                                    class="card-header d-flex align-items-center justify-content-between flex-wrap row-gap-3">
+                                    <h5 class="fw-semibold mb-0">Mensaje de texto</h5>
+                                    <div class="d-inline-flex align-items-center">
+                                        <button class="btn btn-primary"
+                                            onclick="llamarModalMensaje()">
+                                            Abrir Mensajes
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div id="listaMensajeTexto"></div>
+                                </div>
                             </div>
                         </div>
+                        <!-- /Files -->
+
+                        <!-- Email -->
+                        <div class="tab-pane fade" id="tab_5">
+                            <div class="card h-100">
+                                <div class="card-header bg-success text-white">
+                                    <h5 class="mb-0">💬 WhatsApp</h5>
+                                </div>
+
+                                <div class="card-body chat-body" id="chatMensajes"
+                                    style="height:400px; overflow-y:auto;">
+                                </div>
+
+                                <div class="card-footer">
+                                    <div class="input-group">
+                                        <input type="hidden" id="conversacion_id" value="<?= $_GET['id'] ?>">
+                                        <input type="text" id="mensaje" class="form-control"
+                                            placeholder="Escribe un mensaje...">
+                                        <button class="btn btn-success" onclick="enviarMensaje()">Enviar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /Email -->
+
+                        <div class="tab-pane fade" id="tab_6">
+                            <div class="card">
+                                <div
+                                    class="card-header d-flex align-items-center justify-content-between flex-wrap row-gap-3">
+                                    <h5 class="fw-semibold mb-0">Proxima Actividad</h5>
+                                    <div class="d-inline-flex align-items-center">
+                                        <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#create_actividad" class="link-primary fw-medium"><i class="ti ti-circle-plus me-1"></i>Agregar Actividad</a>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div id="contenedorActividades"></div>
+
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
+                    <!-- /Tab Content -->
+
+                    </div>
+                    <!-- /Contact Details -->
 
                 </div>
-                <!-- /Tab Content -->
-
-            </div>
-            <!-- /Contact Details -->
+                <!-- Start Footer -->
 
         </div>
-        <!-- Start Footer -->
+        <!-- End Content -->
 
-    </div>
-    <!-- End Content -->
-
-    <?php require_once '../partials/footer.php'; ?>
-    <?php if (!$esModal): ?>
+        <?php require_once '../partials/footer.php'; ?>
+        <?php if (!$esModal): ?>
     </div>
 <?php endif; ?>
+<div class="modal fade" id="modalGestionLead" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-xxl-custom">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Gestión de Lead</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body p-0">
+                <iframe id="frameGestion"
+                    src=""
+                    style="width:100%; height:80vh; border:none;">
+                </iframe>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<style>
+    .modal-xxl-custom {
+        max-width: 95%;
+        width: 95%;
+    }
+</style>
 <!-- ========================
         End Page Content
     ========================= -->

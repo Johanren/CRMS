@@ -200,7 +200,7 @@ class ListMensajeModels
             JOIN leads l ON lr.lead_lrec = l.id_lead
             INNER JOIN estado_leads e ON e.id_estado_leads = l.estado_leads_id
             GROUP BY DATE(lr.fec_lrec), e.nombre
-            ORDER BY fecha
+            ORDER BY fecha DESC
             ";
 
         $conn = new Conexion();
@@ -227,7 +227,7 @@ class ListMensajeModels
                 COUNT(*) AS total
             FROM lis_recep
             GROUP BY DATE(fec_lrec), usr_lrec
-            ORDER BY fecha
+            ORDER BY fecha DESC
             ";
 
         $conn = new Conexion();

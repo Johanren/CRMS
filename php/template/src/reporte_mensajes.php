@@ -320,10 +320,11 @@ require_once '../partials/main.php'; ?>
     }
 
     function inicializarDataTableReporte1(result) {
-
         $('#tablaReporte1').DataTable({
             destroy: true,
             data: result.data,
+            // DESHABILITA el orden automático inicial para respetar el de SQL
+            order: [],
             columns: [{
                     data: 'fecha'
                 },
@@ -350,10 +351,10 @@ require_once '../partials/main.php'; ?>
     }
 
     function inicializarDataTableReporte2(result) {
-
         $('#tablaReporte2').DataTable({
             destroy: true,
             data: result.data,
+            order: [], // Respeta el orden DESC de la base de datos
             columns: [{
                     data: 'fecha'
                 },
@@ -377,10 +378,10 @@ require_once '../partials/main.php'; ?>
     }
 
     function inicializarDataTableReporte3(result) {
-
         $('#tablaReporte3').DataTable({
             destroy: true,
             data: result.data,
+            order: [], // Respeta el orden DESC de la base de datos
             columns: [{
                     data: 'fecha'
                 },

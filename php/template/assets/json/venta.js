@@ -587,7 +587,7 @@ function manejarCambioFiltro() {
    ========================================================== */
 window.programaSeleccionado = null;
 window.jornadaSeleccionada = null;
-window.estadosSeleccionadosNombres = []; 
+window.estadosSeleccionadosNombres = [];
 window.asesoresSeleccionadosIds = [];
 
 /* ==========================================================
@@ -616,30 +616,52 @@ function listarLeadsDesdeFoco(programaNombre, jornadaNombre) {
     const params = new URLSearchParams();
     params.append("accion", "listar_leads");
 
-    // Lógica para Carreras y Horarios
-    let carrerasArray = (programaNombre !== "TODOS") ? [programaNombre] : [];
-    let horarioArray = (jornadaNombre !== "TODOS") ? [jornadaNombre] : [];
+    // 1. Lógica de Carreras: Evitar enviar ["TODOS"] o [null]
+    let carrerasArray = [];
+    if (programaNombre && programaNombre !== "TODOS") {
+        carrerasArray = [programaNombre];
+    }
 
-    // 🔥 CAPTURA DE ESTADOS (Por Nombre/Label)
-    // Valores para el envío AJAX (basado en IDs)
-    const estadosValues = Array.from(document.querySelectorAll('#listar_filtro_estado input[type="checkbox"]:checked')).map(cb => cb.value);
-    window.estadosSeleccionadosNombres = estadosValues;
+    // 2. Lógica de Horarios: Manejar el string simple o el JSON de "POR CONFIRMAR"
+    let horarioArray = [];
+    if (jornadaNombre && jornadaNombre !== "TODOS") {
+        try {
+            // Intentamos parsear por si viene el array de "POR CONFIRMAR"
+            const parsed = JSON.parse(jornadaNombre);
+            horarioArray = Array.isArray(parsed) ? parsed : [parsed];
+        } catch (e) {
+            // Si no es JSON (es un nombre simple), lo metemos al array
+            horarioArray = [jornadaNombre];
+        }
+    }
 
-    console.log("🚀 Nombres de estados capturados:", window.estadosSeleccionadosNombres);
+    // 3. Captura y limpieza de Estados y Asesores
+    const estadosValues = Array.from(document.querySelectorAll('#listar_filtro_estado input[type="checkbox"]:checked'))
+        .map(cb => cb.value)
+        .filter(v => v !== "" && v !== null); // Eliminar vacíos
 
-    // Captura de Asesores (Por ID/Value)
-    window.asesoresSeleccionadosIds = Array.from(document.querySelectorAll('#listar_filtro_user input[type="checkbox"]:checked'))
-        .map(cb => cb.value);
+    const asesoresIds = Array.from(document.querySelectorAll('#listar_filtro_user input[type="checkbox"]:checked'))
+        .map(cb => cb.value)
+        .filter(v => v !== "" && v !== null); // Eliminar vacíos
 
-    params.append("carreras", JSON.stringify(carrerasArray));
-    params.append("horario", JSON.stringify(horarioArray));
-    params.append("asesores", JSON.stringify(window.asesoresSeleccionadosIds));
-    params.append("estados", JSON.stringify(estadosValues));
+    // 4. APPEND CONDICIONAL: Solo si el array tiene contenido
+    if (carrerasArray.length > 0) params.append("carreras", JSON.stringify(carrerasArray));
+    if (horarioArray.length > 0) params.append("horario", JSON.stringify(horarioArray));
+    if (asesoresIds.length > 0) params.append("asesores", JSON.stringify(asesoresIds));
+    if (estadosValues.length > 0) params.append("estados", JSON.stringify(estadosValues));
+    params.append("lead_reporte_CRM_FOCO", "true");
+
+    console.log("📡 Enviando filtros:", Object.fromEntries(params.entries()));
 
     fetch("ajax/ajax.php?" + params.toString())
         .then(res => res.json())
         .then(data => {
             if (document.getElementById("leads_list")) {
+                // Validación de integridad en la respuesta
+                if (!data || data.error) {
+                    console.error("Error del servidor:", data.message);
+                    return;
+                }
                 inicializarDataTableLeads(data);
                 document.getElementById("contenedorLeadsFoco").scrollIntoView({ behavior: 'smooth' });
             }
@@ -751,7 +773,7 @@ async function abrirModuloMensajesDesdeFoco(programaNombre, jornadaNombre) {
     document.querySelectorAll('#filtro_estado input[type="checkbox"]').forEach(cb => {
         cb.checked = false; // Reset
         const labelModal = cb.nextElementSibling?.textContent?.trim().toUpperCase();
-        
+
         // Comparamos el nombre del checkbox del modal contra nuestro array guardado
         const existe = window.estadosSeleccionadosNombres.some(e => e.toUpperCase() === labelModal);
         if (existe) {
@@ -782,7 +804,7 @@ document.addEventListener("change", function (e) {
         window.estadosSeleccionadosNombres = Array.from(document.querySelectorAll('#listar_filtro_estado input[type="checkbox"]:checked'))
             .map(cb => cb.nextElementSibling?.textContent?.trim() || "");
     }
-    
+
     if (container.id === "listar_filtro_user") {
         window.asesoresSeleccionadosIds = Array.from(document.querySelectorAll('#listar_filtro_user input[type="checkbox"]:checked'))
             .map(cb => cb.value);

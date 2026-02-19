@@ -61,8 +61,12 @@ $jsonData = json_encode($postData, JSON_UNESCAPED_UNICODE);
 <!-- ========================
         Start Page Content
     ========================= -->
-
-<div class="page-wrapper">
+<?php
+$esModal = isset($_GET['modal']) && $_GET['modal'] == 1;
+?>
+<?php if (!$esModal): ?>
+    <div class="page-wrapper">
+    <?php endif; ?>
 
     <!-- Start Content -->
     <div class="content pb-0">
@@ -251,7 +255,9 @@ $jsonData = json_encode($postData, JSON_UNESCAPED_UNICODE);
 
     <?php require_once '../partials/footer.php'; ?>
 
-</div>
+<?php if (!$esModal): ?>
+    </div>
+    <?php endif; ?>
 
 <script>
     let tablaLeads = null;

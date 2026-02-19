@@ -239,7 +239,7 @@ if (isset($_POST['accion'])) {
             $horario = $_POST['filtro_horario'] ?? [];
             $estado  = $_POST['filtro_estado'] ?? [];
             $asesor  = $_POST['filtro_asesor'] ?? [];
-            $numero  = $_POST['filtro_numero'] ?? null;
+            $numero  = $_POST['numero'] ?? null;
             echo json_encode($leads->listarLeadsFiltradosMensaje($carrera, $horario, $estado, $asesor, $numero));
             break;
         /*Notas */
@@ -898,7 +898,8 @@ if (isset($_GET['accion'])) {
             $estados = isset($_GET['estados']) ? json_decode($_GET['estados']) : [];
             $fecha_inicio = $_GET['fecha_inicio'] ?? null;
             $fecha_fin = $_GET['fecha_fin'] ?? null;
-            echo json_encode($leads->listarLeads($texto, $asesor, $carreras, $horario, $interes, $medio, $fuente, $campana, $accion, $departamento, $ciudad, $barrio, $estados, $fecha_inicio, $fecha_fin));
+            $tipo = $_GET['lead_reporte_CRM_FOCO'] ?? null;
+            echo json_encode($leads->listarLeads($texto, $asesor, $carreras, $horario, $interes, $medio, $fuente, $campana, $accion, $departamento, $ciudad, $barrio, $estados, $fecha_inicio, $fecha_fin, $tipo));
             break;
         case 'listar_leads_reporte':
 
