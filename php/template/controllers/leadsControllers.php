@@ -222,12 +222,31 @@ class LeadsControllers
                 "tip_tras"    => $_POST["tip_tras"],
                 "bd_rst"        => 2
             ];
-            
+
             $id_cliente = ClienteModels::agregarCliente($data);
 
             $id_lead = LeadsModels::agregarLeads($data, $id_cliente, $_POST['user_id'], $_POST['estado_lead_id']);
             $data['lead_id'] = $id_lead;
-            $okObs    = LeadsModels::registrarObservacion($data);
+            try {
+                $okObs = LeadsModels::registrarObservacion($data);
+            } catch (PDOException $e) {
+
+                // Código de error MySQL para duplicado
+                if ($e->errorInfo[1] == 1062) {
+                    echo json_encode([
+                        "status" => "danger",
+                        "message" => "Lead ya fue gestionado."
+                    ]);
+                    return;
+                }
+
+                // Si es otro error diferente
+                echo json_encode([
+                    "status" => "error",
+                    "message" => "Error en la base de datos: " . $e->getMessage()
+                ]);
+                return;
+            }
 
             NotifiacionesControllers::crearNotifiacion([
                 'user_id'    => $_POST['user_id'],
@@ -270,7 +289,26 @@ class LeadsControllers
             ];
 
             $okUpdate = LeadsModels::actualizarLeadYCliente($data);
-            $okObs    = LeadsModels::registrarObservacion($data);
+            try {
+                $okObs = LeadsModels::registrarObservacion($data);
+            } catch (PDOException $e) {
+
+                // Código de error MySQL para duplicado
+                if ($e->errorInfo[1] == 1062) {
+                    echo json_encode([
+                        "status" => "danger",
+                        "message" => "Lead ya fue gestionado."
+                    ]);
+                    return;
+                }
+
+                // Si es otro error diferente
+                echo json_encode([
+                    "status" => "error",
+                    "message" => "Error en la base de datos: " . $e->getMessage()
+                ]);
+                return;
+            }
 
             NotifiacionesControllers::crearNotifiacion([
                 'user_id'    => $user_id,
@@ -312,7 +350,8 @@ class LeadsControllers
         return LeadsModels::listarLeadsFiltradosMensaje($carrera, $horario, $estado, $asesor, $numero);
     }
 
-    public static function listarReporteCRMLeads($asesor, $carrera, $estados){
+    public static function listarReporteCRMLeads($asesor, $carrera, $estados)
+    {
         return LeadsModels::listarReporteCRMLeads($asesor, $carrera, $estados);
     }
 }

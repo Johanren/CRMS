@@ -11,13 +11,13 @@ $params = [];
 
 // Si viene identificación
 if (!empty($data['identificacion'])) {
-    $where[] = "identificacion = ?";
+    $where[] = "c.identificacion = ?";
     $params[] = $data['identificacion'];
 }
 
 // Si viene teléfono
 if (!empty($data['telefono_principal'])) {
-    $where[] = "telefono_principal = ?";
+    $where[] = "c.telefono_principal = ?";
     $params[] = $data['telefono_principal'];
 }
 
@@ -31,8 +31,9 @@ if (empty($where)) {
 }
 
 // Armar SQL dinámico
-$sql = "SELECT id_cliente, nombres, apellidos, telefono_principal, identificacion
-        FROM cliente
+$sql = "SELECT l.id_lead, c.id_cliente, c.nombres, c.apellidos, 
+        c.telefono_principal, c.identificacion FROM `leads` l 
+        INNER JOIN cliente c ON c.id_cliente = l.cliente_id
         WHERE " . implode(" OR ", $where) . "
         LIMIT 1";
 

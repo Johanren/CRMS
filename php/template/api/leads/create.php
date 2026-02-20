@@ -6,105 +6,138 @@ foreach (glob("../../models/*.php") as $filename) {
 $data = json_decode(file_get_contents("php://input"), true);
 $conn = (new Conexion())->conectar();
 
-$cod_emp = $data['cod_emp'];
-$identificacion = $data['identificacion'];
-$telefono = $data['telefono_principal'];
-$nombres = $data['nombres'];
-$apellidos = $data['apellidos'];
-$user_id = $data['user_id'];
-$carrera_id = $data['carrera_id'];
-$horario_id = $data['horario_id'];
-$estado_lead_id = $data['estado_lead'];
-$utm_source = $data['utm_source'];
-$utm_medium = $data['utm_medium'];
-$utm_campaign = $data['utm_campaign'];
+try {
 
-/* 1️⃣ Buscar cliente */
-$sql = "SELECT id_cliente FROM cliente 
-        WHERE identificacion = ? OR telefono_principal = ? LIMIT 1";
-$stmt = $conn->prepare($sql);
-$stmt->execute([$identificacion, $telefono]);
-$cliente = $stmt->fetch(PDO::FETCH_ASSOC);
+    $conn->beginTransaction();
 
-/* 2️⃣ Crear cliente si no existe */
-if (!$cliente) {
-    $sql = "INSERT INTO cliente 
-            (nombres, apellidos, telefono_principal, identificacion)
-            VALUES (?,?,?,?)";
+    $cod_emp          = $data['cod_emp'];
+    $identificacion   = $data['identificacion'];
+    $telefono         = $data['telefono_principal'];
+    $nombres          = $data['nombres'];
+    $apellidos        = $data['apellidos'];
+    $email            = $data['email'];
+    $user_id          = $data['user_id'] ?? null;
+    $carrera_id       = $data['carrera_id'];
+    $horario_id       = $data['horario_id'];
+    $estado_lead_id   = $data['estado_lead'];
+    $utm_source       = $data['utm_source'] ?? null;
+    $utm_medium       = $data['utm_medium'] ?? null;
+    $utm_campaign     = $data['utm_campaign'] ?? null;
+
+    /* 1️⃣ Buscar cliente */
+    $sql = "SELECT id_cliente FROM cliente 
+            WHERE identificacion = ? OR telefono_principal = ? LIMIT 1";
     $stmt = $conn->prepare($sql);
-    $stmt->execute([$nombres, $apellidos, $telefono, $identificacion]);
-    $cliente_id = $conn->lastInsertId();
-} else {
-    $cliente_id = $cliente['id_cliente'];
-}
+    $stmt->execute([$identificacion, $telefono]);
+    $cliente = $stmt->fetch(PDO::FETCH_ASSOC);
 
-/* 3️⃣ Definir Asesor (Manual o Automático) */
-if (!empty($user_id)) {
-    // Si ya viene un user_id en el API, lo usamos directamente
-    $asesor_id = $user_id;
-} else {
-    // Si viene vacío, buscamos al asesor con menos leads
-    $sql = "SELECT l.user_id, COUNT(*) total
-            FROM leads l
-            INNER JOIN user u ON u.id_user = l.user_id
-            INNER JOIN user_role ur ON ur.id_rol = u.rol_id
-            WHERE l.cod_emp = ?
-            AND ur.activo = 1
-            GROUP BY l.user_id
-            ORDER BY total ASC
-            LIMIT 1";
-    $stmt = $conn->prepare($sql);
-    $stmt->execute([$cod_emp]);
-    $asesor = $stmt->fetch(PDO::FETCH_ASSOC);
+    /* 2️⃣ Crear cliente si no existe */
+    if (!$cliente) {
+        $sql = "INSERT INTO cliente 
+                (nombres, apellidos, telefono_principal, identificacion, email)
+                VALUES (?,?,?,?,?)";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute([$nombres, $apellidos, $telefono, $identificacion, $email]);
+        $cliente_id = $conn->lastInsertId();
+    } else {
+        $cliente_id = $cliente['id_cliente'];
+    }
 
-    // Si no hay leads registrados aún, buscamos cualquier usuario con rol asesor
-    if (!$asesor) {
-        $sql = "SELECT u.id_user AS user_id
+    /* 3️⃣ Definir Asesor */
+    if (!empty($user_id)) {
+        $asesor_id = $user_id;
+    } else {
+        $sql = "SELECT u.id_user
                 FROM user u
                 INNER JOIN user_role r ON r.id_rol = u.rol_id
-                WHERE (r.nombre_rol LIKE '%asesor%' OR u.rol_id = 2) -- Ajusta el ID según tu BD
+                WHERE (r.nombre_rol LIKE '%asesor%' OR u.rol_id = 2)
                 AND u.cod_emp = ?
-                AND u.estado = 1 -- Asegurar que el usuario esté activo
+                AND u.estado = 1
                 LIMIT 1";
         $stmt = $conn->prepare($sql);
         $stmt->execute([$cod_emp]);
         $asesor = $stmt->fetch(PDO::FETCH_ASSOC);
+        $asesor_id = $asesor ? $asesor['id_user'] : null;
     }
 
-    $asesor_id = $asesor ? $asesor['user_id'] : null;
+    if (!$asesor_id) {
+        throw new Exception("No se encontró asesor disponible");
+    }
+
+    /* 4️⃣ Foco */
+    $sql = "SELECT foco FROM empresa WHERE id_emp = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute([$cod_emp]);
+    $foco = $stmt->fetchColumn();
+
+    /* 5️⃣ Crear lead */
+    $sql = "INSERT INTO leads
+    (user_id, cliente_id, carrera_id, horario_id, estado_leads_id, foco, cod_emp, utm_source, utm_medium, utm_campaign, fecha_creacion)
+    VALUES (?,?,?,?,?,?,?,?,?,?,NOW())";
+
+    $stmt = $conn->prepare($sql);
+    $stmt->execute([
+        18, 
+        $cliente_id,
+        $carrera_id,
+        $horario_id,
+        $estado_lead_id,
+        $foco,
+        $cod_emp,
+        $utm_source,
+        $utm_medium,
+        $utm_campaign,
+    ]);
+
+    $lead_id = $conn->lastInsertId();
+
+    /* 6️⃣ Crear Nota automática (opcional) */
+    if (!empty($data['tit_not']) && !empty($data['desc_not'])) {
+
+        $sql = "INSERT INTO nota 
+                (tit_nota, desc_not, id_lead, user_id, cod_emp)
+                VALUES (?,?,?,?,?)";
+
+        $stmt = $conn->prepare($sql);
+        $stmt->execute([
+            $data['tit_not'],
+            $data['desc_not'],
+            $lead_id,
+            $asesor_id,
+            $cod_emp
+        ]);
+    }
+
+    /* 7️⃣ Crear Notificación */
+    $sql = "INSERT INTO notificaciones 
+            (user_id, titulo, mensaje, modulo, referencia)
+            VALUES (?,?,?,?,?)";
+
+    $stmt = $conn->prepare($sql);
+    $stmt->execute([
+        $asesor_id,
+        'Nuevo Lead Asignado',
+        'Se ha creado un nuevo lead y fue asignado a usted.',
+        'leads-details.php',
+        json_encode([
+            'id' => $lead_id,
+            'id_cliente' => $cliente_id
+        ])
+    ]);
+
+    $conn->commit();
+
+    echo json_encode([
+        'status' => 'ok',
+        'lead_id' => $lead_id
+    ]);
+
+} catch (Exception $e) {
+
+    $conn->rollBack();
+
+    echo json_encode([
+        'status' => 'error',
+        'message' => $e->getMessage()
+    ]);
 }
-
-// Validar que tengamos un asesor antes de insertar
-if (!$asesor_id) {
-    echo json_encode(['status' => 'error', 'message' => 'No se encontró un asesor disponible']);
-    exit;
-}
-
-/* 4️⃣ Foco activo */
-$sql = "SELECT foco FROM empresa WHERE id_emp = ?";
-$stmt = $conn->prepare($sql);
-$stmt->execute([$cod_emp]);
-$foco = $stmt->fetchColumn();
-
-/* 5️⃣ Crear lead */
-$sql = "INSERT INTO leads
-(user_id, cliente_id, carrera_id, horario_id, estado_leads_id, foco, cod_emp, utm_source, utm_medium, utm_campaign, fecha_creacion)
-VALUES (?,?,?,?,?,?,?,?,?,?,NOW())";
-$stmt = $conn->prepare($sql);
-$stmt->execute([
-    $asesor_id,
-    $cliente_id,
-    $carrera_id,
-    $horario_id,
-    $estado_lead_id,
-    $foco,
-    $cod_emp,
-    $utm_source,
-    $utm_medium,
-    $utm_campaign,
-]);
-
-echo json_encode([
-    'status' => 'ok',
-    'lead_id' => $conn->lastInsertId()
-]);

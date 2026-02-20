@@ -765,6 +765,9 @@ class LeadsModels
         $conn = new Conexion();
         $conectar = $conn->conectar();
 
+        // Agregamos comodines para LIKE
+        $valorLike = "%$valor%";
+
         // 🔹 1️⃣ Buscar primero en leads + cliente
         $sql1 = "SELECT 
                 CONCAT(c.nombres, ' ', c.apellidos) AS nombre,
@@ -778,11 +781,11 @@ class LeadsModels
                 l.cliente_id
             FROM leads l
             INNER JOIN cliente c ON c.id_cliente = l.cliente_id
-            WHERE c.telefono_principal = ?
+            WHERE c.telefono_principal LIKE ?
             LIMIT 1";
 
         $stmt1 = $conectar->prepare($sql1);
-        $stmt1->bindParam(1, $valor);
+        $stmt1->bindParam(1, $valorLike, PDO::PARAM_STR);
         $stmt1->execute();
 
         $resultado = $stmt1->fetch(PDO::FETCH_ASSOC);
@@ -806,11 +809,11 @@ class LeadsModels
                 email,
                 dir_con AS dire
             FROM telemercadeo
-            WHERE telefono = ?
+            WHERE telefono LIKE ?
             LIMIT 1";
 
         $stmt2 = $conectar->prepare($sql2);
-        $stmt2->bindParam(1, $valor);
+        $stmt2->bindParam(1, $valorLike, PDO::PARAM_STR);
         $stmt2->execute();
 
         $resultadoTele = $stmt2->fetch(PDO::FETCH_ASSOC);
