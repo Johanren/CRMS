@@ -10,12 +10,20 @@ try {
 
     $conn->beginTransaction();
 
+    function normalizarTelefono($telefono)
+    {
+        $telefono = preg_replace('/\D/', '', $telefono);
+        return (substr($telefono, 0, 2) === '57')
+            ? substr($telefono, 2)
+            : $telefono;
+    }
+
     $cod_emp          = $data['cod_emp'];
-    $identificacion   = $data['identificacion'];
-    $telefono         = $data['telefono_principal'];
+    $identificacion   = $data['identificacion'] ?? null;
+    $telefono = normalizarTelefono($data['telefono_principal']);
     $nombres          = $data['nombres'];
     $apellidos        = $data['apellidos'];
-    $email            = $data['email'];
+    $email            = $data['email'] ?? null;
     $user_id          = $data['user_id'] ?? null;
     $carrera_id       = $data['carrera_id'];
     $horario_id       = $data['horario_id'];
@@ -24,11 +32,34 @@ try {
     $utm_medium       = $data['utm_medium'] ?? null;
     $utm_campaign     = $data['utm_campaign'] ?? null;
 
-    /* 1️⃣ Buscar cliente */
-    $sql = "SELECT id_cliente FROM cliente 
-            WHERE identificacion = ? OR telefono_principal = ? LIMIT 1";
+    $where = [];
+    $params = [];
+
+    /* 🔹 Identificación */
+    if (!empty($identificacion)) {
+        $where[] = "identificacion = ?";
+        $params[] = $identificacion;
+    }
+
+    /* 🔹 Teléfono */
+    if (!empty($telefono)) {
+        $where[] = "telefono_principal = ?";
+        $params[] = $telefono;
+    }
+
+    /* 🔴 Validar que al menos uno venga */
+    if (empty($where)) {
+        throw new Exception("Debe enviar identificación o teléfono");
+    }
+
+    /* 🔹 Construir SQL dinámico */
+    $sql = "SELECT id_cliente 
+        FROM cliente 
+        WHERE " . implode(" OR ", $where) . "
+        LIMIT 1";
+
     $stmt = $conn->prepare($sql);
-    $stmt->execute([$identificacion, $telefono]);
+    $stmt->execute($params);
     $cliente = $stmt->fetch(PDO::FETCH_ASSOC);
 
     /* 2️⃣ Crear cliente si no existe */
@@ -77,7 +108,7 @@ try {
 
     $stmt = $conn->prepare($sql);
     $stmt->execute([
-        18, 
+        18,
         $cliente_id,
         $carrera_id,
         $horario_id,
@@ -131,7 +162,6 @@ try {
         'status' => 'ok',
         'lead_id' => $lead_id
     ]);
-
 } catch (Exception $e) {
 
     $conn->rollBack();

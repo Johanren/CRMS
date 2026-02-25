@@ -9,16 +9,27 @@ $conn = (new Conexion())->conectar();
 $where = [];
 $params = [];
 
-// Si viene identificación
-if (!empty($data['identificacion'])) {
-    $where[] = "c.identificacion = ?";
-    $params[] = $data['identificacion'];
+/* ===== NORMALIZADOR ===== */
+function normalizarTelefono($telefono) {
+    $telefono = preg_replace('/\D/', '', $telefono);
+    return (substr($telefono, 0, 2) === '57')
+        ? substr($telefono, 2)
+        : $telefono;
 }
 
-// Si viene teléfono
+/* ===== IDENTIFICACIÓN (LIKE) ===== */
+if (!empty($data['identificacion'])) {
+    $where[] = "c.identificacion LIKE ?";
+    $params[] = "%" . trim($data['identificacion']) . "%";
+}
+
+/* ===== TELÉFONO (LIKE + NORMALIZADO) ===== */
 if (!empty($data['telefono_principal'])) {
-    $where[] = "c.telefono_principal = ?";
-    $params[] = $data['telefono_principal'];
+
+    $telefono = normalizarTelefono($data['telefono_principal']);
+
+    $where[] = "c.telefono_principal LIKE ?";
+    $params[] = "%" . $telefono . "%";
 }
 
 // Validación: al menos uno debe venir

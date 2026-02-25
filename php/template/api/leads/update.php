@@ -22,6 +22,14 @@ $setCliente = [];
 $setLead = [];
 $params = [];
 
+function normalizarTelefono($telefono)
+{
+    $telefono = preg_replace('/\D/', '', $telefono);
+    return (substr($telefono, 0, 2) === '57')
+        ? substr($telefono, 2)
+        : $telefono;
+}
+
 /* ====== CAMPOS CLIENTE ====== */
 
 $camposCliente = [
@@ -34,8 +42,15 @@ $camposCliente = [
 
 foreach ($camposCliente as $jsonKey => $dbField) {
     if (isset($data[$jsonKey]) && $data[$jsonKey] !== '') {
+
+        $valor = $data[$jsonKey];
+
+        if ($jsonKey === 'telefono_principal') {
+            $valor = normalizarTelefono($valor);
+        }
+
         $setCliente[] = "$dbField = ?";
-        $params[] = $data[$jsonKey];
+        $params[] = $valor;
     }
 }
 
@@ -47,7 +62,7 @@ $camposLead = [
     'carrera_id'  => 'l.carrera_id',
     'utm_source'  => 'l.utm_source',
     'utm_medium'  => 'l.utm_medium',
-    'utm_campaign'=> 'l.utm_campaign'
+    'utm_campaign' => 'l.utm_campaign'
 ];
 
 foreach ($camposLead as $jsonKey => $dbField) {
@@ -117,7 +132,6 @@ try {
         'status' => 'ok',
         'message' => 'Cliente actualizado correctamente'
     ]);
-
 } catch (Exception $e) {
 
     $conn->rollBack();

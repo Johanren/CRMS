@@ -423,16 +423,22 @@ async function cargarTablaFocoResultado() {
         const leadsData = await leadRes.json();
 
         // --- CÁLCULOS INICIALES ---
-        let cupos = [...new Set(leadsData.map(d => d.ventas))];
+        // Calculamos la MODA (el que más se repite) para el encabezado
+        const conteoCupos = {};
+        leadsData.forEach(d => {
+            conteoCupos[d.ventas] = (conteoCupos[d.ventas] || 0) + 1;
+        });
+        const cupoModa = Object.keys(conteoCupos).reduce((a, b) => conteoCupos[a] > conteoCupos[b] ? a : b);
         const totalLeads = leadsData.reduce((total, d) => total + Number(d.con_horario || 0), 0);
         const totalVendi = leadsData.reduce((total, d) => total + Number(d.ventas_estado_6 || 0), 0);
 
         // --- RENDERIZADO DE THEAD ---
+        // Usamos cupoModa para el resumen inicial
         thead.innerHTML = `
             <tr class="fw-bold text-center">
-                <th id="resumenCupo1" style="cursor:pointer" colspan="1">${cupos[0] || 0}</th>
+                <th id="resumenCupo1" style="cursor:pointer" colspan="1" data-base="${cupoModa}">${cupoModa}</th>
                 <th id="resumenPorcentaje" style="cursor:pointer" colspan="2">100%</th>
-                <th class="resumenCupo2" colspan="1">${cupos[0] || 0}</th>
+                <th class="resumenCupo2" colspan="1">${cupoModa}</th>
                 <th colspan="6" class="bg-warning text-center">VENTAS</th>
                 <th colspan="6" class="bg-primary text-white text-center">REINTEGROS</th>
                 <th colspan="3" class="bg-info text-center">RESULTADOS</th>
@@ -462,8 +468,8 @@ async function cargarTablaFocoResultado() {
 
         // --- RENDERIZADO DE TBODY (USANDO ACUMULADOR DE STRING) ---
         // Esto es mucho más rápido que hacer innerHTML += en cada vuelta
+        // --- RENDERIZADO DE TBODY ---
         let htmlRows = "";
-
         leadsData.forEach(row => {
             htmlRows += `
             <tr>
@@ -477,7 +483,7 @@ async function cargarTablaFocoResultado() {
                        ${row.con_horario}
                     </a>
                 </td>
-                <td class="col-cupos">0</td>
+                <td class="col-cupos" data-base="${row.ventas}">${row.ventas}</td>
                 <td class="col-metas">0</td>
                 <td class="col-ventas" data-ventas="${row.ventas_estado_6}">${row.ventas_estado_6}</td>
                 <td class="col-resultado">0%</td>
@@ -860,25 +866,34 @@ function activarPorcentajeResumen(leadsData) {
     };
 
     const recalcular = (porcentaje) => {
-        const cupoBase = parseFloat(thCupo1.dataset.base) || 0;
-        const nuevoCupo = Math.round(cupoBase * (porcentaje / 100));
+        const cupoModaBase = parseFloat(thCupo1.dataset.base) || 0;
+        const nuevoCupoResumen = Math.round(cupoModaBase * (porcentaje / 100));
 
-        // header
-        thCupo2.textContent = nuevoCupo;
+        // Header principal
+        thCupo2.textContent = nuevoCupoResumen;
 
-        // columnas cupos
+        // Columnas cupos INDIVIDUALES
         let totalC = 0;
         document.querySelectorAll(".col-cupos").forEach(td => {
-            td.textContent = nuevoCupo;
-            totalC += nuevoCupo;
+            // Tomamos el cupo original de esa fila y le aplicamos el porcentaje
+            const baseIndividual = parseFloat(td.dataset.base) || 0;
+            const nuevoCupoIndividual = Math.round(baseIndividual * (porcentaje / 100));
+
+            td.textContent = nuevoCupoIndividual;
+            totalC += nuevoCupoIndividual;
         });
 
-        // columnas metas (80%)
+        // Columnas metas (80% del cupo individual recién calculado)
         let totalM = 0;
-        document.querySelectorAll(".col-metas").forEach(td => {
-            const nuevaMeta = Math.round(nuevoCupo * 0.8);
-            td.textContent = nuevaMeta;
-            totalM += nuevaMeta;
+        document.querySelectorAll("#tablaFocoResultado tbody tr").forEach(tr => {
+            const tdCupo = tr.querySelector(".col-cupos");
+            const tdMeta = tr.querySelector(".col-metas");
+            if (tdCupo && tdMeta) {
+                const valorCupo = parseFloat(tdCupo.textContent) || 0;
+                const nuevaMeta = Math.round(valorCupo * 0.8);
+                tdMeta.textContent = nuevaMeta;
+                totalM += nuevaMeta;
+            }
         });
         let totalCum = 0;
         let totalR = 0;
