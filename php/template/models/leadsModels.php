@@ -292,23 +292,13 @@ class LeadsModels
         return "ok";
     }
 
-    public static function listarLeads($texto = "", $asesor = [], $carreras = [], $horario = [], $interes = [], $medio = [], $fuente = [], $campana = [], $accion = [], $departamento = [], $ciudad = [], $barrio = [], $estados = [], $fecha_inicio = [], $fecha_fin = [], $tipo = '')
+    public static function listarLeads($texto = "", $asesor = [], $carreras = [], $horario = [], $interes = [], $medio = [], $fuente = [], $campana = [], $accion = [], $departamento = [], $ciudad = [], $barrio = [], $estados = [], $fecha_inicio = "", $fecha_fin = "", $tipo = '')
     {
-
-        if (empty($tipo)) {
-            $sql = "SELECT 
-                l.*, 
-                c.nombres, 
-                c.apellidos, 
-                c.email, 
-                c.telefono_principal, 
-                p.desc_pro, 
-                ci.desc_ciu AS ciudad, 
-                l.fecha_creacion, 
-                u.nombres AS nombreAsesor, 
-                u.apellidos AS apellidoAsesor,
-                h.descripcion AS horario,
-                e.nombre AS estado
+        $sql = "SELECT 
+                l.*, c.nombres, c.apellidos, c.email, c.telefono_principal, 
+                p.desc_pro, ci.desc_ciu AS ciudad, l.fecha_creacion, 
+                u.nombres AS nombreAsesor, u.apellidos AS apellidoAsesor,
+                h.descripcion AS horario, e.nombre AS estado
             FROM leads l 
             INNER JOIN cliente c ON c.id_cliente = l.cliente_id 
             LEFT JOIN programa p ON p.cod_pro = l.carrera_id 
@@ -317,198 +307,63 @@ class LeadsModels
             LEFT JOIN estado_leads e ON e.id_estado_leads = l.estado_leads_id 
             LEFT JOIN horario h ON l.horario_id = h.id_horario
             WHERE l.cod_emp = ?";
-        } else {
-            $sql = "SELECT 
-                l.*, 
-                c.nombres, 
-                c.apellidos, 
-                c.email, 
-                c.telefono_principal, 
-                p.desc_pro,  
-                l.fecha_creacion, 
-                u.nombres AS nombreAsesor, 
-                u.apellidos AS apellidoAsesor,
-                h.descripcion AS horario,
-                e.nombre AS estado
-            FROM leads l 
-            INNER JOIN cliente c ON c.id_cliente = l.cliente_id 
-            INNER JOIN programa p ON p.cod_pro = l.carrera_id 
-            INNER JOIN user u ON u.id_user = l.user_id 
-            INNER JOIN estado_leads e ON e.id_estado_leads = l.estado_leads_id 
-            INNER JOIN horario h ON l.horario_id = h.id_horario
-            WHERE l.cod_emp = ?";
-        }
-
-
 
         $params = [$_SESSION['cod_emp']];
 
-        /* ===========================
-        FILTRO POR ROL (solo si NO hay filtros)
-        ============================ */
-        $todosVacios = (
-            $texto === ""
-        );
-
-        /* ===========================
-        FILTRO POR ROL
-        ============================ */
-        if ($_SESSION['rol'] !== 'Admin' && $todosVacios) {
+        // Seguridad por Rol
+        if (isset($_SESSION['rol']) && $_SESSION['rol'] !== 'Admin' && $texto === "" && empty($asesor)) {
             $sql .= " AND l.user_id = ?";
             $params[] = $_SESSION['user_id'];
         }
 
-        /* ===========================
-            FILTRO POR TEXTO
-        ============================ */
+        // Filtros de Texto y Arrays
         if ($texto !== "") {
-            $sql .= " AND (
-            c.nombres LIKE ? OR 
-            c.apellidos LIKE ? OR 
-            c.email LIKE ? OR 
-            c.telefono_principal LIKE ? OR
-            l.fecha_creacion LIKE ?
-        )";
-
+            $sql .= " AND (c.nombres LIKE ? OR c.apellidos LIKE ? OR c.email LIKE ? OR c.telefono_principal LIKE ?)";
             $buscar = "%$texto%";
-            $params = array_merge($params, [$buscar, $buscar, $buscar, $buscar, $buscar]);
+            $params = array_merge($params, array_fill(0, 4, $buscar));
         }
 
-        /* ===========================
-            FILTRO POR Asesor
-        ============================ */
-        if (!empty($asesor)) {
-            $placeholders = implode(",", array_fill(0, count($asesor), "?"));
-            $sql .= " AND l.user_id IN ($placeholders)";
-            $params = array_merge($params, $asesor);
+        // Mapeo de filtros array (Key = Columna en DB, Value = Variable)
+        $filtros = [
+            'l.user_id' => $asesor,
+            'p.desc_pro' => $carreras,
+            'l.interes_id' => $interes,
+            'l.medio_id' => $medio,
+            'l.fuente_id' => $fuente,
+            'l.campana_id' => $campana,
+            'l.accion_id' => $accion,
+            'l.departamento_id' => $departamento,
+            'l.ciudad_id' => $ciudad,
+            'l.barrio_id' => $barrio,
+            'e.nombre' => $estados
+        ];
+
+        foreach ($filtros as $columna => $valores) {
+            if (!empty($valores)) {
+                $placeholders = implode(",", array_fill(0, count($valores), "?"));
+                $sql .= " AND $columna IN ($placeholders)";
+                $params = array_merge($params, $valores);
+            }
         }
 
-        /* ===========================
-            FILTRO POR CARRERAS
-        ============================ */
-        if (!empty($carreras)) {
-            $placeholders = implode(",", array_fill(0, count($carreras), "?"));
-            $sql .= " AND p.desc_pro IN ($placeholders)";
-            $params = array_merge($params, $carreras);
-        }
-
-        /* ===========================
-            FILTRO POR Horario
-        ============================ */
         if (!empty($horario)) {
             $placeholders = implode(",", array_fill(0, count($horario), "?"));
-            $sql .= " AND (
-            h.descripcion IN ($placeholders)
-            OR h.id_horario IN ($placeholders)
-            )";
+            $sql .= " AND (h.descripcion IN ($placeholders) OR h.id_horario IN ($placeholders))";
             $params = array_merge($params, $horario, $horario);
         }
 
-        /* ===========================
-            FILTRO POR Interes
-        ============================ */
-        if (!empty($interes)) {
-            $placeholders = implode(",", array_fill(0, count($interes), "?"));
-            $sql .= " AND l.interes_id IN ($placeholders)";
-            $params = array_merge($params, $interes);
-        }
-
-        /* ===========================
-            FILTRO POR medio
-        ============================ */
-        if (!empty($medio)) {
-            $placeholders = implode(",", array_fill(0, count($medio), "?"));
-            $sql .= " AND l.medio_id IN ($placeholders)";
-            $params = array_merge($params, $medio);
-        }
-
-        /* ===========================
-            FILTRO POR fuente
-        ============================ */
-        if (!empty($fuente)) {
-            $placeholders = implode(",", array_fill(0, count($fuente), "?"));
-            $sql .= " AND l.fuente_id IN ($placeholders)";
-            $params = array_merge($params, $fuente);
-        }
-
-        /* ===========================
-            FILTRO POR campana
-        ============================ */
-        if (!empty($campana)) {
-            $placeholders = implode(",", array_fill(0, count($campana), "?"));
-            $sql .= " AND l.campana_id IN ($placeholders)";
-            $params = array_merge($params, $campana);
-        }
-
-        /* ===========================
-            FILTRO POR Accion
-        ============================ */
-        if (!empty($accion)) {
-            $placeholders = implode(",", array_fill(0, count($accion), "?"));
-            $sql .= " AND l.accion_id IN ($placeholders)";
-            $params = array_merge($params, $accion);
-        }
-
-        /* ===========================
-            FILTRO POR departamento
-        ============================ */
-        if (!empty($departamento)) {
-            $placeholders = implode(",", array_fill(0, count($departamento), "?"));
-            $sql .= " AND l.departamento_id IN ($placeholders)";
-            $params = array_merge($params, $departamento);
-        }
-
-        /* ===========================
-            FILTRO POR ciudad
-        ============================ */
-        if (!empty($ciudad)) {
-            $placeholders = implode(",", array_fill(0, count($ciudad), "?"));
-            $sql .= " AND l.ciudad_id IN ($placeholders)";
-            $params = array_merge($params, $ciudad);
-        }
-
-        /* ===========================
-            FILTRO POR barrio
-        ============================ */
-        if (!empty($barrio)) {
-            $placeholders = implode(",", array_fill(0, count($barrio), "?"));
-            $sql .= " AND l.barrio_id IN ($placeholders)";
-            $params = array_merge($params, $barrio);
-        }
-
-        /* ===========================
-            FILTRO POR ESTADOS
-        ============================ */
-        if (!empty($estados)) {
-            $placeholders = implode(",", array_fill(0, count($estados), "?"));
-            $sql .= " AND e.nombre IN ($placeholders)";
-            $params = array_merge($params, $estados);
-        }
-
-        /* ===========================
-            FILTRO POR FECHA
-        ============================ */
         if (!empty($fecha_inicio) && !empty($fecha_fin)) {
-
             $sql .= " AND DATE(l.fecha_creacion) BETWEEN ? AND ?";
             $params[] = $fecha_inicio;
             $params[] = $fecha_fin;
         }
 
-        /* ====================
-        =======
-            ORDENAR POR FECHA DESCENDENTE
-        ============================ */
         $sql .= " ORDER BY l.fecha_creacion DESC";
 
-        /* ===========================
-            EJECUCIÓN
-        ============================ */
         $conn = new Conexion();
         $conectar = $conn->conectar();
         $stmt = $conectar->prepare($sql);
         $stmt->execute($params);
-
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
@@ -1142,89 +997,69 @@ class LeadsModels
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public static function listarReporteCRMLeads(
-        $asesor = [],
-        $carrera = [],
-        $estados = []
-    ) {
-        $sql = "
-        SELECT 
-        p.desc_pro AS programa, 
-        h.descripcion AS horario, 
-        h.id_horario,
-        COUNT(l.id_lead) AS total_leads
-        FROM `leads` l
-        INNER JOIN cliente c ON c.id_cliente = l.cliente_id 
-        INNER JOIN programa p ON p.cod_pro = l.carrera_id
-        INNER JOIN horario h ON h.id_horario = l.horario_id
-        INNER JOIN user u ON u.id_user = l.user_id
-        INNER JOIN estado_leads et ON et.id_estado_leads = l.estado_leads_id
-        WHERE 1
-            AND l.cod_emp = ?
-        ";
+    public static function listarReporteCRMLeads($asesor = [], $carreras = [], $estados = [])
+    {
+        $sql = "SELECT 
+                IFNULL(p.desc_pro, 'Sin Carrera') AS programa, 
+                IFNULL(h.descripcion, 'Sin Horario') AS horario, 
+                h.id_horario,
+                COUNT(l.id_lead) AS total_leads
+            FROM leads l
+            INNER JOIN cliente c ON c.id_cliente = l.cliente_id 
+            LEFT JOIN programa p ON p.cod_pro = l.carrera_id
+            LEFT JOIN horario h ON h.id_horario = l.horario_id
+            LEFT JOIN user u ON u.id_user = l.user_id
+            LEFT JOIN estado_leads e ON e.id_estado_leads = l.estado_leads_id
+            WHERE l.cod_emp = ?";
 
-        $params = [$_SESSION['cod_emp'] ?? $_GET['cod_emp']];
+        $params = [$_SESSION['cod_emp']];
 
-        /* ===========================
-       VALIDAR SI TODOS LOS FILTROS ESTÁN VACÍOS
-    ============================ */
-        $todosVacios = (
-            empty($asesor) &&
-            empty($estados) &&
-            empty($carrera)
-        );
+        // Seguridad por Rol (Igual que la lista)
+        /*if (isset($_SESSION['rol']) && $_SESSION['rol'] !== 'Admin' && $texto === "" && empty($asesor)) {
+            $sql .= " AND l.user_id = ?";
+            $params[] = $_SESSION['user_id'];
+        }*/
 
-        /* ===========================
-        FILTRO POR ROL
-        ============================ */
-        /*if (isset($_SESSION['rol'])) {
-            if ($_SESSION['rol'] !== 'Admin' && $todosVacios) {
-                $sql .= " AND r.user_id = ?";
-                $params[] = $_SESSION['user_id'];
+        // Filtro de Texto (Igual que la lista)
+        /*if ($texto !== "") {
+            $sql .= " AND (c.nombres LIKE ? OR c.apellidos LIKE ? OR c.email LIKE ? OR c.telefono_principal LIKE ?)";
+            $buscar = "%$texto%";
+            $params = array_merge($params, array_fill(0, 4, $buscar));
+        }*/
+
+        // Mismos filtros array que la lista
+        $filtros = [
+            'l.user_id' => $asesor,
+            'p.desc_pro' => $carreras,
+            'e.nombre' => $estados
+        ];
+
+        foreach ($filtros as $columna => $valores) {
+            if (!empty($valores)) {
+                $placeholders = implode(",", array_fill(0, count($valores), "?"));
+                $sql .= " AND $columna IN ($placeholders)";
+                $params = array_merge($params, $valores);
             }
         }
 
-            $buscar = "%$texto%";
-            array_push($params, $buscar, $buscar, $buscar);
-        }*/
-
-        /* ===========================
-        FILTRO POR ASESOR
-        ============================ */
-        if (!empty($asesor)) {
-            $placeholders = implode(",", array_fill(0, count($asesor), "?"));
-            $sql .= " AND l.user_id IN ($placeholders)";
-            $params = array_merge($params, $asesor);
+        if (!empty($horario)) {
+            $placeholders = implode(",", array_fill(0, count($horario), "?"));
+            $sql .= " AND (h.descripcion IN ($placeholders) OR h.id_horario IN ($placeholders))";
+            $params = array_merge($params, $horario, $horario);
         }
 
-        if (!empty($estados)) {
-            $placeholders = implode(",", array_fill(0, count($estados), "?"));
-            $sql .= " AND et.nombre IN ($placeholders)";
-            $params = array_merge($params, $estados);
+        if (!empty($fecha_inicio) && !empty($fecha_fin)) {
+            $sql .= " AND DATE(l.fecha_creacion) BETWEEN ? AND ?";
+            $params[] = $fecha_inicio;
+            $params[] = $fecha_fin;
         }
 
-        if (!empty($carrera)) {
-            $placeholders = implode(",", array_fill(0, count($carrera), "?"));
-            $sql .= " AND p.desc_pro IN ($placeholders)";
-            $params = array_merge($params, $carrera);
-        }
+        $sql .= " GROUP BY p.desc_pro, h.descripcion, h.id_horario";
 
-        /* ===========================
-        ORDEN FINAL
-        ============================ */
-        $sql .= " GROUP BY 
-                p.desc_pro, 
-                h.descripcion;";
-
-        /* ===========================
-        EJECUCIÓN
-        ============================ */
         $conn = new Conexion();
         $pdo = $conn->conectar();
-
         $stmt = $pdo->prepare($sql);
         $stmt->execute($params);
-
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }

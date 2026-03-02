@@ -650,10 +650,22 @@ function listarLeadsDesdeFoco(programaNombre, jornadaNombre) {
         .map(cb => cb.value)
         .filter(v => v !== "" && v !== null); // Eliminar vacíos
 
-    // 4. APPEND CONDICIONAL: Solo si el array tiene contenido
-    if (carrerasArray.length > 0) params.append("carreras", JSON.stringify(carrerasArray));
+    // 1. Obtener los IDs de carreras si el array principal está vacío
+    const carrerasIds = Array.from(document.querySelectorAll('#listar_filtro_carrera input[type="checkbox"]:checked'))
+        .map(cb => cb.value)
+        .filter(v => v !== "" && v !== null);
+
+    // 2. Lógica de selección: Si carrerasArray no existe o está vacío, usa carrerasIds
+    let carrerasFinal = (typeof carrerasArray !== 'undefined' && carrerasArray.length > 0)
+        ? carrerasArray
+        : carrerasIds;
+
+    // 3. APPEND CONDICIONAL
+    if (carrerasFinal.length > 0) {
+        params.append("carreras", JSON.stringify(carrerasFinal));
+    }
     if (horarioArray.length > 0) params.append("horario", JSON.stringify(horarioArray));
-    if (asesoresIds.length > 0) params.append("asesores", JSON.stringify(asesoresIds));
+    if (asesoresIds.length > 0) params.append("asesor", JSON.stringify(asesoresIds));
     if (estadosValues.length > 0) params.append("estados", JSON.stringify(estadosValues));
     params.append("lead_reporte_CRM_FOCO", "true");
 
