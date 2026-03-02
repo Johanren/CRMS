@@ -218,7 +218,7 @@ function obtenerPaginaActual() {
 if (obtenerPaginaActual() === 'manage-users.php') {
     listarUserOption();
 }
-if (obtenerPaginaActual() == 'resultado_foco.php' || obtenerPaginaActual() === 'reporte_lead.php' || obtenerPaginaActual() === 'rst_frm.php' || obtenerPaginaActual() === 'rst_frm_dia.php' || obtenerPaginaActual() === 'leads.php' || obtenerPaginaActual() === 'leads-list.php' || obtenerPaginaActual() === 'index.php' || obtenerPaginaActual() === 'lead-reports.php' || obtenerPaginaActual() == 'manage-users.php') {
+if (obtenerPaginaActual() == 'lead_dia.php' || obtenerPaginaActual() == 'resultado_foco.php' || obtenerPaginaActual() === 'reporte_lead.php' || obtenerPaginaActual() === 'rst_frm.php' || obtenerPaginaActual() === 'rst_frm_dia.php' || obtenerPaginaActual() === 'leads.php' || obtenerPaginaActual() === 'leads-list.php' || obtenerPaginaActual() === 'index.php' || obtenerPaginaActual() === 'lead-reports.php' || obtenerPaginaActual() == 'manage-users.php') {
     listarUser();
     listarUserUl();
 }

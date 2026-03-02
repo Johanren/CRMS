@@ -12,21 +12,17 @@
         <!-- Page Header -->
         <div class="d-flex align-items-center justify-content-between gap-2 mb-4 flex-wrap">
             <div>
-                <h4 class="mb-1">Reporte RST<span class="badge badge-soft-primary ms-2">125</span></h4>
+                <h4 class="mb-1">Reporte Asesor x estado<span class="badge badge-soft-primary ms-2">125</span></h4>
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb mb-0 p-0">
                         <li class="breadcrumb-item"><a href="index.php">Hogar</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Reporte RST</li>
+                        <li class="breadcrumb-item active" aria-current="page">Reporte Asesor x estado</li>
                     </ol>
                 </nav>
             </div>
             <div class="gap-2 d-flex align-items-center flex-wrap">
-                <a href="javascript:void(0);" class="btn btn-icon btn-outline-light shadow" data-bs-toggle="tooltip"
-                    data-bs-placement="top" aria-label="Refresh" data-bs-original-title="Refresh"><i
-                        class="ti ti-refresh"></i></a>
-                <a href="javascript:void(0);" class="btn btn-icon btn-outline-light shadow" data-bs-toggle="tooltip"
-                    data-bs-placement="top" aria-label="Collapse" data-bs-original-title="Collapse"
-                    id="collapse-header"><i class="ti ti-transition-top"></i></a>
+                <a href="javascript:void(0);" class="btn btn-icon btn-outline-light shadow" data-bs-toggle="tooltip" data-bs-placement="top" aria-label="Refresh" data-bs-original-title="Refresh"><i class="ti ti-refresh"></i></a>
+                <a href="javascript:void(0);" class="btn btn-icon btn-outline-light shadow" data-bs-toggle="tooltip" data-bs-placement="top" aria-label="Collapse" data-bs-original-title="Collapse" id="collapse-header"><i class="ti ti-transition-top"></i></a>
             </div>
         </div>
         <!-- End Page Header -->
@@ -34,9 +30,7 @@
         <!-- card start -->
         <div class="card border-0 rounded-0">
             <div class="card-header d-flex align-items-center justify-content-between gap-2 flex-wrap">
-                <a href="javascript:void(0);" onclick="exportarExcel('CRMS_lead')" class="btn btn-primary"
-                    data-bs-toggle="modal" data-bs-target="#####download_report"><i
-                        class="ti ti-file-download me-1"></i>Descargar Reporte</a>
+                <!--<a href="javascript:void(0);" onclick="exportarExcel('rst_frm')" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#####download_report"><i class="ti ti-file-download me-1"></i>Descargar Reporte</a>-->
             </div>
             <div class="card-body">
 
@@ -44,58 +38,43 @@
                 <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
                     <div class="d-flex align-items-center gap-2 flex-wrap">
                         <div class="dropdown">
-                            <a href="javascript:void(0);" class="btn btn-outline-light shadow px-2"
-                                data-bs-toggle="dropdown" data-bs-auto-close="outside"><i
-                                    class="ti ti-filter me-2"></i>Filtrar<i class="ti ti-chevron-down ms-2"></i></a>
+                            <a href="javascript:void(0);" class="btn btn-outline-light shadow px-2" data-bs-toggle="dropdown" data-bs-auto-close="outside"><i class="ti ti-filter me-2"></i>Filtrar<i class="ti ti-chevron-down ms-2"></i></a>
                             <div class="filter-dropdown-menu dropdown-menu dropdown-menu-lg p-0">
-                                <div
-                                    class="filter-header d-flex align-items-center justify-content-between border-bottom">
+                                <div class="filter-header d-flex align-items-center justify-content-between border-bottom">
                                     <h6 class="mb-0"><i class="ti ti-filter me-1"></i>Filtrar</h6>
-                                    <button type="button" class="btn-close close-filter-btn"
-                                        data-bs-dismiss="dropdown-menu" aria-label="Close"></button>
+                                    <button type="button" class="btn-close close-filter-btn" data-bs-dismiss="dropdown-menu" aria-label="Close"></button>
                                 </div>
                                 <div class="filter-set-view p-3">
                                     <div class="filter-set-view p-3">
                                         <div class="accordion" id="accordionExample">
                                             <div class="filter-set-content">
                                                 <div class="filter-set-content-head">
-                                                    <a href="#" class="collapsed" data-bs-toggle="collapse"
-                                                        data-bs-target="#collapseAsesor" aria-expanded="false"
-                                                        aria-controls="collapseThree">Asesor</a>
+                                                    <a href="#" class="collapsed" data-bs-toggle="collapse" data-bs-target="#collapseAsesor" aria-expanded="false" aria-controls="collapseThree">Asesor</a>
                                                 </div>
-                                                <div class="filter-set-contents accordion-collapse collapse"
-                                                    id="collapseAsesor" data-bs-parent="#accordionExample">
-                                                    <div
-                                                        class="filter-content-list bg-light rounded border p-2 shadow mt-2">
+                                                <div class="filter-set-contents accordion-collapse collapse" id="collapseAsesor" data-bs-parent="#accordionExample">
+                                                    <div class="filter-content-list bg-light rounded border p-2 shadow mt-2">
                                                         <div id="listar_filtro_user" class="overflow-x-auto"></div>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="filter-set-content">
                                                 <div class="filter-set-content-head">
-                                                    <a href="#" class="collapsed" data-bs-toggle="collapse"
-                                                        data-bs-target="#collapseCarrera" aria-expanded="false"
-                                                        aria-controls="collapseThree">Carrera</a>
+                                                    <a href="#" class="collapsed" data-bs-toggle="collapse" data-bs-target="#collapseCarrera" aria-expanded="false" aria-controls="collapseThree">Carrera</a>
                                                 </div>
-                                                <div class="filter-set-contents accordion-collapse collapse"
-                                                    id="collapseCarrera" data-bs-parent="#accordionExample">
-                                                    <div
-                                                        class="filter-content-list bg-light rounded border p-2 shadow mt-2">
+                                                <div class="filter-set-contents accordion-collapse collapse" id="collapseCarrera" data-bs-parent="#accordionExample">
+                                                    <div class="filter-content-list bg-light rounded border p-2 shadow mt-2">
                                                         <div id="listar_filtro_carrera" class="overflow-x-auto"></div>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="filter-set-content">
                                                 <div class="filter-set-content-head">
-                                                    <a href="#" class="collapsed" data-bs-toggle="collapse"
-                                                        data-bs-target="#collapseEstado" aria-expanded="false"
-                                                        aria-controls="collapseThree">Estado</a>
+                                                    <a href="#" class="collapsed" data-bs-toggle="collapse" data-bs-target="#status" aria-expanded="false" aria-controls="status">Estado</a>
                                                 </div>
-                                                <div class="filter-set-contents accordion-collapse collapse"
-                                                    id="collapseEstado" data-bs-parent="#accordionExample">
-                                                    <div
-                                                        class="filter-content-list bg-light rounded border p-2 shadow mt-2">
-                                                        <div id="listar_filtro_estado" class="overflow-x-auto"></div>
+                                                <div class="filter-set-contents accordion-collapse collapse" id="status" data-bs-parent="#accordionExample">
+                                                    <div class="filter-content-list bg-light rounded border p-2 shadow mt-2">
+                                                        <div id="listar_filtro_estado"></div>
+                                                        </ul>
                                                     </div>
                                                 </div>
                                             </div>
@@ -107,10 +86,65 @@
                         </div>
                     </div>
                 </div>
-                <!-- table header -->
-
-                <!-- Report List -->
                 <style>
+                    /* ===== TABLAS TIPO EXCEL ===== */
+                    .table-excel {
+                        width: 100%;
+                        border-collapse: collapse;
+                        font-size: 13px;
+                        background: #fff;
+                    }
+
+                    .table-excel thead th {
+                        background: #f8f9fa;
+                        color: #333;
+                        font-weight: 600;
+                        text-align: center;
+                        border: 1px solid #dee2e6;
+                        padding: 8px;
+                        white-space: nowrap;
+                    }
+
+                    .table-excel tbody td {
+                        border: 1px solid #dee2e6;
+                        padding: 6px;
+                        text-align: center;
+                    }
+
+                    .table-excel tbody tr:hover {
+                        background-color: #f1f5f9;
+                    }
+
+                    /* Columna Día / Estado */
+                    .table-excel td:first-child {
+                        font-weight: 600;
+                        background: #f8f9fa;
+                    }
+
+                    /* ===== FILA TOTAL (VERDE) ===== */
+                    .table-total {
+                        background-color: #d1fae5 !important;
+                        color: #065f46;
+                        font-weight: bold;
+                    }
+
+                    /* ===== CONTENEDOR RESPONSIVE ===== */
+                    .table-responsive-excel {
+                        width: 100%;
+                        overflow-x: auto;
+                        margin-bottom: 20px;
+                    }
+
+                    /* Scroll bonito */
+                    .table-responsive-excel::-webkit-scrollbar {
+                        height: 8px;
+                    }
+
+                    .table-responsive-excel::-webkit-scrollbar-thumb {
+                        background: #cbd5e1;
+                        border-radius: 4px;
+                    }
+
                     /* ===== LOADER ===== */
                     .loader-overlay {
                         position: fixed;
@@ -148,12 +182,13 @@
                         display: none;
                     }
                 </style>
-                <div class="table-responsive custom-table">
-                    <div id="rst_reports"></div>
-                    <div id="loaderFoco" class="loader-overlay d-none">
-                        <div class="spinner"></div>
-                        <p>Cargando reporte...</p>
-                    </div>
+                <!-- table header -->
+
+                <h5>Resumen por estado</h5>
+                <div id="tablaEstadosLead"></div>
+                <div id="loaderFoco" class="loader-overlay d-none">
+                    <div class="spinner"></div>
+                    <p>Cargando reporte...</p>
                 </div>
                 <div id="contenedorLeadsFoco" class="mt-4 d-none">
                     <div class="card shadow-sm">
@@ -332,12 +367,17 @@
                 width: 95%;
             }
         </style>
-        <!-- card end -->
+        <!-- /Contact List -->
 
     </div>
-    <!-- End Content -->
+</div>
+<!-- card end -->
 
-    <?php require_once '../partials/footer.php'; ?>
+</div>
+<!-- End Content -->
+
+
+<?php require_once '../partials/footer.php'; ?>
 
 </div>
 
@@ -349,326 +389,8 @@
 $content = ob_get_clean();
 
 require_once '../partials/main.php'; ?>
+
 <script>
-    window.usuarioSesion = <?php echo json_encode($_SESSION['user_id'] ?? null); ?>;
-    window.usuarioRol = <?php echo json_encode($_SESSION['rol'] ?? null); ?>;
-</script>
-<script>
-    window.Filtros = {
-        obtener: function() {
-
-            let texto = "";
-            let inputBuscador = document.getElementById("buscador");
-            if (inputBuscador) {
-                texto = inputBuscador.value.toLowerCase();
-            }
-
-            let asesor = [...document.querySelectorAll(".filtro-asesor:checked")]
-                .map(c => c.value);
-
-            let carrera = [...document.querySelectorAll(".filtro-carrera:checked")]
-                .map(c => c.value);
-
-            let estados = [...document.querySelectorAll(".filtro-estado:checked")]
-                .map(c => c.value);
-
-            // ✅ DEFAULT ESTADOS
-            if (estados.length === 0 && !window.filtrosInicializados) {
-                //estados = ['Nuevo Leads', 'Leads Activo', 'Interesado', 'En Decisión', 'Prospecto'];
-                estados = ['En Decisión'];
-            }
-
-            if (window.usuarioRol != "Admin") {
-                // ✅ DEFAULT ASESOR (igual lógica que estados)
-                if (asesor.length === 0 && !window.filtrosInicializados && window.usuarioSesion) {
-                    asesor = [window.usuarioSesion.toString()];
-                }
-            }
-
-            let fecha_inicio = window.fecha_inicio || "";
-            let fecha_fin = window.fecha_fin || "";
-
-            return {
-                texto,
-                asesor,
-                estados,
-                carrera,
-                fecha_inicio,
-                fecha_fin
-            };
-        }
-    };
-
-    function listarReporteCRMS() {
-        const f = Filtros.obtener();
-        const params = new URLSearchParams();
-
-        // 1. Mostrar el Loader
-        const loader = document.getElementById("loaderFoco");
-        if (loader) loader.classList.remove("d-none");
-
-        params.append("accion", "reporte_CRMS_lead");
-
-        if (f.texto !== "") params.append("texto", f.texto);
-        if (f.asesor.length > 0) params.append("asesor", JSON.stringify(f.asesor));
-        if (f.estados.length > 0) params.append("estados", JSON.stringify(f.estados));
-        if (f.carrera.length > 0) params.append("carrera", JSON.stringify(f.carrera));
-        if (f.fecha_inicio !== "") params.append("fecha_inicio", f.fecha_inicio);
-        if (f.fecha_fin !== "") params.append("fecha_fin", f.fecha_fin);
-
-        fetch("ajax/ajax.php?" + params.toString())
-            .then(res => res.json())
-            .then(data => {
-                if (document.getElementById("rst_reports")) {
-                    inicializarDataTableRst(data);
-                }
-            })
-            .catch(err => console.error("Error reporte rst:", err))
-            .finally(() => {
-                // 2. Ocultar el Loader (se ejecuta siempre, falle o tenga éxito)
-                if (loader) loader.classList.add("d-none");
-            });
-    }
-
-    document.addEventListener("change", function(e) {
-        if (e.target.classList.contains("filtro")) {
-            listarReporteCRMS();
-        }
-    });
-
-    document.addEventListener("input", function(e) {
-        if (e.target.id === "buscador") {
-            listarReporteCRMS();
-        }
-    });
-
-    // Función para marcar visualmente los estados deseados
-    function marcarEstadosDefault() {
-        //const estadosAMarcar = ['Nuevo Leads', 'Leads Activo', 'Interesado', 'En Decisión', 'Prospecto'];
-        const estadosAMarcar = ['En Decisión'];
-
-        // Buscamos todos los checkboxes de estado
-        const checkboxes = document.querySelectorAll('.filtro-estado');
-
-        checkboxes.forEach(chk => {
-            if (estadosAMarcar.includes(chk.value)) {
-                chk.checked = true;
-            }
-        });
-    }
-
-    // Creamos un observador para detectar cuando se cargue la lista en el div
-    const observer = new MutationObserver((mutations) => {
-        mutations.forEach((mutation) => {
-            if (mutation.addedNodes.length) {
-                marcarEstadosDefault();
-            }
-        });
-    });
-
-    if (window.usuarioRol != "Admin") {
-
-        function marcarAsesorDefault() {
-
-            if (!window.usuarioSesion) return;
-
-            const checkboxes = document.querySelectorAll('.filtro-asesor');
-
-            checkboxes.forEach(chk => {
-                if (chk.value == window.usuarioSesion) {
-                    chk.checked = true;
-                }
-            });
-        }
-
-        const observerAsesor = new MutationObserver((mutations) => {
-            mutations.forEach((mutation) => {
-                if (mutation.addedNodes.length) {
-                    marcarAsesorDefault();
-                }
-            });
-        });
-
-        const targetAsesor = document.getElementById('listar_filtro_user');
-
-        if (targetAsesor) {
-            observerAsesor.observe(targetAsesor, {
-                childList: true
-            });
-        }
-
-    }
-
-    // Empezamos a observar el contenedor de los estados
-    const targetNode = document.getElementById('listar_filtro_estado');
-    if (targetNode) {
-        observer.observe(targetNode, {
-            childList: true
-        });
-    }
-
-
-    listarReporteCRMS();
-
-    function inicializarDataTableRst(data) {
-        const contenedor = document.getElementById("rst_reports");
-        if (!data || data.length === 0) {
-            contenedor.innerHTML = "<div class='alert alert-warning'>No hay datos disponibles</div>";
-            return;
-        }
-
-        const programasSet = new Set();
-        const mapaHorarios = {};
-
-        // --- FUNCIÓN DE NORMALIZACIÓN INTERNA ---
-        // Esto asegura que null, undefined, "SIN IDENTIFICAR", etc., se agrupen igual
-        const normalizarHorario = (id, nombre) => {
-            let n = (nombre || "").toUpperCase().trim();
-            if (!id || !n ||
-                n === "NULL" ||
-                n === "POR CONFIRMAR" ||
-                n === "SIN IDENTIFICAR" ||
-                n === "(EN BLANCO)") {
-                return {
-                    id: "99",
-                    nombre: "POR CONFIRMAR"
-                };
-            }
-            return {
-                id: id,
-                nombre: n
-            };
-        };
-
-        // 1. Procesar data y UNIFICAR categorías de horarios
-        data.forEach(item => {
-            const horarioNormalizado = normalizarHorario(item.id_horario, item.horario);
-
-            mapaHorarios[horarioNormalizado.id] = horarioNormalizado.nombre;
-            programasSet.add(item.programa || "SIN PROGRAMA");
-        });
-
-        const idsOrdenados = Object.keys(mapaHorarios).sort((a, b) => parseInt(a) - parseInt(b));
-        const encabezadosHorarios = idsOrdenados.map(id => mapaHorarios[id]);
-        const programas = Array.from(programasSet).sort();
-
-        // 2. Crear Matriz de conteo inicializada en 0
-        const matriz = {};
-        programas.forEach(p => {
-            matriz[p] = {};
-            encabezadosHorarios.forEach(h => matriz[p][h] = 0);
-        });
-
-        // Llenar matriz con los datos reales
-        data.forEach(item => {
-            const p = item.programa || "SIN PROGRAMA";
-            const horarioNormalizado = normalizarHorario(item.id_horario, item.horario);
-            const nombreH = horarioNormalizado.nombre;
-
-            if (matriz[p] && matriz[p][nombreH] !== undefined) {
-                matriz[p][nombreH] += parseInt(item.total_leads) || 0;
-            }
-        });
-
-        // 3. Generar HTML de la Tabla
-        let html = `
-            <style>
-                #rst_reports .table td { padding: 8px 12px !important; vertical-align: middle; }
-                #rst_reports .table th { padding: 10px !important; text-transform: uppercase; font-size: 0.75rem; }
-                .bg-total-fila { background-color: #f8f9fa !important; font-weight: bold; }
-                .bg-gran-total { background-color: #0d6efd !important; color: white !important; }
-                .cursor-pointer { cursor: pointer; transition: all 0.2s; }
-                .cursor-pointer:hover { background-color: rgba(13, 110, 253, 0.1) !important; transform: scale(1.02); }
-            </style>
-            <table id="tabla_resumen_rst" class="table table-bordered table-striped table-hover table-sm">
-                <thead class="table-dark text-center">
-                    <tr>
-                        <th class="text-start">Programa / Horario</th>
-                        ${encabezadosHorarios.map(h => `<th>${h}</th>`).join('')}
-                        <th>Total</th>
-                    </tr>
-                </thead>
-                <tbody>`;
-
-        let totalColumnas = {};
-        encabezadosHorarios.forEach(h => totalColumnas[h] = 0);
-        let granTotal = 0;
-
-        programas.forEach(p => {
-            let totalFila = 0;
-            html += `<tr><td class="text-start"><strong>${p}</strong></td>`;
-
-            encabezadosHorarios.forEach(h => {
-                const valor = matriz[p][h];
-                if (valor > 0) {
-                    html += `
-                <td class="abrir-mensajes-foco text-center text-primary fw-bold cursor-pointer"
-                    data-programa="${p}" 
-                    data-jornada="${h}">
-                    ${valor}
-                </td>`;
-                } else {
-                    html += `<td class="text-center text-muted">-</td>`;
-                }
-                totalFila += valor;
-                totalColumnas[h] += valor;
-            });
-
-            html += `
-                <td class="abrir-mensajes-foco text-center bg-total-fila text-primary fw-bold cursor-pointer" 
-                    data-programa="${p}" 
-                    data-jornada="TODOS">
-                    ${totalFila}
-                </td>
-            </tr>`;
-            granTotal += totalFila;
-        });
-
-        // 4. Footer con Totales
-        html += `</tbody>
-            <tfoot class="table-secondary text-center">
-                <tr>
-                    <td class="text-start"><strong>TOTAL GENERAL</strong></td>
-                    ${encabezadosHorarios.map(h => {
-                        const valCol = totalColumnas[h];
-                        return `
-                        <td class="abrir-mensajes-foco text-primary fw-bold cursor-pointer" 
-                            data-programa="TODOS" 
-                            data-jornada="${h}">
-                            ${valCol}
-                        </td>`;
-                    }).join('')}
-                    <td class="abrir-mensajes-foco bg-gran-total fw-bold cursor-pointer" 
-                        data-programa="TODOS" 
-                        data-jornada="TODOS">
-                        ${granTotal}
-                    </td>
-                </tr>
-            </tfoot>
-            </table>`;
-
-        contenedor.innerHTML = html;
-    }
-
-    function exportarExcel(tipo) {
-        const f = Filtros.obtener();
-        const params = new URLSearchParams();
-
-        // Tipo de reporte (ej: "leads", "asesores", "campanas", etc.)
-        params.append("tipo", tipo);
-
-        // Convertir filtros a parámetros GET
-        for (let k in f) {
-            if (Array.isArray(f[k]) && f[k].length > 0) {
-                params.append(k, JSON.stringify(f[k]));
-            } else if (f[k] !== "") {
-                params.append(k, f[k]);
-            }
-        }
-
-        window.location.href = "ajax/exportar_excel.php?" + params.toString();
-    }
-
     let tablaLeads = null;
 
     /* ===========================

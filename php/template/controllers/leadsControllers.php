@@ -206,6 +206,9 @@ class LeadsControllers
                 }
             }
 
+            $asesor = LeadsModels::obtenerAsesorConMenosLeads($data);
+            $user_id = $asesor['user_id'];
+
             $data = [
                 "cod_emp"     => $_POST['cod_emp'],
                 "nombresLeads"      => $nombres,
@@ -225,7 +228,7 @@ class LeadsControllers
 
             $id_cliente = ClienteModels::agregarCliente($data);
 
-            $id_lead = LeadsModels::agregarLeads($data, $id_cliente, $_POST['user_id'], $_POST['estado_lead_id']);
+            $id_lead = LeadsModels::agregarLeads($data, $id_cliente, $user_id , 3);
             $data['lead_id'] = $id_lead;
             try {
                 $okObs = LeadsModels::registrarObservacion($data);
@@ -343,6 +346,11 @@ class LeadsControllers
     public static function listarReporteRstDia($mes, $anio)
     {
         return LeadsModels::listarReporteRstDia($mes, $anio);
+    }
+
+    public static function listarReporteLeadDia($mes, $anio, $asesor, $carrera, $estados)
+    {
+        return LeadsModels::listarReporteLeadDia($mes, $anio, $asesor, $carrera, $estados);
     }
 
     public static function listarLeadsFiltradosMensaje($carrera, $horario, $estado, $asesor, $numero)

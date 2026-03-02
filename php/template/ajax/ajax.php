@@ -972,6 +972,16 @@ if (isset($_GET['accion'])) {
 
             echo json_encode($leads->listarReporteCRMLeads($asesor, $carrera, $estados));
             break;
+        case 'lead_dia':
+            $mes  = date('m');
+            $anio = date('Y');
+
+            $asesor = isset($_GET['asesor']) ? json_decode($_GET['asesor']) : [];
+            $carrera = isset($_GET['carrera']) ? json_decode($_GET['carrera']) : [];
+            $estados = isset($_GET['estados']) ? json_decode($_GET['estados']) : [];
+
+            echo json_encode($leads->listarReporteLeadDia($mes, $anio, $asesor, $carrera, $estados));
+            break;
         /*Notas */
         case 'listarNotas':
             echo json_encode($notas->listarNotasId($_GET['id']));

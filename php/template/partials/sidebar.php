@@ -219,6 +219,7 @@
                                 <li><a href="contact-reports.php" class="<?php echo ($page == 'contact-reports.php') ? 'active' : ''; ?>">Informes de matriculados</a></li>
                                 <li><a href="dashboard.php" class="<?php echo ($page == 'dashboard.php') ? 'active' : ''; ?>">Informes por asesor</a></li>-->
                                 <li><a href="reporte_lead.php" class="<?php echo ($page == 'reporte_lead.php') ? 'active' : ''; ?>">CRMS Leads FOCO</a></li>
+                                <li><a href="lead_dia.php" class="<?php echo ($page == 'lead_dia.php') ? 'active' : ''; ?>">CRMS Asesor x estado</a></li>
                                 <li><a href="rst_frm.php" class="<?php echo ($page == 'rst_frm.php') ? 'active' : ''; ?>">Informes RST</a></li>
                                 <li><a href="rst_frm_dia.php" class="<?php echo ($page == 'rst_frm_dia.php') ? 'active' : ''; ?>">Desempeño RST</a></li>
                                 <!--<li><a href="company-reports.php" class="<?php echo ($page == 'company-reports.php') ? 'active' : ''; ?>">Company Reports</a></li>
