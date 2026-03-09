@@ -189,7 +189,7 @@
                             <img src="<?php echo $foto = !empty($_SESSION['foto']) ? 'ajax/'.$_SESSION['foto'] : 'assets/img/users/user-40.jpg'; ?>" class="rounded-circle" width="42" height="42" alt="Img">
                             <div class="ms-2">
                                 <p class="fw-medium text-dark mb-0"><?php echo $_SESSION['user'] ?></p>
-                                <span class="d-block fs-13"><?php echo $_SESSION['rol'] ?></span>
+                                <span class="d-block fs-13" id="nombreRolUsuario"><?php echo $_SESSION['rol'] ?></span>
                             </div>
                         </div>
 

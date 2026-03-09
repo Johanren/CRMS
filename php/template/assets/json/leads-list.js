@@ -1125,7 +1125,7 @@ function agruparLeadsPorEstado(leads) {
 }
 
 /* ================================
-   3. Renderizar tablero CON TU DISEÑO
+   3. Renderizar tablero
 ================================ */
 function renderKanban(estados, leads) {
 
@@ -1142,7 +1142,7 @@ function renderKanban(estados, leads) {
 
         const coloresEstado = {
             1: "text-info",
-            2: "text-info",
+            2: "text-warning",
             3: "text-info",
             4: "text-warning",
             5: "text-info",
@@ -1171,7 +1171,10 @@ function renderKanban(estados, leads) {
             </div>
 
             <div class="kanban-drag-wrap">
-                <div class="kanban-list" data-estado="${estado.id_estado_leads}"></div>
+                <div class="kanban-list"
+                     data-estado="${estado.id_estado_leads}"
+                     data-orden="${estado.ord_eld}">
+                </div>
             </div>
         `;
 
@@ -1180,9 +1183,14 @@ function renderKanban(estados, leads) {
         const lista = columna.querySelector(".kanban-list");
         const fragmentLeads = document.createDocumentFragment();
 
-        // ⚠️ Limite inicial (AJUSTABLE)
         listaLeads.slice(0, 150).forEach(l => {
-            fragmentLeads.appendChild(crearCardLead(l, estado.id_estado_leads));
+
+            const estadoObj = estados.find(e => e.id_estado_leads == l.estado_leads_id);
+
+            fragmentLeads.appendChild(
+                crearCardLead(l, estadoObj ? estadoObj.ord_eld : 0, estadoObj ? estadoObj.id_estado_leads : 0)
+            );
+
         });
 
         lista.appendChild(fragmentLeads);
@@ -1194,83 +1202,127 @@ function renderKanban(estados, leads) {
 
 
 /* ================================
-   4. Card del lead CON TU DISEÑO
+   4. Card del lead
 ================================ */
-function crearCardLead(l, estadoId) {
+function crearCardLead(l, ordenEstado, estadoId) {
+
     const loader = document.getElementById("loaderFoco");
 
     try {
+
         loader.classList.remove("d-none");
+
         if (!l?.id_lead) return document.createElement("div");
 
         const coloresTop = {
             1: "bg-info",
-            2: "bg-info",
-            3: "bg-warning",
-            4: "bg-info",
+            2: "bg-warning",
+            3: "bg-info",
+            4: "bg-warning",
             5: "bg-info",
-            6: "bg-success"
+            6: "bg-success",
+            7: "bg-success",
+            8: "bg-danger",
+            9: "bg-warning",
         };
 
         const iniciales = ((l.nombres || "")[0] || "") + ((l.apellidos || "")[0] || "");
 
         const card = document.createElement("div");
+
         card.className = "card kanban-card border mb-0 mt-3 shadow";
         card.draggable = true;
+
         card.dataset.id = l.id_lead;
+        card.dataset.estado = estadoId;
+        card.dataset.orden = ordenEstado;
 
         card.innerHTML = `
         <div class="card-body">
-            <div class="card-topbar mb-3 pt-1 ${coloresTop[estadoId] || 'bg-secondary'}"></div>
+
+            <div class="card-topbar mb-3 pt-1 ${coloresTop[ordenEstado] || 'bg-secondary'}"></div>
 
             <div class="d-flex align-items-center mb-3">
+
                 <a href="leads-details.php?id=${l.id_lead}&id_cliente=${l.cliente_id}"
                    class="avatar rounded-circle bg-soft-info flex-shrink-0 me-2">
+
                     <span class="avatar-title text-info">${iniciales.toUpperCase() || "?"}</span>
+
                 </a>
+
                 <h6 class="fw-medium fs-14 mb-0">
+
                     <a href="leads-details.php?id=${l.id_lead}&id_cliente=${l.cliente_id}">
                         ${l.nombres || ""} ${l.apellidos || ""}
                     </a>
+
                 </h6>
+
             </div>
+
             <h6 class="fw-medium fs-14 mb-1">Asesor: ${l.nombreAsesor}</h6>
+
             <p class="mb-1"><i class="ti ti-mail me-1"></i>${l.email || "Sin email"}</p>
+
             <p class="mb-1"><i class="ti ti-phone me-1"></i>${l.telefono_principal || "Sin teléfono"}</p>
+
             <p class="mb-1"><i class="ti ti-map-pin me-1"></i>${l.ciudad || "Sin ciudad"}</p>
+
             <p class="mb-1"><i class="ti ti-pencil me-1"></i>${l.desc_pro || "Sin programa"}</p>
+
             <p><i class="ti ti-calendar me-1"></i>${l.horario || "Sin horario"}</p>
+
         </div>
-    `;
+        `;
 
         return card;
+
     } catch (e) {
+
         console.error("Error card leads:", e);
+
     } finally {
+
         loader.classList.add("d-none");
+
     }
+
 }
+
 
 /* ================================
    5. Drag & Drop
 ================================ */
 function activarDragAndDrop() {
 
+    const rol = document.getElementById("nombreRolUsuario").textContent.trim().toLowerCase();
+
+    const esAdmin = rol === "admin";
+    const esAsesor = rol.includes("asesor");
+
     document.querySelectorAll(".kanban-list").forEach(l => {
         l.style.minHeight = "60px";
     });
 
     document.addEventListener("dragstart", e => {
+
         const card = e.target.closest(".kanban-card");
         if (!card) return;
 
         e.dataTransfer.setData("lead", card.dataset.id);
+        e.dataTransfer.setData("orden_actual", card.dataset.orden);
+
         setTimeout(() => card.classList.add("dragging"), 0);
+
     });
 
     document.addEventListener("dragend", e => {
+
         const card = e.target.closest(".kanban-card");
+
         if (card) card.classList.remove("dragging");
+
     });
 
     document.querySelectorAll(".kanban-list").forEach(lista => {
@@ -1278,18 +1330,64 @@ function activarDragAndDrop() {
         lista.addEventListener("dragover", e => e.preventDefault());
 
         lista.addEventListener("drop", e => {
+
             e.preventDefault();
 
             const idLead = e.dataTransfer.getData("lead");
+
+            const ordenActual = parseInt(e.dataTransfer.getData("orden_actual"));
+
+            const ordenDestino = parseInt(lista.dataset.orden);
+
+            const estadoDestino = parseInt(lista.dataset.estado);
+
             const card = document.querySelector(`[data-id="${idLead}"]`);
+
             if (!card) return;
+
+            /* ================================
+               VALIDAR PERMISOS
+            ================================ */
+
+            if (!esAdmin) {
+
+                if (esAsesor) {
+
+                    if (ordenDestino < ordenActual) {
+
+                        alert("No puedes devolver el lead a un estado anterior");
+
+                        return;
+
+                    }
+
+                } else {
+
+                    alert("No tienes permisos para mover leads");
+
+                    return;
+
+                }
+
+            }
+
+            /* ================================
+               MOVER CARD
+            ================================ */
 
             lista.appendChild(card);
 
-            updateEstadoLead(idLead, lista.dataset.estado);
+            card.dataset.estado = estadoDestino;
+            card.dataset.orden = ordenDestino;
+
+            updateEstadoLead(idLead, estadoDestino);
+
             actualizarContadores();
+
         });
+
     });
+
 }
 
 function actualizarContadores() {
