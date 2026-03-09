@@ -363,8 +363,8 @@ class LeadsControllers
         return LeadsModels::listarReporteCRMLeads($asesor, $carrera, $estados);
     }
 
-    public static function reporteLeadsFuente()
+    public static function reporteLeadsFuente($asesor, $carrera, $estados)
     {
-        return LeadsModels::reporteLeadsFuente();
+        return LeadsModels::reporteLeadsFuente($asesor, $carrera, $estados);
     }
 }

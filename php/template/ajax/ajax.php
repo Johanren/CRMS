@@ -234,7 +234,7 @@ if (isset($_POST['accion'])) {
             $fechaActual = date('Y-m-d');
             echo json_encode($leads->nuevo_leads_por_dia($fechaActual));
             break;
-        
+
         case 'listar_leads_filtrados':
             $carrera = $_POST['filtro_carrera'] ?? [];
             $horario = $_POST['filtro_horario'] ?? [];
@@ -1000,7 +1000,11 @@ if (isset($_GET['accion'])) {
             echo json_encode($leads->listarReporteLeadDia($mes, $anio, $asesor, $carrera, $estados));
             break;
         case 'reporte_fuente_origen':
-            echo json_encode($leads->reporteLeadsFuente());
+
+            $asesor = isset($_GET['asesor']) ? json_decode($_GET['asesor']) : [];
+            $carrera = isset($_GET['carrera']) ? json_decode($_GET['carrera']) : [];
+            $estados = isset($_GET['estados']) ? json_decode($_GET['estados']) : [];
+            echo json_encode($leads->reporteLeadsFuente($asesor, $carrera, $estados));
             break;
         /*Notas */
         case 'listarNotas':

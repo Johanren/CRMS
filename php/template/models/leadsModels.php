@@ -1041,21 +1041,90 @@ class LeadsModels
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public static function reporteLeadsFuente()
+    public static function reporteLeadsFuente($asesor = [], $carreras = [], $estados = [])
     {
-        $sql = "SELECT 
-                utm_source AS fuente,
-                utm_medium AS origen,
-                COUNT(*) AS total_leads
-            FROM leads
-            GROUP BY utm_source, utm_medium
-            ORDER BY total_leads DESC";
+        $sql = "SELECT
+
+            l.utm_medium AS medio,
+            l.utm_source AS fuente,
+            l.utm_campaign AS campana,
+
+            SUM(CASE WHEN el.nombre = 'Nuevo Leads' THEN 1 ELSE 0 END) AS nuevo_leads,
+            SUM(CASE WHEN el.nombre = 'Prospecto' THEN 1 ELSE 0 END) AS prospecto,
+            SUM(CASE WHEN el.nombre = 'Leads Activo' THEN 1 ELSE 0 END) AS leads_activo,
+            SUM(CASE WHEN el.nombre = 'Interesado' THEN 1 ELSE 0 END) AS interesado,
+            SUM(CASE WHEN el.nombre = 'En Decisión' THEN 1 ELSE 0 END) AS en_decision,
+            SUM(CASE WHEN el.nombre = 'Matricula en Proceso' THEN 1 ELSE 0 END) AS matricula_proceso,
+            SUM(CASE WHEN el.nombre = 'Matriculado' THEN 1 ELSE 0 END) AS matriculado,
+            SUM(CASE WHEN el.nombre = 'Aplazado' THEN 1 ELSE 0 END) AS aplazado,
+            SUM(CASE WHEN el.nombre = 'Perdido' THEN 1 ELSE 0 END) AS perdido,
+
+            COUNT(l.id_lead) AS total
+
+        FROM leads l
+
+        INNER JOIN cliente c 
+            ON c.id_cliente = l.cliente_id
+
+        LEFT JOIN user u 
+            ON u.id_user = l.user_id
+
+        LEFT JOIN estado_leads el 
+            ON el.id_estado_leads = l.estado_leads_id
+
+        LEFT JOIN programa p 
+            ON p.cod_pro = l.carrera_id
+
+        WHERE l.cod_emp = ?";
+
+        $params = [$_SESSION['cod_emp']];
+
+        // Seguridad por Rol (Igual que la lista)
+        /*if (isset($_SESSION['rol']) && $_SESSION['rol'] !== 'Admin' && $texto === "" && empty($asesor)) {
+            $sql .= " AND l.user_id = ?";
+            $params[] = $_SESSION['user_id'];
+        }*/
+
+        // Filtro de Texto (Igual que la lista)
+        /*if ($texto !== "") {
+            $sql .= " AND (c.nombres LIKE ? OR c.apellidos LIKE ? OR c.email LIKE ? OR c.telefono_principal LIKE ?)";
+            $buscar = "%$texto%";
+            $params = array_merge($params, array_fill(0, 4, $buscar));
+        }*/
+
+        // Mismos filtros array que la lista
+        $filtros = [
+            /*'l.user_id' => $asesor,
+            'p.desc_pro' => $carreras,*/
+            'el.nombre' => $estados
+        ];
+
+        foreach ($filtros as $columna => $valores) {
+            if (!empty($valores)) {
+                $placeholders = implode(",", array_fill(0, count($valores), "?"));
+                $sql .= " AND $columna IN ($placeholders)";
+                $params = array_merge($params, $valores);
+            }
+        }
+
+        if (!empty($horario)) {
+            $placeholders = implode(",", array_fill(0, count($horario), "?"));
+            $sql .= " AND (h.descripcion IN ($placeholders) OR h.id_horario IN ($placeholders))";
+            $params = array_merge($params, $horario, $horario);
+        }
+
+        if (!empty($fecha_inicio) && !empty($fecha_fin)) {
+            $sql .= " AND DATE(l.fecha_creacion) BETWEEN ? AND ?";
+            $params[] = $fecha_inicio;
+            $params[] = $fecha_fin;
+        }
+
+        $sql .= "GROUP BY l.utm_medium, l.utm_source ORDER BY total DESC";
 
         $conn = new Conexion();
         $pdo = $conn->conectar();
         $stmt = $pdo->prepare($sql);
-        $stmt->execute();
-
+        $stmt->execute($params);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }
