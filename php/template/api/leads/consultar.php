@@ -42,7 +42,7 @@ if (empty($where)) {
 }
 
 // Armar SQL dinámico
-$sql = "SELECT l.id_lead, c.id_cliente, c.nombres, c.apellidos, 
+$sql = "SELECT l.id_lead, l.estado_leads_id, c.id_cliente, c.nombres, c.apellidos, 
         c.telefono_principal, c.identificacion FROM `leads` l 
         INNER JOIN cliente c ON c.id_cliente = l.cliente_id
         WHERE " . implode(" OR ", $where) . "

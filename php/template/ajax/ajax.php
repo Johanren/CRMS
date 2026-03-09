@@ -43,6 +43,7 @@ $notificaciones = new NotifiacionesControllers();
 $marketing = new Marketing_trackingControllers();
 $lis_mensaje = new ListMensajeControllers();
 $mensaje = new MensajeControllers();
+$urls = new AcortadorUrlsControllers();
 if (isset($_POST['accion'])) {
     switch ($_POST['accion']) {
         /*Campana*/
@@ -472,6 +473,22 @@ if (isset($_POST['accion'])) {
             break;
         case 'listar_mensajes_parametrizados':
             echo json_encode($mensaje->listarMensajesParametrizados());
+            break;
+        /*ACORTADOR DE URLS */
+
+        case 'guardar_acortador':
+
+            $data = [
+                "mensaje" => $_POST['mensaje'],
+                "carrera" => $_POST['carrera'],
+                "horario" => $_POST['horario'],
+                "slug" => $_POST['slug'],
+                "original_url" => $_POST['original_url'],
+                "short_url" => $_POST['short_url']
+            ];
+
+            echo json_encode($urls->guardarUrlsAcortador($data));
+
             break;
 
         default:

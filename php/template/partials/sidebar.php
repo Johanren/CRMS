@@ -199,8 +199,9 @@
                             </a>
                             <ul>
                                 <li><a href="frm_mensaje.php" class="<?php echo ($page == 'frm_mensaje.php' || $page == '/') ? 'active' : ''; ?>">Crear Mensaje</a></li>
+                                <li><a href="frm_mensaje_url.php" class="<?php echo ($page == 'frm_mensaje_url.php' || $page == '/') ? 'active' : ''; ?>">Urls Mensaje</a></li>
                                 <li><a href="mensajes.php" class="<?php echo ($page == 'mensajes.php' || $page == '/') ? 'active' : ''; ?>">Enviar Mensaje</a></li>
-                                <li><a href="reporte_mensajes.php" class="<?php echo ($page == 'mensajes.php' || $page == '/') ? 'active' : ''; ?>">Informe De Mensaje Enviados</a></li>
+                                <li><a href="reporte_mensajes.php" class="<?php echo ($page == 'reporte_mensajes.php' || $page == '/') ? 'active' : ''; ?>">Informe De Mensaje Enviados</a></li>
                             </ul>
                         </li>
                     </ul>
