@@ -48,4 +48,24 @@ class AcortadorUrlsModels
 
         return ["ok" => false];
     }
+
+    public static function cargarUrlsAcortador()
+    {
+        $sql = "SELECT short_url 
+            FROM urls 
+            ORDER BY id DESC 
+            LIMIT 1";
+
+        $conn = new Conexion();
+        $stmt = $conn->conectar()->prepare($sql);
+        $stmt->execute();
+
+        $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($resultado) {
+            return $resultado;
+        } else {
+            return ["short_url" => ""];
+        }
+    }
 }

@@ -234,7 +234,7 @@ if (isset($_POST['accion'])) {
             $fechaActual = date('Y-m-d');
             echo json_encode($leads->nuevo_leads_por_dia($fechaActual));
             break;
-
+        
         case 'listar_leads_filtrados':
             $carrera = $_POST['filtro_carrera'] ?? [];
             $horario = $_POST['filtro_horario'] ?? [];
@@ -999,6 +999,9 @@ if (isset($_GET['accion'])) {
 
             echo json_encode($leads->listarReporteLeadDia($mes, $anio, $asesor, $carrera, $estados));
             break;
+        case 'reporte_fuente_origen':
+            echo json_encode($leads->reporteLeadsFuente());
+            break;
         /*Notas */
         case 'listarNotas':
             echo json_encode($notas->listarNotasId($_GET['id']));
@@ -1093,6 +1096,10 @@ if (isset($_GET['accion'])) {
 
         case 'reporte3_asesores':
             echo json_encode($lis_mensaje->reporte3Asesores());
+            break;
+
+        case 'cargarUrls':
+            echo json_encode($urls->cargarUrlsAcortador());
             break;
 
         default:

@@ -684,6 +684,7 @@ require_once '../partials/main.php'; ?>
     document.addEventListener('DOMContentLoaded', async () => {
         await cargarMensajesPorTema();
         cargarFiltrosRST();
+        cargarUrls();
 
         // Eventos para filtros
         ['filtro_carrera', 'filtro_horario', 'filtro_estado', 'filtro_asesor']
@@ -745,6 +746,19 @@ require_once '../partials/main.php'; ?>
             });
     }
 
+    function cargarUrls() {
+        fetch('ajax/ajax.php?accion=cargarUrls')
+            .then(res => res.json())
+            .then(data => {
+                if (data && data.short_url) {
+                    document.getElementById('url').value = data.short_url;
+                }
+            })
+            .catch(err => {
+                console.error("Error cargando URL:", err);
+            });
+    }
+
     function llenarSelect(id, datos, valueKey, textKey) {
         const contenedor = document.getElementById(id);
         if (!contenedor) return;
@@ -789,6 +803,10 @@ require_once '../partials/main.php'; ?>
     function actualizarUrlPorAsesor() {
         const seleccionados = getValoresSelect('filtro_asesor');
         const inputUrl = document.getElementById('url');
+
+        if (inputUrl.value.trim() !== '') {
+            return;
+        }
 
         // Si solo hay un asesor, ponemos su URL en el input para edición
         if (seleccionados.length === 1) {

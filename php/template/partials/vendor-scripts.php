@@ -94,20 +94,20 @@ if ($page != 'login.php') {
     <script src="assets/plugins/fullcalendar/calendar-data.js"></script>
 <?php } ?>
 
-<?php if ($page == 'analytics.php' || $page == 'calls.php' || $page == 'chart-apex.php' || $page == 'company-reports.php' || $page == 'contact-reports.php' || $page == 'contact-stage.php' || $page == 'dashboard.php' || $page == 'deal-reports.php' || $page == 'leads-reports.php' || $page == 'index.php' || $page == 'layout-dark.php' || $page == 'layout-fullwidth.php' || $page == 'layout-hidden.php' || $page == 'layout-hoverview.php' || $page == 'layout-mini.php' || $page == 'layout-rtl.php' || $page == 'lead-reports.php' || $page == 'leads-dashboard.php' || $page == 'lost-reason.php' || $page == 'project-dashboard.php' || $page == 'project-reports.php' || $page == 'sources.php' || $page == 'task-reports.php' || $page == 'rst_frm.php' || $page == 'rst_frm_dia.php') {   ?>
+<?php if ($page == 'reporte_fuente.php' || $page == 'analytics.php' || $page == 'calls.php' || $page == 'chart-apex.php' || $page == 'company-reports.php' || $page == 'contact-reports.php' || $page == 'contact-stage.php' || $page == 'dashboard.php' || $page == 'deal-reports.php' || $page == 'leads-reports.php' || $page == 'index.php' || $page == 'layout-dark.php' || $page == 'layout-fullwidth.php' || $page == 'layout-hidden.php' || $page == 'layout-hoverview.php' || $page == 'layout-mini.php' || $page == 'layout-rtl.php' || $page == 'lead-reports.php' || $page == 'leads-dashboard.php' || $page == 'lost-reason.php' || $page == 'project-dashboard.php' || $page == 'project-reports.php' || $page == 'sources.php' || $page == 'task-reports.php' || $page == 'rst_frm.php' || $page == 'rst_frm_dia.php') {   ?>
     <!-- Apexchart JS -->
     <script src="assets/plugins/apexchart/apexcharts.min.js"></script>
     <script src="assets/plugins/apexchart/chart-data.js"></script>
 <?php } ?>
 
-<?php if ($page == 'chart-c3.php') {   ?>
+<?php if ($page == 'reporte_fuente.php' || $page == 'chart-c3.php') {   ?>
     <!-- Chart JS -->
     <script src="assets/plugins/c3-chart/d3.v5.min.js"></script>
     <script src="assets/plugins/c3-chart/c3.min.js"></script>
     <script src="assets/plugins/c3-chart/chart-data.js"></script>
 <?php } ?>
 
-<?php if ($page == 'chart-flot.php') {   ?>
+<?php if ($page == 'reporte_fuente.php' || $page == 'chart-flot.php') {   ?>
     <!-- Chart JS -->
     <script src="assets/plugins/flot/jquery.flot.js"></script>
     <script src="assets/plugins/flot/jquery.flot.fillbetween.js"></script>
@@ -115,20 +115,20 @@ if ($page != 'login.php') {
     <script src="assets/plugins/flot/chart-data.js"></script>
 <?php } ?>
 
-<?php if ($page == 'chart-js.php') {   ?>
+<?php if ($page == 'reporte_fuente.php' || $page == 'chart-js.php') {   ?>
     <!-- Chart JS -->
     <script src="assets/plugins/chartjs/chart.min.js"></script>
     <script src="assets/plugins/chartjs/chart-data.js"></script>
 <?php } ?>
 
-<?php if ($page == 'chart-morris.php') {   ?>
+<?php if ($page == 'reporte_fuente.php' || $page == 'chart-morris.php') {   ?>
     <!-- Chart JS -->
     <script src="assets/plugins/morris/raphael-min.js"></script>
     <script src="assets/plugins/morris/morris.min.js"></script>
     <script src="assets/plugins/morris/chart-data.js"></script>
 <?php } ?>
 
-<?php if ($page == 'chart-peity.php' || $page == 'dashboard.php') {   ?>
+<?php if ($page == 'reporte_fuente.php' || $page == 'chart-peity.php' || $page == 'dashboard.php') {   ?>
     <!-- Chart JS -->
     <script src="assets/plugins/peity/jquery.peity.min.js"></script>
     <script src="assets/plugins/peity/chart-data.js"></script>

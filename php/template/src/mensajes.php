@@ -255,9 +255,9 @@ $esModal = isset($_GET['modal']) && $_GET['modal'] == 1;
 
     <?php require_once '../partials/footer.php'; ?>
 
-<?php if (!$esModal): ?>
+    <?php if (!$esModal): ?>
     </div>
-    <?php endif; ?>
+<?php endif; ?>
 
 <script>
     let tablaLeads = null;
@@ -265,8 +265,9 @@ $esModal = isset($_GET['modal']) && $_GET['modal'] == 1;
     /* ===========================
        VARIABLES GLOBALES
     =========================== */
-    const foco = <?php session_start(); echo json_encode($_SESSION['foco'] ?? '55'); ?>;
-    let mensajesPorTema = {}; 
+    const foco = <?php session_start();
+                    echo json_encode($_SESSION['foco'] ?? '55'); ?>;
+    let mensajesPorTema = {};
     let urlsAsesores = {}; // Objeto para mapear ID -> {url, nombre}
 
     /* ===========================
@@ -275,6 +276,7 @@ $esModal = isset($_GET['modal']) && $_GET['modal'] == 1;
     document.addEventListener('DOMContentLoaded', async () => {
         await cargarMensajesPorTema();
         cargarFiltrosRST();
+        cargarUrls();
 
         // Eventos para filtros
         ['filtro_carrera', 'filtro_horario', 'filtro_estado', 'filtro_asesor']
@@ -301,7 +303,10 @@ $esModal = isset($_GET['modal']) && $_GET['modal'] == 1;
         const datos = new FormData();
         datos.append('accion', 'listar_mensajes_parametrizados');
 
-        return fetch('ajax/ajax.php', { method: 'POST', body: datos })
+        return fetch('ajax/ajax.php', {
+                method: 'POST',
+                body: datos
+            })
             .then(res => res.json())
             .then(data => {
                 mensajesPorTema = {};
@@ -318,13 +323,29 @@ $esModal = isset($_GET['modal']) && $_GET['modal'] == 1;
         const datos = new FormData();
         datos.append('accion', 'catalogo_filtros_mensaje');
 
-        fetch('ajax/ajax.php', { method: 'POST', body: datos })
+        fetch('ajax/ajax.php', {
+                method: 'POST',
+                body: datos
+            })
             .then(res => res.json())
             .then(data => {
                 llenarSelect('filtro_carrera', data.carreras, 'id_programa', 'programa');
                 llenarSelect('filtro_horario', data.horarios, 'id_jornada', 'jornada');
                 llenarSelect('filtro_estado', data.estados, 'id_estado', 'estado');
                 llenarSelect('filtro_asesor', data.asesores, 'id_asesor', 'asesor');
+            });
+    }
+
+    function cargarUrls() {
+        fetch('ajax/ajax.php?accion=cargarUrls')
+            .then(res => res.json())
+            .then(data => {
+                if (data && data.short_url) {
+                    document.getElementById('url').value = data.short_url;
+                }
+            })
+            .catch(err => {
+                console.error("Error cargando URL:", err);
             });
     }
 
@@ -372,6 +393,10 @@ $esModal = isset($_GET['modal']) && $_GET['modal'] == 1;
     function actualizarUrlPorAsesor() {
         const seleccionados = getValoresSelect('filtro_asesor');
         const inputUrl = document.getElementById('url');
+
+        if (inputUrl.value.trim() !== '') {
+            return;
+        }
 
         // Si solo hay un asesor, ponemos su URL en el input para edición
         if (seleccionados.length === 1) {
@@ -423,7 +448,10 @@ $esModal = isset($_GET['modal']) && $_GET['modal'] == 1;
             .forEach(id => getValoresSelect(id).forEach(v => datos.append(id + '[]', v)));
         }
 
-        fetch('ajax/ajax.php', { method: 'POST', body: datos })
+        fetch('ajax/ajax.php', {
+                method: 'POST',
+                body: datos
+            })
             .then(res => res.json())
             .then(pintarTabla)
             .catch(() => limpiarTabla('Error al cargar datos'));
@@ -431,7 +459,10 @@ $esModal = isset($_GET['modal']) && $_GET['modal'] == 1;
 
     function pintarTabla(leads) {
         const tbody = document.querySelector('#tabla_leads tbody');
-        if (tablaLeads) { tablaLeads.destroy(); tablaLeads = null; }
+        if (tablaLeads) {
+            tablaLeads.destroy();
+            tablaLeads = null;
+        }
         tbody.innerHTML = '';
 
         if (!leads || !leads.length) {
@@ -441,15 +472,15 @@ $esModal = isset($_GET['modal']) && $_GET['modal'] == 1;
 
         leads.forEach(l => {
             const tr = document.createElement('tr');
-            
+
             // BUSCAR ID DEL ASESOR para vincular la URL correcta
-            const idAsesor = Object.keys(urlsAsesores).find(key => 
+            const idAsesor = Object.keys(urlsAsesores).find(key =>
                 urlsAsesores[key].nombre === (l.asesor || '').toUpperCase()
             );
 
             tr.dataset.cliente = l.cliente;
             tr.dataset.asesor = l.asesor;
-            tr.dataset.id_asesor = idAsesor || ''; 
+            tr.dataset.id_asesor = idAsesor || '';
             tr.dataset.carrera = (l.carrera || '').toUpperCase();
             tr.dataset.jornada = (l.jornada || '').toUpperCase();
             tr.dataset.mensaje = '';
@@ -470,12 +501,18 @@ $esModal = isset($_GET['modal']) && $_GET['modal'] == 1;
         tablaLeads = $('#tabla_leads').DataTable({
             responsive: true,
             pageLength: 10,
-            language: { search: "Buscar:", zeroRecords: "No hay resultados" }
+            language: {
+                search: "Buscar:",
+                zeroRecords: "No hay resultados"
+            }
         });
     }
 
     function limpiarTabla(msg) {
-        if (tablaLeads) { tablaLeads.destroy(); tablaLeads = null; }
+        if (tablaLeads) {
+            tablaLeads.destroy();
+            tablaLeads = null;
+        }
         document.querySelector('#tabla_leads tbody').innerHTML =
             `<tr><td colspan="5" class="text-center text-muted">${msg}</td></tr>`;
     }
@@ -584,7 +621,10 @@ $esModal = isset($_GET['modal']) && $_GET['modal'] == 1;
         datos.append('accion', 'guardar_mensajes_rst');
         datos.append('mensajes', JSON.stringify(mensajes));
 
-        fetch('ajax/ajax.php', { method: 'POST', body: datos })
+        fetch('ajax/ajax.php', {
+                method: 'POST',
+                body: datos
+            })
             .then(res => res.json())
             .then(r => alert(r.ok ? '✔ Mensajes guardados' : '❌ Error'))
             .catch(() => alert('❌ Error de conexión'));

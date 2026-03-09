@@ -1040,4 +1040,22 @@ class LeadsModels
         $stmt->execute($params);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public static function reporteLeadsFuente()
+    {
+        $sql = "SELECT 
+                utm_source AS fuente,
+                utm_medium AS origen,
+                COUNT(*) AS total_leads
+            FROM leads
+            GROUP BY utm_source, utm_medium
+            ORDER BY total_leads DESC";
+
+        $conn = new Conexion();
+        $pdo = $conn->conectar();
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
