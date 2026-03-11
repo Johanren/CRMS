@@ -12,11 +12,11 @@
         <!-- Page Header -->
         <div class="d-flex align-items-center justify-content-between gap-2 mb-4 flex-wrap">
             <div>
-                <h4 class="mb-1">Reporte fuente y origen<span class="badge badge-soft-primary ms-2">125</span></h4>
+                <h4 class="mb-1">Reporte estado lead<span class="badge badge-soft-primary ms-2">125</span></h4>
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb mb-0 p-0">
                         <li class="breadcrumb-item"><a href="index.php">Hogar</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Reporte fuente y origen</li>
+                        <li class="breadcrumb-item active" aria-current="page">Reporte festado lead</li>
                     </ol>
                 </nav>
             </div>
@@ -48,6 +48,16 @@
                         <div class="filter-set-view p-3">
                             <div class="filter-set-view p-3">
                                 <div class="accordion" id="accordionExample">
+                                    <div class="filter-set-content">
+                                        <div class="filter-set-content-head">
+                                            <a href="#" class="collapsed" data-bs-toggle="collapse" data-bs-target="#collapseAsesor" aria-expanded="false" aria-controls="collapseThree">Asesor</a>
+                                        </div>
+                                        <div class="filter-set-contents accordion-collapse collapse" id="collapseAsesor" data-bs-parent="#accordionExample">
+                                            <div class="filter-content-list bg-light rounded border p-2 shadow mt-2">
+                                                <div id="listar_filtro_user" class="overflow-x-auto"></div>
+                                            </div>
+                                        </div>
+                                    </div>
                                     <div class="filter-set-content">
                                         <div class="filter-set-content-head">
                                             <a href="#" class="collapsed" data-bs-toggle="collapse"
@@ -123,41 +133,54 @@
                         padding: 3px 6px !important;
                         font-size: 12px;
                     }
+
+                    #paginacion button {
+                        margin-right: 4px;
+                    }
                 </style>
                 <div class="table-responsive custom-table">
+
+                    <!-- CONTROLES -->
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+
+                        <!-- selector registros -->
+                        <div>
+                            <label class="me-2 fw-bold">Mostrar:</label>
+                            <select id="limitSelect" class="form-select form-select-sm d-inline-block w-auto">
+                                <option value="10">10</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                            </select>
+                        </div>
+
+                        <!-- paginación -->
+                        <div id="paginacion"></div>
+
+                    </div>
+
+                    <!-- TABLA -->
                     <table id="rst_reports" class="table table-bordered table-striped table-hover table-sm">
 
                         <thead class="table-dark text-center">
-
                             <tr>
-                                <th>MEDIO</th>
-                                <th>FUENTE</th>
-                                <th>CAMPAÑA</th>
-                                <th>NUEVO LEADS</th>
-                                <th>PROSPECTO</th>
-                                <th>LEADS ACTIVO</th>
-                                <th>INTERESADO</th>
-                                <th>EN DECISIÓN</th>
-                                <th>MATRICULA EN PROCESO</th>
-                                <th>MATRICULADO</th>
-                                <th>APLAZADO</th>
-                                <th>PERDIDO</th>
-                                <th>TOTAL</th>
+                                <th style="width:40px"></th>
+                                <th>Cliente</th>
+                                <th>Asesor</th>
+                                <th>Estado Actual</th>
+                                <th>Cambios</th>
                             </tr>
-
                         </thead>
 
                         <tbody></tbody>
 
-                        <tfoot>
-                            <tr id="fila_totales"></tr>
-                        </tfoot>
-
                     </table>
-                    <div id="loaderFoco" class="loader-overlay d-none">
-                        <div class="spinner"></div>
-                        <p>Cargando reporte...</p>
-                    </div>
+
+                </div>
+
+                <!-- LOADER -->
+                <div id="loaderFoco" class="loader-overlay d-none">
+                    <div class="spinner"></div>
+                    <p>Cargando reporte...</p>
                 </div>
             </div>
         </div>
@@ -222,7 +245,7 @@ require_once '../partials/main.php'; ?>
                 document.querySelector(".reportrange-picker-field").innerHTML =
                     start.format("DD MMM YY") + " - " + end.format("DD MMM YY");
 
-                listarReporteCRMS();
+                listarReporteEstadoLeads();
             }
         );
     });
@@ -259,7 +282,12 @@ require_once '../partials/main.php'; ?>
         }
     };
 
-    function listarReporteCRMS() {
+    let paginaActual = 1;
+    let limiteActual = 10; // 5, 50 o 100
+
+    function listarReporteEstadoLeads(page = 1) {
+
+        paginaActual = page;
 
         const f = Filtros.obtener();
         const params = new URLSearchParams();
@@ -267,7 +295,9 @@ require_once '../partials/main.php'; ?>
         const loader = document.getElementById("loaderFoco");
         if (loader) loader.classList.remove("d-none");
 
-        params.append("accion", "reporte_fuente_origen");
+        params.append("accion", "reporte_estado_leads");
+        params.append("page", paginaActual);
+        params.append("limit", limiteActual);
 
         if (f.texto !== "") params.append("texto", f.texto);
         if (f.asesor.length > 0) params.append("asesor", JSON.stringify(f.asesor));
@@ -281,105 +311,224 @@ require_once '../partials/main.php'; ?>
             .then(data => {
 
                 let tbody = document.querySelector("#rst_reports tbody");
-                let filaTotales = document.querySelector("#fila_totales");
-
                 tbody.innerHTML = "";
-                filaTotales.innerHTML = "";
 
-                let totalNuevo = 0;
-                let totalProspecto = 0;
-                let totalActivo = 0;
-                let totalInteresado = 0;
-                let totalDecision = 0;
-                let totalMatriculaProceso = 0;
-                let totalMatriculado = 0;
-                let totalAplazado = 0;
-                let totalPerdido = 0;
-                let totalGeneral = 0;
-
-                data.forEach(row => {
-
-                    totalNuevo += parseInt(row.nuevo_leads);
-                    totalProspecto += parseInt(row.prospecto);
-                    totalActivo += parseInt(row.leads_activo);
-                    totalInteresado += parseInt(row.interesado);
-                    totalDecision += parseInt(row.en_decision);
-                    totalMatriculaProceso += parseInt(row.matricula_proceso);
-                    totalMatriculado += parseInt(row.matriculado);
-                    totalAplazado += parseInt(row.aplazado);
-                    totalPerdido += parseInt(row.perdido);
-                    totalGeneral += parseInt(row.total);
-
-                    function pintar(valor) {
-                        return valor > 0 ?
-                            `<span style="color:red;font-weight:600">${valor}</span>` :
-                            `<span class="text-muted">-</span>`;
-                    }
+                data.data.forEach(row => {
 
                     let tr = `
                 <tr class="text-center">
+                    <td style="width:40px">
+                        <button class="btn btn-sm btn-primary btnHistorial"
+                        data-id="${row.id_lead}">
+                        +
+                        </button>
+                    </td>
 
-                    <td class="text-start fw-bold">${row.medio}</td>
-                    <td>${row.fuente}</td>
-                    <td>${row.campana}</td>
+                    <td class="text-start fw-bold">${row.cliente}</td>
+                    <td>${row.asesor ?? "-"}</td>
 
-                    <td>${pintar(row.nuevo_leads)}</td>
-                    <td>${pintar(row.prospecto)}</td>
-                    <td>${pintar(row.leads_activo)}</td>
-                    <td>${pintar(row.interesado)}</td>
-                    <td>${pintar(row.en_decision)}</td>
-                    <td>${pintar(row.matricula_proceso)}</td>
-                    <td>${pintar(row.matriculado)}</td>
-                    <td>${pintar(row.aplazado)}</td>
-                    <td>${pintar(row.perdido)}</td>
+                    <td>
+                        <span class="badge bg-primary">
+                        ${row.estado_actual}
+                        </span>
+                    </td>
 
-                    <td style="color:red;font-weight:bold">${row.total}</td>
+                    <td>${row.cambios}</td>
+                </tr>
 
+                <tr id="hist_${row.id_lead}" style="display:none">
+                    <td colspan="5">
+                        <div class="contenidoHistorial p-2"></div>
+                    </td>
                 </tr>
                 `;
 
                     tbody.innerHTML += tr;
-
                 });
 
-                filaTotales.innerHTML = `
-
-            <tr style="font-weight:bold;background:#f5f5f5;" class="text-center">
-
-                <td colspan="3" class="text-start"><strong>TOTAL GENERAL</strong></td>
-
-                <td style="color:red">${totalNuevo}</td>
-                <td style="color:red">${totalProspecto}</td>
-                <td style="color:red">${totalActivo}</td>
-                <td style="color:red">${totalInteresado}</td>
-                <td style="color:red">${totalDecision}</td>
-                <td style="color:red">${totalMatriculaProceso}</td>
-                <td style="color:red">${totalMatriculado}</td>
-                <td style="color:red">${totalAplazado}</td>
-                <td style="color:red">${totalPerdido}</td>
-                <td style="background:#1e66dc;color:white;font-weight:bold">${totalGeneral}</td>
-
-            </tr>
-            `;
+                renderPaginacion(data.total, data.limit, data.page);
 
             })
-            .catch(err => console.error("Error reporte rst:", err))
+            .catch(err => console.error("Error reporte estados:", err))
             .finally(() => {
                 if (loader) loader.classList.add("d-none");
             });
+
     }
+
+    function renderPaginacion(total, limit, page) {
+
+        const totalPaginas = Math.ceil(total / limit);
+        let html = "";
+
+        // BOTON ANTERIOR
+        if (page > 1) {
+            html += `
+        <button class="btn btn-sm btn-light"
+        onclick="listarReporteEstadoLeads(${page - 1})">
+        &lt;
+        </button>`;
+        }
+
+        let start = Math.max(1, page - 2);
+        let end = Math.min(totalPaginas, page + 2);
+
+        // Si estamos cerca del inicio
+        if (page <= 4) {
+            start = 1;
+            end = Math.min(8, totalPaginas);
+        }
+
+        // Si estamos cerca del final
+        if (page > totalPaginas - 4) {
+            start = Math.max(1, totalPaginas - 7);
+            end = totalPaginas;
+        }
+
+        // Primera página si no está visible
+        if (start > 1) {
+            html += `
+        <button class="btn btn-sm btn-light"
+        onclick="listarReporteEstadoLeads(1)">
+        1
+        </button>`;
+
+            if (start > 2) {
+                html += `<span class="mx-1">...</span>`;
+            }
+        }
+
+        // PAGINAS
+        for (let i = start; i <= end; i++) {
+
+            html += `
+        <button class="btn btn-sm ${i == page ? 'btn-primary' : 'btn-light'}"
+        onclick="listarReporteEstadoLeads(${i})">
+        ${i}
+        </button>`;
+        }
+
+        // Última página si no está visible
+        if (end < totalPaginas) {
+
+            if (end < totalPaginas - 1) {
+                html += `<span class="mx-1">...</span>`;
+            }
+
+            html += `
+        <button class="btn btn-sm btn-light"
+        onclick="listarReporteEstadoLeads(${totalPaginas})">
+        ${totalPaginas}
+        </button>`;
+        }
+
+        // BOTON SIGUIENTE
+        if (page < totalPaginas) {
+            html += `
+        <button class="btn btn-sm btn-light"
+        onclick="listarReporteEstadoLeads(${page + 1})">
+        &gt;
+        </button>`;
+        }
+
+        document.getElementById("paginacion").innerHTML = html;
+    }
+
+    document.addEventListener("click", function(e) {
+
+        if (e.target.classList.contains("btnHistorial")) {
+
+            let idlead = e.target.dataset.id;
+            let fila = document.getElementById("hist_" + idlead);
+
+            if (fila.style.display === "table-row") {
+                fila.style.display = "none";
+                return;
+            }
+
+            const params = new URLSearchParams();
+            params.append("accion", "historial_estado_lead");
+            params.append("idlead", idlead);
+
+            fetch("ajax/ajax.php?" + params.toString())
+
+                .then(res => res.json())
+
+                .then(data => {
+
+                    let html = `
+
+                        <table class="table table-sm table-bordered">
+
+                        <thead>
+
+                        <tr class="table-light">
+
+                            <th>Fecha</th>
+                            <th>Asesor</th>
+                            <th>Estado anterior</th>
+                            <th>Estado nuevo</th>
+
+                        </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                        `;
+
+                    data.forEach(h => {
+
+                        html += `
+
+                        <tr>
+
+                            <td>${h.fec_log} ${h.hor_log}</td>
+
+                            <td>${h.asesor}</td>
+
+                            <td>${h.estado_anterior ?? "-"}</td>
+
+                            <td>${h.estado_nuevo ?? "-"}</td>
+
+                        </tr>
+
+                    `;
+
+                    });
+
+                    html += "</tbody></table>";
+
+                    fila.querySelector(".contenidoHistorial").innerHTML = html;
+
+                    fila.style.display = "table-row";
+
+                })
+
+                .catch(err => console.error("Error historial:", err));
+
+        }
+
+    });
+
+    document.getElementById("limitSelect").addEventListener("change", function() {
+
+        limiteActual = parseInt(this.value);
+        listarReporteEstadoLeads(1);
+
+    });
 
     document.addEventListener("change", function(e) {
         if (e.target.classList.contains("filtro")) {
-            listarReporteCRMS();
+            listarReporteEstadoLeads();
         }
     });
 
     document.addEventListener("input", function(e) {
         if (e.target.id === "buscador") {
-            listarReporteCRMS();
+            listarReporteEstadoLeads();
         }
     });
 
-    listarReporteCRMS();
+    listarReporteEstadoLeads();
 </script>

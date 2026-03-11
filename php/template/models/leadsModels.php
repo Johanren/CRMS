@@ -1041,7 +1041,7 @@ class LeadsModels
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public static function reporteLeadsFuente($asesor = [], $carreras = [], $estados = [])
+    public static function reporteLeadsFuente($texto = "", $asesor = [], $carreras = [], $estados = [], $fecha_inicio = "", $fecha_fin = "")
     {
         $sql = "SELECT
 
@@ -1086,11 +1086,11 @@ class LeadsModels
         }*/
 
         // Filtro de Texto (Igual que la lista)
-        /*if ($texto !== "") {
-            $sql .= " AND (c.nombres LIKE ? OR c.apellidos LIKE ? OR c.email LIKE ? OR c.telefono_principal LIKE ?)";
+        if ($texto !== "") {
+            $sql .= " AND (l.utm_source LIKE ? OR l.utm_medium LIKE ? OR l.utm_campaign LIKE ?)";
             $buscar = "%$texto%";
-            $params = array_merge($params, array_fill(0, 4, $buscar));
-        }*/
+            $params = array_merge($params, array_fill(0, 3, $buscar));
+        }
 
         // Mismos filtros array que la lista
         $filtros = [
@@ -1119,12 +1119,179 @@ class LeadsModels
             $params[] = $fecha_fin;
         }
 
-        $sql .= "GROUP BY l.utm_medium, l.utm_source ORDER BY total DESC";
+        $sql .= "GROUP BY l.utm_medium, l.utm_source, l.utm_campaign ORDER BY total DESC";
 
         $conn = new Conexion();
         $pdo = $conn->conectar();
         $stmt = $pdo->prepare($sql);
         $stmt->execute($params);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public static function ctrReporteEstadoLeads(
+        $texto = "",
+        $asesor = [],
+        $carreras = [],
+        $estados = [],
+        $fecha_inicio = "",
+        $fecha_fin = "",
+        $page = 1,
+        $limit = 10
+    ) {
+
+        $conn = new Conexion();
+        $pdo = $conn->conectar();
+
+        // Seguridad básica
+        $page  = max(1, (int)$page);
+        $limit = max(1, min(100, (int)$limit)); // limite entre 1 y 100
+        $offset = ($page - 1) * $limit;
+
+        /* ==============================
+        WHERE DINAMICO
+        ============================== */
+
+        $where = " WHERE l.emp_log = ? ";
+        $params = [$_SESSION['cod_emp']];
+
+        // Filtro texto
+        if ($texto !== "") {
+
+            $where .= " AND (c.nombres LIKE ? OR c.apellidos LIKE ?)";
+            $buscar = "%$texto%";
+
+            $params[] = $buscar;
+            $params[] = $buscar;
+        }
+
+        // Filtro asesores
+        if (!empty($asesor)) {
+
+            $placeholders = implode(",", array_fill(0, count($asesor), "?"));
+            $where .= " AND l.usu_log IN ($placeholders)";
+            $params = array_merge($params, $asesor);
+        }
+
+        // Filtro estados
+        if (!empty($estados)) {
+
+            $placeholders = implode(",", array_fill(0, count($estados), "?"));
+            $where .= " AND (l.eact_log IN ($placeholders) OR l.enew_log IN ($placeholders))";
+
+            $params = array_merge($params, $estados, $estados);
+        }
+
+        // Filtro fechas
+        if (!empty($fecha_inicio) && !empty($fecha_fin)) {
+
+            $where .= " AND l.fec_log BETWEEN ? AND ?";
+
+            $params[] = $fecha_inicio;
+            $params[] = $fecha_fin;
+        }
+
+        /* ==============================
+        CONSULTA PRINCIPAL
+        ============================== */
+
+        $sql = "SELECT
+                ld.id_lead,
+                CONCAT(c.nombres,' ',c.apellidos) AS cliente,
+                u.nombres AS asesor,
+                IF(en.nombre IS NULL OR en.nombre='',ea.nombre,en.nombre) AS estado_actual,
+                COUNT(l.id_log) AS cambios
+
+            FROM leads ld
+
+            INNER JOIN cliente c
+            ON c.id_cliente = ld.cliente_id
+
+            LEFT JOIN logleadsestado l
+            ON l.idlead_log = ld.id_lead
+
+            LEFT JOIN user u
+            ON u.id_user = l.usu_log
+
+            LEFT JOIN estado_leads ea
+            ON ea.id_estado_leads = l.eact_log
+
+            LEFT JOIN estado_leads en
+            ON en.id_estado_leads = l.enew_log
+
+            $where
+
+            GROUP BY ld.id_lead
+            ORDER BY ld.id_lead DESC
+            LIMIT $limit OFFSET $offset";
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($params);
+
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        /* ==============================
+        TOTAL REGISTROS (SIN DUPLICADOS)
+        ============================== */
+
+        $sqlTotal = "SELECT COUNT(DISTINCT ld.id_lead)
+
+                FROM leads ld
+
+                INNER JOIN cliente c
+                ON c.id_cliente = ld.cliente_id
+
+                LEFT JOIN logleadsestado l
+                ON l.idlead_log = ld.id_lead
+
+                $where";
+
+        $stmtTotal = $pdo->prepare($sqlTotal);
+        $stmtTotal->execute($params);
+
+        $total = (int)$stmtTotal->fetchColumn();
+
+        /* ==============================
+        RESPUESTA
+        ============================== */
+
+        return [
+            "data"  => $data,
+            "total" => $total,
+            "page"  => $page,
+            "limit" => $limit
+        ];
+    }
+
+    public static function ctrReporteEstadoLeadsHistorico($idlead)
+    {
+        $sql = "SELECT
+
+                u.nombres AS asesor,
+                ea.nombre AS estado_anterior,
+                en.nombre AS estado_nuevo,
+                l.fec_log,
+                l.hor_log
+
+            FROM logleadsestado l
+            LEFT JOIN user u
+            ON u.id_user = l.usu_log
+            LEFT JOIN estado_leads ea
+            ON ea.id_estado_leads = l.eact_log
+            LEFT JOIN estado_leads en
+            ON en.id_estado_leads = l.enew_log
+            WHERE l.idlead_log = ?
+
+            ORDER BY l.fec_log DESC, l.hor_log ASC";
+        $conn = new Conexion();
+        $conectar = $conn->conectar();
+        $stmt = $conectar->prepare($sql);
+
+        $stmt->bindParam(1, $idlead);
+
+        if ($stmt->execute()) {
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+        return "error";
     }
 }

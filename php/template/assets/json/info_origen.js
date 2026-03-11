@@ -406,7 +406,7 @@ function listarCampanaIl() {
         });
 }
 
-if (obtenerPaginaActual() == 'reporte_fuente.php' || obtenerPaginaActual() == 'lead_dia.php' || obtenerPaginaActual() == 'resultado_foco.php' || obtenerPaginaActual() === 'reporte_lead.php' || obtenerPaginaActual() === 'leads.php' || obtenerPaginaActual() === 'leads-list.php' || obtenerPaginaActual() === 'lead-reports.php' || obtenerPaginaActual() === 'contacts.php') {
+if (obtenerPaginaActual() == 'reporte_estado_lead.php' || obtenerPaginaActual() == 'reporte_fuente.php' || obtenerPaginaActual() == 'lead_dia.php' || obtenerPaginaActual() == 'resultado_foco.php' || obtenerPaginaActual() === 'reporte_lead.php' || obtenerPaginaActual() === 'leads.php' || obtenerPaginaActual() === 'leads-list.php' || obtenerPaginaActual() === 'lead-reports.php' || obtenerPaginaActual() === 'contacts.php') {
     listarEst_leads();
     listarEst_leadsOption();
     listarEst_leadsIl();

@@ -1001,10 +1001,30 @@ if (isset($_GET['accion'])) {
             break;
         case 'reporte_fuente_origen':
 
+            $texto = $_GET['texto'] ?? '';
             $asesor = isset($_GET['asesor']) ? json_decode($_GET['asesor']) : [];
             $carrera = isset($_GET['carrera']) ? json_decode($_GET['carrera']) : [];
             $estados = isset($_GET['estados']) ? json_decode($_GET['estados']) : [];
-            echo json_encode($leads->reporteLeadsFuente($asesor, $carrera, $estados));
+            $fecha_inicio = !empty($_GET['fecha_inicio']) ? $_GET['fecha_inicio'] : null;
+            $fecha_fin    = !empty($_GET['fecha_fin'])    ? $_GET['fecha_fin']    : null;
+            echo json_encode($leads->reporteLeadsFuente($texto, $asesor, $carrera, $estados, $fecha_inicio, $fecha_fin));
+            break;
+        case 'reporte_estado_leads':
+
+            $texto = $_GET['texto'] ?? '';
+            $asesor = isset($_GET['asesor']) ? json_decode($_GET['asesor']) : [];
+            $carrera = isset($_GET['carrera']) ? json_decode($_GET['carrera']) : [];
+            $estados = isset($_GET['estados']) ? json_decode($_GET['estados']) : [];
+            $fecha_inicio = !empty($_GET['fecha_inicio']) ? $_GET['fecha_inicio'] : null;
+            $fecha_fin    = !empty($_GET['fecha_fin'])    ? $_GET['fecha_fin']    : null;
+            $page  = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+            $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
+            echo json_encode($leads->ctrReporteEstadoLeads($texto, $asesor, $carrera, $estados, $fecha_inicio, $fecha_fin, $page, $limit));
+            break;
+        case 'historial_estado_lead':
+
+            $id = $_GET['idlead'] ?? '';
+            echo json_encode($leads->ctrReporteEstadoLeadsHistorico($id));
             break;
         /*Notas */
         case 'listarNotas':

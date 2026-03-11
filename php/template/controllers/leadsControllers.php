@@ -363,8 +363,18 @@ class LeadsControllers
         return LeadsModels::listarReporteCRMLeads($asesor, $carrera, $estados);
     }
 
-    public static function reporteLeadsFuente($asesor, $carrera, $estados)
+    public static function reporteLeadsFuente($texto, $asesor, $carrera, $estados, $fecha_inicio, $fecha_fin)
     {
-        return LeadsModels::reporteLeadsFuente($asesor, $carrera, $estados);
+        return LeadsModels::reporteLeadsFuente($texto, $asesor, $carrera, $estados, $fecha_inicio, $fecha_fin);
+    }
+
+    public static function ctrReporteEstadoLeads($texto, $asesor, $carrera, $estados, $fecha_inicio, $fecha_fin, $page, $limit)
+    {
+        return LeadsModels::ctrReporteEstadoLeads($texto, $asesor, $carrera, $estados, $fecha_inicio, $fecha_fin, $page, $limit);
+    }
+
+    public static function ctrReporteEstadoLeadsHistorico($id)
+    {
+        return LeadsModels::ctrReporteEstadoLeadsHistorico($id);
     }
 }
