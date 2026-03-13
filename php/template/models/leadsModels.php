@@ -637,50 +637,50 @@ class LeadsModels
         $asesor = []
     ) {
         $sql = "
-        SELECT
-            r.cod_rst,
-            r.fecha,
-            r.obs_rst,
+            SELECT
+                r.cod_rst,
+                r.fecha,
+                r.obs_rst,
 
-            l.id_lead,
+                l.id_lead,
 
-            CONCAT(c.nombres, ' ', c.apellidos) AS cliente_nombre,
-            c.telefono_principal AS cliente_telefono,
+                CONCAT(c.nombres, ' ', c.apellidos) AS cliente_nombre,
+                c.telefono_principal AS cliente_telefono,
 
-            CONCAT(u.nombres, ' ', u.apellidos) AS asesor_nombre,
-            CONCAT(ul.nombres, ' ', ul.apellidos) AS asesor_nombre_lead,
-			el.nombre AS estado_leads,
-            r.cod_emp,
-            tp.des_tipo_trans AS tipo_nom,
-            n.desc_not AS nota
-        FROM rst_frm r
-        LEFT JOIN leads l ON l.id_lead = r.lead_id
-        LEFT JOIN cliente c ON c.id_cliente = l.cliente_id
-        LEFT JOIN user u ON u.id_user = r.user_id
-        LEFT JOIN user ul ON ul.id_user = l.user_id
-        LEFT JOIN tipo_trans tp ON tp.id_tipo_trans = r.tipo_trans_id
-        LEFT JOIN nota n ON n.id_lead = l.id_lead
-        INNER JOIN estado_leads el ON el.id_estado_leads = l.estado_leads_id
-        WHERE r.cod_emp = ?
-            GROUP BY
-            r.cod_rst,
-            r.fecha,
-            r.obs_rst;
-    ";
+                CONCAT(u.nombres, ' ', u.apellidos) AS asesor_nombre,
+                CONCAT(ul.nombres, ' ', ul.apellidos) AS asesor_nombre_lead,
+                el.nombre AS estado_leads,
+                r.cod_emp,
+                tp.des_tipo_trans AS tipo_nom,
+                n.desc_not AS nota
+            FROM rst_frm r
+            LEFT JOIN leads l ON l.id_lead = r.lead_id
+            LEFT JOIN cliente c ON c.id_cliente = l.cliente_id
+            LEFT JOIN user u ON u.id_user = r.user_id
+            LEFT JOIN user ul ON ul.id_user = l.user_id
+            LEFT JOIN tipo_trans tp ON tp.id_tipo_trans = r.tipo_trans_id
+            LEFT JOIN nota n ON n.id_lead = l.id_lead
+            INNER JOIN estado_leads el ON el.id_estado_leads = l.estado_leads_id
+            WHERE r.cod_emp = ? AND r.user_id = 17
+                GROUP BY
+                r.cod_rst,
+                r.fecha,
+                r.obs_rst;
+        ";
 
         $params = [$_SESSION['cod_emp'] ?? $_GET['cod_emp']];
 
         /* ===========================
-       VALIDAR SI TODOS LOS FILTROS ESTÁN VACÍOS
-    ============================ */
+        VALIDAR SI TODOS LOS FILTROS ESTÁN VACÍOS
+        ============================ */
         $todosVacios = (
             $texto === "" &&
             empty($asesor)
         );
 
         /* ===========================
-       FILTRO POR ROL
-    ============================ */
+        FILTRO POR ROL
+        ============================ */
         if (isset($_SESSION['rol'])) {
             if ($_SESSION['rol'] !== 'Admin' && $todosVacios) {
                 $sql .= " AND r.user_id = ?";
@@ -689,8 +689,8 @@ class LeadsModels
         }
 
         /* ===========================
-       FILTRO POR TEXTO (cliente / teléfono)
-    ============================ */
+        FILTRO POR TEXTO (cliente / teléfono)
+        ============================ */
         if ($texto !== "") {
             $sql .= "
             AND (
@@ -705,8 +705,8 @@ class LeadsModels
         }
 
         /* ===========================
-       FILTRO POR ASESOR
-    ============================ */
+        FILTRO POR ASESOR
+        ============================ */
         if (!empty($asesor)) {
             $placeholders = implode(",", array_fill(0, count($asesor), "?"));
             $sql .= " AND l.user_id IN ($placeholders)";
@@ -715,13 +715,13 @@ class LeadsModels
 
 
         /* ===========================
-       ORDEN FINAL
-    ============================ */
+        ORDEN FINAL
+        ============================ */
         $sql .= " ORDER BY l.fecha_creacion DESC";
 
         /* ===========================
-       EJECUCIÓN
-    ============================ */
+        EJECUCIÓN
+        ============================ */
         $conn = new Conexion();
         $pdo = $conn->conectar();
 
@@ -773,7 +773,7 @@ class LeadsModels
         LEFT JOIN tipo_trans tp 
             ON tp.id_tipo_trans = r.tipo_trans_id
 
-        WHERE r.cod_emp = ?
+        WHERE r.cod_emp = ? AND r.user_id = 17
         
 
         GROUP BY
@@ -809,7 +809,7 @@ class LeadsModels
             LEFT JOIN estado_leads el 
                 ON el.id_estado_leads = l.estado_leads_id
 
-            WHERE r.cod_emp = ?
+            WHERE r.cod_emp = ? AND r.user_id = 17
 
             GROUP BY
                 asesor,
@@ -1293,5 +1293,211 @@ class LeadsModels
         }
 
         return "error";
+    }
+
+    public static function listarReporteRstTEO(
+        $texto = "",
+        $asesor = []
+    ) {
+        $sql = "
+            SELECT
+                r.cod_rst,
+                r.fecha,
+                r.obs_rst,
+
+                l.id_lead,
+
+                CONCAT(c.nombres, ' ', c.apellidos) AS cliente_nombre,
+                c.telefono_principal AS cliente_telefono,
+
+                CONCAT(u.nombres, ' ', u.apellidos) AS asesor_nombre,
+                CONCAT(ul.nombres, ' ', ul.apellidos) AS asesor_nombre_lead,
+                el.nombre AS estado_leads,
+                r.cod_emp,
+                tp.des_tipo_trans AS tipo_nom,
+                n.desc_not AS nota
+            FROM rst_frm r
+            LEFT JOIN leads l ON l.id_lead = r.lead_id
+            LEFT JOIN cliente c ON c.id_cliente = l.cliente_id
+            LEFT JOIN user u ON u.id_user = r.user_id
+            LEFT JOIN user ul ON ul.id_user = l.user_id
+            LEFT JOIN tipo_trans tp ON tp.id_tipo_trans = r.tipo_trans_id
+            LEFT JOIN nota n ON n.id_lead = l.id_lead
+            INNER JOIN estado_leads el ON el.id_estado_leads = l.estado_leads_id
+            WHERE r.cod_emp = ? AND r.user_id = 18
+                GROUP BY
+                r.cod_rst,
+                r.fecha,
+                r.obs_rst;
+        ";
+
+        $params = [$_SESSION['cod_emp'] ?? $_GET['cod_emp']];
+
+        /* ===========================
+        VALIDAR SI TODOS LOS FILTROS ESTÁN VACÍOS
+        ============================ */
+        $todosVacios = (
+            $texto === "" &&
+            empty($asesor)
+        );
+
+        /* ===========================
+        FILTRO POR ROL
+        ============================ */
+        if (isset($_SESSION['rol'])) {
+            if ($_SESSION['rol'] !== 'Admin' && $todosVacios) {
+                $sql .= " AND r.user_id = ?";
+                $params[] = $_SESSION['user_id'];
+            }
+        }
+
+        /* ===========================
+        FILTRO POR TEXTO (cliente / teléfono)
+        ============================ */
+        if ($texto !== "") {
+            $sql .= "
+            AND (
+                c.nombres LIKE ? OR
+                c.apellidos LIKE ? OR
+                c.telefono_principal LIKE ?
+            )
+        ";
+
+            $buscar = "%$texto%";
+            array_push($params, $buscar, $buscar, $buscar);
+        }
+
+        /* ===========================
+        FILTRO POR ASESOR
+        ============================ */
+        if (!empty($asesor)) {
+            $placeholders = implode(",", array_fill(0, count($asesor), "?"));
+            $sql .= " AND l.user_id IN ($placeholders)";
+            $params = array_merge($params, $asesor);
+        }
+
+
+        /* ===========================
+        ORDEN FINAL
+        ============================ */
+        $sql .= " ORDER BY l.fecha_creacion DESC";
+
+        /* ===========================
+        EJECUCIÓN
+        ============================ */
+        $conn = new Conexion();
+        $pdo = $conn->conectar();
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($params);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public static function listarReporteRstDiaTEO($mes = null, $anio = null)
+    {
+        // 🔹 Si no vienen mes o año, se calculan automáticamente
+        $mes  = $mes  ?? date('m');
+        $anio = $anio ?? date('Y');
+
+        $codEmp = $_SESSION['cod_emp'] ?? $_GET['cod_emp'];
+
+        $conn = new Conexion();
+        $pdo  = $conn->conectar();
+
+        /* =====================================================
+        CONSULTA 1 → LEADS ASIGNADOS POR DÍA Y ASESOR
+        ====================================================== */
+        $sqlPorDia = "
+        SELECT
+            DAY(r.fecha) AS dia,
+            MONTH(r.fecha) AS mes,
+            CONCAT(u.nombres, ' ', u.apellidos) AS asesor,
+            CONCAT(ur.nombres, ' ', ur.apellidos) AS asesorRTS,
+
+            COUNT(*) AS total,
+
+            SUM(
+                CASE 
+                    WHEN tp.id_tipo_trans IS NOT NULL THEN 1
+                    ELSE 0
+                END
+            ) AS tipo,
+
+            tp.des_tipo_trans AS tipo_nom
+
+        FROM rst_frm r
+        LEFT JOIN user ur 
+            ON ur.id_user = r.user_id
+        LEFT JOIN leads l 
+            ON r.lead_id = l.id_lead
+        LEFT JOIN user u 
+            ON u.id_user = l.user_id
+        LEFT JOIN tipo_trans tp 
+            ON tp.id_tipo_trans = r.tipo_trans_id
+
+        WHERE r.cod_emp = ? AND r.user_id = 18
+        
+
+        GROUP BY
+            dia,
+            asesor,
+            asesorRTS
+
+        ORDER BY mes DESC;
+        ";
+        /*AND MONTH(r.fecha) = ?
+        AND YEAR(r.fecha) = ? 
+        , $mes, $anio*/
+        $stmtDia = $pdo->prepare($sqlPorDia);
+        $stmtDia->execute([$codEmp]);
+        $porDia = $stmtDia->fetchAll(PDO::FETCH_ASSOC);
+
+        /* =====================================================
+        CONSULTA 2 → LEADS POR ESTADO Y ASESOR
+        ====================================================== */
+        $sqlPorEstado = "
+        SELECT
+            CONCAT(u.nombres, ' ', u.apellidos) AS asesor,
+            el.nombre AS estado,
+            el.ord_eld AS id,
+
+            COUNT(*) AS total
+
+            FROM rst_frm r
+            LEFT JOIN leads l 
+                ON r.lead_id = l.id_lead
+            LEFT JOIN user u 
+                ON u.id_user = l.user_id
+            LEFT JOIN estado_leads el 
+                ON el.id_estado_leads = l.estado_leads_id
+
+            WHERE r.cod_emp = ? AND r.user_id = 18
+
+            GROUP BY
+                asesor,
+                el.id_estado_leads,
+                el.nombre,
+                el.ord_eld
+
+            ORDER BY el.ord_eld ASC;
+
+            ";
+        /*AND MONTH(r.fecha) = ?
+            AND YEAR(r.fecha) = ? 
+            , $mes, $anio*/
+        $stmtEstado = $pdo->prepare($sqlPorEstado);
+        $stmtEstado->execute([$codEmp]);
+        $porEstado = $stmtEstado->fetchAll(PDO::FETCH_ASSOC);
+
+        /* =====================================================
+        RETORNO FINAL (LISTO PARA JS / EXCEL)
+        ====================================================== */
+        return [
+            'mes'       => $mes,
+            'anio'      => $anio,
+            'porDia'    => $porDia,
+            'porEstado' => $porEstado
+        ];
     }
 }

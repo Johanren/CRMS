@@ -377,4 +377,14 @@ class LeadsControllers
     {
         return LeadsModels::ctrReporteEstadoLeadsHistorico($id);
     }
+
+    public static function listarReporteRstTEO($texto, $asesor)
+    {
+        return LeadsModels::listarReporteRstTEO($texto, $asesor);
+    }
+
+    public static function listarReporteRstDiaTEO($mes, $anio)
+    {
+        return LeadsModels::listarReporteRstDiaTEO($mes, $anio);
+    }
 }

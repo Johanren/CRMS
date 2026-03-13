@@ -126,6 +126,21 @@ try {
         ]);
     }
 
+    /* Crear RST */
+    $sql = "INSERT INTO rst_frm
+            (lead_id, obs_rst, tipo_trans_id, user_id, cod_emp, bd_rst)
+            VALUES (?,?,?,?,?,?)";
+
+    $stmt = $conn->prepare($sql);
+    $stmt->execute([
+        $lead_id,
+        'Lead Actualizado Por TEO',
+        2,
+        $asesor_id,
+        $cod_emp,
+        1
+    ]);
+
     $conn->commit();
 
     echo json_encode([

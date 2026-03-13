@@ -127,6 +127,19 @@ if (isset($_POST['accion'])) {
 
             echo json_encode($leads->listarReporteRstDia($mes, $anio));
             break;
+        case 'reporte_rst_frm_teo':
+
+            $texto = $_GET['texto'] ?? '';
+            $asesor = isset($_GET['asesor']) ? json_decode($_GET['asesor']) : [];
+
+            echo json_encode($leads->listarReporteRstTEO($texto, $asesor));
+            break;
+        case 'rst_frm_dia_teo':
+            $mes  = date('m');
+            $anio = date('Y');
+
+            echo json_encode($leads->listarReporteRstDiaTEO($mes, $anio));
+            break;
         default:
             # code...
             break;
