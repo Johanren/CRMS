@@ -26,7 +26,7 @@ function listarReporteRstFrm() {
     if (f.fecha_inicio !== "") params.append("fecha_inicio", f.fecha_inicio);
     if (f.fecha_fin !== "") params.append("fecha_fin", f.fecha_fin);
 
-    fetch("ajax.php?" + params.toString())
+    fetch("ajax/ajax.php?" + params.toString())
         .then(res => res.json())
         .then(data => {
             if (document.getElementById("rst_reports")) {
@@ -351,7 +351,7 @@ function construirTablaEstados(data) {
     }
 }
 
-fetch('ajax.php?accion=rst_frm_dia_teo&cod_emp=1')
+fetch('ajax/ajax.php?accion=rst_frm_dia_teo&cod_emp=1')
     .then(r => r.json())
     .then(data => {
         construirTablaDias(data.porDia)
