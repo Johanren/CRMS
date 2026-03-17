@@ -975,7 +975,7 @@ class LeadsModels
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public static function listarReporteCRMLeads($asesor = [], $carreras = [], $estados = [])
+    public static function listarReporteCRMLeads($asesor = [], $carreras = [], $horario = [], $estados = [])
     {
         $sql = "SELECT 
                 IFNULL(p.desc_pro, 'Sin Carrera') AS programa, 

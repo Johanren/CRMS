@@ -88,6 +88,20 @@
                                             <div class="filter-set-content">
                                                 <div class="filter-set-content-head">
                                                     <a href="#" class="collapsed" data-bs-toggle="collapse"
+                                                        data-bs-target="#collapseHorario" aria-expanded="false"
+                                                        aria-controls="collapseThree">Horario</a>
+                                                </div>
+                                                <div class="filter-set-contents accordion-collapse collapse"
+                                                    id="collapseHorario" data-bs-parent="#accordionExample">
+                                                    <div
+                                                        class="filter-content-list bg-light rounded border p-2 shadow mt-2">
+                                                        <div id="listar_filtro_horario" class="overflow-x-auto"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="filter-set-content">
+                                                <div class="filter-set-content-head">
+                                                    <a href="#" class="collapsed" data-bs-toggle="collapse"
                                                         data-bs-target="#collapseEstado" aria-expanded="false"
                                                         aria-controls="collapseThree">Estado</a>
                                                 </div>
@@ -369,6 +383,9 @@ require_once '../partials/main.php'; ?>
             let carrera = [...document.querySelectorAll(".filtro-carrera:checked")]
                 .map(c => c.value);
 
+            let horario = [...document.querySelectorAll(".filtro-horario:checked")]
+                .map(c => c.value);
+
             let estados = [...document.querySelectorAll(".filtro-estado:checked")]
                 .map(c => c.value);
 
@@ -393,6 +410,7 @@ require_once '../partials/main.php'; ?>
                 asesor,
                 estados,
                 carrera,
+                horario,
                 fecha_inicio,
                 fecha_fin
             };
@@ -413,6 +431,7 @@ require_once '../partials/main.php'; ?>
         if (f.asesor.length > 0) params.append("asesor", JSON.stringify(f.asesor));
         if (f.estados.length > 0) params.append("estados", JSON.stringify(f.estados));
         if (f.carrera.length > 0) params.append("carrera", JSON.stringify(f.carrera));
+        if (f.horario.length > 0) params.append("horario", JSON.stringify(f.horario));
         if (f.fecha_inicio !== "") params.append("fecha_inicio", f.fecha_inicio);
         if (f.fecha_fin !== "") params.append("fecha_fin", f.fecha_fin);
 

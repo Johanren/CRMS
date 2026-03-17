@@ -358,9 +358,9 @@ class LeadsControllers
         return LeadsModels::listarLeadsFiltradosMensaje($carrera, $horario, $estado, $asesor, $numero);
     }
 
-    public static function listarReporteCRMLeads($asesor, $carrera, $estados)
+    public static function listarReporteCRMLeads($asesor, $carrera, $horario, $estados)
     {
-        return LeadsModels::listarReporteCRMLeads($asesor, $carrera, $estados);
+        return LeadsModels::listarReporteCRMLeads($asesor, $carrera, $horario, $estados);
     }
 
     public static function reporteLeadsFuente($texto, $asesor, $carrera, $estados, $fecha_inicio, $fecha_fin)

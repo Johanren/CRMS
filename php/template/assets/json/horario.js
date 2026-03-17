@@ -197,7 +197,7 @@ function obtenerPaginaActual() {
 if (obtenerPaginaActual() === 'jornada.php') {
     listarHrs();
 }
-if (obtenerPaginaActual() === 'frm_mensaje_url.php' || obtenerPaginaActual() === 'venta.php' || obtenerPaginaActual() === 'index.php' || obtenerPaginaActual() === 'leads.php' || obtenerPaginaActual() === 'leads-details.php' || obtenerPaginaActual() === 'leads-list.php' || obtenerPaginaActual() === 'contacts.php' || obtenerPaginaActual() === 'lead-reports.php') {
+if (obtenerPaginaActual() === 'reporte_lead.php' || obtenerPaginaActual() === 'frm_mensaje_url.php' || obtenerPaginaActual() === 'venta.php' || obtenerPaginaActual() === 'index.php' || obtenerPaginaActual() === 'leads.php' || obtenerPaginaActual() === 'leads-details.php' || obtenerPaginaActual() === 'leads-list.php' || obtenerPaginaActual() === 'contacts.php' || obtenerPaginaActual() === 'lead-reports.php') {
     listarHrsUl();
     listarHrsOption();
 }
