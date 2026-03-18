@@ -48,7 +48,6 @@ function listarReporteRstFrm() {
 }
 
 function inicializarDataTableRst(data) {
-
     const tableId = '#rst_reports';
 
     if (!Array.isArray(data)) {
@@ -56,8 +55,11 @@ function inicializarDataTableRst(data) {
         data = [];
     }
 
+    // 1. Limpiar rastro de clones previos antes de destruir
     if ($.fn.DataTable.isDataTable(tableId)) {
-        $(tableId).DataTable().clear().destroy();
+        $(tableId).DataTable().destroy();
+        // Eliminamos la fila de filtros clonada para evitar duplicados
+        $(tableId + ' thead tr:eq(1)').remove();
     }
 
     const columnas = [
@@ -73,9 +75,11 @@ function inicializarDataTableRst(data) {
     ];
 
     const table = $(tableId).DataTable({
-        data,
+        data: data,
         columns: columnas,
         ordering: true,
+        orderCellsTop: true, // 🔹 Importante para que el sorting no se rompa con filtros
+        fixedHeader: true,
         autoWidth: false,
         responsive: true,
         pageLength: 10,
@@ -92,18 +96,20 @@ function inicializarDataTableRst(data) {
             emptyTable: "No hay registros para mostrar"
         },
 
-        // 🔹 Crear filtros por columna
         initComplete: function () {
             const api = this.api();
 
-            // Clonar header
-            $(tableId + ' thead tr').clone(true).appendTo(tableId + ' thead');
+            // 2. Clonar solo si no existe ya la fila de filtros
+            if ($(tableId + ' thead tr').length === 1) {
+                $(tableId + ' thead tr').clone(true).appendTo(tableId + ' thead');
+            }
 
             $(tableId + ' thead tr:eq(1) th').each(function (i) {
                 $(this).html(
                     `<input type="text"
                         class="form-control form-control-sm"
                         placeholder="Filtrar..."
+                        style="width: 100%;"
                     />`
                 );
 
@@ -116,7 +122,7 @@ function inicializarDataTableRst(data) {
         }
     });
 
-    // 🔹 Mover controles
+    // Mover controles (asegúrate de que estos contenedores existan en tu HTML)
     $('.datatable-length').html($(tableId + '_length'));
     $('.datatable-paginate').html($(tableId + '_paginate'));
 }
@@ -411,7 +417,7 @@ function construirTablaEstadosLeads(data) {
             });
 
             totalGeneralAbsoluto += totalFilaAsesor;
-            
+
             // TOTAL POR ASESOR (Fila derecha): Filtra por Asesor, pero todos los estados
             html += `
                 <td class="table-total">
@@ -474,12 +480,12 @@ function listarLeadsDesdeFocoRST() {
     const carrerasIds = Array.from(document.querySelectorAll('#listar_filtro_carrera input:checked')).map(cb => cb.value);
 
     // Si las globales están vacías (porque se hizo clic en un Total), intentamos leer de los checkboxes
-    const asesoresIds = window.asesoresSeleccionadosIds.length > 0 
-        ? window.asesoresSeleccionadosIds 
+    const asesoresIds = window.asesoresSeleccionadosIds.length > 0
+        ? window.asesoresSeleccionadosIds
         : Array.from(document.querySelectorAll('#listar_filtro_user input:checked')).map(cb => cb.value);
 
-    const estadosNom = window.estadosSeleccionadosNombres.length > 0 
-        ? window.estadosSeleccionadosNombres 
+    const estadosNom = window.estadosSeleccionadosNombres.length > 0
+        ? window.estadosSeleccionadosNombres
         : Array.from(document.querySelectorAll('#listar_filtro_estado input:checked')).map(cb => {
             return cb.nextElementSibling ? cb.nextElementSibling.textContent.trim() : cb.value;
         });
@@ -493,7 +499,7 @@ function listarLeadsDesdeFocoRST() {
     if (carrerasIds.length > 0) params.append("carreras", JSON.stringify(carrerasIds));
     if (asesoresIds.length > 0) params.append("asesor", JSON.stringify(asesoresIds));
     if (estadosNom.length > 0) params.append("estados", JSON.stringify(estadosNom));
-    
+
     params.append("lead_reporte_CRM_FOCO", "true");
 
     fetch("ajax/ajax.php?" + params.toString())
@@ -528,7 +534,7 @@ async function sincronizarModalMensajes() {
 
         // Match por ID
         const matchId = window.asesoresSeleccionadosIds.includes(cb.value);
-        
+
         // Match por Primer Nombre
         const matchNombre = window.asesoresSeleccionados.some(nomCompleto => {
             const primeraPalabraGuardada = nomCompleto.trim().toUpperCase().split(' ')[0];
@@ -552,7 +558,7 @@ async function sincronizarModalMensajes() {
    ========================================================== */
 function inicializarDataTableLeads(data) {
     if ($.fn.DataTable.isDataTable('#leads_list')) $('#leads_list').DataTable().destroy();
-    
+
     const tbody = document.querySelector("#leads_list tbody");
     tbody.innerHTML = data.map(l => `
         <tr>
@@ -565,9 +571,9 @@ function inicializarDataTableLeads(data) {
             <td class="text-center">${l.fecha_ultima_gestion === new Date().toISOString().split('T')[0] ? '<span class="badge bg-success">OK</span>' : '<span class="badge bg-secondary">Pendiente</span>'}</td>
         </tr>`).join('');
 
-    $('#leads_list').DataTable({ 
-        responsive: true, 
-        language: { url: "//cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json" } 
+    $('#leads_list').DataTable({
+        responsive: true,
+        language: { url: "//cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json" }
     });
 }
 

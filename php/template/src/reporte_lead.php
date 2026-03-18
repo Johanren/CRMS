@@ -89,7 +89,7 @@
                                                 <div class="filter-set-content-head">
                                                     <a href="#" class="collapsed" data-bs-toggle="collapse"
                                                         data-bs-target="#collapseHorario" aria-expanded="false"
-                                                        aria-controls="collapseThree">Horario</a>
+                                                        aria-controls="collapseThree">Jornada</a>
                                                 </div>
                                                 <div class="filter-set-contents accordion-collapse collapse"
                                                     id="collapseHorario" data-bs-parent="#accordionExample">

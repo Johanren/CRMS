@@ -691,7 +691,7 @@ if (isset($_GET['accion'])) {
             break;
         case 'listar_hrs_option':
             $lista = $horario->listarHorario();
-            $option = "<option value=''>Seleccione Horario</option>";
+            $option = "<option value=''>Selecciona Jornada</option>";
             foreach ($lista as $a) {
                 $option .= "
                     <option value='{$a['id_horario']}'>{$a['descripcion']}</option>
@@ -995,7 +995,7 @@ if (isset($_GET['accion'])) {
             $anio = date('Y');
 
             $asesor = isset($_GET['asesor']) ? json_decode($_GET['asesor']) : [];
-            $carrera = isset($_GET['carrera']) ? json_decode($_GET['carrera']) : [];
+            $carrera = isset($_GET['carreras']) ? json_decode($_GET['carreras']) : [];
             $estados = isset($_GET['estados']) ? json_decode($_GET['estados']) : [];
 
             echo json_encode($leads->listarReporteLeadDia($mes, $anio, $asesor, $carrera, $estados));

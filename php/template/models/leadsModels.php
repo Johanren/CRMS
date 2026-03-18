@@ -632,99 +632,57 @@ class LeadsModels
         ]);
     }
 
-    public static function listarReporteRst(
-        $texto = "",
-        $asesor = []
-    ) {
+    public static function listarReporteRst($texto = "", $asesor = [])
+    {
+        // 1. Base de la consulta (SIN el ";" al final y SIN el GROUP BY aquí)
         $sql = "
-            SELECT
-                r.cod_rst,
-                r.fecha,
-                r.obs_rst,
-
-                l.id_lead,
-
-                CONCAT(c.nombres, ' ', c.apellidos) AS cliente_nombre,
-                c.telefono_principal AS cliente_telefono,
-
-                CONCAT(u.nombres, ' ', u.apellidos) AS asesor_nombre,
-                CONCAT(ul.nombres, ' ', ul.apellidos) AS asesor_nombre_lead,
-                el.nombre AS estado_leads,
-                r.cod_emp,
-                tp.des_tipo_trans AS tipo_nom,
-                n.desc_not AS nota
-            FROM rst_frm r
-            LEFT JOIN leads l ON l.id_lead = r.lead_id
-            LEFT JOIN cliente c ON c.id_cliente = l.cliente_id
-            LEFT JOIN user u ON u.id_user = r.user_id
-            LEFT JOIN user ul ON ul.id_user = l.user_id
-            LEFT JOIN tipo_trans tp ON tp.id_tipo_trans = r.tipo_trans_id
-            LEFT JOIN nota n ON n.id_lead = l.id_lead
-            INNER JOIN estado_leads el ON el.id_estado_leads = l.estado_leads_id
-            WHERE r.cod_emp = ? AND r.user_id = 17
-                GROUP BY
-                r.cod_rst,
-                r.fecha,
-                r.obs_rst;
-        ";
+        SELECT
+            r.cod_rst,
+            r.fecha,
+            r.obs_rst,
+            l.id_lead,
+            CONCAT(c.nombres, ' ', c.apellidos) AS cliente_nombre,
+            c.telefono_principal AS cliente_telefono,
+            CONCAT(u.nombres, ' ', u.apellidos) AS asesor_nombre,
+            CONCAT(ul.nombres, ' ', ul.apellidos) AS asesor_nombre_lead,
+            el.nombre AS estado_leads,
+            r.cod_emp,
+            tp.des_tipo_trans AS tipo_nom,
+            n.desc_not AS nota
+        FROM rst_frm r
+        LEFT JOIN leads l ON l.id_lead = r.lead_id
+        LEFT JOIN cliente c ON c.id_cliente = l.cliente_id
+        LEFT JOIN user u ON u.id_user = r.user_id
+        LEFT JOIN user ul ON ul.id_user = l.user_id
+        LEFT JOIN tipo_trans tp ON tp.id_tipo_trans = r.tipo_trans_id
+        LEFT JOIN nota n ON n.id_lead = l.id_lead
+        INNER JOIN estado_leads el ON el.id_estado_leads = l.estado_leads_id
+        WHERE r.cod_emp = ? AND r.user_id = 17
+    ";
 
         $params = [$_SESSION['cod_emp'] ?? $_GET['cod_emp']];
 
-        /* ===========================
-        VALIDAR SI TODOS LOS FILTROS ESTÁN VACÍOS
-        ============================ */
-        $todosVacios = (
-            $texto === "" &&
-            empty($asesor)
-        );
-
-        /* ===========================
-        FILTRO POR ROL
-        ============================ */
-        if (isset($_SESSION['rol'])) {
-            if ($_SESSION['rol'] !== 'Admin' && $todosVacios) {
-                $sql .= " AND r.user_id = ?";
-                $params[] = $_SESSION['user_id'];
-            }
-        }
-
-        /* ===========================
-        FILTRO POR TEXTO (cliente / teléfono)
-        ============================ */
+        // 2. Filtro por Texto
         if ($texto !== "") {
-            $sql .= "
-            AND (
-                c.nombres LIKE ? OR
-                c.apellidos LIKE ? OR
-                c.telefono_principal LIKE ?
-            )
-        ";
-
+            $sql .= " AND (c.nombres LIKE ? OR c.apellidos LIKE ? OR c.telefono_principal LIKE ?)";
             $buscar = "%$texto%";
             array_push($params, $buscar, $buscar, $buscar);
         }
 
-        /* ===========================
-        FILTRO POR ASESOR
-        ============================ */
+        // 3. Filtro por Asesor (Corregido)
         if (!empty($asesor)) {
+            // Aseguramos que los valores sean tratados como placeholders
             $placeholders = implode(",", array_fill(0, count($asesor), "?"));
             $sql .= " AND l.user_id IN ($placeholders)";
             $params = array_merge($params, $asesor);
         }
 
+        // 4. Agrupación y Orden (DEBEN ir al final de todo)
+        $sql .= " GROUP BY r.cod_rst, r.fecha, r.obs_rst";
+        $sql .= " ORDER BY r.fecha DESC"; // Usamos r.fecha ya que l.fecha_creacion no está en el SELECT
 
-        /* ===========================
-        ORDEN FINAL
-        ============================ */
-        $sql .= " ORDER BY l.fecha_creacion DESC";
-
-        /* ===========================
-        EJECUCIÓN
-        ============================ */
         $conn = new Conexion();
         $pdo = $conn->conectar();
-
         $stmt = $pdo->prepare($sql);
         $stmt->execute($params);
 
@@ -1174,11 +1132,19 @@ class LeadsModels
 
         // Filtro estados
         if (!empty($estados)) {
-
+            // Creamos los placeholders (?, ?, ?)
             $placeholders = implode(",", array_fill(0, count($estados), "?"));
-            $where .= " AND (l.eact_log IN ($placeholders) OR l.enew_log IN ($placeholders))";
 
-            $params = array_merge($params, $estados, $estados);
+            // Filtramos buscando en las tablas unidas (ea y en)
+            $where .= " AND (ea.nombre IN ($placeholders) OR en.nombre IN ($placeholders))";
+
+            // Duplicamos los estados en el array de parámetros porque hay dos "IN"
+            foreach ($estados as $est) {
+                $params[] = $est;
+            }
+            foreach ($estados as $est) {
+                $params[] = $est;
+            }
         }
 
         // Filtro fechas
@@ -1234,14 +1200,11 @@ class LeadsModels
         ============================== */
 
         $sqlTotal = "SELECT COUNT(DISTINCT ld.id_lead)
-
-                FROM leads ld
-
-                INNER JOIN cliente c
-                ON c.id_cliente = ld.cliente_id
-
-                LEFT JOIN logleadsestado l
-                ON l.idlead_log = ld.id_lead
+             FROM leads ld
+             INNER JOIN cliente c ON c.id_cliente = ld.cliente_id
+             LEFT JOIN logleadsestado l ON l.idlead_log = ld.id_lead
+             LEFT JOIN estado_leads ea ON ea.id_estado_leads = l.eact_log
+             LEFT JOIN estado_leads en ON en.id_estado_leads = l.enew_log
 
                 $where";
 

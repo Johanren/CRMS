@@ -110,7 +110,7 @@ $esModal = isset($_GET['modal']) && $_GET['modal'] == 1;
                     </div>
 
                     <div class="col-md-3">
-                        <label class="form-label fw-bold">Horario</label>
+                        <label class="form-label fw-bold">Jornada</label>
                         <div id="filtro_horario" class="border rounded p-2 bg-white"
                             style="max-height: 150px; overflow-y: auto;">
                         </div>

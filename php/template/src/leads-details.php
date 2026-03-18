@@ -241,7 +241,7 @@ $esModal = isset($_GET['modal']) && $_GET['modal'] == 1;
                             </div>
 
                             <div class="d-flex align-items-center justify-content-between mb-2">
-                                <p class="mb-0">Horario</p>
+                                <p class="mb-0">Jornada</p>
                                 <p class="mb-0 text-dark editable" id="horarioLead"></p>
                                 <div class="col-sm-6 d-none" id="select_horarioLead">
                                     <select class="form-control" id="horario"></select>
