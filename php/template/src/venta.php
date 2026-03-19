@@ -92,7 +92,8 @@
                             </div>
                             <div class="d-flex align-items-center justify-content-end">
                                 <button type="button" class="btn btn-primary me-2" id="btnCrearFoco">Crear</button>
-                                <button type="button" class="btn btn-success" id="btnGuardarDetalle">Guardar Detalle</button>
+                                <button type="button" class="btn btn-success me-2" id="btnGuardarDetalle">Guardar Detalle</button>
+                                <button type="button" class="btn btn-warning" id="btnCierreFoco">Cierre Foco</button>
                             </div>
                         </form>
                     </div>

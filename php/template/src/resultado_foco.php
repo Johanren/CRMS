@@ -223,6 +223,7 @@
                                                 <th>Estado</th>
                                                 <th>Asesor</th>
                                                 <th>Fecha creación</th>
+                                                <th>Gestion</th>
                                             </tr>
                                         </thead>
                                         <tbody></tbody>

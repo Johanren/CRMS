@@ -4,7 +4,7 @@ class EstadoLeadsModels
 {
     public static function listarEstadoLeads()
     {
-        $sql = "SELECT * FROM estado_leads";
+        $sql = "SELECT * FROM estado_leads ORDER BY ord_eld";
         $conn = new Conexion();
         $conectar = $conn->conectar();
         $stmt = $conectar->prepare($sql);

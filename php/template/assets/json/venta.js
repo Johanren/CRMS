@@ -1556,3 +1556,45 @@ function limpiarCamposDetalle() {
         document.getElementById(id).value = "";
     });
 }
+
+async function validarBotonCierreFoco() {
+
+    const res = await fetch("ajax/ajax.php?accion=consultarFocoFecha");
+    const data = await res.json();
+
+    const fechaFin = new Date(data.ffin_foc + "T23:59:59");
+    const hoy = new Date();
+
+    const diffTime = fechaFin - hoy;
+    const diffDias = diffTime / (1000 * 60 * 60 * 24);
+
+    const btn = document.getElementById("btnCierreFoco");
+
+    if (diffDias <= 5 || diffDias < 0) {
+        btn.style.display = "inline-block";
+    } else {
+        btn.style.display = "none";
+    }
+}
+
+validarBotonCierreFoco();
+
+document.getElementById("btnCierreFoco").addEventListener("click", async () => {
+
+    const res = await fetch("ajax/ajax.php", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: "accion=cerrar_foco"
+    });
+
+    const data = await res.json();
+
+    if (data.status === "success") {
+        Swal.fire("Éxito", "Foco actualizado correctamente", "success")
+            .then(() => location.reload());
+    } else {
+        Swal.fire("Error", data.message, "error");
+    }
+});

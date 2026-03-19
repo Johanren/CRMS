@@ -646,4 +646,95 @@ class focoModels
             'asesores' => $asesores
         ];
     }
+
+    public static function consultarFocoFecha()
+    {
+        $sql = "SELECT ffin_foc FROM foco WHERE id_foc = ?";
+        $conn = new Conexion();
+        $conectar = $conn->conectar();
+        $stmt = $conectar->prepare($sql);
+        $stmt->bindParam(1, $_SESSION['foco']);
+        if ($stmt->execute()) {
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        }
+
+        return "error";
+    }
+
+    public static function mdlCerrarFoco($focoActual, $empresa)
+    {
+
+        try {
+
+            $conn = new Conexion();
+            $pdo = $conn->conectar();
+
+            // 🔹 INICIAR TRANSACCIÓN
+            $pdo->beginTransaction();
+
+            // 1. BUSCAR EL SIGUIENTE FOCO (MEJOR QUE +1)
+            $stmt = $pdo->prepare("
+                SELECT id_foc 
+                FROM foco 
+                WHERE id_foc > ? 
+                ORDER BY id_foc ASC 
+                LIMIT 1
+            ");
+            $stmt->execute([$focoActual]);
+            $nuevoFoco = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if (!$nuevoFoco) {
+                $pdo->rollBack();
+                return [
+                    "status" => "error",
+                    "message" => "No existe un foco siguiente, debes crearlo primero"
+                ];
+            }
+
+            $idNuevoFoco = $nuevoFoco['id_foc'];
+
+            // 2. VALIDAR QUE EL FOCO TENGA FECHA (opcional pero pro)
+            $stmt = $pdo->prepare("SELECT ffin_foc FROM foco WHERE id_foc = ?");
+            $stmt->execute([$idNuevoFoco]);
+            $focoData = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if (!$focoData) {
+                $pdo->rollBack();
+                return [
+                    "status" => "error",
+                    "message" => "El foco siguiente no tiene configuración válida"
+                ];
+            }
+
+            // 3. ACTUALIZAR EMPRESA
+            $stmt = $pdo->prepare("UPDATE empresa SET foco = ? WHERE id_emp = ?");
+            $ok = $stmt->execute([$idNuevoFoco, $empresa]);
+
+            if (!$ok) {
+                $pdo->rollBack();
+                return [
+                    "status" => "error",
+                    "message" => "Error actualizando la empresa"
+                ];
+            }
+
+            // 🔹 CONFIRMAR
+            $pdo->commit();
+
+            return [
+                "status" => "success",
+                "nuevo_foco" => $idNuevoFoco
+            ];
+        } catch (Exception $e) {
+
+            if ($pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+
+            return [
+                "status" => "error",
+                "message" => "Error interno: " . $e->getMessage()
+            ];
+        }
+    }
 }

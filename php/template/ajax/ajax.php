@@ -361,6 +361,10 @@ if (isset($_POST['accion'])) {
         case 'catalogo_filtros_mensaje':
             echo json_encode($foco->catalogoFiltroMensaje());
             break;
+
+        case 'cerrar_foco':
+
+            echo json_encode($foco->ctrCerrarFoco());
             break;
 
         /*Telefono adicioales */
@@ -1138,6 +1142,10 @@ if (isset($_GET['accion'])) {
 
         case 'cargarUrls':
             echo json_encode($urls->cargarUrlsAcortador());
+            break;
+        /*FOCO */
+        case 'consultarFocoFecha':
+            echo json_encode($foco->consultarFocoFecha());
             break;
 
         default:
