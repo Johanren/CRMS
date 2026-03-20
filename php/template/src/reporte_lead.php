@@ -57,62 +57,67 @@
                                 <div class="filter-set-view p-3">
                                     <div class="filter-set-view p-3">
                                         <div class="accordion" id="accordionExample">
+
                                             <div class="filter-set-content">
                                                 <div class="filter-set-content-head">
-                                                    <a href="#" class="collapsed" data-bs-toggle="collapse"
-                                                        data-bs-target="#collapseAsesor" aria-expanded="false"
-                                                        aria-controls="collapseThree">Asesor</a>
+                                                    <a href="#" class="collapsed" data-bs-toggle="collapse" data-bs-target="#collapseAsesor" aria-expanded="false" aria-controls="collapseThree">Asesor</a>
                                                 </div>
-                                                <div class="filter-set-contents accordion-collapse collapse"
-                                                    id="collapseAsesor" data-bs-parent="#accordionExample">
-                                                    <div
-                                                        class="filter-content-list bg-light rounded border p-2 shadow mt-2">
+                                                <div class="filter-set-contents accordion-collapse collapse" id="collapseAsesor" data-bs-parent="#accordionExample">
+                                                    <div class="filter-content-list bg-light rounded border p-2 shadow mt-2">
+                                                        <div class="form-check mb-2 border-bottom pb-1">
+                                                            <input class="form-check-input select-all-filter" type="checkbox" data-target=".filtro-asesor" id="all_asesor">
+                                                            <label class="form-check-label fw-bold" for="all_asesor">Seleccionar todos</label>
+                                                        </div>
                                                         <div id="listar_filtro_user" class="overflow-x-auto"></div>
                                                     </div>
                                                 </div>
                                             </div>
+
                                             <div class="filter-set-content">
                                                 <div class="filter-set-content-head">
-                                                    <a href="#" class="collapsed" data-bs-toggle="collapse"
-                                                        data-bs-target="#collapseCarrera" aria-expanded="false"
-                                                        aria-controls="collapseThree">Carrera</a>
+                                                    <a href="#" class="collapsed" data-bs-toggle="collapse" data-bs-target="#collapseCarrera" aria-expanded="false" aria-controls="collapseThree">Carrera</a>
                                                 </div>
-                                                <div class="filter-set-contents accordion-collapse collapse"
-                                                    id="collapseCarrera" data-bs-parent="#accordionExample">
-                                                    <div
-                                                        class="filter-content-list bg-light rounded border p-2 shadow mt-2">
+                                                <div class="filter-set-contents accordion-collapse collapse" id="collapseCarrera" data-bs-parent="#accordionExample">
+                                                    <div class="filter-content-list bg-light rounded border p-2 shadow mt-2">
+                                                        <div class="form-check mb-2 border-bottom pb-1">
+                                                            <input class="form-check-input select-all-filter" type="checkbox" data-target=".filtro-carrera" id="all_carrera">
+                                                            <label class="form-check-label fw-bold" for="all_carrera">Seleccionar todos</label>
+                                                        </div>
                                                         <div id="listar_filtro_carrera" class="overflow-x-auto"></div>
                                                     </div>
                                                 </div>
                                             </div>
+
                                             <div class="filter-set-content">
                                                 <div class="filter-set-content-head">
-                                                    <a href="#" class="collapsed" data-bs-toggle="collapse"
-                                                        data-bs-target="#collapseHorario" aria-expanded="false"
-                                                        aria-controls="collapseThree">Jornada</a>
+                                                    <a href="#" class="collapsed" data-bs-toggle="collapse" data-bs-target="#collapseHorario" aria-expanded="false" aria-controls="collapseThree">Jornada</a>
                                                 </div>
-                                                <div class="filter-set-contents accordion-collapse collapse"
-                                                    id="collapseHorario" data-bs-parent="#accordionExample">
-                                                    <div
-                                                        class="filter-content-list bg-light rounded border p-2 shadow mt-2">
+                                                <div class="filter-set-contents accordion-collapse collapse" id="collapseHorario" data-bs-parent="#accordionExample">
+                                                    <div class="filter-content-list bg-light rounded border p-2 shadow mt-2">
+                                                        <div class="form-check mb-2 border-bottom pb-1">
+                                                            <input class="form-check-input select-all-filter" type="checkbox" data-target=".filtro-horario" id="all_horario">
+                                                            <label class="form-check-label fw-bold" for="all_horario">Seleccionar todos</label>
+                                                        </div>
                                                         <div id="listar_filtro_horario" class="overflow-x-auto"></div>
                                                     </div>
                                                 </div>
                                             </div>
+
                                             <div class="filter-set-content">
                                                 <div class="filter-set-content-head">
-                                                    <a href="#" class="collapsed" data-bs-toggle="collapse"
-                                                        data-bs-target="#collapseEstado" aria-expanded="false"
-                                                        aria-controls="collapseThree">Estado</a>
+                                                    <a href="#" class="collapsed" data-bs-toggle="collapse" data-bs-target="#collapseEstado" aria-expanded="false" aria-controls="collapseThree">Estado</a>
                                                 </div>
-                                                <div class="filter-set-contents accordion-collapse collapse"
-                                                    id="collapseEstado" data-bs-parent="#accordionExample">
-                                                    <div
-                                                        class="filter-content-list bg-light rounded border p-2 shadow mt-2">
+                                                <div class="filter-set-contents accordion-collapse collapse" id="collapseEstado" data-bs-parent="#accordionExample">
+                                                    <div class="filter-content-list bg-light rounded border p-2 shadow mt-2">
+                                                        <div class="form-check mb-2 border-bottom pb-1">
+                                                            <input class="form-check-input select-all-filter" type="checkbox" data-target=".filtro-estado" id="all_estado">
+                                                            <label class="form-check-label fw-bold" for="all_estado">Seleccionar todos</label>
+                                                        </div>
                                                         <div id="listar_filtro_estado" class="overflow-x-auto"></div>
                                                     </div>
                                                 </div>
                                             </div>
+
                                         </div>
                                     </div>
                                     <div id="contenedor-botones"></div>
@@ -380,7 +385,7 @@ require_once '../partials/main.php'; ?>
             let asesor = [...document.querySelectorAll(".filtro-asesor:checked")]
                 .map(c => c.value);
 
-            let carrera = [...document.querySelectorAll(".filtro-carrera:checked")]
+            let carreras = [...document.querySelectorAll(".filtro-carrera:checked")]
                 .map(c => c.value);
 
             let horario = [...document.querySelectorAll(".filtro-horario:checked")]
@@ -409,7 +414,7 @@ require_once '../partials/main.php'; ?>
                 texto,
                 asesor,
                 estados,
-                carrera,
+                carreras,
                 horario,
                 fecha_inicio,
                 fecha_fin
@@ -430,7 +435,7 @@ require_once '../partials/main.php'; ?>
         if (f.texto !== "") params.append("texto", f.texto);
         if (f.asesor.length > 0) params.append("asesor", JSON.stringify(f.asesor));
         if (f.estados.length > 0) params.append("estados", JSON.stringify(f.estados));
-        if (f.carrera.length > 0) params.append("carrera", JSON.stringify(f.carrera));
+        if (f.carreras.length > 0) params.append("carrera", JSON.stringify(f.carreras));
         if (f.horario.length > 0) params.append("horario", JSON.stringify(f.horario));
         if (f.fecha_inicio !== "") params.append("fecha_inicio", f.fecha_inicio);
         if (f.fecha_fin !== "") params.append("fecha_fin", f.fecha_fin);
@@ -450,7 +455,7 @@ require_once '../partials/main.php'; ?>
     }
 
     document.addEventListener("change", function(e) {
-        if (e.target.classList.contains("filtro")) {
+        if (e.target.classList.contains("filtro") || e.target.classList.contains("select-all-filter")) {
             listarReporteCRMS();
         }
     });

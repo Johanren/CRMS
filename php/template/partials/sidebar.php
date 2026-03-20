@@ -223,6 +223,7 @@
                                 <li><a href="reporte_estado_lead.php" class="<?php echo ($page == 'reporte_estado_lead.php') ? 'active' : ''; ?>">Reporte estado leads</a></li>
                                 <li><a href="lead_dia.php" class="<?php echo ($page == 'lead_dia.php') ? 'active' : ''; ?>">CRMS Asesor x estado</a></li>
                                 <li><a href="reporte_fuente.php" class="<?php echo ($page == 'reporte_fuente.php') ? 'active' : ''; ?>">Reporte fuente y origen</a></li>
+                                <li><a href="reporte_perdido.php" class="<?php echo ($page == 'reporte_perdido.php') ? 'active' : ''; ?>">Reporte perdido</a></li>
                                 <li><a href="rst_frm_teo.php" class="<?php echo ($page == 'rst_frm_teo.php') ? 'active' : ''; ?>">Desempeño TEO</a></li>
                                 <li><a href="rst_frm.php" class="<?php echo ($page == 'rst_frm.php') ? 'active' : ''; ?>">Informes RST</a></li>
                                 <li><a href="rst_frm_dia.php" class="<?php echo ($page == 'rst_frm_dia.php') ? 'active' : ''; ?>">Desempeño RST</a></li>

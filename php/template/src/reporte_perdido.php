@@ -12,11 +12,11 @@
         <!-- Page Header -->
         <div class="d-flex align-items-center justify-content-between gap-2 mb-4 flex-wrap">
             <div>
-                <h4 class="mb-1">Reporte RST DIAS<span class="badge badge-soft-primary ms-2">125</span></h4>
+                <h4 class="mb-1">Reporte Perdido<span class="badge badge-soft-primary ms-2">125</span></h4>
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb mb-0 p-0">
                         <li class="breadcrumb-item"><a href="index.php">Hogar</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Reporte RST</li>
+                        <li class="breadcrumb-item active" aria-current="page">Reporte Perdido</li>
                     </ol>
                 </nav>
             </div>
@@ -30,7 +30,7 @@
         <!-- card start -->
         <div class="card border-0 rounded-0">
             <div class="card-header d-flex align-items-center justify-content-between gap-2 flex-wrap">
-                <a href="javascript:void(0);" onclick="exportarExcel('rst_frm')" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#####download_report"><i class="ti ti-file-download me-1"></i>Descargar Reporte</a>
+                <a href="javascript:void(0);" onclick="exportarExcel('perdido')" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#####download_report"><i class="ti ti-file-download me-1"></i>Descargar Reporte</a>
             </div>
             <div class="card-body">
 
@@ -165,12 +165,9 @@
                         display: none;
                     }
                 </style>
-                <!-- table header -->
-                <h5>Leads asignados por día</h5>
-                <div id="tablaDias"></div>
+                <div id="tablaMotivos">
 
-                <h5>Resumen por estado</h5>
-                <div id="tablaEstados"></div>
+                </div>
                 <div id="loaderFoco" class="loader-overlay d-none">
                     <div class="spinner"></div>
                     <p>Cargando reporte...</p>
@@ -196,3 +193,78 @@
 $content = ob_get_clean();
 
 require_once '../partials/main.php'; ?>
+
+<script>
+    function cargarReporteMotivos() {
+        const loader = $('#loaderFoco');
+        const contenedor = $('#tablaMotivos'); // Asegúrate de tener este ID en tu HTML
+
+        loader.removeClass('d-none');
+
+        $.ajax({
+            url: 'ajax/ajax.php?accion=reporte_leads_motivo',
+            type: 'GET',
+            dataType: 'json',
+            success: function(data) {
+                let totalGeneral = 0;
+
+                // Construir estructura básica
+                let html = `
+            <div class="table-responsive">
+                <table id="tbl_motivos_leads" class="table table-striped table-bordered table-excel" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>MOTIVO / ESTADO</th>
+                            <th class="text-center">CANTIDAD</th>
+                        </tr>
+                    </thead>
+                    <tbody>`;
+
+                data.forEach(r => {
+                    const cant = parseInt(r.cantidad) || 0;
+                    totalGeneral += cant;
+                    html += `
+                    <tr>
+                        <td>${r.estado}</td>
+                        <td class="text-center">${cant}</td>
+                    </tr>`;
+                });
+
+                html += `</tbody>
+                    <tfoot>
+                        <tr class="table-total">
+                            <th>TOTAL GENERAL</th>
+                            <th class="text-center">${totalGeneral}</th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>`;
+
+                contenedor.html(html);
+
+                // Inicializar DataTable
+                $('#tbl_motivos_leads').DataTable({
+                    "language": {
+                        "url": "//cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json" // Traducción al español
+                    },
+                    "order": [
+                        [1, "desc"]
+                    ], // Ordenar por cantidad de mayor a menor
+                    "pageLength": 10,
+                    "dom": '<"d-flex justify-content-between"lf>rtip'
+                });
+            },
+            error: function(e) {
+                console.error("Error al obtener datos:", e);
+            },
+            complete: function() {
+                loader.addClass('d-none');
+            }
+        });
+    }
+
+    // Ejecutar al cargar
+    $(document).ready(function() {
+        cargarReporteMotivos();
+    });
+</script>

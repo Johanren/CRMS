@@ -30,346 +30,379 @@
         <!-- card start -->
         <div class="card border-0 rounded-0">
             <div class="card-header d-flex align-items-center justify-content-between gap-2 flex-wrap">
-                <!--<a href="javascript:void(0);" onclick="exportarExcel('rst_frm')" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#####download_report"><i class="ti ti-file-download me-1"></i>Descargar Reporte</a>-->
-            </div>
-            <div class="card-body">
-
-                <!-- table header -->
-                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
-                    <div class="d-flex align-items-center gap-2 flex-wrap">
-                        <div class="dropdown">
-                            <a href="javascript:void(0);" class="btn btn-outline-light shadow px-2" data-bs-toggle="dropdown" data-bs-auto-close="outside"><i class="ti ti-filter me-2"></i>Filtrar<i class="ti ti-chevron-down ms-2"></i></a>
-                            <div class="filter-dropdown-menu dropdown-menu dropdown-menu-lg p-0">
-                                <div class="filter-header d-flex align-items-center justify-content-between border-bottom">
-                                    <h6 class="mb-0"><i class="ti ti-filter me-1"></i>Filtrar</h6>
-                                    <button type="button" class="btn-close close-filter-btn" data-bs-dismiss="dropdown-menu" aria-label="Close"></button>
-                                </div>
-                                <div class="filter-set-view p-3">
-                                    <div class="filter-set-view p-3">
-                                        <div class="accordion" id="accordionExample">
-                                            <div class="filter-set-content">
-                                                <div class="filter-set-content-head">
-                                                    <a href="#" class="collapsed" data-bs-toggle="collapse" data-bs-target="#collapseAsesor" aria-expanded="false" aria-controls="collapseThree">Asesor</a>
-                                                </div>
-                                                <div class="filter-set-contents accordion-collapse collapse" id="collapseAsesor" data-bs-parent="#accordionExample">
-                                                    <div class="filter-content-list bg-light rounded border p-2 shadow mt-2">
-                                                        <div id="listar_filtro_user" class="overflow-x-auto"></div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="filter-set-content">
-                                                <div class="filter-set-content-head">
-                                                    <a href="#" class="collapsed" data-bs-toggle="collapse" data-bs-target="#collapseCarrera" aria-expanded="false" aria-controls="collapseThree">Carrera</a>
-                                                </div>
-                                                <div class="filter-set-contents accordion-collapse collapse" id="collapseCarrera" data-bs-parent="#accordionExample">
-                                                    <div class="filter-content-list bg-light rounded border p-2 shadow mt-2">
-                                                        <div id="listar_filtro_carrera" class="overflow-x-auto"></div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="filter-set-content">
-                                                <div class="filter-set-content-head">
-                                                    <a href="#" class="collapsed" data-bs-toggle="collapse" data-bs-target="#status" aria-expanded="false" aria-controls="status">Estado</a>
-                                                </div>
-                                                <div class="filter-set-contents accordion-collapse collapse" id="status" data-bs-parent="#accordionExample">
-                                                    <div class="filter-content-list bg-light rounded border p-2 shadow mt-2">
-                                                        <div id="listar_filtro_estado"></div>
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div id="contenedor-botones"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <style>
-                    /* ===== TABLAS TIPO EXCEL ===== */
-                    .table-excel {
-                        width: 100%;
-                        border-collapse: collapse;
-                        font-size: 13px;
-                        background: #fff;
-                    }
-
-                    .table-excel thead th {
-                        background: #f8f9fa;
-                        color: #333;
-                        font-weight: 600;
-                        text-align: center;
-                        border: 1px solid #dee2e6;
-                        padding: 8px;
-                        white-space: nowrap;
-                    }
-
-                    .table-excel tbody td {
-                        border: 1px solid #dee2e6;
-                        padding: 6px;
-                        text-align: center;
-                    }
-
-                    .table-excel tbody tr:hover {
-                        background-color: #f1f5f9;
-                    }
-
-                    /* Columna Día / Estado */
-                    .table-excel td:first-child {
-                        font-weight: 600;
-                        background: #f8f9fa;
-                    }
-
-                    /* ===== FILA TOTAL (VERDE) ===== */
-                    .table-total {
-                        background-color: #d1fae5 !important;
-                        color: #065f46;
-                        font-weight: bold;
-                    }
-
-                    /* ===== CONTENEDOR RESPONSIVE ===== */
-                    .table-responsive-excel {
-                        width: 100%;
-                        overflow-x: auto;
-                        margin-bottom: 20px;
-                    }
-
-                    /* Scroll bonito */
-                    .table-responsive-excel::-webkit-scrollbar {
-                        height: 8px;
-                    }
-
-                    .table-responsive-excel::-webkit-scrollbar-thumb {
-                        background: #cbd5e1;
-                        border-radius: 4px;
-                    }
-
-                    /* ===== LOADER ===== */
-                    .loader-overlay {
-                        position: fixed;
-                        inset: 0;
-                        background: rgba(255, 255, 255, 0.85);
-                        display: flex;
-                        flex-direction: column;
-                        justify-content: center;
-                        align-items: center;
-                        z-index: 9999;
-                    }
-
-                    .loader-overlay p {
-                        margin-top: 10px;
-                        font-weight: bold;
-                    }
-
-                    .spinner {
-                        width: 50px;
-                        height: 50px;
-                        border: 6px solid #ddd;
-                        border-top: 6px solid #007bff;
-                        border-radius: 50%;
-                        animation: spin 1s linear infinite;
-                    }
-
-                    @keyframes spin {
-                        to {
-                            transform: rotate(360deg);
-                        }
-                    }
-
-                    /* UTIL */
-                    .d-none {
-                        display: none;
-                    }
-                </style>
-                <!-- table header -->
-
-                <h5>Resumen por estado</h5>
-                <div id="tablaEstadosLead"></div>
-                <div id="loaderFoco" class="loader-overlay d-none">
-                    <div class="spinner"></div>
-                    <p>Cargando reporte...</p>
-                </div>
-                <div id="contenedorLeadsFoco" class="mt-4 d-none">
-                    <div class="card shadow-sm">
-                        <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                            <h6 class="mb-0 fw-bold">
-                                Leads filtrados por Programa y Jornada
-                            </h6>
-
-                            <button id="btnAbrirModalMensajes" class="btn btn-primary btn-sm">
-                                Enviar mensajes
-                            </button>
-                        </div>
-                        <div class="alert alert-info d-flex justify-content-between align-items-center">
-                            <strong>Resultados del filtro:</strong>
-                            <span class="badge bg-dark fs-12"><span id="contadorTotalLeads">0</span> Leads encontrados</span>
-                        </div>
-                        <div class="card-body table-responsive">
-                            <table class="table table-nowrap" id="leads_list">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>Nombre</th>
-                                        <th>Carrera</th>
-                                        <th>Telefono</th>
-                                        <th>Estado</th>
-                                        <th>Asesor</th>
-                                        <th>Fecha creación</th>
-                                        <th>Gestion</th>
-                                    </tr>
-                                </thead>
-                                <tbody></tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-                <!-- /Contact List -->
-
-            </div>
-            <div class="modal fade" id="modalMensajesFoco" tabindex="-1">
-                <div class="modal-dialog modal-dialog-centered modal-xxl-custom">
-                    <div class="modal-content">
-                        <div class="modal-header bg-primary text-white">
-                            <h5 class="modal-title">Enviar Mensajes - Resultado Foco</h5>
-                            <!--<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>-->
-                        </div>
-                        <div class="modal-body">
-                            <div class="card-body">
-
-                                <form id="frm_rst" class="row g-3 mb-4">
-
-                                    <div class="col-md-3">
-                                        <label class="form-label fw-bold">Carrera</label>
-                                        <div id="filtro_carrera" class="border rounded p-2 bg-white"
-                                            style="max-height: 150px; overflow-y: auto;">
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-3">
-                                        <label class="form-label fw-bold">Jornada</label>
-                                        <div id="filtro_horario" class="border rounded p-2 bg-white"
-                                            style="max-height: 150px; overflow-y: auto;">
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-3">
-                                        <label class="form-label fw-bold">Estado</label>
-                                        <div id="filtro_estado" class="border rounded p-2 bg-white"
-                                            style="max-height: 150px; overflow-y: auto;">
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-3">
-                                        <label class="form-label fw-bold">Asesor</label>
-                                        <div id="filtro_asesor" class="border rounded p-2 bg-white"
-                                            style="max-height: 150px; overflow-y: auto;">
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-2">
-                                        <label class="form-label">Numero</label>
-                                        <input type="text" id="filtro_numero" class="form-control">
-                                    </div>
-
-                                    <div class="col-md-2">
-                                        <label class="form-label">Programar envio</label>
-                                        <input type="datetime-local" id="programar" class="form-control">
-                                    </div>
-
-                                    <div class="col-md-2">
-                                        <label class="form-label">URL</label>
-                                        <input type="text" id="url" class="form-control">
-                                    </div>
-
-                                    <div class="col-md-2">
-                                        <label class="form-label">Tema</label>
-                                        <select class="form-select" id="tema_mensaje">
-                                            <option value="">Seleccione</option>
-                                            <option value="pago">Facilidad Pago</option>
-                                            <option value="ingreso">Ingreso</option>
-                                            <option value="empo">Empoderar</option>
-                                            <option value="bono">Bono</option>
-                                            <option value="incentivo">Incentivo</option>
-                                        </select>
-                                    </div>
-
-
-                                    <div class="col-md-12 mt-3 d-none" id="wrapper-opciones">
-                                        <div class="card shadow-sm border-info">
-                                            <div
-                                                class="card-header bg-info text-white py-2 d-flex justify-content-between align-items-center">
-                                                <small class="text-uppercase fw-bold">Varias variantes detectadas: Seleccione
-                                                    una</small>
-                                                <span class="badge bg-white text-info" id="contador-variantes">0</span>
-                                            </div>
-                                            <div class="card-body p-0">
-                                                <div id="contenedor-opciones-mensaje" class="list-group list-group-flush custom-scroll"
-                                                    style="max-height: 250px; overflow-y: auto;">
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </form>
-
-                                <div class="col-md-2">
-                                    <button id="btn_guardar_mensajes" class="btn btn-success">
-                                        Guardar mensajes
-                                    </button>
-                                </div>
-
-                                <div class="table-responsive mt-5">
-                                    <table id="tabla_leads" class="table table-striped table-bordered w-100">
-                                        <thead>
-                                            <tr>
-                                                <th>ID</th>
-                                                <th>Cliente</th>
-                                                <th>Teléfono</th>
-                                                <th>Asesor</th>
-                                                <th>Mensaje</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody></tbody>
-                                    </table>
-                                </div>
-
-                                <!-- /Contact List -->
-
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <a href="javascript:void(0);" onclick="exportarExcel('lead_dia')" class="btn btn-primary"
+                    data-bs-toggle="modal" data-bs-target="#####download_report"><i
+                        class="ti ti-file-download me-1"></i>Descargar Reporte</a>
             </div>
         </div>
+        <div class="card-body">
 
-        <div class="modal fade" id="modalGestionLead" tabindex="-1">
+            <!-- table header -->
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                    <div class="dropdown">
+                        <a href="javascript:void(0);" class="btn btn-outline-light shadow px-2" data-bs-toggle="dropdown" data-bs-auto-close="outside"><i class="ti ti-filter me-2"></i>Filtrar<i class="ti ti-chevron-down ms-2"></i></a>
+                        <div class="filter-dropdown-menu dropdown-menu dropdown-menu-lg p-0">
+                            <div class="filter-header d-flex align-items-center justify-content-between border-bottom">
+                                <h6 class="mb-0"><i class="ti ti-filter me-1"></i>Filtrar</h6>
+                                <button type="button" class="btn-close close-filter-btn" data-bs-dismiss="dropdown-menu" aria-label="Close"></button>
+                            </div>
+                            <div class="filter-set-view p-3">
+                                <div class="filter-set-view p-3">
+                                    <div class="accordion" id="accordionExample">
+
+                                        <div class="filter-set-content">
+                                            <div class="filter-set-content-head">
+                                                <a href="#" class="collapsed" data-bs-toggle="collapse" data-bs-target="#collapseAsesor" aria-expanded="false" aria-controls="collapseThree">Asesor</a>
+                                            </div>
+                                            <div class="filter-set-contents accordion-collapse collapse" id="collapseAsesor" data-bs-parent="#accordionExample">
+                                                <div class="filter-content-list bg-light rounded border p-2 shadow mt-2">
+                                                    <div class="form-check mb-2 border-bottom pb-1">
+                                                        <input class="form-check-input select-all-filter" type="checkbox" data-target=".filtro-asesor" id="all_asesor">
+                                                        <label class="form-check-label fw-bold" for="all_asesor" style="cursor:pointer;">Seleccionar todos</label>
+                                                    </div>
+                                                    <div id="listar_filtro_user" class="overflow-x-auto"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="filter-set-content">
+                                            <div class="filter-set-content-head">
+                                                <a href="#" class="collapsed" data-bs-toggle="collapse" data-bs-target="#collapseCarrera" aria-expanded="false" aria-controls="collapseThree">Carrera</a>
+                                            </div>
+                                            <div class="filter-set-contents accordion-collapse collapse" id="collapseCarrera" data-bs-parent="#accordionExample">
+                                                <div class="filter-content-list bg-light rounded border p-2 shadow mt-2">
+                                                    <div class="form-check mb-2 border-bottom pb-1">
+                                                        <input class="form-check-input select-all-filter" type="checkbox" data-target=".filtro-carrera" id="all_carrera">
+                                                        <label class="form-check-label fw-bold" for="all_carrera" style="cursor:pointer;">Seleccionar todos</label>
+                                                    </div>
+                                                    <div id="listar_filtro_carrera" class="overflow-x-auto"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="filter-set-content">
+                                            <div class="filter-set-content-head">
+                                                <a href="#" class="collapsed" data-bs-toggle="collapse" data-bs-target="#horarioCollapse">Jornada</a>
+                                            </div>
+                                            <div class="filter-set-contents accordion-collapse collapse" id="horarioCollapse" data-bs-parent="#accordionExample">
+                                                <div class="filter-content-list bg-light rounded border p-2 shadow mt-2">
+                                                    <div class="form-check mb-2 border-bottom pb-1">
+                                                        <input class="form-check-input select-all-filter" type="checkbox" data-target=".filtro-horario" id="all_horario">
+                                                        <label class="form-check-label fw-bold" for="all_horario">Seleccionar todos</label>
+                                                    </div>
+                                                    <div id="listar_filtro_horario" class="overflow-x-auto"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="filter-set-content">
+                                            <div class="filter-set-content-head">
+                                                <a href="#" class="collapsed" data-bs-toggle="collapse" data-bs-target="#status" aria-expanded="false" aria-controls="status">Estado</a>
+                                            </div>
+                                            <div class="filter-set-contents accordion-collapse collapse" id="status" data-bs-parent="#accordionExample">
+                                                <div class="filter-content-list bg-light rounded border p-2 shadow mt-2">
+                                                    <div class="form-check mb-2 border-bottom pb-1">
+                                                        <input class="form-check-input select-all-filter" type="checkbox" data-target=".filtro-estado" id="all_status">
+                                                        <label class="form-check-label fw-bold" for="all_status" style="cursor:pointer;">Seleccionar todos</label>
+                                                    </div>
+                                                    <div id="listar_filtro_estado" class="overflow-x-auto"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <div id="contenedor-botones"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <style>
+                /* ===== TABLAS TIPO EXCEL ===== */
+                .table-excel {
+                    width: 100%;
+                    border-collapse: collapse;
+                    font-size: 13px;
+                    background: #fff;
+                }
+
+                .table-excel thead th {
+                    background: #f8f9fa;
+                    color: #333;
+                    font-weight: 600;
+                    text-align: center;
+                    border: 1px solid #dee2e6;
+                    padding: 8px;
+                    white-space: nowrap;
+                }
+
+                .table-excel tbody td {
+                    border: 1px solid #dee2e6;
+                    padding: 6px;
+                    text-align: center;
+                }
+
+                .table-excel tbody tr:hover {
+                    background-color: #f1f5f9;
+                }
+
+                /* Columna Día / Estado */
+                .table-excel td:first-child {
+                    font-weight: 600;
+                    background: #f8f9fa;
+                }
+
+                /* ===== FILA TOTAL (VERDE) ===== */
+                .table-total {
+                    background-color: #d1fae5 !important;
+                    color: #065f46;
+                    font-weight: bold;
+                }
+
+                /* ===== CONTENEDOR RESPONSIVE ===== */
+                .table-responsive-excel {
+                    width: 100%;
+                    overflow-x: auto;
+                    margin-bottom: 20px;
+                }
+
+                /* Scroll bonito */
+                .table-responsive-excel::-webkit-scrollbar {
+                    height: 8px;
+                }
+
+                .table-responsive-excel::-webkit-scrollbar-thumb {
+                    background: #cbd5e1;
+                    border-radius: 4px;
+                }
+
+                /* ===== LOADER ===== */
+                .loader-overlay {
+                    position: fixed;
+                    inset: 0;
+                    background: rgba(255, 255, 255, 0.85);
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    align-items: center;
+                    z-index: 9999;
+                }
+
+                .loader-overlay p {
+                    margin-top: 10px;
+                    font-weight: bold;
+                }
+
+                .spinner {
+                    width: 50px;
+                    height: 50px;
+                    border: 6px solid #ddd;
+                    border-top: 6px solid #007bff;
+                    border-radius: 50%;
+                    animation: spin 1s linear infinite;
+                }
+
+                @keyframes spin {
+                    to {
+                        transform: rotate(360deg);
+                    }
+                }
+
+                /* UTIL */
+                .d-none {
+                    display: none;
+                }
+            </style>
+            <!-- table header -->
+
+            <h5>Resumen por estado</h5>
+            <div id="tablaEstadosLead"></div>
+            <div id="loaderFoco" class="loader-overlay d-none">
+                <div class="spinner"></div>
+                <p>Cargando reporte...</p>
+            </div>
+            <div id="contenedorLeadsFoco" class="mt-4 d-none">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0 fw-bold">
+                            Leads filtrados por Programa y Jornada
+                        </h6>
+
+                        <button id="btnAbrirModalMensajes" class="btn btn-primary btn-sm">
+                            Enviar mensajes
+                        </button>
+                    </div>
+                    <div class="alert alert-info d-flex justify-content-between align-items-center">
+                        <strong>Resultados del filtro:</strong>
+                        <span class="badge bg-dark fs-12"><span id="contadorTotalLeads">0</span> Leads encontrados</span>
+                    </div>
+                    <div class="card-body table-responsive">
+                        <table class="table table-nowrap" id="leads_list">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Carrera</th>
+                                    <th>Telefono</th>
+                                    <th>Estado</th>
+                                    <th>Asesor</th>
+                                    <th>Fecha creación</th>
+                                    <th>Gestion</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <!-- /Contact List -->
+
+        </div>
+        <div class="modal fade" id="modalMensajesFoco" tabindex="-1">
             <div class="modal-dialog modal-dialog-centered modal-xxl-custom">
                 <div class="modal-content">
-
-                    <div class="modal-header">
-                        <h5 class="modal-title">Gestión de Lead</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title">Enviar Mensajes - Resultado Foco</h5>
+                        <!--<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>-->
                     </div>
+                    <div class="modal-body">
+                        <div class="card-body">
 
-                    <div class="modal-body p-0">
-                        <iframe id="frameGestion"
-                            src=""
-                            style="width:100%; height:80vh; border:none;">
-                        </iframe>
+                            <form id="frm_rst" class="row g-3 mb-4">
+
+                                <div class="col-md-3">
+                                    <label class="form-label fw-bold">Carrera</label>
+                                    <div id="filtro_carrera" class="border rounded p-2 bg-white"
+                                        style="max-height: 150px; overflow-y: auto;">
+                                    </div>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <label class="form-label fw-bold">Jornada</label>
+                                    <div id="filtro_horario" class="border rounded p-2 bg-white"
+                                        style="max-height: 150px; overflow-y: auto;">
+                                    </div>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <label class="form-label fw-bold">Estado</label>
+                                    <div id="filtro_estado" class="border rounded p-2 bg-white"
+                                        style="max-height: 150px; overflow-y: auto;">
+                                    </div>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <label class="form-label fw-bold">Asesor</label>
+                                    <div id="filtro_asesor" class="border rounded p-2 bg-white"
+                                        style="max-height: 150px; overflow-y: auto;">
+                                    </div>
+                                </div>
+
+                                <div class="col-md-2">
+                                    <label class="form-label">Numero</label>
+                                    <input type="text" id="filtro_numero" class="form-control">
+                                </div>
+
+                                <div class="col-md-2">
+                                    <label class="form-label">Programar envio</label>
+                                    <input type="datetime-local" id="programar" class="form-control">
+                                </div>
+
+                                <div class="col-md-2">
+                                    <label class="form-label">URL</label>
+                                    <input type="text" id="url" class="form-control">
+                                </div>
+
+                                <div class="col-md-2">
+                                    <label class="form-label">Tema</label>
+                                    <select class="form-select" id="tema_mensaje">
+                                        <option value="">Seleccione</option>
+                                        <option value="pago">Facilidad Pago</option>
+                                        <option value="ingreso">Ingreso</option>
+                                        <option value="empo">Empoderar</option>
+                                        <option value="bono">Bono</option>
+                                        <option value="incentivo">Incentivo</option>
+                                    </select>
+                                </div>
+
+
+                                <div class="col-md-12 mt-3 d-none" id="wrapper-opciones">
+                                    <div class="card shadow-sm border-info">
+                                        <div
+                                            class="card-header bg-info text-white py-2 d-flex justify-content-between align-items-center">
+                                            <small class="text-uppercase fw-bold">Varias variantes detectadas: Seleccione
+                                                una</small>
+                                            <span class="badge bg-white text-info" id="contador-variantes">0</span>
+                                        </div>
+                                        <div class="card-body p-0">
+                                            <div id="contenedor-opciones-mensaje" class="list-group list-group-flush custom-scroll"
+                                                style="max-height: 250px; overflow-y: auto;">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+
+                            <div class="col-md-2">
+                                <button id="btn_guardar_mensajes" class="btn btn-success">
+                                    Guardar mensajes
+                                </button>
+                            </div>
+
+                            <div class="table-responsive mt-5">
+                                <table id="tabla_leads" class="table table-striped table-bordered w-100">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Cliente</th>
+                                            <th>Teléfono</th>
+                                            <th>Asesor</th>
+                                            <th>Mensaje</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+
+                            <!-- /Contact List -->
+
+                        </div>
                     </div>
-
                 </div>
             </div>
         </div>
-
-        <style>
-            .modal-xxl-custom {
-                max-width: 95%;
-                width: 95%;
-            }
-        </style>
-        <!-- /Contact List -->
-
     </div>
+
+    <div class="modal fade" id="modalGestionLead" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-xxl-custom">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Gestión de Lead</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body p-0">
+                    <iframe id="frameGestion"
+                        src=""
+                        style="width:100%; height:80vh; border:none;">
+                    </iframe>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .modal-xxl-custom {
+            max-width: 95%;
+            width: 95%;
+        }
+    </style>
+    <!-- /Contact List -->
+
+</div>
 </div>
 <!-- card end -->
 

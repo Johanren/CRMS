@@ -1040,7 +1040,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // 1. Detectar cambios en filtros
 document.addEventListener("change", function (e) {
-    if (e.target.classList.contains("filtro")) {
+    if (e.target.classList.contains("filtro") || e.target.classList.contains("select-all-filter")) {
         ejecutarCargaOptimizada();
     }
 });

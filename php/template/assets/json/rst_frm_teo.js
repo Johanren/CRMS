@@ -37,7 +37,7 @@ function listarReporteRstFrm() {
 }
 
 document.addEventListener("change", function (e) {
-    if (e.target.classList.contains("filtro")) {
+    if (e.target.classList.contains("filtro") || e.target.classList.contains("select-all-filter")) {
         listarReporteRstFrm();
     }
 });

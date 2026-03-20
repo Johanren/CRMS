@@ -214,9 +214,6 @@ if (isset($_POST['accion'])) {
         case 'reporte_leads_mes':
             echo json_encode($leads->reporteLeadsBarra());
             break;
-        case 'reporte_leads_motivo':
-            echo json_encode($leads->reporteLeadsPastelMotivo());
-            break;
         case 'reporte_leads_matriculados_mes':
             echo json_encode($leads->reporteLeadsBarraMatriculado());
             break;
@@ -1000,9 +997,10 @@ if (isset($_GET['accion'])) {
 
             $asesor = isset($_GET['asesor']) ? json_decode($_GET['asesor']) : [];
             $carrera = isset($_GET['carreras']) ? json_decode($_GET['carreras']) : [];
+            $horario = isset($_GET['horario']) ? json_decode($_GET['horario']) : [];
             $estados = isset($_GET['estados']) ? json_decode($_GET['estados']) : [];
 
-            echo json_encode($leads->listarReporteLeadDia($mes, $anio, $asesor, $carrera, $estados));
+            echo json_encode($leads->listarReporteLeadDia($mes, $anio, $asesor, $carrera, $horario, $estados));
             break;
         case 'reporte_fuente_origen':
 
@@ -1030,6 +1028,9 @@ if (isset($_GET['accion'])) {
 
             $id = $_GET['idlead'] ?? '';
             echo json_encode($leads->ctrReporteEstadoLeadsHistorico($id));
+            break;
+        case 'reporte_leads_motivo':
+            echo json_encode($leads->reporteLeadsPastelMotivo());
             break;
         /*Notas */
         case 'listarNotas':

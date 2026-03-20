@@ -796,7 +796,7 @@ class LeadsModels
         ];
     }
 
-    public static function listarReporteLeadDia($mes = null, $anio = null, $asesor = [], $carreras = [], $estados = [], $fecha_inicio = "", $fecha_fin = "")
+    public static function listarReporteLeadDia($mes = null, $anio = null, $asesor = [], $carreras = [], $horario = [], $estados = [], $fecha_inicio = "", $fecha_fin = "")
     {
         // 🔹 Configuración inicial de fechas
         $mes  = $mes  ?? date('m');
@@ -838,6 +838,7 @@ class LeadsModels
         $filtros = [
             'l.user_id'    => $asesor,
             'p.desc_pro'   => $carreras,
+            'l.horario_id'   => $horario,
             'el.nombre'    => $estados
         ];
 

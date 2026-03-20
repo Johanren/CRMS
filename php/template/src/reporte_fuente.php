@@ -48,6 +48,7 @@
                         <div class="filter-set-view p-3">
                             <div class="filter-set-view p-3">
                                 <div class="accordion" id="accordionExample">
+
                                     <div class="filter-set-content">
                                         <div class="filter-set-content-head">
                                             <a href="#" class="collapsed" data-bs-toggle="collapse"
@@ -56,12 +57,21 @@
                                         </div>
                                         <div class="filter-set-contents accordion-collapse collapse"
                                             id="collapseEstado" data-bs-parent="#accordionExample">
-                                            <div
-                                                class="filter-content-list bg-light rounded border p-2 shadow mt-2">
+                                            <div class="filter-content-list bg-light rounded border p-2 shadow mt-2">
+
+                                                <div class="form-check mb-2 border-bottom pb-1">
+                                                    <input class="form-check-input select-all-filter" type="checkbox"
+                                                        data-target=".filtro-estado" id="all_estado">
+                                                    <label class="form-check-label fw-bold" for="all_estado" style="cursor:pointer;">
+                                                        Seleccionar todos
+                                                    </label>
+                                                </div>
+
                                                 <div id="listar_filtro_estado" class="overflow-x-auto"></div>
                                             </div>
                                         </div>
                                     </div>
+
                                 </div>
                             </div>
                             <div id="contenedor-botones"></div>
@@ -76,6 +86,11 @@
                     <span class="input-icon-addon text-dark"><i class="ti ti-search"></i></span>
                     <input type="text" class="form-control" id="buscador" placeholder="Buscar">
                 </div>
+            </div>
+            <div class="card-header d-flex align-items-center justify-content-between gap-2 flex-wrap">
+                <a href="javascript:void(0);" onclick="exportarExcel('reporte_fuente')" class="btn btn-primary"
+                    data-bs-toggle="modal" data-bs-target="#####download_report"><i
+                        class="ti ti-file-download me-1"></i>Descargar Reporte</a>
             </div>
         </div>
         <div class="card border-0 rounded-0">
@@ -194,6 +209,25 @@ $content = ob_get_clean();
 
 require_once '../partials/main.php'; ?>
 <script>
+    function exportarExcel(tipo) {
+        const f = Filtros.obtener();
+        const params = new URLSearchParams();
+
+        // Tipo de reporte (ej: "leads", "asesores", "campanas", etc.)
+        params.append("tipo", tipo);
+
+        // Convertir filtros a parámetros GET
+        for (let k in f) {
+            if (Array.isArray(f[k]) && f[k].length > 0) {
+                params.append(k, JSON.stringify(f[k]));
+            } else if (f[k] !== "") {
+                params.append(k, f[k]);
+            }
+        }
+
+        window.location.href = "ajax/exportar_excel.php?" + params.toString();
+    }
+
     /*Fecha inicio fin */
 
     $(function() {
@@ -222,44 +256,55 @@ require_once '../partials/main.php'; ?>
                 document.querySelector(".reportrange-picker-field").innerHTML =
                     start.format("DD MMM YY") + " - " + end.format("DD MMM YY");
 
-                listarReporteCRMS();
+                listarReporteFuente();
             }
         );
     });
 
     window.Filtros = {
         obtener: function() {
-
             let texto = "";
             let inputBuscador = document.getElementById("buscador");
             if (inputBuscador) {
                 texto = inputBuscador.value.toLowerCase();
             }
 
-            let asesor = [...document.querySelectorAll(".filtro-asesor:checked")]
-                .map(c => c.value);
-
-            let carrera = [...document.querySelectorAll(".filtro-carrera:checked")]
-                .map(c => c.value);
-
-            let estados = [...document.querySelectorAll(".filtro-estado:checked")]
-                .map(c => c.value);
-
+            let asesor = [...document.querySelectorAll(".filtro-asesor:checked")].map(c => c.value);
+            let carreras = [...document.querySelectorAll(".filtro-carrera:checked")].map(c => c.value);
+            let horario = [...document.querySelectorAll(".filtro-horario:checked")].map(c => c.value);
+            let interes = [...document.querySelectorAll(".filtro-interes:checked")].map(c => c.value);
+            let medio = [...document.querySelectorAll(".filtro-medio:checked")].map(c => c.value);
+            let fuente = [...document.querySelectorAll(".filtro-fuente:checked")].map(c => c.value);
+            let campana = [...document.querySelectorAll(".filtro-campana:checked")].map(c => c.value);
+            let accion = [...document.querySelectorAll(".filtro-accion:checked")].map(c => c.value);
+            let departamento = [...document.querySelectorAll(".filtro-dep:checked")].map(c => c.value);
+            let ciudad = [...document.querySelectorAll(".filtro-ciu:checked")].map(c => c.value);
+            let barrio = [...document.querySelectorAll(".filtro-brr:checked")].map(c => c.value);
+            let estados = [...document.querySelectorAll(".filtro-estado:checked")].map(c => c.value);
             let fecha_inicio = window.fecha_inicio || "";
             let fecha_fin = window.fecha_fin || "";
 
             return {
                 texto,
                 asesor,
+                carreras,
+                horario,
+                interes,
+                medio,
+                fuente,
+                campana,
+                accion,
+                departamento,
+                ciudad,
+                barrio,
                 estados,
-                carrera,
                 fecha_inicio,
                 fecha_fin
             };
         }
     };
 
-    function listarReporteCRMS() {
+    function listarReporteFuente() {
 
         const f = Filtros.obtener();
         const params = new URLSearchParams();
@@ -270,9 +315,7 @@ require_once '../partials/main.php'; ?>
         params.append("accion", "reporte_fuente_origen");
 
         if (f.texto !== "") params.append("texto", f.texto);
-        if (f.asesor.length > 0) params.append("asesor", JSON.stringify(f.asesor));
         if (f.estados.length > 0) params.append("estados", JSON.stringify(f.estados));
-        if (f.carrera.length > 0) params.append("carrera", JSON.stringify(f.carrera));
         if (f.fecha_inicio !== "") params.append("fecha_inicio", f.fecha_inicio);
         if (f.fecha_fin !== "") params.append("fecha_fin", f.fecha_fin);
 
@@ -370,16 +413,16 @@ require_once '../partials/main.php'; ?>
     }
 
     document.addEventListener("change", function(e) {
-        if (e.target.classList.contains("filtro")) {
-            listarReporteCRMS();
+        if (e.target.classList.contains("filtro") || e.target.classList.contains("select-all-filter")) {
+            listarReporteFuente();
         }
     });
 
     document.addEventListener("input", function(e) {
         if (e.target.id === "buscador") {
-            listarReporteCRMS();
+            listarReporteFuente();
         }
     });
 
-    listarReporteCRMS();
+    listarReporteFuente();
 </script>

@@ -34,8 +34,6 @@ function listarReporteRstFrm() {
 
     if (f.texto !== "") params.append("texto", f.texto);
     if (f.asesor.length > 0) params.append("asesor", JSON.stringify(f.asesor));
-    if (f.fecha_inicio !== "") params.append("fecha_inicio", f.fecha_inicio);
-    if (f.fecha_fin !== "") params.append("fecha_fin", f.fecha_fin);
 
     fetch("ajax/ajax.php?" + params.toString())
         .then(res => res.json())
@@ -591,6 +589,7 @@ function listarEstadoLead() {
 
     if (f.asesor.length > 0) params.append("asesor", JSON.stringify(f.asesor));
     if (f.carreras.length > 0) params.append("carreras", JSON.stringify(f.carreras));
+    if (f.horario.length > 0) params.append("horario", JSON.stringify(f.horario));
     if (f.estados.length > 0) params.append("estados", JSON.stringify(f.estados));
 
     fetch("ajax/ajax.php?" + params.toString())
@@ -611,7 +610,7 @@ if (obtenerPaginaActual() === 'lead_dia.php') {
 
 
     document.addEventListener("change", function (e) {
-        if (e.target.classList.contains("filtro")) {
+        if (e.target.classList.contains("filtro") || e.target.classList.contains("select-all-filter")) {
             listarEstadoLead();
         }
     });
@@ -626,7 +625,7 @@ if (obtenerPaginaActual() === 'rst_frm_dia.php') {
 if (obtenerPaginaActual() === 'rst_frm.php') {
 
     document.addEventListener("change", function (e) {
-        if (e.target.classList.contains("filtro")) {
+        if (e.target.classList.contains("filtro") || e.target.classList.contains("select-all-filter")) {
             listarReporteRstFrm();
         }
     });

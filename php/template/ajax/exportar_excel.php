@@ -1,6 +1,9 @@
 <?php
 ob_clean();
 ob_start();
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 session_start();
 
 foreach (glob("../controllers/*.php") as $filename) {
@@ -80,6 +83,12 @@ $departamento = json_decode($_GET["departamento"] ?? "[]");
 $ciudad       = json_decode($_GET["ciudad"] ?? "[]");
 $barrio       = json_decode($_GET["barrio"] ?? "[]");
 $estados      = json_decode($_GET["estados"] ?? "[]");
+$fecha_inicio = !empty($_GET['fecha_inicio']) ? $_GET['fecha_inicio'] : null;
+$fecha_fin    = !empty($_GET['fecha_fin'])    ? $_GET['fecha_fin']    : null;
+$page  = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
+$mes = date('m');
+$anio = date('Y');
 
 switch ($tipo) {
     case "leads":
@@ -474,24 +483,9 @@ switch ($tipo) {
         exportarExcel("Leads_por_Campaign_clic", $data, $columnas);
         break;
 
-    case "rst_frm":
-
-        $data = LeadsControllers::listarReporteRst($texto, $asesor);
-
-        $columnas = [
-            "fecha" => "Fecha",
-            "cliente_nombre" => "Cliente",
-            "cliente_telefono"  => "Telefono",
-            "asesor_nombre"  => "Asesor",
-            "obs_rst"  => "Observaciones",
-        ];
-
-        exportarExcel("RST", $data, $columnas);
-        break;
-
     case "CRMS_lead":
         // 1. Obtener la data del modelo
-        $data = LeadsControllers::listarReporteCRMLeads($asesor, $carreras, $estados);
+        $data = LeadsControllers::listarReporteCRMLeads($asesor, $carreras, $horario, $estados);
 
         if (empty($data)) {
             die("No hay datos para exportar.");
@@ -585,6 +579,653 @@ switch ($tipo) {
         exit;
         break;
 
+    case "estado_lead":
+
+        $respuesta = LeadsControllers::ctrReporteEstadoLeads($texto, $asesor, $carreras, $estados, $fecha_inicio, $fecha_fin, 1, 10000);
+        $data = $respuesta['data'] ?? [];
+
+        if (empty($data)) {
+            die("No hay datos para exportar.");
+        }
+
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle("Reporte Estado Leads");
+
+        $encabezados = ["ID Lead", "Cliente", "Asesor", "Estado Actual", "N° de Cambios"];
+        $columnas = ['A', 'B', 'C', 'D', 'E'];
+
+        foreach ($columnas as $index => $col) {
+            $sheet->setCellValue($col . "1", $encabezados[$index]);
+        }
+
+        $fila = 2;
+        foreach ($data as $row) {
+            $sheet->setCellValue("A{$fila}", $row['id_lead']);
+            $sheet->setCellValue("B{$fila}", $row['cliente']);
+            $sheet->setCellValue("C{$fila}", $row['asesor'] ?? "-");
+            $sheet->setCellValue("D{$fila}", $row['estado_actual']);
+            $sheet->setCellValue("E{$fila}", $row['cambios']);
+            $fila++;
+        }
+
+        $ultimaFila = $fila - 1;
+        $sheet->getStyle("A1:E1")->getFont()->setBold(true);
+        $sheet->getStyle("A1:E{$ultimaFila}")->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+
+        foreach ($columnas as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="Reporte_Estado_Leads_' . date('His') . '.xlsx"');
+        header('Cache-Control: max-age=0');
+        header('Pragma: public');
+
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+        $writer->save("php://output");
+
+        exit;
+        break;
+
+    case "lead_dia":
+
+        $respuesta = LeadsControllers::listarReporteLeadDia($mes, $anio, $asesor, $carreras, $estados);
+        $data = $respuesta['porEstado'] ?? [];
+
+        if (empty($data)) {
+            die("No hay datos para exportar.");
+        }
+
+        $estados_header = array_values(array_unique(array_column($data, 'estado')));
+        $asesores_rows = array_values(array_unique(array_column($data, 'asesor')));
+
+        $matriz = [];
+        foreach ($data as $row) {
+            $matriz[$row['asesor']][$row['estado']] = (int)$row['total'];
+        }
+
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle("Resumen Leads por Estado");
+
+        $sheet->setCellValue("A1", "ASESOR");
+        $col = 2;
+        foreach ($estados_header as $est) {
+            $sheet->setCellValueByColumnAndRow($col, 1, $est);
+            $col++;
+        }
+        $sheet->setCellValueByColumnAndRow($col, 1, "TOTAL"); // Columna final
+        $colFinalNum = $col;
+
+        $fila = 2;
+        $totalesColumnas = array_fill(2, count($estados_header), 0);
+        $granTotalAbsoluto = 0;
+
+        foreach ($asesores_rows as $nomAsesor) {
+            $sheet->setCellValue("A{$fila}", $nomAsesor);
+
+            $col = 2;
+            $totalFilaAsesor = 0;
+
+            foreach ($estados_header as $index => $est) {
+                $valor = $matriz[$nomAsesor][$est] ?? 0;
+                if ($valor > 0) {
+                    $sheet->setCellValueByColumnAndRow($col, $fila, $valor);
+                }
+                $totalFilaAsesor += $valor;
+                $totalesColumnas[$col] += $valor;
+                $col++;
+            }
+
+            $sheet->setCellValueByColumnAndRow($col, $fila, $totalFilaAsesor);
+            $granTotalAbsoluto += $totalFilaAsesor;
+            $fila++;
+        }
+
+        $sheet->setCellValue("A{$fila}", "TOTAL GENERAL");
+        $col = 2;
+        foreach ($totalesColumnas as $tCol) {
+            $sheet->setCellValueByColumnAndRow($col, $fila, $tCol);
+            $col++;
+        }
+        $sheet->setCellValueByColumnAndRow($col, $fila, $granTotalAbsoluto);
+
+        $colFinalLetra = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colFinalNum);
+
+        $sheet->getStyle("A1:{$colFinalLetra}1")->getFont()->setBold(true); // Cabecera
+        $sheet->getStyle("A{$fila}:{$colFinalLetra}{$fila}")->getFont()->setBold(true); // Pie
+        $sheet->getStyle("A1:{$colFinalLetra}{$fila}")->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+
+        $sheet->getStyle("B1:{$colFinalLetra}{$fila}")->getAlignment()->setHorizontal('center');
+
+        foreach (range('A', $colFinalLetra) as $columnID) {
+            $sheet->getColumnDimension($columnID)->setAutoSize(true);
+        }
+
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="Reporte_Leads_Por_Estado_' . date('dmY') . '.xlsx"');
+        header('Cache-Control: max-age=0');
+
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+        $writer->save("php://output");
+        exit;
+        break;
+
+    case "reporte_fuente":
+
+        $data = LeadsControllers::reporteLeadsFuente($texto, $asesor, $carreras, $estados, $fecha_inicio, $fecha_fin);
+
+        if (empty($data)) {
+            die("No hay datos para exportar.");
+        }
+
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle("Reporte Fuente de Origen");
+
+        $encabezados = [
+            "MEDIO",
+            "FUENTE",
+            "CAMPAÑA",
+            "NUEVO LEADS",
+            "PROSPECTO",
+            "LEADS ACTIVO",
+            "INTERESADO",
+            "EN DECISIÓN",
+            "MATRICULA EN PROCESO",
+            "MATRICULADO",
+            "APLAZADO",
+            "PERDIDO",
+            "TOTAL"
+        ];
+
+        $columnas = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M'];
+
+        foreach ($columnas as $index => $col) {
+            $sheet->setCellValue($col . "1", $encabezados[$index]);
+        }
+
+        $fila = 2;
+        $t = [
+            'nuevo' => 0,
+            'prospecto' => 0,
+            'activo' => 0,
+            'interesado' => 0,
+            'decision' => 0,
+            'proceso' => 0,
+            'matriculado' => 0,
+            'aplazado' => 0,
+            'perdido' => 0,
+            'general' => 0
+        ];
+
+        foreach ($data as $row) {
+            $sheet->setCellValue("A{$fila}", $row['medio']);
+            $sheet->setCellValue("B{$fila}", $row['fuente']);
+            $sheet->setCellValue("C{$fila}", $row['campana']);
+            $sheet->setCellValue("D{$fila}", $row['nuevo_leads']);
+            $sheet->setCellValue("E{$fila}", $row['prospecto']);
+            $sheet->setCellValue("F{$fila}", $row['leads_activo']);
+            $sheet->setCellValue("G{$fila}", $row['interesado']);
+            $sheet->setCellValue("H{$fila}", $row['en_decision']);
+            $sheet->setCellValue("I{$fila}", $row['matricula_proceso']);
+            $sheet->setCellValue("J{$fila}", $row['matriculado']);
+            $sheet->setCellValue("K{$fila}", $row['aplazado']);
+            $sheet->setCellValue("L{$fila}", $row['perdido']);
+            $sheet->setCellValue("M{$fila}", $row['total']);
+
+            foreach (range('D', 'M') as $colRed) {
+                $valCell = $sheet->getCell($colRed . $fila)->getValue();
+                if ($valCell > 0) {
+                    $sheet->getStyle($colRed . $fila)->getFont()->getColor()->setARGB('FFFF0000'); // Rojo
+                    $sheet->getStyle($colRed . $fila)->getFont()->setBold(true);
+                }
+            }
+
+            $t['nuevo'] += $row['nuevo_leads'];
+            $t['prospecto'] += $row['prospecto'];
+            $t['activo'] += $row['leads_activo'];
+            $t['interesado'] += $row['interesado'];
+            $t['decision'] += $row['en_decision'];
+            $t['proceso'] += $row['matricula_proceso'];
+            $t['matriculado'] += $row['matriculado'];
+            $t['aplazado'] += $row['aplazado'];
+            $t['perdido'] += $row['perdido'];
+            $t['general'] += $row['total'];
+
+            $fila++;
+        }
+
+        $sheet->setCellValue("A{$fila}", "TOTAL GENERAL");
+        $sheet->mergeCells("A{$fila}:C{$fila}");
+
+        $sheet->setCellValue("D{$fila}", $t['nuevo']);
+        $sheet->setCellValue("E{$fila}", $t['prospecto']);
+        $sheet->setCellValue("F{$fila}", $t['activo']);
+        $sheet->setCellValue("G{$fila}", $t['interesado']);
+        $sheet->setCellValue("H{$fila}", $t['decision']);
+        $sheet->setCellValue("I{$fila}", $t['proceso']);
+        $sheet->setCellValue("J{$fila}", $t['matriculado']);
+        $sheet->setCellValue("K{$fila}", $t['aplazado']);
+        $sheet->setCellValue("L{$fila}", $t['perdido']);
+        $sheet->setCellValue("M{$fila}", $t['general']);
+
+        $ultimaCol = "M";
+        $rangoTabla = "A1:{$ultimaCol}{$fila}";
+
+        $sheet->getStyle("A1:{$ultimaCol}1")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FF212529');
+        $sheet->getStyle("A1:{$ultimaCol}1")->getFont()->getColor()->setARGB(\PhpOffice\PhpSpreadsheet\Style\Color::COLOR_WHITE);
+
+        $sheet->getStyle("A{$fila}:L{$fila}")->getFont()->getColor()->setARGB('FFFF0000');
+        $sheet->getStyle("A{$fila}:M{$fila}")->getFont()->setBold(true);
+        $sheet->getStyle("A{$fila}:M{$fila}")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFF5F5F5');
+
+        $sheet->getStyle("M{$fila}")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FF1E66DC');
+        $sheet->getStyle("M{$fila}")->getFont()->getColor()->setARGB(\PhpOffice\PhpSpreadsheet\Style\Color::COLOR_WHITE);
+
+        $sheet->getStyle($rangoTabla)->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+        $sheet->getStyle("D1:M{$fila}")->getAlignment()->setHorizontal('center');
+
+        foreach (range('A', $ultimaCol) as $columnID) {
+            $sheet->getColumnDimension($columnID)->setAutoSize(true);
+        }
+
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="Reporte_Fuente_Origen_' . date('Ymd_His') . '.xlsx"');
+        header('Cache-Control: max-age=0');
+
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+        $writer->save("php://output");
+        exit;
+        break;
+
+    case "rst_teo":
+
+        // 2. OBTENCIÓN DE DATOS (Agrupados y Detallados)
+        $dataRespuesta = LeadsControllers::listarReporteRstDiaTEO($mes, $anio);
+        $dataDias = $dataRespuesta['porDia'] ?? [];
+        $dataEstados = $dataRespuesta['porEstado'] ?? [];
+
+        // Obtenemos el detalle que usa el DataTable
+        $dataDetalle = LeadsControllers::listarReporteRstTEO($texto, $asesor);
+
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+
+        /* =========================================================
+       HOJA 1: RESUMEN DIARIO
+       ========================================================= */
+        $sheet1 = $spreadsheet->getActiveSheet();
+        $sheet1->setTitle("Resumen Diario TEO");
+
+        if (!empty($dataDias)) {
+            $asesoresUnicos = array_values(array_unique(array_column($dataDias, 'asesor')));
+            $teoNombre = $dataDias[0]['asesorRTS'] ?? 'TEO';
+
+            // Encabezados
+            $sheet1->setCellValue("A1", "DÍA");
+            $sheet1->setCellValue("B1", "TEO");
+            $sheet1->mergeCells("A1:A2");
+            $sheet1->mergeCells("B1:B2");
+
+            $col = 3;
+            foreach ($asesoresUnicos as $nomAsesor) {
+                $letraIni = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($col);
+                $letraFin = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($col + 1);
+                $sheet1->setCellValueByColumnAndRow($col, 1, $nomAsesor);
+                $sheet1->mergeCells("{$letraIni}1:{$letraFin}1");
+                $sheet1->setCellValueByColumnAndRow($col, 2, "Llamada");
+                $sheet1->setCellValueByColumnAndRow($col + 1, 2, "WhatsApp");
+                $col += 2;
+            }
+            $letraTotalCol = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($col);
+            $sheet1->setCellValueByColumnAndRow($col, 1, "TOTAL");
+            $sheet1->mergeCells("{$letraTotalCol}1:{$letraTotalCol}2");
+
+            // Datos
+            $fila = 3;
+            $diasUnicos = array_unique(array_column($dataDias, 'dia'));
+            sort($diasUnicos);
+            $mesesNombres = [1 => 'Enero', 2 => 'Febrero', 3 => 'Marzo', 4 => 'Abril', 5 => 'Mayo', 6 => 'Junio', 7 => 'Julio', 8 => 'Agosto', 9 => 'Septiembre', 10 => 'Octubre', 11 => 'Noviembre', 12 => 'Diciembre'];
+
+            foreach ($diasUnicos as $dia) {
+                $sheet1->setCellValue("A{$fila}", $dia . " - " . $mesesNombres[(int)$mes]);
+                $sheet1->setCellValue("B{$fila}", $teoNombre);
+                $colData = 3;
+                $totalFila = 0;
+                foreach ($asesoresUnicos as $asesor) {
+                    $llamada = 0;
+                    $ws = 0;
+                    foreach ($dataDias as $r) {
+                        if ($r['dia'] == $dia && $r['asesor'] == $asesor) {
+                            if (($r['tipo_nom'] ?? '') === 'WhatsApp') $ws += (int)($r['tipo'] ?? 0);
+                            else $llamada += (int)($r['tipo'] ?? $r['total'] ?? 0);
+                        }
+                    }
+                    $sheet1->setCellValueByColumnAndRow($colData, $fila, $llamada);
+                    $sheet1->setCellValueByColumnAndRow($colData + 1, $fila, $ws);
+                    $totalFila += ($llamada + $ws);
+                    $colData += 2;
+                }
+                $sheet1->setCellValueByColumnAndRow($colData, $fila, $totalFila);
+                $fila++;
+            }
+
+            // Fila Totales
+            $sheet1->setCellValue("A{$fila}", "TOTAL GENERAL");
+            $sheet1->mergeCells("A{$fila}:B{$fila}");
+            for ($c = 3; $c <= $col; $c++) {
+                $letraC = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($c);
+                $sheet1->setCellValueByColumnAndRow($c, $fila, "=SUM({$letraC}3:{$letraC}" . ($fila - 1) . ")");
+            }
+            $sheet1->getStyle("A1:{$letraTotalCol}2")->getAlignment()->setHorizontal('center');
+            $sheet1->getStyle("A{$fila}:{$letraTotalCol}{$fila}")->getFont()->setBold(true);
+            $sheet1->getStyle("A1:{$letraTotalCol}{$fila}")->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+        }
+
+        /* =========================================================
+       HOJA 2: RESUMEN POR ESTADOS
+       ========================================================= */
+        $sheet2 = $spreadsheet->createSheet();
+        $sheet2->setTitle("Resumen por Estados");
+
+        if (!empty($dataEstados)) {
+            $estadosUnicos = array_values(array_unique(array_column($dataEstados, 'estado')));
+            $asesoresRows = array_values(array_unique(array_column($dataEstados, 'asesor')));
+
+            $sheet2->setCellValue("A1", "ASESOR");
+            $col = 2;
+            foreach ($estadosUnicos as $est) {
+                $sheet2->setCellValueByColumnAndRow($col, 1, $est);
+                $col++;
+            }
+            $sheet2->setCellValueByColumnAndRow($col, 1, "TOTAL");
+            $colMaxNum = $col;
+            $letraMax = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colMaxNum);
+
+            $fila = 2;
+            foreach ($asesoresRows as $asesor) {
+                $sheet2->setCellValue("A{$fila}", $asesor);
+                $colData = 2;
+                $totalAsesor = 0;
+                foreach ($estadosUnicos as $estado) {
+                    $val = 0;
+                    foreach ($dataEstados as $r) {
+                        if ($r['asesor'] === $asesor && $r['estado'] === $estado) $val = (int)$r['total'];
+                    }
+                    $sheet2->setCellValueByColumnAndRow($colData, $fila, $val);
+                    $totalAsesor += $val;
+                    $colData++;
+                }
+                $sheet2->setCellValueByColumnAndRow($colData, $fila, $totalAsesor);
+                $fila++;
+            }
+            // Fila Totales Hoja 2
+            $sheet2->setCellValue("A{$fila}", "TOTAL GENERAL");
+            for ($c = 2; $c <= $colMaxNum; $c++) {
+                $letraC = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($c);
+                $sheet2->setCellValueByColumnAndRow($c, $fila, "=SUM({$letraC}2:{$letraC}" . ($fila - 1) . ")");
+            }
+            $sheet2->getStyle("A1:{$letraMax}1")->getFont()->setBold(true);
+            $sheet2->getStyle("A{$fila}:{$letraMax}{$fila}")->getFont()->setBold(true);
+            $sheet2->getStyle("A1:{$letraMax}{$fila}")->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+        }
+
+        /* =========================================================
+       HOJA 3: DETALLE DE REGISTROS (DataTable)
+       ========================================================= */
+        $sheet3 = $spreadsheet->createSheet();
+        $sheet3->setTitle("Detalle de Registros");
+
+        $headers = ["Fecha", "Cliente", "Teléfono", "TEO", "Tipo Transferencia", "Observación", "Asesor", "Estado", "Notas"];
+        $sheet3->fromArray($headers, NULL, 'A1');
+
+        if (!empty($dataDetalle)) {
+            $filaDet = 2;
+            foreach ($dataDetalle as $reg) {
+                $sheet3->setCellValue("A{$filaDet}", $reg['fecha'] ?? '');
+                $sheet3->setCellValue("B{$filaDet}", $reg['cliente_nombre'] ?? '');
+                $sheet3->setCellValue("C{$filaDet}", $reg['cliente_telefono'] ?? '');
+                $sheet3->setCellValue("D{$filaDet}", $reg['asesor_nombre'] ?? '');
+                $sheet3->setCellValue("E{$filaDet}", $reg['tipo_nom'] ?? '');
+                $sheet3->setCellValue("F{$filaDet}", $reg['obs_rst'] ?? '');
+                $sheet3->setCellValue("G{$filaDet}", $reg['asesor_nombre_lead'] ?? '');
+                $sheet3->setCellValue("H{$filaDet}", $reg['estado_leads'] ?? '');
+                $sheet3->setCellValue("I{$filaDet}", $reg['nota'] ?? '');
+                $filaDet++;
+            }
+            // Auto-ajustar ancho de columnas
+            foreach (range('A', 'I') as $columnID) {
+                $sheet3->getColumnDimension($columnID)->setAutoSize(true);
+            }
+            $sheet3->getStyle("A1:I1")->getFont()->setBold(true);
+            $sheet3->getStyle("A1:I" . ($filaDet - 1))->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+        }
+
+        // 3. DESCARGA DEL ARCHIVO
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="Reporte_RST_TEO_' . date('dmY') . '.xlsx"');
+        header('Cache-Control: max-age=0');
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+        $writer->save("php://output");
+        exit;
+        break;
+
+    case "rst_frm":
+
+        // 2. OBTENCIÓN DE DATOS (Agrupados y Detallados)
+        $dataRespuesta = LeadsControllers::listarReporteRstDia($mes, $anio);
+        $dataDias = $dataRespuesta['porDia'] ?? [];
+        $dataEstados = $dataRespuesta['porEstado'] ?? [];
+
+        // Obtenemos el detalle que usa el DataTable
+        $dataDetalle = LeadsControllers::listarReporteRst($texto, $asesor);
+
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+
+        /* =========================================================
+       HOJA 1: RESUMEN DIARIO
+       ========================================================= */
+        $sheet1 = $spreadsheet->getActiveSheet();
+        $sheet1->setTitle("Resumen Diario");
+
+        if (!empty($dataDias)) {
+            $asesoresUnicos = array_values(array_unique(array_column($dataDias, 'asesor')));
+            $teoNombre = $dataDias[0]['asesorRTS'] ?? 'TEO';
+
+            // Encabezados
+            $sheet1->setCellValue("A1", "DÍA");
+            $sheet1->setCellValue("B1", "TEO");
+            $sheet1->mergeCells("A1:A2");
+            $sheet1->mergeCells("B1:B2");
+
+            $col = 3;
+            foreach ($asesoresUnicos as $nomAsesor) {
+                $letraIni = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($col);
+                $letraFin = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($col + 1);
+                $sheet1->setCellValueByColumnAndRow($col, 1, $nomAsesor);
+                $sheet1->mergeCells("{$letraIni}1:{$letraFin}1");
+                $sheet1->setCellValueByColumnAndRow($col, 2, "Llamada");
+                $sheet1->setCellValueByColumnAndRow($col + 1, 2, "WhatsApp");
+                $col += 2;
+            }
+            $letraTotalCol = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($col);
+            $sheet1->setCellValueByColumnAndRow($col, 1, "TOTAL");
+            $sheet1->mergeCells("{$letraTotalCol}1:{$letraTotalCol}2");
+
+            // Datos
+            $fila = 3;
+            $diasUnicos = array_unique(array_column($dataDias, 'dia'));
+            sort($diasUnicos);
+            $mesesNombres = [1 => 'Enero', 2 => 'Febrero', 3 => 'Marzo', 4 => 'Abril', 5 => 'Mayo', 6 => 'Junio', 7 => 'Julio', 8 => 'Agosto', 9 => 'Septiembre', 10 => 'Octubre', 11 => 'Noviembre', 12 => 'Diciembre'];
+
+            foreach ($diasUnicos as $dia) {
+                $sheet1->setCellValue("A{$fila}", $dia . " - " . $mesesNombres[(int)$mes]);
+                $sheet1->setCellValue("B{$fila}", $teoNombre);
+                $colData = 3;
+                $totalFila = 0;
+                foreach ($asesoresUnicos as $asesor) {
+                    $llamada = 0;
+                    $ws = 0;
+                    foreach ($dataDias as $r) {
+                        if ($r['dia'] == $dia && $r['asesor'] == $asesor) {
+                            if (($r['tipo_nom'] ?? '') === 'WhatsApp') $ws += (int)($r['tipo'] ?? 0);
+                            else $llamada += (int)($r['tipo'] ?? $r['total'] ?? 0);
+                        }
+                    }
+                    $sheet1->setCellValueByColumnAndRow($colData, $fila, $llamada);
+                    $sheet1->setCellValueByColumnAndRow($colData + 1, $fila, $ws);
+                    $totalFila += ($llamada + $ws);
+                    $colData += 2;
+                }
+                $sheet1->setCellValueByColumnAndRow($colData, $fila, $totalFila);
+                $fila++;
+            }
+
+            // Fila Totales
+            $sheet1->setCellValue("A{$fila}", "TOTAL GENERAL");
+            $sheet1->mergeCells("A{$fila}:B{$fila}");
+            for ($c = 3; $c <= $col; $c++) {
+                $letraC = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($c);
+                $sheet1->setCellValueByColumnAndRow($c, $fila, "=SUM({$letraC}3:{$letraC}" . ($fila - 1) . ")");
+            }
+            $sheet1->getStyle("A1:{$letraTotalCol}2")->getAlignment()->setHorizontal('center');
+            $sheet1->getStyle("A{$fila}:{$letraTotalCol}{$fila}")->getFont()->setBold(true);
+            $sheet1->getStyle("A1:{$letraTotalCol}{$fila}")->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+        }
+
+        /* =========================================================
+       HOJA 2: RESUMEN POR ESTADOS
+       ========================================================= */
+        $sheet2 = $spreadsheet->createSheet();
+        $sheet2->setTitle("Resumen por Estados");
+
+        if (!empty($dataEstados)) {
+            $estadosUnicos = array_values(array_unique(array_column($dataEstados, 'estado')));
+            $asesoresRows = array_values(array_unique(array_column($dataEstados, 'asesor')));
+
+            $sheet2->setCellValue("A1", "ASESOR");
+            $col = 2;
+            foreach ($estadosUnicos as $est) {
+                $sheet2->setCellValueByColumnAndRow($col, 1, $est);
+                $col++;
+            }
+            $sheet2->setCellValueByColumnAndRow($col, 1, "TOTAL");
+            $colMaxNum = $col;
+            $letraMax = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colMaxNum);
+
+            $fila = 2;
+            foreach ($asesoresRows as $asesor) {
+                $sheet2->setCellValue("A{$fila}", $asesor);
+                $colData = 2;
+                $totalAsesor = 0;
+                foreach ($estadosUnicos as $estado) {
+                    $val = 0;
+                    foreach ($dataEstados as $r) {
+                        if ($r['asesor'] === $asesor && $r['estado'] === $estado) $val = (int)$r['total'];
+                    }
+                    $sheet2->setCellValueByColumnAndRow($colData, $fila, $val);
+                    $totalAsesor += $val;
+                    $colData++;
+                }
+                $sheet2->setCellValueByColumnAndRow($colData, $fila, $totalAsesor);
+                $fila++;
+            }
+            // Fila Totales Hoja 2
+            $sheet2->setCellValue("A{$fila}", "TOTAL GENERAL");
+            for ($c = 2; $c <= $colMaxNum; $c++) {
+                $letraC = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($c);
+                $sheet2->setCellValueByColumnAndRow($c, $fila, "=SUM({$letraC}2:{$letraC}" . ($fila - 1) . ")");
+            }
+            $sheet2->getStyle("A1:{$letraMax}1")->getFont()->setBold(true);
+            $sheet2->getStyle("A{$fila}:{$letraMax}{$fila}")->getFont()->setBold(true);
+            $sheet2->getStyle("A1:{$letraMax}{$fila}")->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+        }
+
+        /* =========================================================
+       HOJA 3: DETALLE DE REGISTROS (DataTable)
+       ========================================================= */
+        $sheet3 = $spreadsheet->createSheet();
+        $sheet3->setTitle("Detalle de Registros");
+
+        $headers = ["Fecha", "Cliente", "Teléfono", "TEO", "Tipo Transferencia", "Observación", "Asesor", "Estado", "Notas"];
+        $sheet3->fromArray($headers, NULL, 'A1');
+
+        if (!empty($dataDetalle)) {
+            $filaDet = 2;
+            foreach ($dataDetalle as $reg) {
+                $sheet3->setCellValue("A{$filaDet}", $reg['fecha'] ?? '');
+                $sheet3->setCellValue("B{$filaDet}", $reg['cliente_nombre'] ?? '');
+                $sheet3->setCellValue("C{$filaDet}", $reg['cliente_telefono'] ?? '');
+                $sheet3->setCellValue("D{$filaDet}", $reg['asesor_nombre'] ?? '');
+                $sheet3->setCellValue("E{$filaDet}", $reg['tipo_nom'] ?? '');
+                $sheet3->setCellValue("F{$filaDet}", $reg['obs_rst'] ?? '');
+                $sheet3->setCellValue("G{$filaDet}", $reg['asesor_nombre_lead'] ?? '');
+                $sheet3->setCellValue("H{$filaDet}", $reg['estado_leads'] ?? '');
+                $sheet3->setCellValue("I{$filaDet}", $reg['nota'] ?? '');
+                $filaDet++;
+            }
+            // Auto-ajustar ancho de columnas
+            foreach (range('A', 'I') as $columnID) {
+                $sheet3->getColumnDimension($columnID)->setAutoSize(true);
+            }
+            $sheet3->getStyle("A1:I1")->getFont()->setBold(true);
+            $sheet3->getStyle("A1:I" . ($filaDet - 1))->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+        }
+
+        // 3. DESCARGA DEL ARCHIVO
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="Reporte_RST_' . date('dmY') . '.xlsx"');
+        header('Cache-Control: max-age=0');
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+        $writer->save("php://output");
+        exit;
+        break;
+    case "perdido": 
+
+        $dataMotivos = LeadsControllers::reporteLeadsPastelMotivo();
+
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle("Reporte por Motivos");
+
+        $sheet->setCellValue("A1", "MOTIVO / ESTADO");
+        $sheet->setCellValue("B1", "CANTIDAD");
+
+        $sheet->getStyle("A1:B1")->getFont()->setBold(true);
+        $sheet->getStyle("A1:B1")->getAlignment()->setHorizontal('center');
+
+        $fila = 2;
+        if (!empty($dataMotivos)) {
+            foreach ($dataMotivos as $reg) {
+                $sheet->setCellValue("A{$fila}", $reg['estado']);
+                $sheet->setCellValue("B{$fila}", (int)$reg['cantidad']);
+                $fila++;
+            }
+
+            // 4. FILA DE TOTALES
+            $sheet->setCellValue("A{$fila}", "TOTAL GENERAL");
+            // Fórmula SUM para la columna B
+            $sheet->setCellValue("B{$fila}", "=SUM(B2:B" . ($fila - 1) . ")");
+
+            // Estilos finales
+            $sheet->getStyle("A{$fila}:B{$fila}")->getFont()->setBold(true);
+            $sheet->getStyle("A1:B{$fila}")->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+
+            // Ajuste automático de columnas
+            $sheet->getColumnDimension('A')->setAutoSize(true);
+            $sheet->getColumnDimension('B')->setAutoSize(true);
+        }
+
+        // 5. SALIDA
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="Reporte_Motivos_Leads_' . date('dmY') . '.xlsx"');
+        header('Cache-Control: max-age=0');
+
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+        $writer->save("php://output");
+        exit;
+        break;
     default:
         die("Tipo de reporte no válido");
 }

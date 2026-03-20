@@ -1431,7 +1431,7 @@ if (obtenerPaginaActual() === 'index.php') {
 if (obtenerPaginaActual() === 'resultado_foco.php') {
     document.addEventListener("DOMContentLoaded", cargarTablaFocoResultado);
     document.addEventListener("change", function (e) {
-        if (e.target.classList.contains("filtro")) {
+        if (e.target.classList.contains("filtro") || e.target.classList.contains("select-all-filter")) {
             cargarTablaFocoResultado();
         }
     });

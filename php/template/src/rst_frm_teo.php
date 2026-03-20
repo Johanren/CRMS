@@ -29,6 +29,11 @@
 
         <!-- card start -->
         <div class="card border-0 rounded-0">
+            <div class="card-header d-flex align-items-center justify-content-between gap-2 flex-wrap">
+                <a href="javascript:void(0);" onclick="exportarExcel('rst_teo')" class="btn btn-primary"
+                    data-bs-toggle="modal" data-bs-target="#####download_report"><i
+                        class="ti ti-file-download me-1"></i>Descargar Reporte</a>
+            </div>
             <div class="card-body">
 
                 <style>

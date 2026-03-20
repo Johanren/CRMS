@@ -1,4 +1,53 @@
 document.addEventListener("DOMContentLoaded", () => {
+    $(document).ready(function () {
+
+        // Función centralizada para ejecutar cualquier función de recarga que exista en la página
+        function refrescarDatos() {
+            const funcionesRecarga = [
+                'listarLeads', 'cargarKanban', 'cargarContactGrid',
+                'listarLeadsReporte', 'listarReporteCRMS', 'listarReporteEstadoLeads',
+                'listarEstadoLead', 'listarReporteFuente', 'listarReporteRstFrm'
+            ];
+
+            funcionesRecarga.forEach(nombreFunc => {
+                if (typeof window[nombreFunc] === 'function') {
+                    window[nombreFunc]();
+                }
+            });
+        }
+
+        // 1. Lógica de "Seleccionar todos"
+        $(document).on('change', '.select-all-filter', function () {
+            let targetSelector = $(this).data('target');
+            let isChecked = $(this).is(':checked');
+
+            // Marcamos los hijos SIN disparar sus eventos individuales (evita el bucle)
+            $(targetSelector).prop('checked', isChecked);
+
+            // Ejecutamos la recarga UNA SOLA VEZ
+            refrescarDatos();
+        });
+
+        // 2. Lógica para los checkboxes hijos (individuales)
+        $(document).on('change', 'input[type="checkbox"]:not(.select-all-filter)', function () {
+            let classList = $(this).attr('class') ? $(this).attr('class').split(' ') : [];
+            let filterClass = classList.filter(c => c.startsWith('filtro-'))[0];
+
+            if (!filterClass) return;
+
+            let clise = "." + filterClass;
+            let allSelectedCheckbox = $(`.select-all-filter[data-target="${clise}"]`);
+
+            // Actualizar el estado del "Seleccionar todos" visualmente
+            let total = $(clise).length;
+            let marcados = $(clise + ":checked").length;
+            allSelectedCheckbox.prop('checked', (total > 0 && total === marcados));
+
+            // Ejecutar la recarga
+            refrescarDatos();
+        });
+    });
+
     FiltrosUI.init();
 });
 
@@ -69,28 +118,56 @@ const FiltrosUI = {
     aplicarFiltros(filtros) {
         filtros = this.normalizarFiltros(filtros);
 
+        // Actualización de inputs directos
         if (this.dom.buscador) this.dom.buscador.value = filtros.texto;
         if (this.dom.fechaInicio) this.dom.fechaInicio.value = filtros.fecha_inicio;
         if (this.dom.fechaFin) this.dom.fechaFin.value = filtros.fecha_fin;
 
-        this.marcar(".filtro-asesor", filtros.asesor);
-        this.marcar(".filtro-carrera", filtros.carreras);
-        this.marcar(".filtro-horario", filtros.horario);
-        this.marcar(".filtro-interes", filtros.interes);
-        this.marcar(".filtro-medio", filtros.medio);
-        this.marcar(".filtro-fuente", filtros.fuente);
-        this.marcar(".filtro-campana", filtros.campana);
-        this.marcar(".filtro-accion", filtros.accion);
-        this.marcar(".filtro-dep", filtros.departamento);
-        this.marcar(".filtro-ciu", filtros.ciudad);
-        this.marcar(".filtro-brr", filtros.barrio);
-        this.marcar(".filtro-estado", filtros.estados);
-
         window.fecha_inicio = filtros.fecha_inicio;
         window.fecha_fin = filtros.fecha_fin;
 
+        // Mapeo de selectores vs datos del objeto filtros
+        const mapeo = {
+            ".filtro-asesor": filtros.asesor,
+            ".filtro-carrera": filtros.carreras,
+            ".filtro-horario": filtros.horario,
+            ".filtro-interes": filtros.interes,
+            ".filtro-medio": filtros.medio,
+            ".filtro-fuente": filtros.fuente,
+            ".filtro-campana": filtros.campana,
+            ".filtro-accion": filtros.accion,
+            ".filtro-dep": filtros.departamento,
+            ".filtro-ciu": filtros.ciudad,
+            ".filtro-brr": filtros.barrio,
+            ".filtro-estado": filtros.estados
+        };
+
+        // Marcado masivo silencioso
+        Object.entries(mapeo).forEach(([selector, valores]) => {
+            this.marcarSilencioso(selector, valores);
+        });
+
+        // Una sola actualización para todo
         this.actualizarVistas();
         this.mostrarResumen(filtros);
+    },
+
+    marcarSilencioso(selector, valores) {
+        if (!valores) return;
+
+        const $elementos = $(selector);
+        if ($elementos.length === 0) return;
+
+        // Marcamos cada checkbox hijo
+        $elementos.each(function () {
+            $(this).prop('checked', valores.includes($(this).val()));
+        });
+
+        // IMPORTANTE: Actualizar el checkbox "Seleccionar Todos" de este grupo
+        // Buscamos el checkbox maestro que tenga este selector como data-target
+        const total = $elementos.length;
+        const marcados = $elementos.filter(':checked').length;
+        $(`.select-all-filter[data-target="${selector}"]`).prop('checked', total > 0 && total === marcados);
     },
 
     normalizarFiltros(filtros) {
@@ -112,19 +189,32 @@ const FiltrosUI = {
     },
 
     marcar(selector, valores) {
-        document.querySelectorAll(selector).forEach(chk => {
-            chk.checked = valores.includes(chk.value);
+        if (!valores || !Array.isArray(valores)) return;
+
+        $(selector).each(function () {
+            $(this).prop('checked', valores.includes($(this).val()));
         });
+        $(selector).trigger('change');
     },
 
     actualizarVistas() {
+        // Aumentamos un poco el debounce para asegurar que el DOM terminó de procesar
         clearTimeout(this.debounceTimer);
         this.debounceTimer = setTimeout(() => {
-            window.listarLeads?.();
-            window.cargarKanban?.();
-            window.cargarContactGrid?.();
-            window.listarLeadsReporte?.();
-        }, 120);
+            console.log("Re-listando datos con filtros aplicados...");
+
+            const metodos = [
+                'listarLeads', 'cargarKanban', 'cargarContactGrid',
+                'listarLeadsReporte', 'listarReporteCRMS', 'listarReporteEstadoLeads',
+                'listarEstadoLead', 'listarReporteFuente', 'listarReporteRstFrm'
+            ];
+
+            metodos.forEach(f => {
+                if (typeof window[f] === 'function') {
+                    window[f]();
+                }
+            });
+        }, 200);
     },
 
     mostrarResumen(filtros) {
@@ -170,7 +260,19 @@ const FiltrosUI = {
                     return;
                 }
 
-                document.querySelectorAll("[class^='filtro-']").forEach(c => c.checked = false);
+                // 1. Limpiar todos los checkboxes que empiezan con 'filtro-'
+                const filtrosCheck = document.querySelectorAll("[class^='filtro-']");
+                filtrosCheck.forEach(c => c.checked = false);
+
+                // 2. NUEVO: Limpiar también las casillas de "Seleccionar todos"
+                const selectAllCheck = document.querySelectorAll(".select-all-filter");
+                selectAllCheck.forEach(c => c.checked = false);
+
+                // 3. NUEVO: Disparar el evento change (usando jQuery para asegurar compatibilidad con el listener)
+                // Esto le avisa a cualquier otra lógica que los filtros han cambiado
+                $("[class^='filtro-'], .select-all-filter").trigger('change');
+
+                // 4. Limpiar inputs de texto y fechas
                 if (this.dom.buscador) this.dom.buscador.value = "";
                 if (this.dom.fechaInicio) this.dom.fechaInicio.value = "";
                 if (this.dom.fechaFin) this.dom.fechaFin.value = "";
@@ -178,10 +280,14 @@ const FiltrosUI = {
                 window.fecha_inicio = "";
                 window.fecha_fin = "";
 
+                // 5. Limpiar filtros globales si existe la función
                 window.Filtros?.limpiar?.();
 
                 this.actualizarVistas();
-                if (this.dom.resumen) this.dom.resumen.innerText = "Sin filtros aplicados";
+
+                if (this.dom.resumen) {
+                    this.dom.resumen.innerText = "Sin filtros aplicados";
+                }
 
                 Swal.fire("Filtros restablecidos", "", "info");
             });

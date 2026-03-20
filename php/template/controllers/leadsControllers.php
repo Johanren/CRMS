@@ -348,9 +348,9 @@ class LeadsControllers
         return LeadsModels::listarReporteRstDia($mes, $anio);
     }
 
-    public static function listarReporteLeadDia($mes, $anio, $asesor, $carrera, $estados)
+    public static function listarReporteLeadDia($mes, $anio, $asesor, $carrera, $horario, $estados)
     {
-        return LeadsModels::listarReporteLeadDia($mes, $anio, $asesor, $carrera, $estados);
+        return LeadsModels::listarReporteLeadDia($mes, $anio, $asesor, $carrera, $horario, $estados);
     }
 
     public static function listarLeadsFiltradosMensaje($carrera, $horario, $estado, $asesor, $numero)

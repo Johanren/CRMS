@@ -32,64 +32,92 @@
         <!-- End Page Header -->
 
         <!-- card start -->
-        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
-            <div class="d-flex align-items-center gap-2 flex-wrap">
-                <div class="dropdown">
-                    <a href="javascript:void(0);" class="btn btn-outline-light shadow px-2"
-                        data-bs-toggle="dropdown" data-bs-auto-close="outside"><i
-                            class="ti ti-filter me-2"></i>Filtrar<i class="ti ti-chevron-down ms-2"></i></a>
-                    <div class="filter-dropdown-menu dropdown-menu dropdown-menu-lg p-0">
-                        <div
-                            class="filter-header d-flex align-items-center justify-content-between border-bottom">
-                            <h6 class="mb-0"><i class="ti ti-filter me-1"></i>Filtrar</h6>
-                            <button type="button" class="btn-close close-filter-btn"
-                                data-bs-dismiss="dropdown-menu" aria-label="Close"></button>
-                        </div>
-                        <div class="filter-set-view p-3">
-                            <div class="filter-set-view p-3">
-                                <div class="accordion" id="accordionExample">
-                                    <div class="filter-set-content">
-                                        <div class="filter-set-content-head">
-                                            <a href="#" class="collapsed" data-bs-toggle="collapse" data-bs-target="#collapseAsesor" aria-expanded="false" aria-controls="collapseThree">Asesor</a>
-                                        </div>
-                                        <div class="filter-set-contents accordion-collapse collapse" id="collapseAsesor" data-bs-parent="#accordionExample">
-                                            <div class="filter-content-list bg-light rounded border p-2 shadow mt-2">
-                                                <div id="listar_filtro_user" class="overflow-x-auto"></div>
+        <div class="card border-0 rounded-0">
+            <div class="card-header d-flex align-items-center justify-content-between gap-2 flex-wrap">
+                <a href="javascript:void(0);" onclick="exportarExcel('estado_lead')" class="btn btn-primary"
+                    data-bs-toggle="modal" data-bs-target="#####download_report"><i
+                        class="ti ti-file-download me-1"></i>Descargar Reporte</a>
+            </div>
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                        <div class="dropdown">
+                            <a href="javascript:void(0);" class="btn btn-outline-light shadow px-2"
+                                data-bs-toggle="dropdown" data-bs-auto-close="outside"><i
+                                    class="ti ti-filter me-2"></i>Filtrar<i class="ti ti-chevron-down ms-2"></i></a>
+                            <div class="filter-dropdown-menu dropdown-menu dropdown-menu-lg p-0">
+                                <div
+                                    class="filter-header d-flex align-items-center justify-content-between border-bottom">
+                                    <h6 class="mb-0"><i class="ti ti-filter me-1"></i>Filtrar</h6>
+                                    <button type="button" class="btn-close close-filter-btn"
+                                        data-bs-dismiss="dropdown-menu" aria-label="Close"></button>
+                                </div>
+                                <div class="filter-set-view p-3">
+                                    <div class="filter-set-view p-3">
+                                        <div class="accordion" id="accordionExample">
+
+                                            <div class="filter-set-content">
+                                                <div class="filter-set-content-head">
+                                                    <a href="#" class="collapsed" data-bs-toggle="collapse"
+                                                        data-bs-target="#collapseAsesor" aria-expanded="false"
+                                                        aria-controls="collapseThree">Asesor</a>
+                                                </div>
+                                                <div class="filter-set-contents accordion-collapse collapse"
+                                                    id="collapseAsesor" data-bs-parent="#accordionExample">
+                                                    <div class="filter-content-list bg-light rounded border p-2 shadow mt-2">
+
+                                                        <div class="form-check mb-2 border-bottom pb-1">
+                                                            <input class="form-check-input select-all-filter" type="checkbox"
+                                                                data-target=".filtro-asesor" id="all_asesor">
+                                                            <label class="form-check-label fw-bold" for="all_asesor" style="cursor:pointer;">
+                                                                Seleccionar todos
+                                                            </label>
+                                                        </div>
+
+                                                        <div id="listar_filtro_user" class="overflow-x-auto"></div>
+                                                    </div>
+                                                </div>
                                             </div>
+
+                                            <div class="filter-set-content">
+                                                <div class="filter-set-content-head">
+                                                    <a href="#" class="collapsed" data-bs-toggle="collapse"
+                                                        data-bs-target="#collapseEstado" aria-expanded="false"
+                                                        aria-controls="collapseThree">Estado</a>
+                                                </div>
+                                                <div class="filter-set-contents accordion-collapse collapse"
+                                                    id="collapseEstado" data-bs-parent="#accordionExample">
+                                                    <div class="filter-content-list bg-light rounded border p-2 shadow mt-2">
+
+                                                        <div class="form-check mb-2 border-bottom pb-1">
+                                                            <input class="form-check-input select-all-filter" type="checkbox"
+                                                                data-target=".filtro-estado" id="all_estado">
+                                                            <label class="form-check-label fw-bold" for="all_estado" style="cursor:pointer;">
+                                                                Seleccionar todos
+                                                            </label>
+                                                        </div>
+
+                                                        <div id="listar_filtro_estado" class="overflow-x-auto"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
                                         </div>
                                     </div>
-                                    <div class="filter-set-content">
-                                        <div class="filter-set-content-head">
-                                            <a href="#" class="collapsed" data-bs-toggle="collapse"
-                                                data-bs-target="#collapseEstado" aria-expanded="false"
-                                                aria-controls="collapseThree">Estado</a>
-                                        </div>
-                                        <div class="filter-set-contents accordion-collapse collapse"
-                                            id="collapseEstado" data-bs-parent="#accordionExample">
-                                            <div
-                                                class="filter-content-list bg-light rounded border p-2 shadow mt-2">
-                                                <div id="listar_filtro_estado" class="overflow-x-auto"></div>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    <div id="contenedor-botones"></div>
                                 </div>
                             </div>
-                            <div id="contenedor-botones"></div>
+                        </div>
+                        <div id="reportrange" class="reportrange-picker d-flex align-items-center shadow">
+                            <i class="ti ti-calendar-due text-dark fs-14 me-1"></i>
+                            <span class="reportrange-picker-field">Seleccione fechas</span>
+                        </div>
+                        <div class="input-icon input-icon-start position-relative">
+                            <span class="input-icon-addon text-dark"><i class="ti ti-search"></i></span>
+                            <input type="text" class="form-control" id="buscador" placeholder="Buscar">
                         </div>
                     </div>
                 </div>
-                <div id="reportrange" class="reportrange-picker d-flex align-items-center shadow">
-                    <i class="ti ti-calendar-due text-dark fs-14 me-1"></i>
-                    <span class="reportrange-picker-field">Seleccione fechas</span>
-                </div>
-                <div class="input-icon input-icon-start position-relative">
-                    <span class="input-icon-addon text-dark"><i class="ti ti-search"></i></span>
-                    <input type="text" class="form-control" id="buscador" placeholder="Buscar">
-                </div>
-            </div>
-        </div>
-        <div class="card border-0 rounded-0">
-            <div class="card-body">
                 <style>
                     /* ===== LOADER ===== */
                     .loader-overlay {
@@ -217,6 +245,25 @@ $content = ob_get_clean();
 
 require_once '../partials/main.php'; ?>
 <script>
+    function exportarExcel(tipo) {
+        const f = Filtros.obtener();
+        const params = new URLSearchParams();
+
+        // Tipo de reporte (ej: "leads", "asesores", "campanas", etc.)
+        params.append("tipo", tipo);
+
+        // Convertir filtros a parámetros GET
+        for (let k in f) {
+            if (Array.isArray(f[k]) && f[k].length > 0) {
+                params.append(k, JSON.stringify(f[k]));
+            } else if (f[k] !== "") {
+                params.append(k, f[k]);
+            }
+        }
+
+        window.location.href = "ajax/exportar_excel.php?" + params.toString();
+    }
+
     /*Fecha inicio fin */
 
     $(function() {
@@ -519,7 +566,7 @@ require_once '../partials/main.php'; ?>
     });
 
     document.addEventListener("change", function(e) {
-        if (e.target.classList.contains("filtro")) {
+        if (e.target.classList.contains("filtro") || e.target.classList.contains("select-all-filter")) {
             listarReporteEstadoLeads();
         }
     });
