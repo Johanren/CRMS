@@ -176,7 +176,6 @@ function construirTablaDias(data) {
             datosPorMes[r.mes].push(r);
         });
 
-        // 👉 Ordenar meses
         const mesesOrdenados = Object.keys(datosPorMes)
             .map(Number)
             .sort((a, b) => a - b);
@@ -190,35 +189,32 @@ function construirTablaDias(data) {
                 <th rowspan="2">TEO</th>`;
 
         asesores.forEach(a => {
-            html += `<th colspan="2">${a}</th>`;
+            html += `<th>${a}</th>`; // 🔹 Solo 1 columna por asesor
         });
 
         html += `<th rowspan="2">Total</th></tr><tr>`;
 
         asesores.forEach(() => {
-            html += `<th>Llamada</th><th>WhatsApp</th>`;
+            html += `<th>WhatsApp</th>`; // 🔹 Solo WhatsApp
         });
 
         html += `</tr></thead><tbody>`;
 
         let totalesAsesor = {};
-        asesores.forEach(a => totalesAsesor[a] = { Llamada: 0, WhatsApp: 0 });
+        asesores.forEach(a => totalesAsesor[a] = { WhatsApp: 0 });
 
         let totalMesGeneral = 0;
 
-        // 👉 Recorrer meses ordenados
         mesesOrdenados.forEach(mes => {
             const mesNombre = mesesMap[mes];
             const registrosMes = datosPorMes[mes];
 
-            // Obtener días únicos del mes
             const dias = [...new Set(registrosMes.map(r => r.dia))]
                 .sort((a, b) => a - b);
 
-            // 👉 Fila separadora del mes
             html += `
                 <tr class="table-mes">
-                    <td colspan="${asesores.length * 2 + 3}">
+                    <td colspan="${asesores.length + 3}">
                         <b>${mesNombre.toUpperCase()}</b>
                     </td>
                 </tr>`;
@@ -229,28 +225,23 @@ function construirTablaDias(data) {
                 html += `<tr><td>${dia} - ${mesNombre}</td><td>${rts}</td>`;
 
                 asesores.forEach(asesor => {
-                    let llamada = 0;
                     let whatsapp = 0;
 
                     registrosMes
                         .filter(r => r.dia === dia && r.asesor === asesor)
                         .forEach(r => {
                             if (!r.tipo_nom) {
-                                llamada += Number(r.total);
-                            } else if (r.tipo_nom === 'Llamada') {
-                                llamada += Number(r.tipo);
+                                whatsapp += Number(r.total);
                             } else if (r.tipo_nom === 'WhatsApp') {
                                 whatsapp += Number(r.tipo);
                             }
                         });
 
-                    totalesAsesor[asesor].Llamada += llamada;
                     totalesAsesor[asesor].WhatsApp += whatsapp;
 
-                    const subtotal = llamada + whatsapp;
-                    totalDia += subtotal;
+                    totalDia += whatsapp;
 
-                    html += `<td>${llamada}</td><td>${whatsapp}</td>`;
+                    html += `<td>${whatsapp}</td>`;
                 });
 
                 totalMesGeneral += totalDia;
@@ -262,7 +253,6 @@ function construirTablaDias(data) {
         html += `<tr class="table-total"><td colspan="2">TOTAL GENERAL</td>`;
 
         asesores.forEach(a => {
-            html += `<td>${totalesAsesor[a].Llamada}</td>`;
             html += `<td>${totalesAsesor[a].WhatsApp}</td>`;
         });
 

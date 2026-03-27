@@ -96,9 +96,14 @@ class LeadsModels
             LEFT JOIN horario h ON l.horario_id = h.id_horario
             LEFT JOIN user u ON l.user_id = u.id_user
             LEFT JOIN estado_leads e ON e.id_estado_leads = l.estado_leads_id 
-            WHERE l.cod_emp = ?";
+            WHERE l.cod_emp = ?
+            AND (
+                e.nombre != 'Matriculado'
+                OR (e.nombre = 'Matriculado' AND l.foco = ?)
+            )
+            ";
 
-        $params = [$_SESSION['cod_emp']];
+        $params = [$_SESSION['cod_emp'],$_SESSION['foco']];
 
         /* ===========================
         FILTRO POR ROL (Sincronizado con listarLeads)
@@ -209,9 +214,14 @@ class LeadsModels
             LEFT JOIN user u ON u.id_user = l.user_id 
             LEFT JOIN estado_leads e ON e.id_estado_leads = l.estado_leads_id 
             LEFT JOIN horario h ON l.horario_id = h.id_horario
-            WHERE l.cod_emp = ?";
+            WHERE l.cod_emp = ?
+            AND (
+                e.nombre != 'Matriculado'
+                OR (e.nombre = 'Matriculado' AND l.foco = ?)
+            )
+            ";
 
-        $params = [$_SESSION['cod_emp']];
+        $params = [$_SESSION['cod_emp'],$_SESSION['foco']];
 
         // Seguridad por Rol
         if (isset($_SESSION['rol']) && $_SESSION['rol'] !== 'Admin' && $texto === "" && empty($asesor)) {
@@ -635,6 +645,7 @@ class LeadsModels
     public static function listarReporteRst($texto = "", $asesor = [])
     {
         // 1. Base de la consulta (SIN el ";" al final y SIN el GROUP BY aquí)
+        $codEmp = $_SESSION['cod_emp'] ?? $_GET['cod_emp'];
         $sql = "
         SELECT
             r.cod_rst,
@@ -658,9 +669,13 @@ class LeadsModels
         LEFT JOIN nota n ON n.id_lead = l.id_lead
         INNER JOIN estado_leads el ON el.id_estado_leads = l.estado_leads_id
         WHERE r.cod_emp = ? AND r.user_id = 17
+        AND (
+            el.nombre != 'Matriculado'
+            OR (el.nombre = 'Matriculado' AND l.foco = ?)
+        )
     ";
 
-        $params = [$_SESSION['cod_emp'] ?? $_GET['cod_emp']];
+        $params = [$codEmp,$_SESSION['foco']];
 
         // 2. Filtro por Texto
         if ($texto !== "") {
@@ -732,7 +747,10 @@ class LeadsModels
             ON tp.id_tipo_trans = r.tipo_trans_id
 
         WHERE r.cod_emp = ? AND r.user_id = 17
-        
+        AND (
+            l.estado_leads_id != '6'
+            OR (l.estado_leads_id = '6' AND l.foco = ?)
+        )       
 
         GROUP BY
             dia,
@@ -745,7 +763,7 @@ class LeadsModels
         AND YEAR(r.fecha) = ? 
         , $mes, $anio*/
         $stmtDia = $pdo->prepare($sqlPorDia);
-        $stmtDia->execute([$codEmp]);
+        $stmtDia->execute([$codEmp,$_SESSION['foco']]);
         $porDia = $stmtDia->fetchAll(PDO::FETCH_ASSOC);
 
         /* =====================================================
@@ -768,7 +786,10 @@ class LeadsModels
                 ON el.id_estado_leads = l.estado_leads_id
 
             WHERE r.cod_emp = ? AND r.user_id = 17
-
+            AND (
+                el.nombre != 'Matriculado'
+                OR (el.nombre = 'Matriculado' AND l.foco = ?)
+            )
             GROUP BY
                 asesor,
                 el.id_estado_leads,
@@ -782,7 +803,7 @@ class LeadsModels
             AND YEAR(r.fecha) = ? 
             , $mes, $anio*/
         $stmtEstado = $pdo->prepare($sqlPorEstado);
-        $stmtEstado->execute([$codEmp]);
+        $stmtEstado->execute([$codEmp,$_SESSION['foco']]);
         $porEstado = $stmtEstado->fetchAll(PDO::FETCH_ASSOC);
 
         /* =====================================================
@@ -820,9 +841,13 @@ class LeadsModels
         LEFT JOIN estado_leads el ON el.id_estado_leads = l.estado_leads_id
         LEFT JOIN programa p ON p.cod_pro = l.carrera_id
         WHERE l.cod_emp = ?
+        AND (
+            el.nombre != 'Matriculado'
+            OR (el.nombre = 'Matriculado' AND l.foco = ?)
+        )
     ";
 
-        $params = [$codEmp];
+        $params = [$codEmp, $_SESSION['foco']];
 
         /* =====================================================
        SEGURIDAD POR ROL (Sincronizado)
@@ -947,9 +972,14 @@ class LeadsModels
             LEFT JOIN horario h ON h.id_horario = l.horario_id
             LEFT JOIN user u ON u.id_user = l.user_id
             LEFT JOIN estado_leads e ON e.id_estado_leads = l.estado_leads_id
-            WHERE l.cod_emp = ?";
+            WHERE l.cod_emp = ?
+            AND (
+                e.nombre != 'Matriculado'
+                OR (e.nombre = 'Matriculado' AND l.foco = ?)
+            )
+            ";
 
-        $params = [$_SESSION['cod_emp']];
+        $params = [$_SESSION['cod_emp'],$_SESSION['foco']];
 
         // Seguridad por Rol (Igual que la lista)
         /*if (isset($_SESSION['rol']) && $_SESSION['rol'] !== 'Admin' && $texto === "" && empty($asesor)) {
@@ -1034,9 +1064,14 @@ class LeadsModels
         LEFT JOIN programa p 
             ON p.cod_pro = l.carrera_id
 
-        WHERE l.cod_emp = ?";
+        WHERE l.cod_emp = ?
+        AND (
+            el.nombre != 'Matriculado'
+            OR (el.nombre = 'Matriculado' AND l.foco = ?)
+        )
+        ";
 
-        $params = [$_SESSION['cod_emp']];
+        $params = [$_SESSION['cod_emp'],$_SESSION['foco']];
 
         // Seguridad por Rol (Igual que la lista)
         /*if (isset($_SESSION['rol']) && $_SESSION['rol'] !== 'Admin' && $texto === "" && empty($asesor)) {
@@ -1263,6 +1298,7 @@ class LeadsModels
         $texto = "",
         $asesor = []
     ) {
+        $codEmp = $_SESSION['cod_emp'] ?? $_GET['cod_emp'];
         $sql = "
             SELECT
                 r.cod_rst,
@@ -1289,13 +1325,17 @@ class LeadsModels
             LEFT JOIN nota n ON n.id_lead = l.id_lead
             INNER JOIN estado_leads el ON el.id_estado_leads = l.estado_leads_id
             WHERE r.cod_emp = ? AND r.user_id = 18
+            AND (
+                el.nombre != 'Matriculado'
+                OR (el.nombre = 'Matriculado' AND l.foco = ?)
+            )
                 GROUP BY
                 r.cod_rst,
                 r.fecha,
                 r.obs_rst;
         ";
 
-        $params = [$_SESSION['cod_emp'] ?? $_GET['cod_emp']];
+        $params = [$codEmp, $_SESSION['foco']];
 
         /* ===========================
         VALIDAR SI TODOS LOS FILTROS ESTÁN VACÍOS
@@ -1401,6 +1441,10 @@ class LeadsModels
             ON tp.id_tipo_trans = r.tipo_trans_id
 
         WHERE r.cod_emp = ? AND r.user_id = 18
+        AND (
+            l.estado_leads_id != '6'
+            OR (l.estado_leads_id = '6' AND l.foco = ?)
+        )
         
 
         GROUP BY
@@ -1414,7 +1458,7 @@ class LeadsModels
         AND YEAR(r.fecha) = ? 
         , $mes, $anio*/
         $stmtDia = $pdo->prepare($sqlPorDia);
-        $stmtDia->execute([$codEmp]);
+        $stmtDia->execute([$codEmp,$_SESSION['foco']]);
         $porDia = $stmtDia->fetchAll(PDO::FETCH_ASSOC);
 
         /* =====================================================
@@ -1437,7 +1481,10 @@ class LeadsModels
                 ON el.id_estado_leads = l.estado_leads_id
 
             WHERE r.cod_emp = ? AND r.user_id = 18
-
+            AND (
+                el.nombre != 'Matriculado'
+                OR (el.nombre = 'Matriculado' AND l.foco = ?)
+            )
             GROUP BY
                 asesor,
                 el.id_estado_leads,
@@ -1451,7 +1498,7 @@ class LeadsModels
             AND YEAR(r.fecha) = ? 
             , $mes, $anio*/
         $stmtEstado = $pdo->prepare($sqlPorEstado);
-        $stmtEstado->execute([$codEmp]);
+        $stmtEstado->execute([$codEmp,$_SESSION['foco']]);
         $porEstado = $stmtEstado->fetchAll(PDO::FETCH_ASSOC);
 
         /* =====================================================

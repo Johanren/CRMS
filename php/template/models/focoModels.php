@@ -247,6 +247,7 @@ class focoModels
         /* Ventas estado 6 válidas */
         COUNT(DISTINCT CASE 
             WHEN l.estado_leads_id = 6
+            AND l.foco = ?
             AND l.Nfactura IS NOT NULL
             AND l.valorF IS NOT NULL
             AND l.metodoF IS NOT NULL
@@ -277,6 +278,7 @@ class focoModels
     ";
 
         $params = [
+            $_SESSION["foco"],
             $_SESSION["cod_emp"],
             $_SESSION["foco"]
         ];

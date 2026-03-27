@@ -19,9 +19,9 @@ if (isset($_POST['action'])) {
     switch ($_POST['action']) {
         case 'listar':
             // Importante: Ordenar por prioridad descendente desde la base de datos
-            $sql = "SELECT * FROM prioridad ORDER BY CAST(pri_pri AS UNSIGNED) DESC";
+            $sql = "SELECT * FROM prioridad WHERE foc_pri = :foc_pri ORDER BY CAST(pri_pri AS UNSIGNED) DESC";
             $stmt = $conectar->prepare($sql);
-            $stmt->execute();
+            $stmt->execute([':foc_pri' => 56]);
             echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
             break;
 
@@ -53,6 +53,7 @@ if (isset($_POST['action'])) {
             $stmt->execute();
             echo json_encode(["success" => true]);
             break;
+        
     }
     exit;
 }
