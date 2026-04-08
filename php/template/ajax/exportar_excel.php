@@ -1181,50 +1181,133 @@ switch ($tipo) {
         $writer->save("php://output");
         exit;
         break;
-    case "perdido": 
+    case "perdido":
 
-        $dataMotivos = LeadsControllers::reporteLeadsPastelMotivo();
+        $data = LeadsControllers::reporteLeadsPastelMotivo();
 
         $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
-        $sheet->setTitle("Reporte por Motivos");
+        $sheet->setTitle("Reporte Pivot Motivos");
 
-        $sheet->setCellValue("A1", "MOTIVO / ESTADO");
-        $sheet->setCellValue("B1", "CANTIDAD");
-
-        $sheet->getStyle("A1:B1")->getFont()->setBold(true);
-        $sheet->getStyle("A1:B1")->getAlignment()->setHorizontal('center');
-
-        $fila = 2;
-        if (!empty($dataMotivos)) {
-            foreach ($dataMotivos as $reg) {
-                $sheet->setCellValue("A{$fila}", $reg['estado']);
-                $sheet->setCellValue("B{$fila}", (int)$reg['cantidad']);
-                $fila++;
-            }
-
-            // 4. FILA DE TOTALES
-            $sheet->setCellValue("A{$fila}", "TOTAL GENERAL");
-            // Fórmula SUM para la columna B
-            $sheet->setCellValue("B{$fila}", "=SUM(B2:B" . ($fila - 1) . ")");
-
-            // Estilos finales
-            $sheet->getStyle("A{$fila}:B{$fila}")->getFont()->setBold(true);
-            $sheet->getStyle("A1:B{$fila}")->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
-
-            // Ajuste automático de columnas
-            $sheet->getColumnDimension('A')->setAutoSize(true);
-            $sheet->getColumnDimension('B')->setAutoSize(true);
+        if (empty($data)) {
+            die("No hay datos");
         }
 
-        // 5. SALIDA
+        // 🔹 1. Obtener asesores y estados únicos
+        $asesores = [];
+        $estados = [];
+
+        foreach ($data as $row) {
+            $asesores[$row['asesor']] = true;
+            $estados[$row['estado']] = true;
+        }
+
+        $asesores = array_keys($asesores);
+        $estados = array_keys($estados);
+
+        // 🔹 2. Crear matriz pivot
+        $tabla = [];
+
+        foreach ($estados as $estado) {
+            foreach ($asesores as $asesor) {
+                $tabla[$estado][$asesor] = 0;
+            }
+            $tabla[$estado]['total'] = 0;
+        }
+
+        // 🔹 3. Llenar datos
+        foreach ($data as $row) {
+            $asesor = $row['asesor'];
+            $estado = $row['estado'];
+            $cantidad = (int)$row['cantidad'];
+
+            $tabla[$estado][$asesor] += $cantidad;
+            $tabla[$estado]['total'] += $cantidad;
+        }
+
+        // 🔹 4. Totales por asesor
+        $totalesAsesor = array_fill_keys($asesores, 0);
+        $totalGeneral = 0;
+
+        foreach ($estados as $estado) {
+            foreach ($asesores as $asesor) {
+                $totalesAsesor[$asesor] += $tabla[$estado][$asesor];
+            }
+            $totalGeneral += $tabla[$estado]['total'];
+        }
+
+        // 🔹 5. ENCABEZADOS
+        $sheet->setCellValue("A1", "ESTADO");
+
+        $col = 2; // B
+        foreach ($asesores as $asesor) {
+            $sheet->setCellValueByColumnAndRow($col, 1, $asesor);
+            $col++;
+        }
+
+        $sheet->setCellValueByColumnAndRow($col, 1, "TOTAL");
+
+        // 🎨 Estilo encabezado
+        $sheet->getStyle("A1:" . $sheet->getHighestColumn() . "1")->applyFromArray([
+            'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
+            'alignment' => ['horizontal' => 'center'],
+            'fill' => [
+                'fillType' => 'solid',
+                'startColor' => ['rgb' => '4472C4']
+            ]
+        ]);
+
+        // 🔹 6. LLENAR FILAS
+        $fila = 2;
+
+        foreach ($estados as $estado) {
+
+            $sheet->setCellValue("A{$fila}", $estado);
+
+            $col = 2;
+            foreach ($asesores as $asesor) {
+                $sheet->setCellValueByColumnAndRow($col, $fila, $tabla[$estado][$asesor]);
+                $col++;
+            }
+
+            $sheet->setCellValueByColumnAndRow($col, $fila, $tabla[$estado]['total']);
+
+            $fila++;
+        }
+
+        // 🔹 7. FILA TOTAL FINAL
+        $sheet->setCellValue("A{$fila}", "TOTAL");
+
+        $col = 2;
+        foreach ($asesores as $asesor) {
+            $sheet->setCellValueByColumnAndRow($col, $fila, $totalesAsesor[$asesor]);
+            $col++;
+        }
+
+        $sheet->setCellValueByColumnAndRow($col, $fila, $totalGeneral);
+
+        // 🔹 8. ESTILOS FINALES
+        $sheet->getStyle("A{$fila}:" . $sheet->getHighestColumn() . "{$fila}")
+            ->getFont()->setBold(true);
+
+        $sheet->getStyle("A1:" . $sheet->getHighestColumn() . "{$fila}")
+            ->getBorders()->getAllBorders()
+            ->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+
+        // 🔹 9. AUTO SIZE
+        foreach (range('A', $sheet->getHighestColumn()) as $colLetra) {
+            $sheet->getColumnDimension($colLetra)->setAutoSize(true);
+        }
+
+        // 🔹 10. DESCARGA
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment; filename="Reporte_Motivos_Leads_' . date('dmY') . '.xlsx"');
+        header('Content-Disposition: attachment; filename="Reporte_Pivot_Motivos_' . date('dmY') . '.xlsx"');
         header('Cache-Control: max-age=0');
 
         $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
         $writer->save("php://output");
         exit;
+
         break;
     default:
         die("Tipo de reporte no válido");

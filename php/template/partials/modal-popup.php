@@ -22178,9 +22178,13 @@ $page = end( $link_array );
                         
                     </div>-->
                     <input class="form-control" name="tit_not" id="tit_not" type="hidden">
+                    <div class="mb-3" id="listar_motivo" style="display:none;">
+                        <label class="form-label">Motivo <span class="text-danger"> *</span></label>
+                        <select name="motivo" id="motivo" class="form-control"></select>
+                    </div>
                     <div class="mb-3">
                         <label class="form-label">Nota <span class="text-danger"> *</span></label>
-                        <textarea class="form-control" name="desc_not" id="desc_not"  rows="4"></textarea>
+                        <textarea class="form-control" name="desc_not" id="desc_not" required rows="4"></textarea>
                     </div>
                     <button type="button" id="btnMostrarAtividad" class="btn btn-outline-primary">
                         <i class="ti ti-note me-1"></i> Agregar Proxima actividad

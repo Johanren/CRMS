@@ -200,7 +200,7 @@ class LeadsModels
         return "ok";
     }
 
-    public static function listarLeads($texto = "", $asesor = [], $carreras = [], $horario = [], $interes = [], $medio = [], $fuente = [], $campana = [], $accion = [], $departamento = [], $ciudad = [], $barrio = [], $estados = [], $fecha_inicio = "", $fecha_fin = "", $tipo = '')
+    public static function listarLeads($texto = "", $asesor = [], $carreras = [], $horario = [], $interes = [], $medio = [], $fuente = [], $campana = [], $accion = [], $departamento = [], $ciudad = [], $barrio = [], $estados = [], $fecha_inicio = "", $fecha_fin = "", $tipo = '', $estadosPer = [])
     {
         $sql = "SELECT 
                 l.*, c.nombres, c.apellidos, c.email, c.telefono_principal, 
@@ -214,6 +214,8 @@ class LeadsModels
             LEFT JOIN user u ON u.id_user = l.user_id 
             LEFT JOIN estado_leads e ON e.id_estado_leads = l.estado_leads_id 
             LEFT JOIN horario h ON l.horario_id = h.id_horario
+            LEFT JOIN motivo_estado_leads m ON m.id_mot = l.est_motivo
+            LEFT JOIN motivo_perdido mt ON mt.id_per = m.per_id
             WHERE l.cod_emp = ?
             AND (
                 e.nombre != 'Matriculado'
@@ -248,7 +250,8 @@ class LeadsModels
             'l.departamento_id' => $departamento,
             'l.ciudad_id' => $ciudad,
             'l.barrio_id' => $barrio,
-            'e.nombre' => $estados
+            'e.nombre' => $estados,
+            'mt.desc_per' => $estadosPer
         ];
 
         foreach ($filtros as $columna => $valores) {
@@ -388,10 +391,21 @@ class LeadsModels
 
     public static function reporteLeadsPastelMotivo()
     {
-        $sql = "SELECT m.desc_mot AS estado, COUNT(*) AS cantidad
-        FROM leads l INNER JOIN motivo_estado_leads m ON m.id_mot = l.est_motivo 
+        $sql = "SELECT 
+            u.id_user,
+            u.nombres AS asesor,
+            COALESCE(mt.desc_per, 'Otros') AS estado,
+            COUNT(*) AS cantidad
+        FROM motivo_estado_leads m
+        LEFT JOIN motivo_perdido mt 
+            ON mt.id_per = m.per_id
+        INNER JOIN leads l 
+            ON l.est_motivo = m.id_mot
+        INNER JOIN user u 
+            ON u.id_user = l.user_id
         WHERE l.cod_emp = ?
-        GROUP BY estado;";
+        GROUP BY u.nombres, mt.desc_per
+        ORDER BY estado, asesor;";
         $conn = new Conexion();
         $conectar = $conn->conectar();
         $stmt = $conectar->prepare($sql);

@@ -3,11 +3,12 @@
 class MotivoModels
 {
     public static function registrarMotivo($data) {
-        $sql = "INSERT INTO motivo_estado_leads (desc_mot, eslead_mot) VALUES (?, 7)";
+        $sql = "INSERT INTO motivo_estado_leads (per_id, desc_mot, eslead_mot) VALUES (?, ?, 7)";
         $conn = new Conexion();
         $conectar = $conn->conectar();
         $stmt = $conectar->prepare($sql);
-        $stmt->bindParam(1, $data['desc_not']);
+        $stmt->bindParam(1, $data['motivo']);
+        $stmt->bindParam(2, $data['desc_not']);
         $stmt->execute();
         return $conectar->lastInsertId();
     }
@@ -18,6 +19,15 @@ class MotivoModels
         $conectar = $conn->conectar();
         $stmt = $conectar->prepare($sql);
         $stmt->bindParam(1, $id);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public static function listarMotivosUl(){
+        $sql = "SELECT * FROM `motivo_perdido`";
+        $conn = new Conexion();
+        $conectar = $conn->conectar();
+        $stmt = $conectar->prepare($sql);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }

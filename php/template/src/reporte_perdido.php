@@ -70,62 +70,35 @@
                     </div>
                 </div>-->
                 <style>
-                    /* ===== TABLAS TIPO EXCEL ===== */
-                    .table-excel {
-                        width: 100%;
-                        border-collapse: collapse;
-                        font-size: 13px;
-                        background: #fff;
+                    #rst_reports .table td {
+                        padding: 8px 12px !important;
+                        vertical-align: middle;
                     }
 
-                    .table-excel thead th {
-                        background: #f8f9fa;
-                        color: #333;
-                        font-weight: 600;
-                        text-align: center;
-                        border: 1px solid #dee2e6;
-                        padding: 8px;
-                        white-space: nowrap;
+                    #rst_reports .table th {
+                        padding: 10px !important;
+                        text-transform: uppercase;
+                        font-size: 0.75rem;
                     }
 
-                    .table-excel tbody td {
-                        border: 1px solid #dee2e6;
-                        padding: 6px;
-                        text-align: center;
-                    }
-
-                    .table-excel tbody tr:hover {
-                        background-color: #f1f5f9;
-                    }
-
-                    /* Columna Día / Estado */
-                    .table-excel td:first-child {
-                        font-weight: 600;
-                        background: #f8f9fa;
-                    }
-
-                    /* ===== FILA TOTAL (VERDE) ===== */
-                    .table-total {
-                        background-color: #d1fae5 !important;
-                        color: #065f46;
+                    .bg-total-fila {
+                        background-color: #f8f9fa !important;
                         font-weight: bold;
                     }
 
-                    /* ===== CONTENEDOR RESPONSIVE ===== */
-                    .table-responsive-excel {
-                        width: 100%;
-                        overflow-x: auto;
-                        margin-bottom: 20px;
+                    .bg-gran-total {
+                        background-color: #0d6efd !important;
+                        color: white !important;
                     }
 
-                    /* Scroll bonito */
-                    .table-responsive-excel::-webkit-scrollbar {
-                        height: 8px;
+                    .cursor-pointer {
+                        cursor: pointer;
+                        transition: all 0.2s;
                     }
 
-                    .table-responsive-excel::-webkit-scrollbar-thumb {
-                        background: #cbd5e1;
-                        border-radius: 4px;
+                    .cursor-pointer:hover {
+                        background-color: rgba(13, 110, 253, 0.1) !important;
+                        transform: scale(1.02);
                     }
 
                     /* ===== LOADER ===== */
@@ -172,6 +145,65 @@
                     <div class="spinner"></div>
                     <p>Cargando reporte...</p>
                 </div>
+                <div id="contenedorLeadsFoco" class="mt-4 d-none">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                            <h6 class="mb-0 fw-bold">
+                                Leads filtrados por asesor y motivo
+                            </h6>
+
+                            <button id="btnAbrirModalMensajes" class="btn btn-primary btn-sm">
+                                Enviar mensajes
+                            </button>
+                        </div>
+                        <div class="alert alert-info d-flex justify-content-between align-items-center">
+                            <strong>Resultados del filtro:</strong>
+                            <span class="badge bg-dark fs-12"><span id="contadorTotalLeads">0</span> Leads encontrados</span>
+                        </div>
+                        <div class="card-body table-responsive">
+                            <table class="table table-nowrap" id="leads_list">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Nombre</th>
+                                        <th>Carrera</th>
+                                        <th>Telefono</th>
+                                        <th>Estado</th>
+                                        <th>Asesor</th>
+                                        <th>Fecha creación</th>
+                                        <th>Gestion</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal fade" id="modalGestionLead" tabindex="-1">
+                    <div class="modal-dialog modal-dialog-centered modal-xxl-custom">
+                        <div class="modal-content">
+
+                            <div class="modal-header">
+                                <h5 class="modal-title">Gestión de Lead</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+
+                            <div class="modal-body p-0">
+                                <iframe id="frameGestion"
+                                    src=""
+                                    style="width:100%; height:80vh; border:none;">
+                                </iframe>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <style>
+                    .modal-xxl-custom {
+                        max-width: 95%;
+                        width: 95%;
+                    }
+                </style>
                 <!-- /Contact List -->
 
             </div>
@@ -195,10 +227,9 @@ $content = ob_get_clean();
 require_once '../partials/main.php'; ?>
 
 <script>
-    function cargarReporteMotivos() {
+    function cargarReporteMotivosPivot() {
         const loader = $('#loaderFoco');
-        const contenedor = $('#tablaMotivos'); // Asegúrate de tener este ID en tu HTML
-
+        const contenedor = $('#tablaMotivos');
         loader.removeClass('d-none');
 
         $.ajax({
@@ -206,65 +237,144 @@ require_once '../partials/main.php'; ?>
             type: 'GET',
             dataType: 'json',
             success: function(data) {
-                let totalGeneral = 0;
+                if (!data || data.length === 0) {
+                    contenedor.html('<div class="alert alert-warning">No hay datos disponibles</div>');
+                    return;
+                }
 
-                // Construir estructura básica
+                let asesoresSet = new Set();
+                let estadosSet = new Set();
+                let mapaIdAsesores = {}; // 🔹 Para guardar la relación Nombre -> ID
+
+                data.forEach(r => {
+                    const nomAsesor = r.asesor || "SIN ASESOR";
+                    asesoresSet.add(nomAsesor);
+                    estadosSet.add(r.estado || "SIN ESTADO");
+
+                    // Guardamos el ID asociado al nombre del asesor
+                    if (r.id_user && !mapaIdAsesores[nomAsesor]) {
+                        mapaIdAsesores[nomAsesor] = r.id_user;
+                    }
+                });
+
+                let asesores = Array.from(asesoresSet).sort();
+                let estados = Array.from(estadosSet).sort();
+
+                let tabla = {};
+                estados.forEach(e => {
+                    tabla[e] = {};
+                    asesores.forEach(a => {
+                        tabla[e][a] = 0;
+                    });
+                    tabla[e]['total'] = 0;
+                });
+
+                data.forEach(r => {
+                    let asesor = r.asesor || "SIN ASESOR";
+                    let estado = r.estado || "SIN ESTADO";
+                    let cantidad = parseInt(r.cantidad) || 0;
+                    if (tabla[estado]) {
+                        tabla[estado][asesor] += cantidad;
+                        tabla[estado]['total'] += cantidad;
+                    }
+                });
+
+                let totalesAsesor = {};
+                asesores.forEach(a => totalesAsesor[a] = 0);
+                let granTotal = 0;
+
+                estados.forEach(e => {
+                    asesores.forEach(a => {
+                        totalesAsesor[a] += tabla[e][a];
+                    });
+                    granTotal += tabla[e]['total'];
+                });
+
                 let html = `
+            <style>
+                #tablaMotivos .table td { padding: 8px 12px !important; vertical-align: middle; }
+                #tablaMotivos .table th { padding: 10px !important; text-transform: uppercase; font-size: 0.75rem; }
+                .bg-total-fila { background-color: #f8f9fa !important; font-weight: bold; }
+                .bg-gran-total { background-color: #0d6efd !important; color: white !important; }
+                .cursor-pointer { cursor: pointer; transition: all 0.2s; }
+                .cursor-pointer:hover { background-color: rgba(13, 110, 253, 0.1) !important; transform: scale(1.01); }
+                .text-muted-dash { color: #adb5bd; font-weight: normal; }
+            </style>
+            
             <div class="table-responsive">
-                <table id="tbl_motivos_leads" class="table table-striped table-bordered table-excel" style="width:100%">
-                    <thead>
+                <table id="tablaPivot" class="table table-bordered table-striped table-hover table-sm">
+                    <thead class="table-dark text-center">
                         <tr>
-                            <th>MOTIVO / ESTADO</th>
-                            <th class="text-center">CANTIDAD</th>
+                            <th class="text-start">Estado / Asesor</th>
+                            ${asesores.map(a => `<th>${a}</th>`).join('')}
+                            <th>Total</th>
                         </tr>
                     </thead>
                     <tbody>`;
 
-                data.forEach(r => {
-                    const cant = parseInt(r.cantidad) || 0;
-                    totalGeneral += cant;
+                estados.forEach(e => {
+                    html += `<tr><td class="text-start"><strong>${e}</strong></td>`;
+
+                    asesores.forEach(a => {
+                        const valor = tabla[e][a];
+                        const idUser = mapaIdAsesores[a] || ""; // Sacamos el ID del mapa
+
+                        if (valor > 0) {
+                            // 🔹 Agregamos clase y data-attributes
+                            html += `
+                        <td class="abrir-mensajes-foco text-center text-primary fw-bold cursor-pointer"
+                            data-estado="${e}" 
+                            data-user="${idUser}">
+                            ${valor}
+                        </td>`;
+                        } else {
+                            html += `<td class="text-center text-muted-dash">-</td>`;
+                        }
+                    });
+
+                    // Total Fila (Por Estado, todos los asesores)
                     html += `
-                    <tr>
-                        <td>${r.estado}</td>
-                        <td class="text-center">${cant}</td>
-                    </tr>`;
+                    <td class="abrir-mensajes-foco text-center bg-total-fila text-primary fw-bold cursor-pointer"
+                        data-estado="${e}" 
+                        data-user="TODOS">
+                        ${tabla[e]['total']}
+                    </td>
+                </tr>`;
                 });
 
                 html += `</tbody>
-                    <tfoot>
-                        <tr class="table-total">
-                            <th>TOTAL GENERAL</th>
-                            <th class="text-center">${totalGeneral}</th>
+                    <tfoot class="table-secondary text-center">
+                        <tr>
+                            <td class="text-start"><strong>TOTAL GENERAL</strong></td>
+                            ${asesores.map(a => `
+                                <td class="abrir-mensajes-foco text-primary fw-bold cursor-pointer"
+                                    data-estado="TODOS" 
+                                    data-user="${mapaIdAsesores[a] || ""}">
+                                    ${totalesAsesor[a]}
+                                </td>
+                            `).join('')}
+                            <td class="abrir-mensajes-foco bg-gran-total fw-bold cursor-pointer"
+                                data-estado="TODOS" 
+                                data-user="TODOS">
+                                ${granTotal}
+                            </td>
                         </tr>
                     </tfoot>
                 </table>
             </div>`;
 
                 contenedor.html(html);
-
-                // Inicializar DataTable
-                $('#tbl_motivos_leads').DataTable({
-                    "language": {
-                        "url": "//cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json" // Traducción al español
-                    },
-                    "order": [
-                        [1, "desc"]
-                    ], // Ordenar por cantidad de mayor a menor
-                    "pageLength": 10,
-                    "dom": '<"d-flex justify-content-between"lf>rtip'
-                });
             },
             error: function(e) {
-                console.error("Error al obtener datos:", e);
+                contenedor.html('<div class="alert alert-danger">Error al cargar el reporte</div>');
             },
             complete: function() {
                 loader.addClass('d-none');
             }
         });
     }
-
     // Ejecutar al cargar
     $(document).ready(function() {
-        cargarReporteMotivos();
+        cargarReporteMotivosPivot();
     });
 </script>

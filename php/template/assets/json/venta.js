@@ -601,22 +601,70 @@ window.asesoresSeleccionadosIds = [];
    ========================================================== */
 document.addEventListener("click", function (e) {
     if (e.target.classList.contains("abrir-mensajes-foco")) {
-
+        
+        // 1. Detectar si el clic viene de la tabla Pivot (Estados/Asesores)
+        // o de la tabla RST (Programas/Horarios)
         const programa = e.target.dataset.programa;
-        const jornada = e.target.dataset.jornada;
-
-        console.log("Programa seleccionado:", programa);
-        console.log("Jornada seleccionada:", jornada);
+        const jornada  = e.target.dataset.jornada;
+        const estado   = e.target.dataset.estado; // Nuevo
+        const user     = e.target.dataset.user;   // Nuevo (ID)
 
         const contenedor = document.getElementById("contenedorLeadsFoco");
         if (contenedor) contenedor.classList.remove("d-none");
 
-        window.programaSeleccionado = programa;
-        window.jornadaSeleccionada = jornada;
-
-        listarLeadsDesdeFoco(programa, jornada);
+        // Si existen 'estado' o 'user', es que venimos de la tabla Pivot
+        if (estado || user) {
+            listarLeadsDesdeFocoPivot(estado, user);
+        } else {
+            // Si no, usamos la lógica anterior de programa/jornada
+            window.programaSeleccionado = programa;
+            window.jornadaSeleccionada = jornada;
+            listarLeadsDesdeFoco(programa, jornada);
+        }
     }
 });
+
+// Nueva función espejo para no alterar la original listarLeadsDesdeFoco
+function listarLeadsDesdeFocoPivot(estadoNombre, userId) {
+    const params = new URLSearchParams();
+    params.append("accion", "listar_leads");
+
+    // 1. Lógica de Estados
+    if (estadoNombre && estadoNombre !== "TODOS") {
+        params.append("estadosPer", JSON.stringify([estadoNombre]));
+    } else {
+        // Si es TODOS, capturamos los que estén marcados en el filtro lateral por defecto
+        const estadosValues = Array.from(document.querySelectorAll('#listar_filtro_estado input[type="checkbox"]:checked'))
+            .map(cb => cb.value).filter(v => v);
+        if (estadosValues.length > 0) params.append("estadosPer", JSON.stringify(estadosValues));
+    }
+
+    // 2. Lógica de Asesor (User)
+    if (userId && userId !== "TODOS") {
+        params.append("asesor", JSON.stringify([userId]));
+    } else {
+        const asesoresIds = Array.from(document.querySelectorAll('#listar_filtro_user input[type="checkbox"]:checked'))
+            .map(cb => cb.value).filter(v => v);
+        if (asesoresIds.length > 0) params.append("asesor", JSON.stringify(asesoresIds));
+    }
+
+    // 3. Mantener otros filtros (Carreras/Horarios) que ya estén marcados
+    const carrerasIds = Array.from(document.querySelectorAll('#listar_filtro_carrera input[type="checkbox"]:checked'))
+        .map(cb => cb.value).filter(v => v);
+    if (carrerasIds.length > 0) params.append("carreras", JSON.stringify(carrerasIds));
+
+    params.append("lead_reporte_CRM_FOCO", "true");
+
+    fetch("ajax/ajax.php?" + params.toString())
+        .then(res => res.json())
+        .then(data => {
+            if (document.getElementById("leads_list")) {
+                inicializarDataTableLeads(data);
+                document.getElementById("contenedorLeadsFoco").scrollIntoView({ behavior: 'smooth' });
+            }
+        })
+        .catch(err => console.error("Error al listar leads pivot:", err));
+}
 
 function listarLeadsDesdeFoco(programaNombre, jornadaNombre) {
     const params = new URLSearchParams();

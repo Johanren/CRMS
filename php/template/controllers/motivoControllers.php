@@ -17,4 +17,9 @@ class MotivoControllers
     {
         return MotivoModels::listarMotivos($id);
     }
+
+    public static function listarMotivosUl()
+    {
+        return MotivoModels::listarMotivosUl();
+    }
 }

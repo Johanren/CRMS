@@ -57,6 +57,7 @@ foreach ($camposCliente as $jsonKey => $dbField) {
 /* ====== CAMPOS LEAD ====== */
 
 $camposLead = [
+    'user_id'     => 'l.user_id',
     'estado_lead' => 'l.estado_leads_id',
     'horario_id'  => 'l.horario_id',
     'carrera_id'  => 'l.carrera_id',
@@ -121,7 +122,7 @@ try {
         $stmtNota->execute([
             $data['desc_not'],
             $lead_id,
-            $asesor_id,
+            18,//$asesor_id,
             $cod_emp
         ]);
     }
@@ -132,14 +133,14 @@ try {
             VALUES (?,?,?,?,?,?)";
 
     $stmt = $conn->prepare($sql);
-    $stmt->execute([
+    /*$stmt->execute([
         $lead_id,
         'Lead Actualizado Por TEO',
         2,
-        $asesor_id,
+        18,//$asesor_id,
         $cod_emp,
         1
-    ]);
+    ]);*/
 
     $conn->commit();
 

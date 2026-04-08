@@ -917,7 +917,8 @@ if (isset($_GET['accion'])) {
             $fecha_inicio = $_GET['fecha_inicio'] ?? null;
             $fecha_fin = $_GET['fecha_fin'] ?? null;
             $tipo = $_GET['lead_reporte_CRM_FOCO'] ?? null;
-            echo json_encode($leads->listarLeads($texto, $asesor, $carreras, $horario, $interes, $medio, $fuente, $campana, $accion, $departamento, $ciudad, $barrio, $estados, $fecha_inicio, $fecha_fin, $tipo));
+            $estadosPer = isset($_GET['estadosPer']) ? json_decode($_GET['estadosPer']) : [];
+            echo json_encode($leads->listarLeads($texto, $asesor, $carreras, $horario, $interes, $medio, $fuente, $campana, $accion, $departamento, $ciudad, $barrio, $estados, $fecha_inicio, $fecha_fin, $tipo, $estadosPer));
             break;
         case 'listar_leads_reporte':
 
@@ -1147,6 +1148,19 @@ if (isset($_GET['accion'])) {
         /*FOCO */
         case 'consultarFocoFecha':
             echo json_encode($foco->consultarFocoFecha());
+            break;
+
+        /*MOTIVO */
+
+        case 'listar_motivos':
+            $lista = $motivo->listarMotivosUl();
+            $option = "<option value=''>Seleccione Motivo</option>";
+            foreach ($lista as $a) {
+                $option .= "
+                    <option value='{$a['id_per']}'>{$a['desc_per']}</option>
+                ";
+            }
+            echo json_encode(["option" => $option]);
             break;
 
         default:

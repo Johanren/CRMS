@@ -1885,14 +1885,26 @@ function abrirModalPerdido(nombreEstado) {
     window.abriendoPerdido = true;
     document.getElementById("tit_not").value = nombreEstado;
 
-    // Cambiar ID del formulario
     const form = document.getElementById("formNotas");
     form.id = "formMotivo";
 
-    // Ocultar adjunto
     document.querySelector('[name="desc_arch[]"]').closest('.mb-3').style.display = "none";
 
-    // Limpiar input file
+    // Muestra el contenedor y HACE QUE SEA OBLIGATORIO
+    const divMotivo = document.getElementById("listar_motivo");
+    const selectMotivo = document.getElementById("motivo");
+    
+    divMotivo.style.display = "block";
+    selectMotivo.required = true; // <--- AGREGADO
+
+    fetch("ajax/ajax.php?accion=listar_motivos")
+        .then(res => res.json())
+        .then(data => {
+            if (selectMotivo) {
+                selectMotivo.innerHTML = data.option;
+            }
+        });
+
     document.getElementById("desc_arch").value = "";
     document.getElementById("preview-archivos").innerHTML = "";
 
@@ -1901,28 +1913,25 @@ function abrirModalPerdido(nombreEstado) {
 }
 
 document.getElementById("add_notes").addEventListener("show.bs.modal", function () {
-    // Si el form tiene el ID cambiado, restaurarlo
     const form = document.getElementById("formMotivo") || document.getElementById("formNotas");
 
-    // Detectar si NO se abrió desde abrirModalPerdido()
-    // (porque esa función siempre cambia el ID)
     if (form.id === "formMotivo" && !window.abriendoPerdido) {
         form.id = "formNotas";
 
-        // Mostrar adjunto
+        // Oculta el contenedor y QUITA EL REQUERIDO
+        document.getElementById("listar_motivo").style.display = "none";
+        document.getElementById("motivo").required = false; // <--- AGREGADO
+        document.getElementById("motivo").innerHTML = ""; // Limpia las opciones
+
         document.querySelector('[name="desc_arch[]"]').closest('.mb-3').style.display = "block";
 
-        // Limpiar
-        //document.getElementById("tit_not").value = "";
         document.getElementById("desc_not").value = "";
         document.getElementById("desc_arch").value = "";
         document.getElementById("preview-archivos").innerHTML = "";
     }
 
-    // Reset flag
     window.abriendoPerdido = false;
 });
-
 
 function abrirModalAplazado(nombreEstado) {
 

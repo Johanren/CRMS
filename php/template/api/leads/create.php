@@ -108,7 +108,7 @@ try {
 
     $stmt = $conn->prepare($sql);
     $stmt->execute([
-        18,
+        $asesor_id,
         $cliente_id,
         $carrera_id,
         $horario_id,
@@ -134,7 +134,7 @@ try {
             $data['tit_not'],
             $data['desc_not'],
             $lead_id,
-            $asesor_id,
+            18,//$asesor_id,
             $cod_emp
         ]);
     }
@@ -166,7 +166,7 @@ try {
         $lead_id,
         'Nuevo Lead Asignado Por TEO',
         2,
-        $asesor_id,
+        18,//$asesor_id,
         $cod_emp,
         1
     ]);
