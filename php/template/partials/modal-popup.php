@@ -33844,7 +33844,134 @@ $page = end( $link_array );
 <!-- End Modal  -->
 <?php }?>
 
-<?php if ($page == 'info_origen.php' || $page == 'venta.php' || $page == 'manage-users.php' || $page == 'roles-permissions.php' || $page == 'ciudad.php' || $page == 'barrio.php' || $page == 'programa.php' || $page == 'jornada.php' || $page == 'interes.php' || $page == 'medio.php' || $page == 'fuente.php' || $page == 'accion.php') {   ?>
+<?php if ($page == "campanas.php" || $page == 'info_origen.php' || $page == 'venta.php' || $page == 'manage-users.php' || $page == 'roles-permissions.php' || $page == 'ciudad.php' || $page == 'barrio.php' || $page == 'programa.php' || $page == 'jornada.php' || $page == 'interes.php' || $page == 'medio.php' || $page == 'fuente.php' || $page == 'accion.php') {   ?>
+
+<div class="offcanvas offcanvas-end offcanvas-large" tabindex="-1" id="offcampanaMedio_add">
+    <div class="offcanvas-header border-bottom">
+        <h5 class="mb-0" id="title-canvas-camp">Nueva campaña X medio</h5>
+        <button type="button"
+            class="btn-close custom-btn-close border p-1 me-0 d-flex align-items-center justify-content-center rounded-circle"
+            data-bs-dismiss="offcanvas" aria-label="Close">
+        </button>
+    </div>
+    <div class="offcanvas-body">
+        <form id="formCampanasMedio">
+            <div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Campaña <span class="text-danger">*</span></label>
+                            <select name="cam_cxm" id="cam_cxm" class="form-control"></select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Medio <span class="text-danger">*</span></label>
+                            <select name="med_cxm" id="medio" class="form-control"></select>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6" id="contenedor_fuente" style="display:none;">
+                        <div class="mb-3">
+                            <label class="form-label">Fuente <span class="text-danger">*</span></label>
+                            <select name="fue_cxm" id="fuente" class="form-control"></select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Fecha <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" id="fec_cxm" name="fec_cxm" required>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">RSC <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="rsc_cxm" name="rsc_cxm" required>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="d-flex align-items-center justify-content-end">
+                <button type="button" id="btnCerrarOffcanvas-campaMedio" data-bs-dismiss="offcanvas"
+                    class="btn btn-light me-2">Cancel</button>
+                <button type="submit" class="btn btn-primary" id="btncampanasMedio">Crear</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="offcanvas offcanvas-end offcanvas-large" tabindex="-1" id="offcampana_add">
+    <div class="offcanvas-header border-bottom">
+        <h5 class="mb-0" id="title-canvas-ciu">Nueva campaña</h5>
+        <button type="button"
+            class="btn-close custom-btn-close border p-1 me-0 d-flex align-items-center justify-content-center rounded-circle"
+            data-bs-dismiss="offcanvas" aria-label="Close">
+        </button>
+    </div>
+    <div class="offcanvas-body">
+        <form id="formCampanas">
+            <div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Nombre Campaña <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="nom_cam" name="nom_cam" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Fecha Campaña <span class="text-danger">*</span></label>
+                            <input type="date" value="<?php echo date("Y-m-d"); ?>" class="form-control" id="fre_cam" name="fre_cam" required>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Fecha Inicio Campaña <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" id="fini_cam" name="fini_cam" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Fecha Fin Campaña <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" id="ffin_cam" name="ffin_cam" required>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Detalle campaña <span class="text-danger">*</span></label>
+                            <textarea name="det_cam" id="det_cam" class="form-control" required></textarea>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Activar Campaña <span class="text-danger">*</span></label>
+                            <select name="act_cam" id="act_cam" class="form-control">
+                                <option value="">Seleccionar</option>
+                                <option value="SI">Si</option>
+                                <option value="NO">No</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="mb-3">
+                            <label class="form-label">Imagen <span class="text-danger">*</span></label>
+                            <input type="file" name="img_cam" id="img_cam" class="form-control">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex align-items-center justify-content-end">
+                <button type="button" id="btnCerrarOffcanvas-campa" data-bs-dismiss="offcanvas"
+                    class="btn btn-light me-2">Cancel</button>
+                <button type="submit" class="btn btn-primary" id="btncampanas">Crear</button>
+            </div>
+        </form>
+    </div>
+</div>
 
 <div class="offcanvas offcanvas-end offcanvas-large" tabindex="-1" id="offdepartamento_add">
     <div class="offcanvas-header border-bottom">
@@ -34381,3 +34508,4 @@ $page = end( $link_array );
     </div>
 </div>
 <?php } ?>
+

@@ -50,11 +50,36 @@ if (isset($_POST['accion'])) {
         case 'registrar_campana':
             echo json_encode($campana->agregarCampana($_POST));
             break;
+        //otras campanas
+        case 'registrar_campanas':
+            echo json_encode($campana->agregarCampanas($_POST, $_FILES));
+            break;
+        case 'registrar_campanasxmedio':
+            echo json_encode($campana->agregarCampanasxmedio($_POST));
+            break;
+        case 'actualizar_campanas':
+            echo json_encode($campana->actuaizarCampanas($_POST, $_FILES));
+            break;
         case 'consultar_campana':
             echo json_encode($campana->listarCampanaId($_POST['id']));
             break;
+        case 'consultar_campanas':
+            echo json_encode($campana->listarCampanasId($_POST['id']));
+            break;
+        case 'consultar_campanasxmedio':
+            echo json_encode($campana->listarCampanasxmedioId($_POST['id']));
+            break;
+        case 'actualizar_campanasxmedio':
+            echo json_encode($campana->actuaizarCampanasxmedio($_POST));
+            break;
         case 'eliminar_campana':
             echo json_encode($campana->eliminarCampana($_POST['id']));
+            break;
+        case 'eliminar_campanas':
+            echo json_encode($campana->eliminarCampanas($_POST['id']));
+            break;
+        case 'eliminar_campanasxmedio':
+            echo json_encode($campana->eliminarCampanasxmedio($_POST['id']));
             break;
         /*auditoria*/
         /*departamento*/
@@ -505,12 +530,29 @@ if (isset($_GET['accion'])) {
         case 'listar_campanas':
             echo json_encode($campana->listarCampana());
             break;
+        //Campanas nuevas
+        case 'listar_campana':
+            echo json_encode($campana->listarCampanas());
+            break;
+        case 'listar_campanaxmedio':
+            echo json_encode($campana->listarCampanasxmedio());
+            break;
         case 'listar_campana_option':
             $lista = $campana->listarCampana();
             $option = "<option value=''>Seleccione Campaña</option>";
             foreach ($lista as $a) {
                 $option .= "
                     <option value='{$a['id_campana']}'>{$a['codigo']} {$a['nombre']}</option>
+                ";
+            }
+            echo json_encode(["option" => $option]);
+            break;
+        case 'listar_campanas_option':
+            $lista = $campana->listarCampanas();
+            $option = "<option value=''>Seleccione Campaña</option>";
+            foreach ($lista as $a) {
+                $option .= "
+                    <option value='{$a['cod_cam']}'>{$a['nom_cam']}</option>
                 ";
             }
             echo json_encode(["option" => $option]);

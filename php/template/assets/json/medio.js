@@ -197,7 +197,7 @@ function obtenerPaginaActual() {
 if (obtenerPaginaActual() === 'medio.php') {
     listarMdo();
 }
-if (obtenerPaginaActual() === 'fuente.php' || obtenerPaginaActual() === 'leads.php' || obtenerPaginaActual() === 'leads-list.php' || obtenerPaginaActual() === 'leads-details.php') {
+if (obtenerPaginaActual() === 'campanas.php' ||  obtenerPaginaActual() === 'fuente.php' || obtenerPaginaActual() === 'leads.php' || obtenerPaginaActual() === 'leads-list.php' || obtenerPaginaActual() === 'leads-details.php') {
     listarMdsOption();
     listarMdsLi();
 }

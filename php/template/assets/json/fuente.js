@@ -199,7 +199,7 @@ function obtenerPaginaActual() {
 if (obtenerPaginaActual() === 'fuente.php') {
     listarFnt();
 }
-if (obtenerPaginaActual() === 'leads.php' || obtenerPaginaActual() === 'leads-list.php' || obtenerPaginaActual() === 'leads-details.php') {
+if (obtenerPaginaActual() === 'campanas.php' || obtenerPaginaActual() === 'leads.php' || obtenerPaginaActual() === 'leads-list.php' || obtenerPaginaActual() === 'leads-details.php') {
     listarFntLi();
     listarFntOption();
 }

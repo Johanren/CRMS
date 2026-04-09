@@ -128,6 +128,7 @@
                                     <i class="ti ti-dashboard"></i><span>Información Origen</span><span class="menu-arrow"></span>
                                 </a>
                                 <ul>
+                                    <li><a href="campanas.php" class="<?php echo ($page == 'campanas.php' || $page == '/') ? 'active' : ''; ?>">Campañas</a></li>
                                     <li class="<?php echo ($page == 'info_origen.php') ? 'active' : ''; ?>"><a href="info_origen.php"><span>Departamento</span></a></li>
                                     <li><a href="ciudad.php" class="<?php echo ($page == 'ciudad.php' || $page == '/') ? 'active' : ''; ?>">Ciudad</a></li>
                                     <li><a href="barrio.php" class="<?php echo ($page == 'barrio.php') ? 'active' : ''; ?>">Barrio</a></li>
