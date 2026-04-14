@@ -243,7 +243,10 @@
                     </div>
                 </div>
                 <!-- /Contact List -->
-
+                <div id="loaderFoco" class="loader-overlay d-none">
+                    <div class="spinner"></div>
+                    <p>Cargando reporte...</p>
+                </div>
             </div>
         </div>
         <!-- card end -->

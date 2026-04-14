@@ -485,3 +485,21 @@ $('#medio').on('change', function () {
         $("#contenedor_fuente").hide();
     }
 });
+
+$('#medio1').on('change', function () {
+    let id_med = $(this).val();
+
+    if (id_med !== "") {
+
+        $("#contenedor_fuente1").show();
+
+        fetch("ajax/ajax.php?accion=listar_fuente_por_medio&id_med=" + id_med)
+            .then(res => res.json())
+            .then(data => {
+                $("#fuente1").html(data.option).trigger("change.select2");
+            });
+
+    } else {
+        $("#contenedor_fuente1").hide();
+    }
+});

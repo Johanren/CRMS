@@ -601,13 +601,13 @@ window.asesoresSeleccionadosIds = [];
    ========================================================== */
 document.addEventListener("click", function (e) {
     if (e.target.classList.contains("abrir-mensajes-foco")) {
-        
+
         // 1. Detectar si el clic viene de la tabla Pivot (Estados/Asesores)
         // o de la tabla RST (Programas/Horarios)
         const programa = e.target.dataset.programa;
-        const jornada  = e.target.dataset.jornada;
-        const estado   = e.target.dataset.estado; // Nuevo
-        const user     = e.target.dataset.user;   // Nuevo (ID)
+        const jornada = e.target.dataset.jornada;
+        const estado = e.target.dataset.estado; // Nuevo
+        const user = e.target.dataset.user;   // Nuevo (ID)
 
         const contenedor = document.getElementById("contenedorLeadsFoco");
         if (contenedor) contenedor.classList.remove("d-none");
@@ -760,13 +760,13 @@ function inicializarDataTableLeads(data) {
 
     data.forEach(l => {
         const tr = document.createElement("tr");
-        const fueGestionadoHoy = l.fecha_ultima_gestion === hoy ?
+        const fueGestionadoHoy = l.fec_ult_gest === hoy ?
             '<span class="badge bg-success">OK</span>' :
             '<span class="badge bg-secondary">Pendiente</span>';
 
         const enlaceNombre = `
             <a href="javascript:void(0)" 
-               onclick="abrirModalGestion('${l.id_lead}', '${l.id_cliente}')" 
+               onclick="abrirModalGestion('${l.id_lead}', '${l.cliente_id}')" 
                class="text-primary fw-bold">
                ${l.nombres} ${l.apellidos}
             </a>`;
@@ -778,6 +778,8 @@ function inicializarDataTableLeads(data) {
             <td>${l.estado}</td>
             <td>${l.nombreAsesor}</td>
             <td>${l.fecha_creacion}</td>
+            <td>${l.fec_ult_gest || 'Sin fecha'}</td>
+            <td>${l.fec_ult_asig || 'Sin fecha'}</td>
             <td class="text-center">${fueGestionadoHoy}</td>
         `;
         tbody.appendChild(tr);
@@ -791,16 +793,31 @@ function inicializarDataTableLeads(data) {
 }
 
 function abrirModalGestion(idLead, idCliente) {
-
+    
     const url = `leads-details.php?id=${idLead}&id_cliente=${idCliente}&modal=1`;
-
     document.getElementById('frameGestion').src = url;
 
-    const myModal = new bootstrap.Modal(
-        document.getElementById('modalGestionLead')
-    );
-
+    const modalElement = document.getElementById('modalGestionLead');
+    let myModal = bootstrap.Modal.getInstance(modalElement);
+    if (!myModal) myModal = new bootstrap.Modal(modalElement);
     myModal.show();
+
+    const params = new URLSearchParams({
+        accion: "actualizar_fecha_gestion",
+        id_lead: idLead,       
+        cliente_id: idCliente  
+    });
+
+    fetch("ajax/ajax.php?" + params.toString())
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'success') {
+                console.log("✅ Fecha de gestión actualizada correctamente");
+            } else {
+                console.error("❌ Error:", data.message);
+            }
+        })
+        .catch(err => console.error("Error en la petición:", err));
 }
 
 /* ==========================================================

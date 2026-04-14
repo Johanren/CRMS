@@ -27,8 +27,8 @@ class CampanaModels
         $conn = new Conexion();
         $conectar = $conn->conectar();
         $stmt = $conectar->prepare($sql);
-
-        $stmt->bindParam(1, $data["cam_cxm"]);
+        $id = $data["cam_cxm"] ?? $data["id_campana"] ?? null;
+        $stmt->bindParam(1, $id);
         $stmt->bindParam(2, $data["med_cxm"]);
         $stmt->bindParam(3, $data["fue_cxm"]);
         $stmt->bindParam(4, $data["fec_cxm"]);
@@ -85,7 +85,7 @@ class CampanaModels
         $stmt->bindParam(9, $_SESSION['foco']);
 
         if ($stmt->execute()) {
-            return "ok";
+            return $conectar->lastInsertId();
         }
 
         return "error";
@@ -140,7 +140,7 @@ class CampanaModels
 
         return "error";
     }
-    
+
     public static function actuaizarCampanasxmedio($data)
     {
 
@@ -185,12 +185,48 @@ class CampanaModels
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public static function listarCampanasxmedio()
+    public static function listarCampanasPagi($page, $limit)
     {
-        $sql = "SELECT * FROM campana_x_medio_fuente cxm INNER JOIN campanas c ON c.cod_cam = cxm.cam_cxm INNER JOIN medio1 mo ON mo.cod_med = cxm.med_cxm INNER JOIN fuente1 ft ON ft.cod_fue = cxm.fue_cxm";
+        // Seguridad básica
+        $page  = max(1, (int)$page);
+        $limit = max(1, min(100, (int)$limit)); // limite entre 1 y 100
+        $offset = ($page - 1) * $limit;
+
+        $sql = "SELECT * FROM campanas LIMIT $limit OFFSET $offset";
         $conn = new Conexion();
         $conectar = $conn->conectar();
         $stmt = $conectar->prepare($sql);
+
+        $stmt->execute();
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $sqlTotal = "SELECT COUNT(*)
+             FROM campanas";
+
+        $stmtTotal = $conectar->prepare($sqlTotal);
+        $stmtTotal->execute();
+
+        $total = (int)$stmtTotal->fetchColumn();
+
+        /* ==============================
+        RESPUESTA
+        ============================== */
+
+        return [
+            "data"  => $data,
+            "total" => $total,
+            "page"  => $page,
+            "limit" => $limit
+        ];
+    }
+
+    public static function listarCampanasxmedio($id)
+    {
+        $sql = "SELECT * FROM campana_x_medio_fuente cxm INNER JOIN campanas c ON c.cod_cam = cxm.cam_cxm INNER JOIN medio1 mo ON mo.cod_med = cxm.med_cxm INNER JOIN fuente1 ft ON ft.cod_fue = cxm.fue_cxm WHERE cxm.cam_cxm = ?";
+        $conn = new Conexion();
+        $conectar = $conn->conectar();
+        $stmt = $conectar->prepare($sql);
+        $stmt->bindParam(1, $id);
 
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);

@@ -103,7 +103,7 @@ class LeadsModels
             )
             ";
 
-        $params = [$_SESSION['cod_emp'],$_SESSION['foco']];
+        $params = [$_SESSION['cod_emp'], $_SESSION['foco']];
 
         /* ===========================
         FILTRO POR ROL (Sincronizado con listarLeads)
@@ -223,7 +223,7 @@ class LeadsModels
             )
             ";
 
-        $params = [$_SESSION['cod_emp'],$_SESSION['foco']];
+        $params = [$_SESSION['cod_emp'], $_SESSION['foco']];
 
         // Seguridad por Rol
         if (isset($_SESSION['rol']) && $_SESSION['rol'] !== 'Admin' && $texto === "" && empty($asesor)) {
@@ -464,7 +464,7 @@ class LeadsModels
 
     public static function cambiarAsesor($id_lead, $user_id)
     {
-        $sql = "UPDATE leads SET user_id = ? WHERE id_lead = ?";
+        $sql = "UPDATE leads SET user_id = ?, fec_ult_asig = NOW() WHERE id_lead = ?";
         $conn = new Conexion();
         $conectar = $conn->conectar();
         $stmt = $conectar->prepare($sql);
@@ -689,7 +689,7 @@ class LeadsModels
         )
     ";
 
-        $params = [$codEmp,$_SESSION['foco']];
+        $params = [$codEmp, $_SESSION['foco']];
 
         // 2. Filtro por Texto
         if ($texto !== "") {
@@ -777,7 +777,7 @@ class LeadsModels
         AND YEAR(r.fecha) = ? 
         , $mes, $anio*/
         $stmtDia = $pdo->prepare($sqlPorDia);
-        $stmtDia->execute([$codEmp,$_SESSION['foco']]);
+        $stmtDia->execute([$codEmp, $_SESSION['foco']]);
         $porDia = $stmtDia->fetchAll(PDO::FETCH_ASSOC);
 
         /* =====================================================
@@ -817,7 +817,7 @@ class LeadsModels
             AND YEAR(r.fecha) = ? 
             , $mes, $anio*/
         $stmtEstado = $pdo->prepare($sqlPorEstado);
-        $stmtEstado->execute([$codEmp,$_SESSION['foco']]);
+        $stmtEstado->execute([$codEmp, $_SESSION['foco']]);
         $porEstado = $stmtEstado->fetchAll(PDO::FETCH_ASSOC);
 
         /* =====================================================
@@ -993,7 +993,7 @@ class LeadsModels
             )
             ";
 
-        $params = [$_SESSION['cod_emp'],$_SESSION['foco']];
+        $params = [$_SESSION['cod_emp'], $_SESSION['foco']];
 
         // Seguridad por Rol (Igual que la lista)
         /*if (isset($_SESSION['rol']) && $_SESSION['rol'] !== 'Admin' && $texto === "" && empty($asesor)) {
@@ -1085,7 +1085,7 @@ class LeadsModels
         )
         ";
 
-        $params = [$_SESSION['cod_emp'],$_SESSION['foco']];
+        $params = [$_SESSION['cod_emp'], $_SESSION['foco']];
 
         // Seguridad por Rol (Igual que la lista)
         /*if (isset($_SESSION['rol']) && $_SESSION['rol'] !== 'Admin' && $texto === "" && empty($asesor)) {
@@ -1472,7 +1472,7 @@ class LeadsModels
         AND YEAR(r.fecha) = ? 
         , $mes, $anio*/
         $stmtDia = $pdo->prepare($sqlPorDia);
-        $stmtDia->execute([$codEmp,$_SESSION['foco']]);
+        $stmtDia->execute([$codEmp, $_SESSION['foco']]);
         $porDia = $stmtDia->fetchAll(PDO::FETCH_ASSOC);
 
         /* =====================================================
@@ -1512,7 +1512,7 @@ class LeadsModels
             AND YEAR(r.fecha) = ? 
             , $mes, $anio*/
         $stmtEstado = $pdo->prepare($sqlPorEstado);
-        $stmtEstado->execute([$codEmp,$_SESSION['foco']]);
+        $stmtEstado->execute([$codEmp, $_SESSION['foco']]);
         $porEstado = $stmtEstado->fetchAll(PDO::FETCH_ASSOC);
 
         /* =====================================================
@@ -1524,5 +1524,25 @@ class LeadsModels
             'porDia'    => $porDia,
             'porEstado' => $porEstado
         ];
+    }
+
+    public static function actualizarFechaGestionLeads($id, $cliente_id)
+    {
+        $sql = "UPDATE leads SET fec_ult_gest = NOW() 
+            WHERE id_lead = :lead AND cliente_id = :cliente";
+
+        try {
+            $conn = new Conexion();
+            $conectar = $conn->conectar();
+            $stmt = $conectar->prepare($sql);
+
+            return $stmt->execute([
+                ":lead"    => $id,
+                ":cliente" => $cliente_id
+            ]);
+        } catch (PDOException $e) {
+            // Log de error si fuera necesario
+            return false;
+        }
     }
 }

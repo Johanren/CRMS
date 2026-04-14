@@ -180,6 +180,9 @@ function listarFntOption() {
             if (document.getElementById("fuente")) {
                 document.getElementById("fuente").innerHTML = data.option;
             }
+            if (document.getElementById("fuente1")) {
+                document.getElementById("fuente1").innerHTML = data.option;
+            }
         });
 }
 

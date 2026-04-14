@@ -28,18 +28,47 @@
         <!-- start row -->
         <div class="row">
 
-            <div class="col-md-6 d-flex">
+            <div class="col-md-12 d-flex">
                 <div class="card flex-fill">
                     <div class="card-header">
                         <div class="d-flex align-items-center justify-content-between flex-wrap row-gap-3">
                             <h6 class="mb-0">Campañas</h6>
                             <div class="dropdown">
                                 <a href="javascript:void(0);" class="btn btn-primary" data-bs-toggle="offcanvas" data-bs-target="#offcampana_add"><i class="ti ti-square-rounded-plus-filled me-1"></i>Agregar Campañas</a>
+
+                                <a href="javascript:void(0);" class="btn btn-primary" data-bs-toggle="offcanvas" data-bs-target="#offcampanaMedio_add"><i class="ti ti-square-rounded-plus-filled me-1"></i>Agregar Campañas X Medio</a>
                             </div>
                         </div>
                     </div>
+                    <style>
+                        #info-campa td,
+                        #info-campa th {
+                            padding: 3px 6px !important;
+                            font-size: 12px;
+                        }
+
+                        #paginacion button {
+                            margin-right: 4px;
+                        }
+                    </style>
                     <div class="card-body">
                         <div class="table-responsive custom-table">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+
+                                <!-- selector registros -->
+                                <div>
+                                    <label class="me-2 fw-bold">Mostrar:</label>
+                                    <select id="limitSelect" class="form-select form-select-sm d-inline-block w-auto">
+                                        <option value="10">10</option>
+                                        <option value="50">50</option>
+                                        <option value="100">100</option>
+                                    </select>
+                                </div>
+
+                                <!-- paginación -->
+                                <div id="paginacion"></div>
+
+                            </div>
                             <table class="table dataTable table-nowrap" id="info-campa">
                                 <thead class="table-light">
                                     <tr>
@@ -70,7 +99,7 @@
                 </div> <!-- end card -->
             </div> <!-- end col -->
 
-            <div class="col-md-6 d-flex">
+            <!--<div class="col-md-6 d-flex">
                 <div class="card flex-fill">
                     <div class="card-header">
                         <div class="d-flex align-items-center justify-content-between flex-wrap row-gap-3">
@@ -105,9 +134,9 @@
                                 <div class="datatable-paginate-campa-fuente"></div>
                             </div>
                         </div>
-                    </div> <!-- end card body -->
-                </div> <!-- end card -->
-            </div> <!-- end col -->
+                    </div> 
+                </div> 
+            </div>--> <!-- end col -->
 
         </div>
         <!-- end row -->

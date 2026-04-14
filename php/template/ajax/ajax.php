@@ -532,10 +532,13 @@ if (isset($_GET['accion'])) {
             break;
         //Campanas nuevas
         case 'listar_campana':
-            echo json_encode($campana->listarCampanas());
+            $page  = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+            $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
+            echo json_encode($campana->listarCampanasPagi($page, $limit));
             break;
         case 'listar_campanaxmedio':
-            echo json_encode($campana->listarCampanasxmedio());
+            $id  = isset($_GET['id_campana']) ? (int)$_GET['id_campana'] : null;
+            echo json_encode($campana->listarCampanasxmedio($id));
             break;
         case 'listar_campana_option':
             $lista = $campana->listarCampana();
@@ -1074,6 +1077,11 @@ if (isset($_GET['accion'])) {
             break;
         case 'reporte_leads_motivo':
             echo json_encode($leads->reporteLeadsPastelMotivo());
+            break;
+        case 'actualizar_fecha_gestion':
+            $id = $_GET['id_lead'] ?? ''; 
+            $cliente_id = $_GET['cliente_id'] ?? '';
+            echo json_encode($leads->actualizarFechaGestionLeads($id, $cliente_id));
             break;
         /*Notas */
         case 'listarNotas':

@@ -33962,6 +33962,35 @@ $page = end( $link_array );
                             <input type="file" name="img_cam" id="img_cam" class="form-control">
                         </div>
                     </div>
+                    <div class="offcanvas-header border-bottom">
+                        <h5 class="mb-0" id="title-canvas-ciu">Nueva campaña x fuente</h5>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Medio <span class="text-danger">*</span></label>
+                            <select name="med_cxm" id="medio1" class="form-control"></select>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6" id="contenedor_fuente1" style="display:none;">
+                        <div class="mb-3">
+                            <label class="form-label">Fuente <span class="text-danger">*</span></label>
+                            <select name="fue_cxm" id="fuente1" class="form-control"></select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Fecha <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" id="fec_cxm" name="fec_cxm" required>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">RSC <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="rsc_cxm" name="rsc_cxm" required>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="d-flex align-items-center justify-content-end">

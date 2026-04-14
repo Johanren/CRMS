@@ -228,7 +228,7 @@ class LeadsControllers
 
             $id_cliente = ClienteModels::agregarCliente($data);
 
-            $id_lead = LeadsModels::agregarLeads($data, $id_cliente, $user_id , 3);
+            $id_lead = LeadsModels::agregarLeads($data, $id_cliente, $user_id, 3);
             $data['lead_id'] = $id_lead;
             try {
                 $okObs = LeadsModels::registrarObservacion($data);
@@ -386,5 +386,15 @@ class LeadsControllers
     public static function listarReporteRstDiaTEO($mes, $anio)
     {
         return LeadsModels::listarReporteRstDiaTEO($mes, $anio);
+    }
+
+    public static function actualizarFechaGestionLeads($id, $cliente_id)
+    {
+        $resp = LeadsModels::actualizarFechaGestionLeads($id, $cliente_id);
+        if ($resp) {
+            return ["status" => "success", "message" => "Fecha actualizada correctamente"];
+        } else {
+            return ["status" => "error", "message" => "Error al actualizar en la base de datos"];
+        }
     }
 }

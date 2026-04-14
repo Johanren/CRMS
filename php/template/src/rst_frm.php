@@ -35,6 +35,9 @@
             <div class="card-body">
 
                 <!-- table header -->
+                 <div class="input-icon input-icon-start position-relative">
+                    <span id="resumen-filtros" class="text-muted small"></span>
+                </div>
                 <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
                     <div class="d-flex align-items-center gap-2 flex-wrap">
                         <div class="dropdown">

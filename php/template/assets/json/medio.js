@@ -178,6 +178,9 @@ function listarMdsOption() {
             if (document.getElementById("medio")) {
                 document.getElementById("medio").innerHTML = data.option;
             }
+            if (document.getElementById("medio1")) {
+                document.getElementById("medio1").innerHTML = data.option;
+            }
         });
 }
 

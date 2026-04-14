@@ -201,6 +201,8 @@
                                         <th>Estado</th>
                                         <th>Asesor</th>
                                         <th>Fecha creación</th>
+                                        <th>Fecha ultima gestion</th>
+                                        <th>Fecha ultima asignacion</th>
                                         <th>Gestion</th>
                                     </tr>
                                 </thead>
