@@ -107,11 +107,12 @@ const FiltrosUI = {
         fetch("ajax/ajax.php?accion=cargar_filtro")
             .then(r => r.json())
             .then(filtros => {
-                if (!filtros) {
+                if (filtros) {
+                    this.aplicarFiltros(filtros);
+                } else {
                     if (!auto) Swal.fire("Sin filtros guardados", "", "warning");
-                    return;
+                    this.mostrarResumen();
                 }
-                this.aplicarFiltros(filtros);
             });
     },
 
@@ -217,30 +218,62 @@ const FiltrosUI = {
         }, 200);
     },
 
-    mostrarResumen(filtros) {
+    mostrarResumen(filtros = null) {
         if (!this.dom.resumen) return;
 
         const map = {
-            texto: "Texto",
-            asesor: "Asesor",
-            carreras: "Carrera",
-            horario: "Horario",
-            interes: "Interés",
-            medio: "Medio",
-            fuente: "Fuente",
-            campana: "Campaña",
-            accion: "Acción",
-            departamento: "Departamento",
-            ciudad: "Ciudad",
-            barrio: "Barrio",
-            estados: "Estado",
-            fecha_inicio: "Desde",
-            fecha_fin: "Hasta"
+            texto: "Texto", asesor: "Asesor", carreras: "Carrera",
+            horario: "Horario", interes: "Interés", medio: "Medio",
+            fuente: "Fuente", campana: "Campaña", accion: "Acción",
+            departamento: "Departamento", ciudad: "Ciudad",
+            barrio: "Barrio", estados: "Estado",
+            fecha_inicio: "Desde", fecha_fin: "Hasta"
         };
 
-        const resumen = Object.keys(map)
-            .filter(k => filtros[k]?.length || filtros[k])
-            .map(k => `${map[k]}: ${Array.isArray(filtros[k]) ? filtros[k].join(", ") : filtros[k]}`);
+        // Mapeo de los contenedores donde están tus checkboxes
+        const contenedores = {
+            asesor: "#listar_filtro_asesor",
+            carreras: "#listar_filtro_carrera",
+            horario: "#listar_filtro_horario",
+            interes: "#listar_filtro_interes",
+            medio: "#listar_filtro_medio",
+            fuente: "#listar_filtro_fuente",
+            campana: "#listar_filtro_campana",
+            accion: "#listar_filtro_accion",
+            departamento: "#listar_filtro_dep",
+            ciudad: "#listar_filtro_ciu",
+            barrio: "#listar_filtro_brr",
+            estados: "#listar_filtro_estado"
+        };
+
+        const resumen = Object.keys(map).map(k => {
+            let valor = filtros ? filtros[k] : null;
+
+            // Si no hay valor del DBA, buscamos los checkboxes marcados
+            if (!valor || (Array.isArray(valor) && valor.length === 0)) {
+                const idContenedor = contenedores[k];
+
+                if (idContenedor) {
+                    const nodos = document.querySelectorAll(`${idContenedor} input[type="checkbox"]:checked`);
+                    // Validamos que existan nodos antes de convertir a Array
+                    if (nodos && nodos.length > 0) {
+                        valor = Array.from(nodos)
+                            .map(cb => {
+                                // Intentamos traer el texto de la etiqueta (label) si existe
+                                const label = document.querySelector(`label[for="${cb.id}"]`);
+                                return label ? label.innerText : cb.value;
+                            })
+                            .filter(v => v !== "" && v !== null);
+                    }
+                } else if (this.dom[k] && this.dom[k].value) {
+                    valor = this.dom[k].value;
+                }
+            }
+
+            if (!valor || (Array.isArray(valor) && valor.length === 0)) return null;
+
+            return `${map[k]}: ${Array.isArray(valor) ? valor.join(", ") : valor}`;
+        }).filter(item => item !== null);
 
         this.dom.resumen.innerText = resumen.length
             ? "Filtros aplicados: " + resumen.join(" | ")

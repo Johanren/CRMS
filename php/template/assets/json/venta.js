@@ -609,9 +609,6 @@ document.addEventListener("click", function (e) {
         const estado = e.target.dataset.estado; // Nuevo
         const user = e.target.dataset.user;   // Nuevo (ID)
 
-        const contenedor = document.getElementById("contenedorLeadsFoco");
-        if (contenedor) contenedor.classList.remove("d-none");
-
         // Si existen 'estado' o 'user', es que venimos de la tabla Pivot
         if (estado || user) {
             listarLeadsDesdeFocoPivot(estado, user);
@@ -660,140 +657,437 @@ function listarLeadsDesdeFocoPivot(estadoNombre, userId) {
         .then(data => {
             if (document.getElementById("leads_list")) {
                 inicializarDataTableLeads(data);
+                const contenedor = document.getElementById("contenedorLeadsFoco");
+                if (contenedor) contenedor.classList.remove("d-none");
                 document.getElementById("contenedorLeadsFoco").scrollIntoView({ behavior: 'smooth' });
             }
         })
         .catch(err => console.error("Error al listar leads pivot:", err));
 }
 
+window.dataLeadsGlobal = [];
+let tablaLeadsFoco = null;
+
+/* ==========================================================
+   CONSULTA PRINCIPAL
+========================================================== */
+
 function listarLeadsDesdeFoco(programaNombre, jornadaNombre) {
+
     const params = new URLSearchParams();
     params.append("accion", "listar_leads");
 
-    // 1. Lógica de Carreras: Evitar enviar ["TODOS"] o [null]
+    /* CARRERAS */
     let carrerasArray = [];
     if (programaNombre && programaNombre !== "TODOS") {
         carrerasArray = [programaNombre];
     }
 
-    // 2. Lógica de Horarios: Manejar el string simple o el JSON de "POR CONFIRMAR"
+    /* JORNADAS */
     let horarioArray = [];
+
     if (jornadaNombre && jornadaNombre !== "TODOS") {
         try {
-            // Intentamos parsear por si viene el array de "POR CONFIRMAR"
             const parsed = JSON.parse(jornadaNombre);
             horarioArray = Array.isArray(parsed) ? parsed : [parsed];
         } catch (e) {
-            // Si no es JSON (es un nombre simple), lo metemos al array
             horarioArray = [jornadaNombre];
         }
     }
 
-    // 3. Captura y limpieza de Estados y Asesores
-    const estadosValues = Array.from(document.querySelectorAll('#listar_filtro_estado input[type="checkbox"]:checked'))
+    /* ESTADOS */
+    const estadosValues = Array.from(
+        document.querySelectorAll('#listar_filtro_estado input[type="checkbox"]:checked')
+    )
         .map(cb => cb.value)
-        .filter(v => v !== "" && v !== null); // Eliminar vacíos
+        .filter(v => v);
 
-    const asesoresIds = Array.from(document.querySelectorAll('#listar_filtro_user input[type="checkbox"]:checked'))
+    /* ASESORES */
+    const asesoresIds = Array.from(
+        document.querySelectorAll('#listar_filtro_user input[type="checkbox"]:checked')
+    )
         .map(cb => cb.value)
-        .filter(v => v !== "" && v !== null); // Eliminar vacíos
+        .filter(v => v);
 
-    // 1. Obtener los IDs de carreras si el array principal está vacío
-    const carrerasIds = Array.from(document.querySelectorAll('#listar_filtro_carrera input[type="checkbox"]:checked'))
+    /* CARRERAS CHECKBOX */
+    const carrerasIds = Array.from(
+        document.querySelectorAll('#listar_filtro_carrera input[type="checkbox"]:checked')
+    )
         .map(cb => cb.value)
-        .filter(v => v !== "" && v !== null);
+        .filter(v => v);
 
-    // 2. Lógica de selección: Si carrerasArray no existe o está vacío, usa carrerasIds
-    let carrerasFinal = (typeof carrerasArray !== 'undefined' && carrerasArray.length > 0)
-        ? carrerasArray
-        : carrerasIds;
+    let carrerasFinal = carrerasArray.length > 0 ? carrerasArray : carrerasIds;
 
-    // 3. APPEND CONDICIONAL
-    if (carrerasFinal.length > 0) {
+    /* PARAMS */
+    if (carrerasFinal.length > 0)
         params.append("carreras", JSON.stringify(carrerasFinal));
-    }
-    if (horarioArray.length > 0) params.append("horario", JSON.stringify(horarioArray));
-    if (asesoresIds.length > 0) params.append("asesor", JSON.stringify(asesoresIds));
-    if (estadosValues.length > 0) params.append("estados", JSON.stringify(estadosValues));
-    params.append("lead_reporte_CRM_FOCO", "true");
 
-    console.log("📡 Enviando filtros:", Object.fromEntries(params.entries()));
+    if (horarioArray.length > 0)
+        params.append("horario", JSON.stringify(horarioArray));
+
+    if (asesoresIds.length > 0)
+        params.append("asesor", JSON.stringify(asesoresIds));
+
+    if (estadosValues.length > 0)
+        params.append("estados", JSON.stringify(estadosValues));
+
+    params.append("lead_reporte_CRM_FOCO", "true");
 
     fetch("ajax/ajax.php?" + params.toString())
         .then(res => res.json())
         .then(data => {
-            if (document.getElementById("leads_list")) {
-                // Validación de integridad en la respuesta
-                if (!data || data.error) {
-                    console.error("Error del servidor:", data.message);
-                    return;
-                }
-                inicializarDataTableLeads(data);
-                document.getElementById("contenedorLeadsFoco").scrollIntoView({ behavior: 'smooth' });
-            }
+
+            if (!data || data.error) return;
+
+            window.dataLeadsGlobal = data;
+
+            const contenedor = document.getElementById("contenedorLeadsFoco");
+            if (contenedor) contenedor.classList.add("d-none");
+
+            /* SOLO TABLA RESUMEN */
+            renderTablaResumen(data, programaNombre, jornadaNombre);
+
+            /* LIMPIAR DETALLE */
+            limpiarTablaLeads();
+            document.getElementById("tablaResumenFiltros")
+                .scrollIntoView({ behavior: "smooth" });
+
         })
-        .catch(err => console.error("Error al listar leads:", err));
+        .catch(err => console.error(err));
 }
 
 /* ==========================================================
-   2. INICIALIZAR DATATABLE
-   ========================================================== */
-let tablaLeadsFoco = null;
+   TABLA RESUMEN
+========================================================== */
+
+function renderTablaResumen(data, programaNombre, jornadaNombre) {
+
+    const contenedor = document.getElementById("tablaResumenFiltros");
+    if (!contenedor) return;
+
+    contenedor.innerHTML = "";
+
+    const ordenBaseEstados = [
+        "Nuevo Leads",
+        "Prospecto",
+        "Leads Activo",
+        "Interesado",
+        "En Decisión",
+        "Matricula en proceso",
+        "Matriculado",
+        "Perdido",
+        "Aplazado",
+        "DESERTOR",
+        "NUNCA ASISTIO"
+    ];
+
+    /* SOLO ESTADOS QUE EXISTEN EN LA DATA */
+    const estadosData = [...new Set(
+        data.map(x => (x.estado || "").trim())
+            .filter(v => v !== "")
+    )];
+
+    /* RESPETA ORDEN SOLO SI EXISTEN */
+    const estados = [
+        ...ordenBaseEstados.filter(est => estadosData.includes(est)),
+
+        /* NUEVOS DINÁMICOS */
+        ...estadosData.filter(est => !ordenBaseEstados.includes(est))
+    ];
+
+    let agrupado = {};
+    let titulo = "";
+    let primeraColumna = "";
+
+    /* ==========================================
+       SOLO JORNADA
+    ========================================== */
+    if (jornadaNombre !== "TODOS" && programaNombre === "TODOS") {
+
+        titulo = "JORNADA: " + jornadaNombre;
+        primeraColumna = "Carreras";
+
+        data.forEach(row => {
+
+            let fila = row.desc_pro + " - " + row.horario || "SIN CARRERA";
+            let estado = row.estado || "SIN ESTADO";
+
+            if (!agrupado[fila]) agrupado[fila] = {};
+            if (!agrupado[fila][estado]) agrupado[fila][estado] = 0;
+
+            agrupado[fila][estado]++;
+        });
+    }
+
+    /* ==========================================
+       SOLO CARRERA
+    ========================================== */
+    else if (programaNombre !== "TODOS" && jornadaNombre === "TODOS") {
+
+        titulo = "CARRERA: " + programaNombre;
+        primeraColumna = "Jornadas";
+
+        data.forEach(row => {
+
+            let fila = row.desc_pro + " - " + row.horario || "SIN JORNADA";
+            let estado = row.estado || "SIN ESTADO";
+
+            if (!agrupado[fila]) agrupado[fila] = {};
+            if (!agrupado[fila][estado]) agrupado[fila][estado] = 0;
+
+            agrupado[fila][estado]++;
+        });
+    }
+
+    /* ==========================================
+       CARRERA + JORNADA
+    ========================================== */
+    else {
+
+        titulo = "RESULTADO FILTRADO";
+        primeraColumna = "Detalle";
+
+        data.forEach(row => {
+
+            let fila = row.desc_pro + " - " + row.horario;
+            let estado = row.estado || "SIN ESTADO";
+
+            if (!agrupado[fila]) agrupado[fila] = {};
+            if (!agrupado[fila][estado]) agrupado[fila][estado] = 0;
+
+            agrupado[fila][estado]++;
+        });
+    }
+
+    /* ================================================== */
+    let html = `
+    <table class="table table-bordered table-striped table-hover table-sm" id="tablaResumenCRM">
+        <thead class="table-dark text-center">
+            <tr>
+                <th>${primeraColumna}</th>
+    `;
+
+    estados.forEach(est => {
+        html += `
+        <th class="">
+            ${est}
+        </th>`;
+    });
+
+    html += `
+        <th class="">
+            Total
+        </th>
+        </tr>
+        </thead>
+        <tbody>
+    `;
+
+    let totalGeneral = 0;
+
+    for (let fila in agrupado) {
+
+        html += `<tr>`;
+        html += `
+        <td class="bg-total-fila">
+            ${fila}
+        </td>`;
+
+        let totalFila = 0;
+
+        estados.forEach(est => {
+
+            let cantidad = agrupado[fila][est] || 0;
+            totalFila += cantidad;
+
+            if (cantidad > 0) {
+                html += `
+                    <td class="text-center bg-total-fila text-primary fw-bold cursor-pointer"
+                        onclick="abrirDetalle('${fila}','${est}','${programaNombre}','${jornadaNombre}')">
+                        ${cantidad}
+                    </td>`;
+            } else {
+                html += `<td class="text-center text-muted">-</td>`;
+            }
+
+            html += `
+            `;
+        });
+
+        totalGeneral += totalFila;
+
+        html += `
+        <td class="text-center text-primary fw-bold cursor-pointer"
+            onclick="abrirDetalle('${fila}','', '${programaNombre}', '${jornadaNombre}')">
+            ${totalFila}
+        </td>`;
+
+        html += `</tr>`;
+    }
+
+    /* ==========================================
+       FILA TOTALES
+    ========================================== */
+    html += `<tr>`;
+    html += `
+    <td class="">
+        <strong>TOTALES</strong>
+    </td>`;
+
+    estados.forEach(est => {
+
+        let suma = 0;
+
+        for (let fila in agrupado) {
+            suma += agrupado[fila][est] || 0;
+        }
+
+        html += `
+        <td class="text-center text-primary fw-bold cursor-pointer"
+            onclick="abrirDetalle('', '${est}', '${programaNombre}', '${jornadaNombre}')">
+            ${suma}
+        </td>`;
+    });
+
+    html += `
+    <td class="text-center text-primary bg-gran-total fw-bold cursor-pointer"
+        onclick="abrirDetalle('','', '${programaNombre}', '${jornadaNombre}')">
+        ${totalGeneral}
+    </td>`;
+
+    html += `</tr>`;
+
+    html += `</tbody></table>`;
+
+    contenedor.innerHTML = html;
+}
+
+/* ==========================================================
+   ABRIR DETALLE MEJORADO
+========================================================== */
+function abrirDetalle(fila, estado, programaNombre, jornadaNombre) {
+
+    let filtrados = window.dataLeadsGlobal.filter(row => {
+
+        let ok = true;
+
+        /* FILTRO FILA */
+        if (fila) {
+
+            if (jornadaNombre !== "TODOS" && programaNombre === "TODOS") {
+                ok = ok && row.desc_pro === fila;
+            }
+
+            else if (programaNombre !== "TODOS" && jornadaNombre === "TODOS") {
+                ok = ok && row.horario === fila;
+            }
+
+            else {
+                ok = ok && (row.desc_pro + " - " + row.horario) === fila;
+            }
+        }
+
+        /* FILTRO ESTADO */
+        if (estado) {
+            ok = ok && row.estado === estado;
+        }
+
+        return ok;
+    });
+    const contenedor = document.getElementById("contenedorLeadsFoco");
+    if (contenedor) contenedor.classList.remove("d-none");
+    inicializarDataTableLeads(filtrados);
+
+    document.getElementById("contenedorLeadsFoco")
+        .scrollIntoView({ behavior: "smooth" });
+}
+
+/* ==========================================================
+   LIMPIAR TABLA DETALLE
+========================================================== */
+function limpiarTablaLeads() {
+
+    if (tablaLeadsFoco) {
+        tablaLeadsFoco.destroy();
+        tablaLeadsFoco = null;
+    }
+
+    const tbody = document.querySelector("#leads_list tbody");
+
+    tbody.innerHTML = `
+        <tr>
+            <td colspan="9" class="text-center">
+                Seleccione un valor del resumen
+            </td>
+        </tr>
+    `;
+}
+
+/* ==========================================================
+   TU TABLA ORIGINAL
+========================================================== */
 function inicializarDataTableLeads(data) {
+
     if (tablaLeadsFoco) {
         tablaLeadsFoco.destroy();
         tablaLeadsFoco = null;
     }
 
     const spanContador = document.getElementById("contadorTotalLeads");
-    if (spanContador) spanContador.innerText = data ? data.length : 0;
+    if (spanContador) spanContador.innerText = data.length;
 
     const tbody = document.querySelector("#leads_list tbody");
     tbody.innerHTML = "";
 
-    if (!data || !data.length) {
-        tbody.innerHTML = `<tr><td colspan="7" class="text-center text-muted">No hay resultados para esta selección</td></tr>`;
+    if (!data.length) {
+        tbody.innerHTML = `
+        <tr>
+            <td colspan="9" class="text-center">
+                No hay resultados
+            </td>
+        </tr>`;
         return;
     }
 
     const hoy = new Date().toISOString().split('T')[0];
 
     data.forEach(l => {
-        const tr = document.createElement("tr");
-        const fueGestionadoHoy = l.fec_ult_gest === hoy ?
-            '<span class="badge bg-success">OK</span>' :
-            '<span class="badge bg-secondary">Pendiente</span>';
 
-        const enlaceNombre = `
-            <a href="javascript:void(0)" 
-               onclick="abrirModalGestion('${l.id_lead}', '${l.cliente_id}')" 
-               class="text-primary fw-bold">
-               ${l.nombres} ${l.apellidos}
-            </a>`;
+        const gestion = l.fec_ult_gest === hoy ? "OK" : "Pendiente";
+
+        const tr = document.createElement("tr");
 
         tr.innerHTML = `
-            <td>${enlaceNombre}</td>
+            <td>
+                <a href="javascript:void(0)" class="text-primary fw-bold"
+                   onclick="abrirModalGestion('${l.id_lead}','${l.cliente_id}')">
+                   ${l.nombres} ${l.apellidos}
+                </a>
+            </td>
             <td>${l.desc_pro}</td>
             <td>${l.telefono_principal}</td>
             <td>${l.estado}</td>
             <td>${l.nombreAsesor}</td>
             <td>${l.fecha_creacion}</td>
-            <td>${l.fec_ult_gest || 'Sin fecha'}</td>
-            <td>${l.fec_ult_asig || 'Sin fecha'}</td>
-            <td class="text-center">${fueGestionadoHoy}</td>
+            <td>${l.fec_ult_gest || ''}</td>
+            <td>${l.fec_ult_asig || ''}</td>
+            <td>${gestion}</td>
         `;
+
         tbody.appendChild(tr);
     });
 
     tablaLeadsFoco = $('#leads_list').DataTable({
         responsive: true,
         pageLength: 10,
-        language: { "url": "//cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json" }
+        language: {
+            url: "//cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json"
+        }
     });
 }
 
 function abrirModalGestion(idLead, idCliente) {
-    
+
     const url = `leads-details.php?id=${idLead}&id_cliente=${idCliente}&modal=1`;
     document.getElementById('frameGestion').src = url;
 
@@ -804,8 +1098,8 @@ function abrirModalGestion(idLead, idCliente) {
 
     const params = new URLSearchParams({
         accion: "actualizar_fecha_gestion",
-        id_lead: idLead,       
-        cliente_id: idCliente  
+        id_lead: idLead,
+        cliente_id: idCliente
     });
 
     fetch("ajax/ajax.php?" + params.toString())

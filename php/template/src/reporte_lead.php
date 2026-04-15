@@ -176,6 +176,7 @@
                         <p>Cargando reporte...</p>
                     </div>
                 </div>
+                <div id="tablaResumenFiltros" class="mt-4"></div>
                 <div id="contenedorLeadsFoco" class="mt-4 d-none">
                     <div class="card shadow-sm">
                         <div class="card-header bg-light d-flex justify-content-between align-items-center">
@@ -401,7 +402,7 @@ require_once '../partials/main.php'; ?>
             // ✅ DEFAULT ESTADOS
             if (estados.length === 0 && !window.filtrosInicializados) {
                 //estados = ['Nuevo Leads', 'Leads Activo', 'Interesado', 'En Decisión', 'Prospecto'];
-                estados = ['En Decisión'];
+                estados = ['Nuevo Leads', 'Leads Activo', 'Interesado', 'En Decisión', 'Prospecto'];
             }
 
             if (window.usuarioRol != "Admin") {
@@ -473,7 +474,7 @@ require_once '../partials/main.php'; ?>
     // Función para marcar visualmente los estados deseados
     function marcarEstadosDefault() {
         //const estadosAMarcar = ['Nuevo Leads', 'Leads Activo', 'Interesado', 'En Decisión', 'Prospecto'];
-        const estadosAMarcar = ['En Decisión'];
+        const estadosAMarcar = ['Nuevo Leads', 'Leads Activo', 'Interesado', 'En Decisión', 'Prospecto'];
 
         // Buscamos todos los checkboxes de estado
         const checkboxes = document.querySelectorAll('.filtro-estado');
