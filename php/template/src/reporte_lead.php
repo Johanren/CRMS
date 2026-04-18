@@ -120,11 +120,152 @@
                                                 </div>
                                             </div>
 
+                                            <div class="filter-set-content">
+                                                <div class="filter-set-content-head">
+                                                    <a href="#" class="collapsed d-block py-2 fw-bold border-bottom" data-bs-toggle="collapse" data-bs-target="#collapseotro" aria-expanded="false" aria-controls="collapseotro">
+                                                        Otros <i class="bi bi-chevron-down float-end"></i>
+                                                    </a>
+                                                </div>
+
+                                                <div class="filter-set-contents accordion-collapse collapse mt-2" id="collapseotro" data-bs-parent="#accordionExample">
+                                                    <div class="ps-3 border-start">
+                                                        <div class="filter-set-content mb-2">
+                                                            <div class="filter-set-content-head">
+                                                                <a href="#" class="collapsed text-muted" data-bs-toggle="collapse" data-bs-target="#collapseInteres">Interes</a>
+                                                            </div>
+                                                            <div class="filter-set-contents accordion-collapse collapse" id="collapseInteres">
+                                                                <div class="filter-content-list bg-light rounded border p-2 shadow-sm mt-2">
+                                                                    <div class="form-check mb-2 border-bottom pb-1">
+                                                                        <input class="form-check-input select-all-filter" type="checkbox" data-target=".filtro-interes" id="all_interes">
+                                                                        <label class="form-check-label fw-bold" for="all_interes">Seleccionar todos</label>
+                                                                    </div>
+                                                                    <div id="listar_filtro_interes" class="overflow-x-auto"></div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="filter-set-content mb-2">
+                                                            <div class="filter-set-content-head">
+                                                                <a href="#" class="collapsed text-muted" data-bs-toggle="collapse" data-bs-target="#collapseMedio">Medio</a>
+                                                            </div>
+                                                            <div class="filter-set-contents accordion-collapse collapse" id="collapseMedio">
+                                                                <div class="filter-content-list bg-light rounded border p-2 shadow-sm mt-2">
+                                                                    <div class="form-check mb-2 border-bottom pb-1">
+                                                                        <input class="form-check-input select-all-filter" type="checkbox" data-target=".filtro-medio" id="all_medio">
+                                                                        <label class="form-check-label fw-bold" for="all_medio">Seleccionar todos</label>
+                                                                    </div>
+                                                                    <div id="listar_filtro_medio" class="overflow-x-auto"></div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="filter-set-content mb-2">
+                                                            <div class="filter-set-content-head">
+                                                                <a href="#" class="collapsed text-muted" data-bs-toggle="collapse" data-bs-target="#collapseFuente">Fuente</a>
+                                                            </div>
+                                                            <div class="filter-set-contents accordion-collapse collapse" id="collapseFuente">
+                                                                <div class="filter-content-list bg-light rounded border p-2 shadow-sm mt-2">
+                                                                    <div class="form-check mb-2 border-bottom pb-1">
+                                                                        <input class="form-check-input select-all-filter" type="checkbox" data-target=".filtro-fuente" id="all_fuente">
+                                                                        <label class="form-check-label fw-bold" for="all_fuente">Seleccionar todos</label>
+                                                                    </div>
+                                                                    <div id="listar_filtro_fuente" class="overflow-x-auto"></div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="filter-set-content mb-2">
+                                                            <div class="filter-set-content-head">
+                                                                <a href="#" class="collapsed text-muted" data-bs-toggle="collapse" data-bs-target="#collapseCamp">Campaña</a>
+                                                            </div>
+                                                            <div class="filter-set-contents accordion-collapse collapse" id="collapseCamp">
+                                                                <div class="filter-content-list bg-light rounded border p-2 shadow-sm mt-2">
+                                                                    <div class="form-check mb-2 border-bottom pb-1">
+                                                                        <input class="form-check-input select-all-filter" type="checkbox" data-target=".filtro-campana" id="all_campana">
+                                                                        <label class="form-check-label fw-bold" for="all_campana">Seleccionar todos</label>
+                                                                    </div>
+                                                                    <div id="listar_filtro_campana" class="overflow-x-auto"></div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="filter-set-content mb-2">
+                                                            <div class="filter-set-content-head">
+                                                                <a href="#" class="collapsed text-muted" data-bs-toggle="collapse" data-bs-target="#collapseAcc">Acción</a>
+                                                            </div>
+                                                            <div class="filter-set-contents accordion-collapse collapse" id="collapseAcc">
+                                                                <div class="filter-content-list bg-light rounded border p-2 shadow-sm mt-2">
+                                                                    <div class="form-check mb-2 border-bottom pb-1">
+                                                                        <input class="form-check-input select-all-filter" type="checkbox" data-target=".filtro-accion" id="all_accion">
+                                                                        <label class="form-check-label fw-bold" for="all_accion">Seleccionar todos</label>
+                                                                    </div>
+                                                                    <div id="listar_filtro_accion" class="overflow-x-auto"></div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="filter-set-content mb-2">
+                                                            <div class="filter-set-content-head">
+                                                                <a href="#" class="collapsed text-muted" data-bs-toggle="collapse" data-bs-target="#collapseDep">Departamento</a>
+                                                            </div>
+                                                            <div class="filter-set-contents accordion-collapse collapse" id="collapseDep">
+                                                                <div class="filter-content-list bg-light rounded border p-2 shadow-sm mt-2">
+                                                                    <div class="form-check mb-2 border-bottom pb-1">
+                                                                        <input class="form-check-input select-all-filter" type="checkbox" data-target=".filtro-dep" id="all_dep">
+                                                                        <label class="form-check-label fw-bold" for="all_dep">Seleccionar todos</label>
+                                                                    </div>
+                                                                    <div id="listar_filtro_dep" class="overflow-x-auto"></div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="filter-set-content mb-2">
+                                                            <div class="filter-set-content-head">
+                                                                <a href="#" class="collapsed text-muted" data-bs-toggle="collapse" data-bs-target="#collapseCiduad">Ciudad</a>
+                                                            </div>
+                                                            <div class="filter-set-contents accordion-collapse collapse" id="collapseCiduad">
+                                                                <div class="filter-content-list bg-light rounded border p-2 shadow-sm mt-2">
+                                                                    <div class="form-check mb-2 border-bottom pb-1">
+                                                                        <input class="form-check-input select-all-filter" type="checkbox" data-target=".filtro-ciu" id="all_ciu">
+                                                                        <label class="form-check-label fw-bold" for="all_ciu">Seleccionar todos</label>
+                                                                    </div>
+                                                                    <div id="listar_filtro_ciudad" class="overflow-x-auto"></div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="filter-set-content mb-2">
+                                                            <div class="filter-set-content-head">
+                                                                <a href="#" class="collapsed text-muted" data-bs-toggle="collapse" data-bs-target="#collapseBrr">Barrio</a>
+                                                            </div>
+                                                            <div class="filter-set-contents accordion-collapse collapse" id="collapseBrr">
+                                                                <div class="filter-content-list bg-light rounded border p-2 shadow-sm mt-2">
+                                                                    <div class="form-check mb-2 border-bottom pb-1">
+                                                                        <input class="form-check-input select-all-filter" type="checkbox" data-target=".filtro-brr" id="all_brr">
+                                                                        <label class="form-check-label fw-bold" for="all_brr">Seleccionar todos</label>
+                                                                    </div>
+                                                                    <div id="listar_filtro_brr" class="overflow-x-auto"></div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+
                                         </div>
                                     </div>
                                     <div id="contenedor-botones"></div>
                                 </div>
                             </div>
+                        </div>
+                        <div id="reportrange" class="reportrange-picker d-flex align-items-center shadow">
+                            <i class="ti ti-calendar-due text-dark fs-14 me-1"></i>
+                            <span class="reportrange-picker-field">Seleccione fechas</span>
+                        </div>
+                        <div class="input-icon input-icon-start position-relative">
+                            <span class="input-icon-addon text-dark"><i class="ti ti-search"></i></span>
+                            <input type="text" class="form-control" id="buscador" placeholder="Buscar">
                         </div>
                     </div>
                 </div>
@@ -132,6 +273,55 @@
 
                 <!-- Report List -->
                 <style>
+                    /* ===== TABLAS TIPO EXCEL ===== */
+                    .table-excel {
+                        width: 100%;
+                        border-collapse: collapse;
+                        font-size: 13px;
+                        background: #fff;
+                    }
+
+                    .table-excel thead th {
+                        background: #f8f9fa;
+                        color: #333;
+                        font-weight: 600;
+                        text-align: center;
+                        border: 1px solid #dee2e6;
+                        padding: 8px;
+                        white-space: nowrap;
+                    }
+
+                    .table-excel tbody td {
+                        border: 1px solid #dee2e6;
+                        padding: 6px;
+                        text-align: center;
+                    }
+
+                    .table-excel tbody tr:hover {
+                        background-color: #f1f5f9;
+                    }
+
+                    /* Columna Día / Estado */
+                    .table-excel td:first-child {
+                        font-weight: 600;
+                        background: #f8f9fa;
+                    }
+
+                    /* ===== FILA TOTAL (VERDE) ===== */
+                    .table-total {
+                        background-color: #d1fae5 !important;
+                        color: #065f46;
+                        font-weight: bold;
+                    }
+
+                    .cursor-pointer {
+                        cursor: pointer;
+                    }
+
+                    .cursor-pointer:hover {
+                        text-decoration: underline;
+                    }
+
                     /* ===== LOADER ===== */
                     .loader-overlay {
                         position: fixed;
@@ -378,6 +568,39 @@ require_once '../partials/main.php'; ?>
     window.usuarioRol = <?php echo json_encode($_SESSION['rol'] ?? null); ?>;
 </script>
 <script>
+    
+    $(function() {
+
+        $('#reportrange').daterangepicker({
+                opens: "left",
+                autoUpdateInput: false,
+                locale: {
+                    format: "YYYY-MM-DD",
+                    applyLabel: "Aplicar",
+                    cancelLabel: "Cancelar",
+                    daysOfWeek: ["Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sa"],
+                    monthNames: [
+                        "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+                        "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+                    ]
+                }
+            },
+            function(start, end) {
+
+                // Guardar fechas globales
+                window.fecha_inicio = start.format("YYYY-MM-DD");
+                window.fecha_fin = end.format("YYYY-MM-DD");
+
+                // Mostrar en el span
+                document.querySelector(".reportrange-picker-field").innerHTML =
+                    start.format("DD MMM YY") + " - " + end.format("DD MMM YY");
+
+                // Llamar a función principal
+                listarReporteCRMS();
+            }
+        );
+    });
+
     window.Filtros = {
         obtener: function() {
 
@@ -387,17 +610,18 @@ require_once '../partials/main.php'; ?>
                 texto = inputBuscador.value.toLowerCase();
             }
 
-            let asesor = [...document.querySelectorAll(".filtro-asesor:checked")]
-                .map(c => c.value);
-
-            let carreras = [...document.querySelectorAll(".filtro-carrera:checked")]
-                .map(c => c.value);
-
-            let horario = [...document.querySelectorAll(".filtro-horario:checked")]
-                .map(c => c.value);
-
-            let estados = [...document.querySelectorAll(".filtro-estado:checked")]
-                .map(c => c.value);
+            let asesor = [...document.querySelectorAll(".filtro-asesor:checked")].map(c => c.value);
+            let carreras = [...document.querySelectorAll(".filtro-carrera:checked")].map(c => c.value);
+            let horario = [...document.querySelectorAll(".filtro-horario:checked")].map(c => c.value);
+            let interes = [...document.querySelectorAll(".filtro-interes:checked")].map(c => c.value);
+            let medio = [...document.querySelectorAll(".filtro-medio:checked")].map(c => c.value);
+            let fuente = [...document.querySelectorAll(".filtro-fuente:checked")].map(c => c.value);
+            let campana = [...document.querySelectorAll(".filtro-campana:checked")].map(c => c.value);
+            let accion = [...document.querySelectorAll(".filtro-accion:checked")].map(c => c.value);
+            let departamento = [...document.querySelectorAll(".filtro-dep:checked")].map(c => c.value);
+            let ciudad = [...document.querySelectorAll(".filtro-ciu:checked")].map(c => c.value);
+            let barrio = [...document.querySelectorAll(".filtro-brr:checked")].map(c => c.value);
+            let estados = [...document.querySelectorAll(".filtro-estado:checked")].map(c => c.value);
 
             // ✅ DEFAULT ESTADOS
             if (estados.length === 0 && !window.filtrosInicializados) {
@@ -418,9 +642,17 @@ require_once '../partials/main.php'; ?>
             return {
                 texto,
                 asesor,
-                estados,
                 carreras,
                 horario,
+                interes,
+                medio,
+                fuente,
+                campana,
+                accion,
+                departamento,
+                ciudad,
+                barrio,
+                estados,
                 fecha_inicio,
                 fecha_fin
             };
@@ -439,9 +671,17 @@ require_once '../partials/main.php'; ?>
 
         if (f.texto !== "") params.append("texto", f.texto);
         if (f.asesor.length > 0) params.append("asesor", JSON.stringify(f.asesor));
-        if (f.estados.length > 0) params.append("estados", JSON.stringify(f.estados));
-        if (f.carreras.length > 0) params.append("carrera", JSON.stringify(f.carreras));
+        if (f.carreras.length > 0) params.append("carreras", JSON.stringify(f.carreras));
         if (f.horario.length > 0) params.append("horario", JSON.stringify(f.horario));
+        if (f.interes.length > 0) params.append("interes", JSON.stringify(f.interes));
+        if (f.medio.length > 0) params.append("medio", JSON.stringify(f.medio));
+        if (f.fuente.length > 0) params.append("fuente", JSON.stringify(f.fuente));
+        if (f.campana.length > 0) params.append("campana", JSON.stringify(f.campana));
+        if (f.accion.length > 0) params.append("accion", JSON.stringify(f.accion));
+        if (f.departamento.length > 0) params.append("departamento", JSON.stringify(f.departamento));
+        if (f.ciudad.length > 0) params.append("ciudad", JSON.stringify(f.ciudad));
+        if (f.barrio.length > 0) params.append("barrio", JSON.stringify(f.barrio));
+        if (f.estados.length > 0) params.append("estados", JSON.stringify(f.estados));
         if (f.fecha_inicio !== "") params.append("fecha_inicio", f.fecha_inicio);
         if (f.fecha_fin !== "") params.append("fecha_fin", f.fecha_fin);
 
@@ -540,141 +780,196 @@ require_once '../partials/main.php'; ?>
     listarReporteCRMS();
 
     function inicializarDataTableRst(data) {
+
         const contenedor = document.getElementById("rst_reports");
+
         if (!data || data.length === 0) {
-            contenedor.innerHTML = "<div class='alert alert-warning'>No hay datos disponibles</div>";
+            contenedor.innerHTML =
+                "<div class='alert alert-warning'>No hay datos disponibles</div>";
             return;
         }
 
         const programasSet = new Set();
         const mapaHorarios = {};
 
-        // --- FUNCIÓN DE NORMALIZACIÓN INTERNA ---
-        // Esto asegura que null, undefined, "SIN IDENTIFICAR", etc., se agrupen igual
+        /* ==================================================
+           NORMALIZAR HORARIOS
+        ================================================== */
         const normalizarHorario = (id, nombre) => {
+
             let n = (nombre || "").toUpperCase().trim();
+
             if (!id || !n ||
                 n === "NULL" ||
                 n === "POR CONFIRMAR" ||
                 n === "SIN IDENTIFICAR" ||
                 n === "(EN BLANCO)") {
+
                 return {
                     id: "99",
                     nombre: "POR CONFIRMAR"
                 };
             }
+
             return {
                 id: id,
                 nombre: n
             };
         };
 
-        // 1. Procesar data y UNIFICAR categorías de horarios
+        /* ==================================================
+           LEER DATA
+        ================================================== */
         data.forEach(item => {
-            const horarioNormalizado = normalizarHorario(item.id_horario, item.horario);
 
-            mapaHorarios[horarioNormalizado.id] = horarioNormalizado.nombre;
+            const horarioNormalizado =
+                normalizarHorario(item.id_horario, item.horario);
+
+            mapaHorarios[horarioNormalizado.id] =
+                horarioNormalizado.nombre;
+
             programasSet.add(item.programa || "SIN PROGRAMA");
         });
 
-        const idsOrdenados = Object.keys(mapaHorarios).sort((a, b) => parseInt(a) - parseInt(b));
-        const encabezadosHorarios = idsOrdenados.map(id => mapaHorarios[id]);
-        const programas = Array.from(programasSet).sort();
+        const idsOrdenados = Object.keys(mapaHorarios)
+            .sort((a, b) => parseInt(a) - parseInt(b));
 
-        // 2. Crear Matriz de conteo inicializada en 0
+        const encabezadosHorarios =
+            idsOrdenados.map(id => mapaHorarios[id]);
+
+        const programas =
+            Array.from(programasSet).sort();
+
+        /* ==================================================
+           MATRIZ
+        ================================================== */
         const matriz = {};
+
         programas.forEach(p => {
+
             matriz[p] = {};
-            encabezadosHorarios.forEach(h => matriz[p][h] = 0);
+
+            encabezadosHorarios.forEach(h => {
+                matriz[p][h] = 0;
+            });
         });
 
-        // Llenar matriz con los datos reales
+        /* ==================================================
+           LLENAR MATRIZ
+        ================================================== */
         data.forEach(item => {
+
             const p = item.programa || "SIN PROGRAMA";
-            const horarioNormalizado = normalizarHorario(item.id_horario, item.horario);
+
+            const horarioNormalizado =
+                normalizarHorario(item.id_horario, item.horario);
+
             const nombreH = horarioNormalizado.nombre;
 
-            if (matriz[p] && matriz[p][nombreH] !== undefined) {
-                matriz[p][nombreH] += parseInt(item.total_leads) || 0;
+            if (matriz[p] &&
+                matriz[p][nombreH] !== undefined) {
+
+                matriz[p][nombreH] +=
+                    parseInt(item.total_leads) || 0;
             }
         });
 
-        // 3. Generar HTML de la Tabla
+        /* ==================================================
+           HTML + CSS EXCEL
+        ================================================== */
         let html = `
-            <style>
-                #rst_reports .table td { padding: 8px 12px !important; vertical-align: middle; }
-                #rst_reports .table th { padding: 10px !important; text-transform: uppercase; font-size: 0.75rem; }
-                .bg-total-fila { background-color: #f8f9fa !important; font-weight: bold; }
-                .bg-gran-total { background-color: #0d6efd !important; color: white !important; }
-                .cursor-pointer { cursor: pointer; transition: all 0.2s; }
-                .cursor-pointer:hover { background-color: rgba(13, 110, 253, 0.1) !important; transform: scale(1.02); }
-            </style>
-            <table id="tabla_resumen_rst" class="table table-bordered table-striped table-hover table-sm">
-                <thead class="table-dark text-center">
-                    <tr>
-                        <th class="text-start">Programa / Horario</th>
-                        ${encabezadosHorarios.map(h => `<th>${h}</th>`).join('')}
-                        <th>Total</th>
-                    </tr>
-                </thead>
-                <tbody>`;
+    <div class="table-responsive">
+    <table id="tabla_resumen_rst" class="table-excel">
+        <thead>
+            <tr>
+                <th>Programa / Horario</th>
+                ${encabezadosHorarios.map(h => `<th>${h}</th>`).join("")}
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+    `;
 
         let totalColumnas = {};
         encabezadosHorarios.forEach(h => totalColumnas[h] = 0);
+
         let granTotal = 0;
 
+        /* ==================================================
+           FILAS PROGRAMAS
+        ================================================== */
         programas.forEach(p => {
+
             let totalFila = 0;
-            html += `<tr><td class="text-start"><strong>${p}</strong></td>`;
+
+            html += `<tr>`;
+            html += `<td>${p}</td>`;
 
             encabezadosHorarios.forEach(h => {
+
                 const valor = matriz[p][h];
+
                 if (valor > 0) {
+
                     html += `
-                <td class="abrir-mensajes-foco text-center text-primary fw-bold cursor-pointer"
-                    data-programa="${p}" 
+                <td class="abrir-mensajes-foco cursor-pointer text-primary fw-bold"
+                    data-programa="${p}"
                     data-jornada="${h}">
                     ${valor}
                 </td>`;
+
                 } else {
-                    html += `<td class="text-center text-muted">-</td>`;
+
+                    html += `<td class="text-muted">-</td>`;
                 }
+
                 totalFila += valor;
                 totalColumnas[h] += valor;
             });
 
             html += `
-                <td class="abrir-mensajes-foco text-center bg-total-fila text-primary fw-bold cursor-pointer" 
-                    data-programa="${p}" 
-                    data-jornada="TODOS">
-                    ${totalFila}
-                </td>
-            </tr>`;
+        <td class="abrir-mensajes-foco cursor-pointer text-primary fw-bold"
+            data-programa="${p}"
+            data-jornada="TODOS">
+            ${totalFila}
+        </td>
+        </tr>
+        `;
+
             granTotal += totalFila;
         });
 
-        // 4. Footer con Totales
-        html += `</tbody>
-            <tfoot class="table-secondary text-center">
-                <tr>
-                    <td class="text-start"><strong>TOTAL GENERAL</strong></td>
-                    ${encabezadosHorarios.map(h => {
-                        const valCol = totalColumnas[h];
-                        return `
-                        <td class="abrir-mensajes-foco text-primary fw-bold cursor-pointer" 
-                            data-programa="TODOS" 
-                            data-jornada="${h}">
-                            ${valCol}
-                        </td>`;
-                    }).join('')}
-                    <td class="abrir-mensajes-foco bg-gran-total fw-bold cursor-pointer" 
-                        data-programa="TODOS" 
-                        data-jornada="TODOS">
-                        ${granTotal}
-                    </td>
-                </tr>
-            </tfoot>
-            </table>`;
+        /* ==================================================
+           FOOTER TOTAL
+        ================================================== */
+        html += `
+        </tbody>
+        <tfoot class="text-center">
+            <tr class="table-total">
+                <td>TOTAL GENERAL</td>
+    `;
+
+        encabezadosHorarios.forEach(h => {
+
+            html += `
+        <td class="abrir-mensajes-foco cursor-pointer"
+            data-programa="TODOS"
+            data-jornada="${h}">
+            ${totalColumnas[h]}
+        </td>`;
+        });
+
+        html += `
+        <td class="abrir-mensajes-foco cursor-pointer"
+            data-programa="TODOS"
+            data-jornada="TODOS">
+            ${granTotal}
+        </td>
+        </tr>
+        </tfoot>
+    </table>
+    </div>
+    `;
 
         contenedor.innerHTML = html;
     }

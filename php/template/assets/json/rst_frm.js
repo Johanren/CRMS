@@ -34,6 +34,19 @@ function listarReporteRstFrm() {
 
     if (f.texto !== "") params.append("texto", f.texto);
     if (f.asesor.length > 0) params.append("asesor", JSON.stringify(f.asesor));
+    if (f.carreras.length > 0) params.append("carreras", JSON.stringify(f.carreras));
+    if (f.horario.length > 0) params.append("horario", JSON.stringify(f.horario));
+    if (f.interes.length > 0) params.append("interes", JSON.stringify(f.interes));
+    if (f.medio.length > 0) params.append("medio", JSON.stringify(f.medio));
+    if (f.fuente.length > 0) params.append("fuente", JSON.stringify(f.fuente));
+    if (f.campana.length > 0) params.append("campana", JSON.stringify(f.campana));
+    if (f.accion.length > 0) params.append("accion", JSON.stringify(f.accion));
+    if (f.departamento.length > 0) params.append("departamento", JSON.stringify(f.departamento));
+    if (f.ciudad.length > 0) params.append("ciudad", JSON.stringify(f.ciudad));
+    if (f.barrio.length > 0) params.append("barrio", JSON.stringify(f.barrio));
+    if (f.estados.length > 0) params.append("estados", JSON.stringify(f.estados));
+    if (f.fecha_inicio !== "") params.append("fecha_inicio", f.fecha_inicio);
+    if (f.fecha_fin !== "") params.append("fecha_fin", f.fecha_fin);
 
     fetch("ajax/ajax.php?" + params.toString())
         .then(res => res.json())
@@ -587,10 +600,21 @@ function listarEstadoLead() {
 
     params.append("accion", "lead_dia");
 
+    if (f.texto !== "") params.append("texto", f.texto);
     if (f.asesor.length > 0) params.append("asesor", JSON.stringify(f.asesor));
     if (f.carreras.length > 0) params.append("carreras", JSON.stringify(f.carreras));
     if (f.horario.length > 0) params.append("horario", JSON.stringify(f.horario));
+    if (f.interes.length > 0) params.append("interes", JSON.stringify(f.interes));
+    if (f.medio.length > 0) params.append("medio", JSON.stringify(f.medio));
+    if (f.fuente.length > 0) params.append("fuente", JSON.stringify(f.fuente));
+    if (f.campana.length > 0) params.append("campana", JSON.stringify(f.campana));
+    if (f.accion.length > 0) params.append("accion", JSON.stringify(f.accion));
+    if (f.departamento.length > 0) params.append("departamento", JSON.stringify(f.departamento));
+    if (f.ciudad.length > 0) params.append("ciudad", JSON.stringify(f.ciudad));
+    if (f.barrio.length > 0) params.append("barrio", JSON.stringify(f.barrio));
     if (f.estados.length > 0) params.append("estados", JSON.stringify(f.estados));
+    if (f.fecha_inicio !== "") params.append("fecha_inicio", f.fecha_inicio);
+    if (f.fecha_fin !== "") params.append("fecha_fin", f.fecha_fin);
 
     fetch("ajax/ajax.php?" + params.toString())
         .then(res => res.json())

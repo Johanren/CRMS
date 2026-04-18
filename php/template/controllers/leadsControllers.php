@@ -338,9 +338,9 @@ class LeadsControllers
         }
     }
 
-    public static function listarReporteRst($texto, $asesor)
+    public static function listarReporteRst($texto, $asesor, $carreras, $horario, $interes, $medio, $fuente, $campana, $accion, $departamento, $ciudad, $barrio, $estados, $fecha_inicio, $fecha_fin)
     {
-        return LeadsModels::listarReporteRst($texto, $asesor);
+        return LeadsModels::listarReporteRst($texto, $asesor, $carreras, $horario, $interes, $medio, $fuente, $campana, $accion, $departamento, $ciudad, $barrio, $estados, $fecha_inicio, $fecha_fin);
     }
 
     public static function listarReporteRstDia($mes, $anio)
@@ -348,9 +348,9 @@ class LeadsControllers
         return LeadsModels::listarReporteRstDia($mes, $anio);
     }
 
-    public static function listarReporteLeadDia($mes, $anio, $asesor, $carrera, $horario, $estados)
+    public static function listarReporteLeadDia($mes, $anio, $texto, $asesor, $carreras, $horario, $interes, $medio, $fuente, $campana, $accion, $departamento, $ciudad, $barrio, $estados, $fecha_inicio, $fecha_fin)
     {
-        return LeadsModels::listarReporteLeadDia($mes, $anio, $asesor, $carrera, $horario, $estados);
+        return LeadsModels::listarReporteLeadDia($mes, $anio, $texto, $asesor, $carreras, $horario, $interes, $medio, $fuente, $campana, $accion, $departamento, $ciudad, $barrio, $estados, $fecha_inicio, $fecha_fin);
     }
 
     public static function listarLeadsFiltradosMensaje($carrera, $horario, $estado, $asesor, $numero)
@@ -358,19 +358,19 @@ class LeadsControllers
         return LeadsModels::listarLeadsFiltradosMensaje($carrera, $horario, $estado, $asesor, $numero);
     }
 
-    public static function listarReporteCRMLeads($asesor, $carrera, $horario, $estados)
+    public static function listarReporteCRMLeads($texto, $asesor, $carreras, $horario, $interes, $medio, $fuente, $campana, $accion, $departamento, $ciudad, $barrio, $estados, $fecha_inicio, $fecha_fin)
     {
-        return LeadsModels::listarReporteCRMLeads($asesor, $carrera, $horario, $estados);
+        return LeadsModels::listarReporteCRMLeads($texto, $asesor, $carreras, $horario, $interes, $medio, $fuente, $campana, $accion, $departamento, $ciudad, $barrio, $estados, $fecha_inicio, $fecha_fin);
     }
 
-    public static function reporteLeadsFuente($texto, $asesor, $carrera, $estados, $fecha_inicio, $fecha_fin)
+    public static function reporteLeadsFuente($texto, $asesor, $carreras, $horario, $interes, $medio, $fuente, $campana, $accion, $departamento, $ciudad, $barrio, $estados, $fecha_inicio, $fecha_fin)
     {
-        return LeadsModels::reporteLeadsFuente($texto, $asesor, $carrera, $estados, $fecha_inicio, $fecha_fin);
+        return LeadsModels::reporteLeadsFuente($texto, $asesor, $carreras, $horario, $interes, $medio, $fuente, $campana, $accion, $departamento, $ciudad, $barrio, $estados, $fecha_inicio, $fecha_fin);
     }
 
-    public static function ctrReporteEstadoLeads($texto, $asesor, $carrera, $estados, $fecha_inicio, $fecha_fin, $page, $limit)
+    public static function ctrReporteEstadoLeads($texto, $asesor, $carreras, $horario, $interes, $medio, $fuente, $campana, $accion, $departamento, $ciudad, $barrio, $estados, $fecha_inicio, $fecha_fin, $page, $limit)
     {
-        return LeadsModels::ctrReporteEstadoLeads($texto, $asesor, $carrera, $estados, $fecha_inicio, $fecha_fin, $page, $limit);
+        return LeadsModels::ctrReporteEstadoLeads($texto, $asesor, $carreras, $horario, $interes, $medio, $fuente, $campana, $accion, $departamento, $ciudad, $barrio, $estados, $fecha_inicio, $fecha_fin, $page, $limit);
     }
 
     public static function ctrReporteEstadoLeadsHistorico($id)

@@ -421,7 +421,8 @@ if (isset($_POST['accion'])) {
 
         case 'listar_limit':
             $user_id = $_SESSION['user_id'];
-            echo json_encode($notificaciones->listarPorUsuario($user_id, 3));
+            $limit = $_POST['limit'] ?? null;
+            echo json_encode($notificaciones->listarPorUsuario($user_id, $limit));
             break;
 
         case 'marcar_leida':
@@ -1030,45 +1031,86 @@ if (isset($_GET['accion'])) {
             break;
         case 'reporte_CRMS_lead':
 
+            $texto = $_GET['texto'] ?? '';
             $asesor = isset($_GET['asesor']) ? json_decode($_GET['asesor']) : [];
-            $carrera = isset($_GET['carrera']) ? json_decode($_GET['carrera']) : [];
+            $carreras = isset($_GET['carreras']) ? json_decode($_GET['carreras']) : [];
             $horario = isset($_GET['horario']) ? json_decode($_GET['horario']) : [];
+            $interes = isset($_GET['interes']) ? json_decode($_GET['interes']) : [];
+            $medio = isset($_GET['medio']) ? json_decode($_GET['medio']) : [];
+            $fuente = isset($_GET['fuente']) ? json_decode($_GET['fuente']) : [];
+            $campana = isset($_GET['campana']) ? json_decode($_GET['campana']) : [];
+            $accion = isset($_GET['accion']) ? json_decode($_GET['accion']) : [];
+            $departamento = isset($_GET['departamento']) ? json_decode($_GET['departamento']) : [];
+            $ciudad = isset($_GET['ciudad']) ? json_decode($_GET['ciudad']) : [];
+            $barrio = isset($_GET['barrio']) ? json_decode($_GET['barrio']) : [];
             $estados = isset($_GET['estados']) ? json_decode($_GET['estados']) : [];
+            $fecha_inicio = $_GET['fecha_inicio'] ?? null;
+            $fecha_fin = $_GET['fecha_fin'] ?? null;
 
-            echo json_encode($leads->listarReporteCRMLeads($asesor, $carrera, $horario, $estados));
+            echo json_encode($leads->listarReporteCRMLeads($texto, $asesor, $carreras, $horario, $interes, $medio, $fuente, $campana, $accion, $departamento, $ciudad, $barrio, $estados, $fecha_inicio, $fecha_fin));
             break;
         case 'lead_dia':
             $mes  = date('m');
             $anio = date('Y');
 
+            $texto = $_GET['texto'] ?? '';
             $asesor = isset($_GET['asesor']) ? json_decode($_GET['asesor']) : [];
-            $carrera = isset($_GET['carreras']) ? json_decode($_GET['carreras']) : [];
+            $carreras = isset($_GET['carreras']) ? json_decode($_GET['carreras']) : [];
             $horario = isset($_GET['horario']) ? json_decode($_GET['horario']) : [];
+            $interes = isset($_GET['interes']) ? json_decode($_GET['interes']) : [];
+            $medio = isset($_GET['medio']) ? json_decode($_GET['medio']) : [];
+            $fuente = isset($_GET['fuente']) ? json_decode($_GET['fuente']) : [];
+            $campana = isset($_GET['campana']) ? json_decode($_GET['campana']) : [];
+            $accion = isset($_GET['accion']) ? json_decode($_GET['accion']) : [];
+            $departamento = isset($_GET['departamento']) ? json_decode($_GET['departamento']) : [];
+            $ciudad = isset($_GET['ciudad']) ? json_decode($_GET['ciudad']) : [];
+            $barrio = isset($_GET['barrio']) ? json_decode($_GET['barrio']) : [];
             $estados = isset($_GET['estados']) ? json_decode($_GET['estados']) : [];
+            $fecha_inicio = $_GET['fecha_inicio'] ?? null;
+            $fecha_fin = $_GET['fecha_fin'] ?? null;
 
-            echo json_encode($leads->listarReporteLeadDia($mes, $anio, $asesor, $carrera, $horario, $estados));
+            echo json_encode($leads->listarReporteLeadDia($mes, $anio, $texto, $asesor, $carreras, $horario, $interes, $medio, $fuente, $campana, $accion, $departamento, $ciudad, $barrio, $estados, $fecha_inicio, $fecha_fin));
             break;
         case 'reporte_fuente_origen':
 
             $texto = $_GET['texto'] ?? '';
             $asesor = isset($_GET['asesor']) ? json_decode($_GET['asesor']) : [];
-            $carrera = isset($_GET['carrera']) ? json_decode($_GET['carrera']) : [];
+            $carreras = isset($_GET['carreras']) ? json_decode($_GET['carreras']) : [];
+            $horario = isset($_GET['horario']) ? json_decode($_GET['horario']) : [];
+            $interes = isset($_GET['interes']) ? json_decode($_GET['interes']) : [];
+            $medio = isset($_GET['medio']) ? json_decode($_GET['medio']) : [];
+            $fuente = isset($_GET['fuente']) ? json_decode($_GET['fuente']) : [];
+            $campana = isset($_GET['campana']) ? json_decode($_GET['campana']) : [];
+            $accion = isset($_GET['accion']) ? json_decode($_GET['accion']) : [];
+            $departamento = isset($_GET['departamento']) ? json_decode($_GET['departamento']) : [];
+            $ciudad = isset($_GET['ciudad']) ? json_decode($_GET['ciudad']) : [];
+            $barrio = isset($_GET['barrio']) ? json_decode($_GET['barrio']) : [];
             $estados = isset($_GET['estados']) ? json_decode($_GET['estados']) : [];
-            $fecha_inicio = !empty($_GET['fecha_inicio']) ? $_GET['fecha_inicio'] : null;
-            $fecha_fin    = !empty($_GET['fecha_fin'])    ? $_GET['fecha_fin']    : null;
-            echo json_encode($leads->reporteLeadsFuente($texto, $asesor, $carrera, $estados, $fecha_inicio, $fecha_fin));
+            $fecha_inicio = $_GET['fecha_inicio'] ?? null;
+            $fecha_fin = $_GET['fecha_fin'] ?? null;
+            echo json_encode($leads->reporteLeadsFuente($texto, $asesor, $carreras, $horario, $interes, $medio, $fuente, $campana, $accion, $departamento, $ciudad, $barrio, $estados, $fecha_inicio, $fecha_fin));
             break;
         case 'reporte_estado_leads':
 
             $texto = $_GET['texto'] ?? '';
             $asesor = isset($_GET['asesor']) ? json_decode($_GET['asesor']) : [];
-            $carrera = isset($_GET['carrera']) ? json_decode($_GET['carrera']) : [];
+            $carreras = isset($_GET['carreras']) ? json_decode($_GET['carreras']) : [];
+            $horario = isset($_GET['horario']) ? json_decode($_GET['horario']) : [];
+            $interes = isset($_GET['interes']) ? json_decode($_GET['interes']) : [];
+            $medio = isset($_GET['medio']) ? json_decode($_GET['medio']) : [];
+            $fuente = isset($_GET['fuente']) ? json_decode($_GET['fuente']) : [];
+            $campana = isset($_GET['campana']) ? json_decode($_GET['campana']) : [];
+            $accion = isset($_GET['accion']) ? json_decode($_GET['accion']) : [];
+            $departamento = isset($_GET['departamento']) ? json_decode($_GET['departamento']) : [];
+            $ciudad = isset($_GET['ciudad']) ? json_decode($_GET['ciudad']) : [];
+            $barrio = isset($_GET['barrio']) ? json_decode($_GET['barrio']) : [];
             $estados = isset($_GET['estados']) ? json_decode($_GET['estados']) : [];
-            $fecha_inicio = !empty($_GET['fecha_inicio']) ? $_GET['fecha_inicio'] : null;
-            $fecha_fin    = !empty($_GET['fecha_fin'])    ? $_GET['fecha_fin']    : null;
+            $fecha_inicio = $_GET['fecha_inicio'] ?? null;
+            $fecha_fin = $_GET['fecha_fin'] ?? null;
+
             $page  = isset($_GET['page']) ? (int)$_GET['page'] : 1;
             $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
-            echo json_encode($leads->ctrReporteEstadoLeads($texto, $asesor, $carrera, $estados, $fecha_inicio, $fecha_fin, $page, $limit));
+            echo json_encode($leads->ctrReporteEstadoLeads($texto, $asesor, $carreras, $horario, $interes, $medio, $fuente, $campana, $accion, $departamento, $ciudad, $barrio, $estados, $fecha_inicio, $fecha_fin, $page, $limit));
             break;
         case 'historial_estado_lead':
 
@@ -1157,8 +1199,21 @@ if (isset($_GET['accion'])) {
 
             $texto = $_GET['texto'] ?? '';
             $asesor = isset($_GET['asesor']) ? json_decode($_GET['asesor']) : [];
+            $carreras = isset($_GET['carreras']) ? json_decode($_GET['carreras']) : [];
+            $horario = isset($_GET['horario']) ? json_decode($_GET['horario']) : [];
+            $interes = isset($_GET['interes']) ? json_decode($_GET['interes']) : [];
+            $medio = isset($_GET['medio']) ? json_decode($_GET['medio']) : [];
+            $fuente = isset($_GET['fuente']) ? json_decode($_GET['fuente']) : [];
+            $campana = isset($_GET['campana']) ? json_decode($_GET['campana']) : [];
+            $accion = isset($_GET['accion']) ? json_decode($_GET['accion']) : [];
+            $departamento = isset($_GET['departamento']) ? json_decode($_GET['departamento']) : [];
+            $ciudad = isset($_GET['ciudad']) ? json_decode($_GET['ciudad']) : [];
+            $barrio = isset($_GET['barrio']) ? json_decode($_GET['barrio']) : [];
+            $estados = isset($_GET['estados']) ? json_decode($_GET['estados']) : [];
+            $fecha_inicio = $_GET['fecha_inicio'] ?? null;
+            $fecha_fin = $_GET['fecha_fin'] ?? null;
 
-            echo json_encode($leads->listarReporteRst($texto, $asesor));
+            echo json_encode($leads->listarReporteRst($texto, $asesor, $carreras, $horario, $interes, $medio, $fuente, $campana, $accion, $departamento, $ciudad, $barrio, $estados, $fecha_inicio, $fecha_fin));
             break;
         case 'rst_frm_dia':
             $mes  = date('m');

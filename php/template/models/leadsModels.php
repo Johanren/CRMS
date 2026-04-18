@@ -105,64 +105,56 @@ class LeadsModels
 
         $params = [$_SESSION['cod_emp'], $_SESSION['foco']];
 
-        /* ===========================
-        FILTRO POR ROL (Sincronizado con listarLeads)
-    ============================ */
-        if (isset($_SESSION['rol']) && $_SESSION['rol'] !== 'Admin' && $texto === "" && empty($asesor)) {
-            $sql .= " AND l.user_id = ?";
-            $params[] = $_SESSION['user_id'];
-        }
-
-        /* ===========================
-        FILTRO POR TEXTO (Igual a listarLeads)
-    ============================ */
         if ($texto !== "") {
+
             $sql .= " AND (c.nombres LIKE ? OR c.apellidos LIKE ? OR c.email LIKE ? OR c.telefono_principal LIKE ?)";
             $buscar = "%$texto%";
             $params = array_merge($params, array_fill(0, 4, $buscar));
-        }
 
-        /* ===========================
-        FILTROS DE ARRAYS (Mapeo idéntico)
-    ============================ */
-        $filtros = [
-            'l.user_id' => $asesor,
-            'p.desc_pro' => $carreras,
-            'l.interes_id' => $interes,
-            'l.medio_id' => $medio,
-            'l.fuente_id' => $fuente,
-            'l.campana_id' => $campana,
-            'l.accion_id' => $accion,
-            'l.departamento_id' => $departamento,
-            'l.ciudad_id' => $ciudad,
-            'l.barrio_id' => $barrio,
-            'e.nombre' => $estados
-        ];
+            /*if (isset($_SESSION['rol']) && $_SESSION['rol'] !== 'Admin') {
+                $sql .= " AND l.user_id = ?";
+                $params[] = $_SESSION['user_id'];
+            }*/
+        } else {
 
-        foreach ($filtros as $columna => $valores) {
-            if (!empty($valores)) {
-                $placeholders = implode(",", array_fill(0, count($valores), "?"));
-                $sql .= " AND $columna IN ($placeholders)";
-                $params = array_merge($params, $valores);
+            if (isset($_SESSION['rol']) && $_SESSION['rol'] !== 'Admin' && empty($asesor)) {
+                $sql .= " AND l.user_id = ?";
+                $params[] = $_SESSION['user_id'];
             }
-        }
 
-        /* ===========================
-        FILTRO POR HORARIO (Sincronizado)
-    ============================ */
-        if (!empty($horario)) {
-            $placeholders = implode(",", array_fill(0, count($horario), "?"));
-            $sql .= " AND (h.descripcion IN ($placeholders) OR h.id_horario IN ($placeholders))";
-            $params = array_merge($params, $horario, $horario);
-        }
+            $filtros = [
+                'l.user_id' => $asesor,
+                'p.desc_pro' => $carreras,
+                'l.interes_id' => $interes,
+                'l.medio_id' => $medio,
+                'l.fuente_id' => $fuente,
+                'l.campana_id' => $campana,
+                'l.accion_id' => $accion,
+                'l.departamento_id' => $departamento,
+                'l.ciudad_id' => $ciudad,
+                'l.barrio_id' => $barrio,
+                'e.nombre' => $estados
+            ];
 
-        /* ===========================
-        FILTRO POR FECHA
-    ============================ */
-        if (!empty($fecha_inicio) && !empty($fecha_fin)) {
-            $sql .= " AND DATE(l.fecha_creacion) BETWEEN ? AND ?";
-            $params[] = $fecha_inicio;
-            $params[] = $fecha_fin;
+            foreach ($filtros as $columna => $valores) {
+                if (!empty($valores)) {
+                    $placeholders = implode(",", array_fill(0, count($valores), "?"));
+                    $sql .= " AND $columna IN ($placeholders)";
+                    $params = array_merge($params, $valores);
+                }
+            }
+
+            if (!empty($horario)) {
+                $placeholders = implode(",", array_fill(0, count($horario), "?"));
+                $sql .= " AND (h.descripcion IN ($placeholders) OR h.id_horario IN ($placeholders))";
+                $params = array_merge($params, $horario, $horario);
+            }
+
+            if (!empty($fecha_inicio) && !empty($fecha_fin)) {
+                $sql .= " AND DATE(l.fecha_creacion) BETWEEN ? AND ?";
+                $params[] = $fecha_inicio;
+                $params[] = $fecha_fin;
+            }
         }
 
         $sql .= " ORDER BY l.fecha_creacion DESC";
@@ -226,10 +218,10 @@ class LeadsModels
         $params = [$_SESSION['cod_emp'], $_SESSION['foco']];
 
         // Seguridad por Rol
-        if (isset($_SESSION['rol']) && $_SESSION['rol'] !== 'Admin' && $texto === "" && empty($asesor)) {
+        /*if (isset($_SESSION['rol']) && $_SESSION['rol'] !== 'Admin' && $texto === "" && empty($asesor)) {
             $sql .= " AND l.user_id = ?";
             $params[] = $_SESSION['user_id'];
-        }
+        }*/
 
         // Filtros de Texto y Arrays
         if ($texto !== "") {
@@ -656,7 +648,7 @@ class LeadsModels
         ]);
     }
 
-    public static function listarReporteRst($texto = "", $asesor = [])
+    public static function listarReporteRst($texto = "", $asesor = [], $carreras = [], $horario = [], $interes = [], $medio = [], $fuente = [], $campana = [], $accion = [], $departamento = [], $ciudad = [], $barrio = [], $estados = [], $fecha_inicio = "", $fecha_fin = [])
     {
         // 1. Base de la consulta (SIN el ";" al final y SIN el GROUP BY aquí)
         $codEmp = $_SESSION['cod_emp'] ?? $_GET['cod_emp'];
@@ -693,17 +685,41 @@ class LeadsModels
 
         // 2. Filtro por Texto
         if ($texto !== "") {
-            $sql .= " AND (c.nombres LIKE ? OR c.apellidos LIKE ? OR c.telefono_principal LIKE ?)";
+            // Si hay texto, filtramos por datos del cliente
+            $sql .= " AND (c.nombres LIKE ? OR c.apellidos LIKE ? OR c.email LIKE ? OR c.telefono_principal LIKE ?)";
             $buscar = "%$texto%";
-            array_push($params, $buscar, $buscar, $buscar);
-        }
+            $params = array_merge($params, array_fill(0, 4, $buscar));
+        } else {
+            // Si no hay texto, aplicamos los filtros de arrays
+            $filtros = [
+                'l.user_id'         => $asesor,
+                'p.desc_pro'        => $carreras,
+                'l.interes_id'      => $interes,
+                'l.horario_id'      => $horario,
+                'l.medio_id'        => $medio,
+                'l.fuente_id'       => $fuente,
+                'l.campana_id'      => $campana,
+                'l.accion_id'       => $accion,
+                'l.departamento_id' => $departamento,
+                'l.ciudad_id'       => $ciudad,
+                'l.barrio_id'       => $barrio,
+                'el.nombre'         => $estados
+            ];
 
-        // 3. Filtro por Asesor (Corregido)
-        if (!empty($asesor)) {
-            // Aseguramos que los valores sean tratados como placeholders
-            $placeholders = implode(",", array_fill(0, count($asesor), "?"));
-            $sql .= " AND l.user_id IN ($placeholders)";
-            $params = array_merge($params, $asesor);
+            foreach ($filtros as $columna => $valores) {
+                if (!empty($valores)) {
+                    $placeholders = implode(",", array_fill(0, count($valores), "?"));
+                    $sql .= " AND $columna IN ($placeholders)"; // Corregido de $sql a $sqlPorEstado
+                    $params = array_merge($params, $valores);
+                }
+            }
+
+            // Filtro de fechas
+            if (!empty($fecha_inicio) && !empty($fecha_fin)) {
+                $sql .= " AND DATE(l.fecha_creacion) BETWEEN ? AND ?";
+                $params[] = $fecha_inicio;
+                $params[] = $fecha_fin;
+            }
         }
 
         // 4. Agrupación y Orden (DEBEN ir al final de todo)
@@ -831,7 +847,7 @@ class LeadsModels
         ];
     }
 
-    public static function listarReporteLeadDia($mes = null, $anio = null, $asesor = [], $carreras = [], $horario = [], $estados = [], $fecha_inicio = "", $fecha_fin = "")
+    public static function listarReporteLeadDia($mes = null, $anio = null, $texto = "", $asesor = [], $carreras = [], $horario = [], $interes = [], $medio = [], $fuente = [], $campana = [], $accion = [], $departamento = [], $ciudad = [], $barrio = [], $estados = [], $fecha_inicio = "", $fecha_fin = [])
     {
         // 🔹 Configuración inicial de fechas
         $mes  = $mes  ?? date('m');
@@ -841,7 +857,7 @@ class LeadsModels
         $conn = new Conexion();
         $pdo  = $conn->conectar();
 
-        // Consulta base con los JOINs necesarios para filtrar
+        // Consulta base
         $sqlPorEstado = "
         SELECT
             u.id_user,
@@ -859,47 +875,63 @@ class LeadsModels
             el.nombre != 'Matriculado'
             OR (el.nombre = 'Matriculado' AND l.foco = ?)
         )
-    ";
+        ";
 
         $params = [$codEmp, $_SESSION['foco']];
 
         /* =====================================================
-       SEGURIDAD POR ROL (Sincronizado)
-    ====================================================== */
-        /*if (isset($_SESSION['rol']) && $_SESSION['rol'] !== 'Admin' && empty($asesor)) {
-            $sqlPorEstado .= " AND l.user_id = ?";
-            $params[] = $_SESSION['user_id'];
-        }*/
+        LÓGICA DE FILTROS (Con prioridad de texto)
+        ====================================================== */
+        if ($texto !== "") {
+            // Si hay texto, filtramos por datos del cliente
+            $sqlPorEstado .= " AND (c.nombres LIKE ? OR c.apellidos LIKE ? OR c.email LIKE ? OR c.telefono_principal LIKE ?)";
+            $buscar = "%$texto%";
+            $params = array_merge($params, array_fill(0, 4, $buscar));
+        } else {
+            // Si no hay texto, aplicamos los filtros de arrays
+            $filtros = [
+                'l.user_id'         => $asesor,
+                'p.desc_pro'        => $carreras,
+                'l.interes_id'      => $interes,
+                'l.horario_id'      => $horario,
+                'l.medio_id'        => $medio,
+                'l.fuente_id'       => $fuente,
+                'l.campana_id'      => $campana,
+                'l.accion_id'       => $accion,
+                'l.departamento_id' => $departamento,
+                'l.ciudad_id'       => $ciudad,
+                'l.barrio_id'       => $barrio,
+                'el.nombre'         => $estados
+            ];
 
-        /* =====================================================
-       FILTROS DINÁMICOS (Mapeo idéntico)
-    ====================================================== */
-        $filtros = [
-            'l.user_id'    => $asesor,
-            'p.desc_pro'   => $carreras,
-            'l.horario_id'   => $horario,
-            'el.nombre'    => $estados
-        ];
+            foreach ($filtros as $columna => $valores) {
+                if (!empty($valores)) {
+                    $placeholders = implode(",", array_fill(0, count($valores), "?"));
+                    $sqlPorEstado .= " AND $columna IN ($placeholders)"; // Corregido de $sql a $sqlPorEstado
+                    $params = array_merge($params, $valores);
+                }
+            }
 
-        foreach ($filtros as $columna => $valores) {
-            if (!empty($valores)) {
-                $placeholders = implode(",", array_fill(0, count($valores), "?"));
-                $sqlPorEstado .= " AND $columna IN ($placeholders)";
-                $params = array_merge($params, $valores);
+            // Filtro de fechas
+            if (!empty($fecha_inicio) && !empty($fecha_fin)) {
+                $sqlPorEstado .= " AND DATE(l.fecha_creacion) BETWEEN ? AND ?";
+                $params[] = $fecha_inicio;
+                $params[] = $fecha_fin;
             }
         }
 
         /* ===========================
-       AGRUPACIÓN Y ORDEN
-    ============================ */
+        AGRUPACIÓN Y ORDEN
+        ============================ */
         $sqlPorEstado .= "
         GROUP BY 
+            u.id_user,
             asesor, 
             el.id_estado_leads, 
             el.nombre, 
             el.ord_eld
         ORDER BY el.ord_eld ASC
-    ";
+        ";
 
         $stmtEstado = $pdo->prepare($sqlPorEstado);
         $stmtEstado->execute($params);
@@ -973,7 +1005,7 @@ class LeadsModels
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public static function listarReporteCRMLeads($asesor = [], $carreras = [], $horario = [], $estados = [])
+    public static function listarReporteCRMLeads($texto = "", $asesor = [], $carreras = [], $horario = [], $interes = [], $medio = [], $fuente = [], $campana = [], $accion = [], $departamento = [], $ciudad = [], $barrio = [], $estados = [], $fecha_inicio = "", $fecha_fin = [])
     {
         $sql = "SELECT 
                 IFNULL(p.desc_pro, 'Sin Carrera') AS programa, 
@@ -1002,16 +1034,25 @@ class LeadsModels
         }*/
 
         // Filtro de Texto (Igual que la lista)
-        /*if ($texto !== "") {
+        if ($texto !== "") {
             $sql .= " AND (c.nombres LIKE ? OR c.apellidos LIKE ? OR c.email LIKE ? OR c.telefono_principal LIKE ?)";
             $buscar = "%$texto%";
             $params = array_merge($params, array_fill(0, 4, $buscar));
-        }*/
+        }
 
         // Mismos filtros array que la lista
+
         $filtros = [
             'l.user_id' => $asesor,
             'p.desc_pro' => $carreras,
+            'l.interes_id' => $interes,
+            'l.medio_id' => $medio,
+            'l.fuente_id' => $fuente,
+            'l.campana_id' => $campana,
+            'l.accion_id' => $accion,
+            'l.departamento_id' => $departamento,
+            'l.ciudad_id' => $ciudad,
+            'l.barrio_id' => $barrio,
             'e.nombre' => $estados
         ];
 
@@ -1044,7 +1085,7 @@ class LeadsModels
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public static function reporteLeadsFuente($texto = "", $asesor = [], $carreras = [], $estados = [], $fecha_inicio = "", $fecha_fin = "")
+    public static function reporteLeadsFuente($texto = "", $asesor = [], $carreras = [], $horario = [], $interes = [], $medio = [], $fuente = [], $campana = [], $accion = [], $departamento = [], $ciudad = [], $barrio = [], $estados = [], $fecha_inicio = "", $fecha_fin = [])
     {
         $sql = "SELECT
 
@@ -1100,10 +1141,18 @@ class LeadsModels
             $params = array_merge($params, array_fill(0, 3, $buscar));
         }
 
-        // Mismos filtros array que la lista
         $filtros = [
-            /*'l.user_id' => $asesor,
-            'p.desc_pro' => $carreras,*/
+            'l.user_id' => $asesor,
+            'p.desc_pro' => $carreras,
+            'l.horario_id' => $horario,
+            'l.interes_id' => $interes,
+            'l.medio_id' => $medio,
+            'l.fuente_id' => $fuente,
+            'l.campana_id' => $campana,
+            'l.accion_id' => $accion,
+            'l.departamento_id' => $departamento,
+            'l.ciudad_id' => $ciudad,
+            'l.barrio_id' => $barrio,
             'el.nombre' => $estados
         ];
 
@@ -1113,12 +1162,6 @@ class LeadsModels
                 $sql .= " AND $columna IN ($placeholders)";
                 $params = array_merge($params, $valores);
             }
-        }
-
-        if (!empty($horario)) {
-            $placeholders = implode(",", array_fill(0, count($horario), "?"));
-            $sql .= " AND (h.descripcion IN ($placeholders) OR h.id_horario IN ($placeholders))";
-            $params = array_merge($params, $horario, $horario);
         }
 
         if (!empty($fecha_inicio) && !empty($fecha_fin)) {
@@ -1140,132 +1183,129 @@ class LeadsModels
         $texto = "",
         $asesor = [],
         $carreras = [],
+        $horario = [],
+        $interes = [],
+        $medio = [],
+        $fuente = [],
+        $campana = [],
+        $accion = [],
+        $departamento = [],
+        $ciudad = [],
+        $barrio = [],
         $estados = [],
         $fecha_inicio = "",
         $fecha_fin = "",
         $page = 1,
         $limit = 10
     ) {
-
         $conn = new Conexion();
         $pdo = $conn->conectar();
 
         // Seguridad básica
         $page  = max(1, (int)$page);
-        $limit = max(1, min(100, (int)$limit)); // limite entre 1 y 100
+        $limit = max(1, min(100, (int)$limit));
         $offset = ($page - 1) * $limit;
 
         /* ==============================
         WHERE DINAMICO
         ============================== */
-
         $where = " WHERE l.emp_log = ? ";
         $params = [$_SESSION['cod_emp']];
 
-        // Filtro texto
         if ($texto !== "") {
-
+            // PRIORIDAD: Si hay texto, solo busca por nombre/apellido (según tu lógica previa)
             $where .= " AND (c.nombres LIKE ? OR c.apellidos LIKE ?)";
             $buscar = "%$texto%";
-
             $params[] = $buscar;
             $params[] = $buscar;
-        }
+        } else {
+            // APLICAR FILTROS MULTIPLES
+            $filtros = [
+                'ld.user_id'         => $asesor,
+                'p.desc_pro'         => $carreras,
+                'ld.interes_id'      => $interes,
+                'ld.medio_id'        => $medio,
+                'ld.fuente_id'       => $fuente,
+                'ld.campana_id'      => $campana,
+                'ld.accion_id'       => $accion,
+                'ld.departamento_id' => $departamento,
+                'ld.ciudad_id'       => $ciudad,
+                'ld.barrio_id'       => $barrio
+            ];
 
-        // Filtro asesores
-        if (!empty($asesor)) {
-
-            $placeholders = implode(",", array_fill(0, count($asesor), "?"));
-            $where .= " AND l.usu_log IN ($placeholders)";
-            $params = array_merge($params, $asesor);
-        }
-
-        // Filtro estados
-        if (!empty($estados)) {
-            // Creamos los placeholders (?, ?, ?)
-            $placeholders = implode(",", array_fill(0, count($estados), "?"));
-
-            // Filtramos buscando en las tablas unidas (ea y en)
-            $where .= " AND (ea.nombre IN ($placeholders) OR en.nombre IN ($placeholders))";
-
-            // Duplicamos los estados en el array de parámetros porque hay dos "IN"
-            foreach ($estados as $est) {
-                $params[] = $est;
+            foreach ($filtros as $columna => $valores) {
+                if (!empty($valores)) {
+                    $placeholders = implode(",", array_fill(0, count($valores), "?"));
+                    $where .= " AND $columna IN ($placeholders)";
+                    $params = array_merge($params, $valores);
+                }
             }
-            foreach ($estados as $est) {
-                $params[] = $est;
+
+            // Filtro especial para Estados (doble join ea y en)
+            if (!empty($estados)) {
+                $placeholders = implode(",", array_fill(0, count($estados), "?"));
+                $where .= " AND (ea.nombre IN ($placeholders) OR en.nombre IN ($placeholders))";
+                $params = array_merge($params, $estados, $estados);
             }
-        }
 
-        // Filtro fechas
-        if (!empty($fecha_inicio) && !empty($fecha_fin)) {
+            // Filtro especial para Horario
+            if (!empty($horario)) {
+                $placeholders = implode(",", array_fill(0, count($horario), "?"));
+                $where .= " AND (h.descripcion IN ($placeholders) OR h.id_horario IN ($placeholders))";
+                $params = array_merge($params, $horario, $horario);
+            }
 
-            $where .= " AND l.fec_log BETWEEN ? AND ?";
-
-            $params[] = $fecha_inicio;
-            $params[] = $fecha_fin;
+            // Filtro de Fechas
+            if (!empty($fecha_inicio) && !empty($fecha_fin)) {
+                $where .= " AND DATE(l.fec_log) BETWEEN ? AND ?";
+                $params[] = $fecha_inicio;
+                $params[] = $fecha_fin;
+            }
         }
 
         /* ==============================
         CONSULTA PRINCIPAL
         ============================== */
-
+        // Agregamos los LEFT JOIN necesarios para que los filtros funcionen
         $sql = "SELECT
                 ld.id_lead,
                 CONCAT(c.nombres,' ',c.apellidos) AS cliente,
                 u.nombres AS asesor,
-                IF(en.nombre IS NULL OR en.nombre='',ea.nombre,en.nombre) AS estado_actual,
+                IF(en.nombre IS NULL OR en.nombre='', ea.nombre, en.nombre) AS estado_actual,
                 COUNT(l.id_log) AS cambios
-
             FROM leads ld
-
-            INNER JOIN cliente c
-            ON c.id_cliente = ld.cliente_id
-
-            LEFT JOIN logleadsestado l
-            ON l.idlead_log = ld.id_lead
-
-            LEFT JOIN user u
-            ON u.id_user = l.usu_log
-
-            LEFT JOIN estado_leads ea
-            ON ea.id_estado_leads = l.eact_log
-
-            LEFT JOIN estado_leads en
-            ON en.id_estado_leads = l.enew_log
-
+            INNER JOIN cliente c ON c.id_cliente = ld.cliente_id
+            LEFT JOIN logleadsestado l ON l.idlead_log = ld.id_lead
+            LEFT JOIN user u ON u.id_user = l.usu_log
+            LEFT JOIN estado_leads ea ON ea.id_estado_leads = l.eact_log
+            LEFT JOIN estado_leads en ON en.id_estado_leads = l.enew_log
+            LEFT JOIN programa p ON ld.carrera_id = p.cod_pro
+            LEFT JOIN horario h ON ld.horario_id = h.id_horario
             $where
-
             GROUP BY ld.id_lead
             ORDER BY ld.id_lead DESC
             LIMIT $limit OFFSET $offset";
 
         $stmt = $pdo->prepare($sql);
         $stmt->execute($params);
-
         $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         /* ==============================
-        TOTAL REGISTROS (SIN DUPLICADOS)
+        TOTAL REGISTROS
         ============================== */
-
         $sqlTotal = "SELECT COUNT(DISTINCT ld.id_lead)
-             FROM leads ld
-             INNER JOIN cliente c ON c.id_cliente = ld.cliente_id
-             LEFT JOIN logleadsestado l ON l.idlead_log = ld.id_lead
-             LEFT JOIN estado_leads ea ON ea.id_estado_leads = l.eact_log
-             LEFT JOIN estado_leads en ON en.id_estado_leads = l.enew_log
-
-                $where";
+                 FROM leads ld
+                 INNER JOIN cliente c ON c.id_cliente = ld.cliente_id
+                 LEFT JOIN logleadsestado l ON l.idlead_log = ld.id_lead
+                 LEFT JOIN estado_leads ea ON ea.id_estado_leads = l.eact_log
+                 LEFT JOIN estado_leads en ON en.id_estado_leads = l.enew_log
+                 LEFT JOIN programa p ON ld.carrera_id = p.cod_pro
+                 LEFT JOIN horario h ON ld.horario_id = h.id_horario
+                 $where";
 
         $stmtTotal = $pdo->prepare($sqlTotal);
         $stmtTotal->execute($params);
-
         $total = (int)$stmtTotal->fetchColumn();
-
-        /* ==============================
-        RESPUESTA
-        ============================== */
 
         return [
             "data"  => $data,

@@ -160,19 +160,36 @@
                                     </div>
                                 </div>
                             </div>
+                            <style>
+                                /* Ajuste para que el cuerpo sea desplazable y no tape el pie */
+                                .notification-body {
+                                    max-height: 350px;
+                                    /* Ajusta esta altura según tu preferencia */
+                                    overflow-y: auto;
+                                    /* Habilita el scroll vertical */
+                                    overflow-x: hidden;
+                                    /* Evita scroll horizontal innecesario */
+                                }
 
+                                /* Si usas simplebar, asegúrate de que el contenedor padre tenga posición relativa */
+                                .notification-list-container {
+                                    display: flex;
+                                    flex-direction: column;
+                                    max-width: 320px;
+                                    /* O el ancho que prefieras para tu dropdown */
+                                }
+                            </style>
                             <!-- Notification Body -->
-                            <div class="notification-body position-relative z-2 rounded-0" data-simplebar>
+                            <div class="notification-list-container">
+                                <div class="notification-body position-relative z-2 rounded-0 w-100" data-simplebar id="listaNotificaciones">
+                                </div>
 
+                                <div class="p-2 rounded-bottom border-top text-center bg-light">
+                                    <a href="notifications.php" class="text-center text-decoration-underline fs-14 mb-0 text-primary">
+                                        Ver todas las notificaciones
+                                    </a>
+                                </div>
                             </div>
-
-                            <!-- View All-->
-                            <div class="p-2 rounded-bottom border-top text-center">
-                                <a href="notifications.php" class="text-center text-decoration-underline fs-14 mb-0">
-                                    Ver todas las notificaciones
-                                </a>
-                            </div>
-
                         </div>
                     </div>
                 </div>
@@ -180,13 +197,13 @@
                 <!-- User Dropdown -->
                 <div class="dropdown profile-dropdown d-flex align-items-center justify-content-center">
                     <a href="javascript:void(0);" class="topbar-link dropdown-toggle drop-arrow-none position-relative" data-bs-toggle="dropdown" data-bs-offset="0,22" aria-haspopup="false" aria-expanded="false">
-                        <img src="<?php echo $foto = !empty($_SESSION['foto']) ? 'ajax/'.$_SESSION['foto'] : 'assets/img/users/user-40.jpg'; ?>" width="38" class="rounded-1 d-flex" alt="user-image">
+                        <img src="<?php echo $foto = !empty($_SESSION['foto']) ? 'ajax/' . $_SESSION['foto'] : 'assets/img/users/user-40.jpg'; ?>" width="38" class="rounded-1 d-flex" alt="user-image">
                         <span class="online text-success"><i class="ti ti-circle-filled d-flex bg-white rounded-circle border border-1 border-white"></i></span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-end dropdown-menu-md p-2">
 
                         <div class="d-flex align-items-center bg-light rounded-3 p-2 mb-2">
-                            <img src="<?php echo $foto = !empty($_SESSION['foto']) ? 'ajax/'.$_SESSION['foto'] : 'assets/img/users/user-40.jpg'; ?>" class="rounded-circle" width="42" height="42" alt="Img">
+                            <img src="<?php echo $foto = !empty($_SESSION['foto']) ? 'ajax/' . $_SESSION['foto'] : 'assets/img/users/user-40.jpg'; ?>" class="rounded-circle" width="42" height="42" alt="Img">
                             <div class="ms-2">
                                 <p class="fw-medium text-dark mb-0"><?php echo $_SESSION['user'] ?></p>
                                 <span class="d-block fs-13" id="nombreRolUsuario"><?php echo $_SESSION['rol'] ?></span>
@@ -231,3 +248,91 @@
         </div>
     </header>
     <!-- Topbar End -->
+
+    <!-- =========================================
+MODAL ALERTA NUEVA NOTIFICACIÓN
+(Cambia el id del primer contenedor)
+========================================= -->
+
+    <div class="modal fade" id="modalNuevaNotificacion" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-xxl-custom">
+            <div class="modal-content">
+
+                <div class="modal-header text-white">
+                    <h5 class="modal-title fw-bold">
+                        🔔 Tienes una nueva notificación
+                    </h5>
+
+                    <button type="button"
+                        class="btn-close btn-close-white"
+                        data-bs-dismiss="modal">
+                    </button>
+                </div>
+
+                <div class="modal-body">
+
+                    <div class="alert alert-info mb-3">
+                        Se ha generado una nueva operación pendiente.
+                    </div>
+                    <span class="badge bg-dark fs-12 d-none"><span id="contadorTotalLeads2">0</span> Leads encontrados</span>
+                    <div class="table-responsive">
+                        <table id="leads_list2" class="table table-bordered table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Carrera</th>
+                                    <th>Telefono</th>
+                                    <th>Estado</th>
+                                    <th>Asesor</th>
+                                    <th>Fecha creación</th>
+                                    <th>Fecha ultima gestion</th>
+                                    <th>Fecha ultima asignacion</th>
+                                    <th>Gestion</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <!-- dinámico -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-secondary"
+                        data-bs-dismiss="modal">
+                        Cerrar
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalGestionLead" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-xxl-custom">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Gestión de Lead</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body p-0">
+                    <iframe id="frameGestion"
+                        src=""
+                        style="width:100%; height:80vh; border:none;">
+                    </iframe>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .modal-xxl-custom {
+            max-width: 95%;
+            width: 95%;
+        }
+    </style>

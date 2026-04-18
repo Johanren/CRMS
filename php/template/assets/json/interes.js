@@ -197,7 +197,7 @@ function obtenerPaginaActual() {
 if (obtenerPaginaActual() === 'interes.php') {
     listarItns();
 }
-if (obtenerPaginaActual() === 'leads.php' || obtenerPaginaActual() === 'leads-list.php' || obtenerPaginaActual() === 'leads-details.php') {
+if (obtenerPaginaActual() === 'rst_frm.php' || obtenerPaginaActual() === 'reporte_fuente.php' || obtenerPaginaActual() === 'lead_dia.php' || obtenerPaginaActual() === 'reporte_estado_lead.php' || obtenerPaginaActual() === 'reporte_lead.php' || obtenerPaginaActual() === 'leads.php' || obtenerPaginaActual() === 'leads-list.php' || obtenerPaginaActual() === 'leads-details.php') {
     listarInsOption();
     listarInsLi();
 }

@@ -70,15 +70,37 @@
                     </div>
                 </div>-->
                 <style>
-                    #rst_reports .table td {
-                        padding: 8px 12px !important;
-                        vertical-align: middle;
+                    .rst_reports {
+                        width: 100%;
+                        border-collapse: collapse;
+                        font-size: 13px;
+                        background: #fff;
                     }
 
-                    #rst_reports .table th {
-                        padding: 10px !important;
-                        text-transform: uppercase;
-                        font-size: 0.75rem;
+                    .rst_reports thead th {
+                        background: #f8f9fa;
+                        color: #333;
+                        font-weight: 600;
+                        text-align: center;
+                        border: 1px solid #dee2e6;
+                        padding: 8px;
+                        white-space: nowrap;
+                    }
+
+                    .rst_reports tbody td {
+                        border: 1px solid #dee2e6;
+                        padding: 6px;
+                        text-align: center;
+                    }
+
+                    .rst_reports tbody tr:hover {
+                        background-color: #f1f5f9;
+                    }
+
+                    /* Columna Día / Estado */
+                    .rst_reports td:first-child {
+                        font-weight: 600;
+                        background: #f8f9fa;
                     }
 
                     .bg-total-fila {
@@ -291,75 +313,77 @@ require_once '../partials/main.php'; ?>
                 });
 
                 let html = `
-            <style>
-                #tablaMotivos .table td { padding: 8px 12px !important; vertical-align: middle; }
-                #tablaMotivos .table th { padding: 10px !important; text-transform: uppercase; font-size: 0.75rem; }
-                .bg-total-fila { background-color: #f8f9fa !important; font-weight: bold; }
-                .bg-gran-total { background-color: #0d6efd !important; color: white !important; }
-                .cursor-pointer { cursor: pointer; transition: all 0.2s; }
-                .cursor-pointer:hover { background-color: rgba(13, 110, 253, 0.1) !important; transform: scale(1.01); }
-                .text-muted-dash { color: #adb5bd; font-weight: normal; }
-            </style>
             
             <div class="table-responsive">
-                <table id="tablaPivot" class="table table-bordered table-striped table-hover table-sm">
-                    <thead class="table-dark text-center">
+                <table id="tablaPivot" class="rst_reports">
+                    <thead>
                         <tr>
-                            <th class="text-start">Estado / Asesor</th>
+                            <th>Estado / Asesor</th>
                             ${asesores.map(a => `<th>${a}</th>`).join('')}
                             <th>Total</th>
                         </tr>
                     </thead>
-                    <tbody>`;
+                    <tbody>
+                `;
 
                 estados.forEach(e => {
-                    html += `<tr><td class="text-start"><strong>${e}</strong></td>`;
+
+                    html += `<tr>`;
+                    html += `<td><strong>${e}</strong></td>`;
 
                     asesores.forEach(a => {
+
                         const valor = tabla[e][a];
-                        const idUser = mapaIdAsesores[a] || ""; // Sacamos el ID del mapa
+                        const idUser = mapaIdAsesores[a] || "";
 
                         if (valor > 0) {
-                            // 🔹 Agregamos clase y data-attributes
+
                             html += `
-                        <td class="abrir-mensajes-foco text-center text-primary fw-bold cursor-pointer"
-                            data-estado="${e}" 
-                            data-user="${idUser}">
-                            ${valor}
-                        </td>`;
+                            <td class="abrir-mensajes-foco text-primary fw-bold cursor-pointer"
+                                data-estado="${e}"
+                                data-user="${idUser}">
+                                ${valor}
+                            </td>`;
+
                         } else {
-                            html += `<td class="text-center text-muted-dash">-</td>`;
+
+                            html += `<td class="text-muted-dash">-</td>`;
                         }
+
                     });
 
-                    // Total Fila (Por Estado, todos los asesores)
+                    /* Total fila */
                     html += `
-                    <td class="abrir-mensajes-foco text-center bg-total-fila text-primary fw-bold cursor-pointer"
-                        data-estado="${e}" 
+                    <td class="abrir-mensajes-foco bg-total-fila text-primary fw-bold cursor-pointer"
+                        data-estado="${e}"
                         data-user="TODOS">
                         ${tabla[e]['total']}
                     </td>
-                </tr>`;
+                    </tr>`;
                 });
 
-                html += `</tbody>
-                    <tfoot class="table-secondary text-center">
-                        <tr>
-                            <td class="text-start"><strong>TOTAL GENERAL</strong></td>
-                            ${asesores.map(a => `
-                                <td class="abrir-mensajes-foco text-primary fw-bold cursor-pointer"
-                                    data-estado="TODOS" 
-                                    data-user="${mapaIdAsesores[a] || ""}">
-                                    ${totalesAsesor[a]}
-                                </td>
-                            `).join('')}
-                            <td class="abrir-mensajes-foco bg-gran-total fw-bold cursor-pointer"
-                                data-estado="TODOS" 
-                                data-user="TODOS">
-                                ${granTotal}
-                            </td>
-                        </tr>
-                    </tfoot>
+                /* FOOTER */
+                html += `
+                </tbody>
+                <tfoot>
+                <tr>
+                    <td class="bg-total-fila"><strong>TOTAL GENERAL</strong></td>
+
+                    ${asesores.map(a => `
+                        <td class="abrir-mensajes-foco bg-total-fila text-primary fw-bold cursor-pointer"
+                            data-estado="TODOS"
+                            data-user="${mapaIdAsesores[a] || ""}">
+                            ${totalesAsesor[a]}
+                        </td>
+                    `).join('')}
+
+                    <td class="abrir-mensajes-foco bg-gran-total fw-bold cursor-pointer"
+                        data-estado="TODOS"
+                        data-user="TODOS">
+                        ${granTotal}
+                    </td>
+                </tr>
+                </tfoot>
                 </table>
             </div>`;
 

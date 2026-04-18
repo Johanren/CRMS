@@ -202,7 +202,7 @@ function obtenerPaginaActual() {
 if (obtenerPaginaActual() === 'fuente.php') {
     listarFnt();
 }
-if (obtenerPaginaActual() === 'campanas.php' || obtenerPaginaActual() === 'leads.php' || obtenerPaginaActual() === 'leads-list.php' || obtenerPaginaActual() === 'leads-details.php') {
+if (obtenerPaginaActual() === 'rst_frm.php' || obtenerPaginaActual() === 'reporte_fuente.php' || obtenerPaginaActual() === 'lead_dia.php' || obtenerPaginaActual() === 'reporte_estado_lead.php' ||  obtenerPaginaActual() === 'reporte_lead.php' || obtenerPaginaActual() === 'campanas.php' || obtenerPaginaActual() === 'leads.php' || obtenerPaginaActual() === 'leads-list.php' || obtenerPaginaActual() === 'leads-details.php') {
     listarFntLi();
     listarFntOption();
 }

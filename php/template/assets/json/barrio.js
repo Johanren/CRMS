@@ -200,7 +200,7 @@ function obtenerPaginaActual() {
 if (obtenerPaginaActual() === 'barrio.php') {
     listarBarrio();
 }
-if (obtenerPaginaActual() === 'leads.php' || obtenerPaginaActual() === 'leads-details.php' || obtenerPaginaActual() === 'leads-list.php') {
+if (obtenerPaginaActual() === 'rst_frm.php' || obtenerPaginaActual() === 'reporte_fuente.php' || obtenerPaginaActual() === 'lead_dia.php' || obtenerPaginaActual() === 'reporte_estado_lead.php' || obtenerPaginaActual() === 'reporte_lead.php' || obtenerPaginaActual() === 'leads.php' || obtenerPaginaActual() === 'leads-details.php' || obtenerPaginaActual() === 'leads-list.php') {
     listarBarrioOption();
     listarBarrioUl();
 }

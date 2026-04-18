@@ -228,7 +228,7 @@ function obtenerPaginaActual() {
 if (obtenerPaginaActual() === 'programa.php') {
     listarCarr();
 }
-if (obtenerPaginaActual() === 'frm_mensaje_url.php' || obtenerPaginaActual() == 'lead_dia.php' || obtenerPaginaActual() == 'resultado_foco.php' || obtenerPaginaActual() === 'reporte_lead.php' || obtenerPaginaActual() === 'venta.php' || obtenerPaginaActual() === 'index.php' || obtenerPaginaActual() === 'leads.php' || obtenerPaginaActual() === 'leads-details.php' || obtenerPaginaActual() === 'leads-list.php' || obtenerPaginaActual() === 'contacts.php' || obtenerPaginaActual() === 'lead-reports.php' ) {
+if (obtenerPaginaActual() === 'rst_frm.php' || obtenerPaginaActual() === 'reporte_fuente.php' || obtenerPaginaActual() === 'reporte_estado_lead.php' || obtenerPaginaActual() === 'frm_mensaje_url.php' || obtenerPaginaActual() == 'lead_dia.php' || obtenerPaginaActual() == 'resultado_foco.php' || obtenerPaginaActual() === 'reporte_lead.php' || obtenerPaginaActual() === 'venta.php' || obtenerPaginaActual() === 'index.php' || obtenerPaginaActual() === 'leads.php' || obtenerPaginaActual() === 'leads-details.php' || obtenerPaginaActual() === 'leads-list.php' || obtenerPaginaActual() === 'contacts.php' || obtenerPaginaActual() === 'lead-reports.php' ) {
     listarCarreraOption();
     listarCarreraLIi();
 }

@@ -674,6 +674,7 @@ let tablaLeadsFoco = null;
 
 function listarLeadsDesdeFoco(programaNombre, jornadaNombre) {
 
+    const f = Filtros.obtener();
     const params = new URLSearchParams();
     params.append("accion", "listar_leads");
 
@@ -731,6 +732,9 @@ function listarLeadsDesdeFoco(programaNombre, jornadaNombre) {
     if (estadosValues.length > 0)
         params.append("estados", JSON.stringify(estadosValues));
 
+    if (f.fecha_inicio !== "") params.append("fecha_inicio", f.fecha_inicio);
+    if (f.fecha_fin !== "") params.append("fecha_fin", f.fecha_fin);
+
     params.append("lead_reporte_CRM_FOCO", "true");
 
     fetch("ajax/ajax.php?" + params.toString())
@@ -773,25 +777,24 @@ function renderTablaResumen(data, programaNombre, jornadaNombre) {
         "Leads Activo",
         "Interesado",
         "En Decisión",
-        "Matricula en proceso",
+        /*"Matricula en proceso",
         "Matriculado",
         "Perdido",
         "Aplazado",
         "DESERTOR",
-        "NUNCA ASISTIO"
+        "NUNCA ASISTIO"*/
     ];
 
-    /* SOLO ESTADOS QUE EXISTEN EN LA DATA */
+    /* ==========================================
+       SOLO ESTADOS QUE EXISTEN EN LA DATA
+    ========================================== */
     const estadosData = [...new Set(
         data.map(x => (x.estado || "").trim())
             .filter(v => v !== "")
     )];
 
-    /* RESPETA ORDEN SOLO SI EXISTEN */
     const estados = [
         ...ordenBaseEstados.filter(est => estadosData.includes(est)),
-
-        /* NUEVOS DINÁMICOS */
         ...estadosData.filter(est => !ordenBaseEstados.includes(est))
     ];
 
@@ -809,7 +812,7 @@ function renderTablaResumen(data, programaNombre, jornadaNombre) {
 
         data.forEach(row => {
 
-            let fila = row.desc_pro + " - " + row.horario || "SIN CARRERA";
+            let fila = (row.desc_pro || "SIN CARRERA") + " - " + (row.horario || "");
             let estado = row.estado || "SIN ESTADO";
 
             if (!agrupado[fila]) agrupado[fila] = {};
@@ -829,7 +832,7 @@ function renderTablaResumen(data, programaNombre, jornadaNombre) {
 
         data.forEach(row => {
 
-            let fila = row.desc_pro + " - " + row.horario || "SIN JORNADA";
+            let fila = (row.desc_pro || "") + " - " + (row.horario || "SIN JORNADA");
             let estado = row.estado || "SIN ESTADO";
 
             if (!agrupado[fila]) agrupado[fila] = {};
@@ -849,7 +852,7 @@ function renderTablaResumen(data, programaNombre, jornadaNombre) {
 
         data.forEach(row => {
 
-            let fila = row.desc_pro + " - " + row.horario;
+            let fila = (row.desc_pro || "") + " - " + (row.horario || "");
             let estado = row.estado || "SIN ESTADO";
 
             if (!agrupado[fila]) agrupado[fila] = {};
@@ -859,39 +862,29 @@ function renderTablaResumen(data, programaNombre, jornadaNombre) {
         });
     }
 
-    /* ================================================== */
+    /* ==================================================
+       TABLA ESTILO EXCEL
+    ================================================== */
     let html = `
-    <table class="table table-bordered table-striped table-hover table-sm" id="tablaResumenCRM">
-        <thead class="table-dark text-center">
+    <div class="table-responsive">
+    <table class="table-excel" id="tablaResumenCRM">
+        <thead>
             <tr>
                 <th>${primeraColumna}</th>
     `;
 
     estados.forEach(est => {
-        html += `
-        <th class="">
-            ${est}
-        </th>`;
+        html += `<th>${est}</th>`;
     });
 
-    html += `
-        <th class="">
-            Total
-        </th>
-        </tr>
-        </thead>
-        <tbody>
-    `;
+    html += `<th>Total</th></tr></thead><tbody>`;
 
     let totalGeneral = 0;
 
     for (let fila in agrupado) {
 
         html += `<tr>`;
-        html += `
-        <td class="bg-total-fila">
-            ${fila}
-        </td>`;
+        html += `<td>${fila}</td>`;
 
         let totalFila = 0;
 
@@ -901,23 +894,23 @@ function renderTablaResumen(data, programaNombre, jornadaNombre) {
             totalFila += cantidad;
 
             if (cantidad > 0) {
-                html += `
-                    <td class="text-center bg-total-fila text-primary fw-bold cursor-pointer"
-                        onclick="abrirDetalle('${fila}','${est}','${programaNombre}','${jornadaNombre}')">
-                        ${cantidad}
-                    </td>`;
-            } else {
-                html += `<td class="text-center text-muted">-</td>`;
-            }
 
-            html += `
-            `;
+                html += `
+                <td class="text-primary fw-bold cursor-pointer"
+                    onclick="abrirDetalle('${fila}','${est}','${programaNombre}','${jornadaNombre}')">
+                    ${cantidad}
+                </td>`;
+
+            } else {
+
+                html += `<td class="text-muted">-</td>`;
+            }
         });
 
         totalGeneral += totalFila;
 
         html += `
-        <td class="text-center text-primary fw-bold cursor-pointer"
+        <td class="text-primary fw-bold cursor-pointer"
             onclick="abrirDetalle('${fila}','', '${programaNombre}', '${jornadaNombre}')">
             ${totalFila}
         </td>`;
@@ -928,10 +921,12 @@ function renderTablaResumen(data, programaNombre, jornadaNombre) {
     /* ==========================================
        FILA TOTALES
     ========================================== */
-    html += `<tr>`;
+    html += `<tr class="table-total">`;
+
     html += `
-    <td class="">
-        <strong>TOTALES</strong>
+    <td class="cursor-pointer"
+        onclick="abrirDetalle('','', '${programaNombre}', '${jornadaNombre}')">
+        TOTALES
     </td>`;
 
     estados.forEach(est => {
@@ -943,21 +938,21 @@ function renderTablaResumen(data, programaNombre, jornadaNombre) {
         }
 
         html += `
-        <td class="text-center text-primary fw-bold cursor-pointer"
+        <td class="cursor-pointer"
             onclick="abrirDetalle('', '${est}', '${programaNombre}', '${jornadaNombre}')">
             ${suma}
         </td>`;
     });
 
     html += `
-    <td class="text-center text-primary bg-gran-total fw-bold cursor-pointer"
+    <td class="cursor-pointer"
         onclick="abrirDetalle('','', '${programaNombre}', '${jornadaNombre}')">
         ${totalGeneral}
     </td>`;
 
     html += `</tr>`;
 
-    html += `</tbody></table>`;
+    html += `</tbody></table></div>`;
 
     contenedor.innerHTML = html;
 }
@@ -971,35 +966,40 @@ function abrirDetalle(fila, estado, programaNombre, jornadaNombre) {
 
         let ok = true;
 
-        /* FILTRO FILA */
+        /* ======================================
+           FILTRO FILA
+        ====================================== */
         if (fila) {
 
-            if (jornadaNombre !== "TODOS" && programaNombre === "TODOS") {
-                ok = ok && row.desc_pro === fila;
-            }
+            const filaActual =
+                (row.desc_pro || "") + " - " + (row.horario || "");
 
-            else if (programaNombre !== "TODOS" && jornadaNombre === "TODOS") {
-                ok = ok && row.horario === fila;
-            }
-
-            else {
-                ok = ok && (row.desc_pro + " - " + row.horario) === fila;
-            }
+            ok = ok && filaActual === fila;
         }
 
-        /* FILTRO ESTADO */
+        /* ======================================
+           FILTRO ESTADO
+        ====================================== */
         if (estado) {
-            ok = ok && row.estado === estado;
+            ok = ok && (row.estado || "") === estado;
         }
 
         return ok;
     });
+
     const contenedor = document.getElementById("contenedorLeadsFoco");
-    if (contenedor) contenedor.classList.remove("d-none");
+
+    if (contenedor) {
+        contenedor.classList.remove("d-none");
+    }
+
     inicializarDataTableLeads(filtrados);
 
-    document.getElementById("contenedorLeadsFoco")
-        .scrollIntoView({ behavior: "smooth" });
+    document
+        .getElementById("contenedorLeadsFoco")
+        .scrollIntoView({
+            behavior: "smooth"
+        });
 }
 
 /* ==========================================================
@@ -1023,19 +1023,38 @@ function limpiarTablaLeads() {
     `;
 }
 
+
+
 /* ==========================================================
    TU TABLA ORIGINAL
 ========================================================== */
 function inicializarDataTableLeads(data) {
 
+    const tableId = '#leads_list';
+
+    /* ==========================================
+       DESTRUIR DATATABLE + QUITAR FILTROS PREVIOS
+    ========================================== */
     if (tablaLeadsFoco) {
         tablaLeadsFoco.destroy();
         tablaLeadsFoco = null;
     }
 
+    if ($.fn.DataTable.isDataTable(tableId)) {
+        $(tableId).DataTable().destroy();
+    }
+
+    $(tableId + ' thead tr:eq(1)').remove();
+
+    /* ==========================================
+       CONTADOR
+    ========================================== */
     const spanContador = document.getElementById("contadorTotalLeads");
     if (spanContador) spanContador.innerText = data.length;
 
+    /* ==========================================
+       BODY
+    ========================================== */
     const tbody = document.querySelector("#leads_list tbody");
     tbody.innerHTML = "";
 
@@ -1053,13 +1072,17 @@ function inicializarDataTableLeads(data) {
 
     data.forEach(l => {
 
-        const gestion = l.fec_ult_gest === hoy ? "OK" : "Pendiente";
+        const fueGestionadoHoy =
+            l.fec_ult_gest === hoy
+                ? '<span class="badge bg-success">OK</span>'
+                : '<span class="badge bg-secondary">Pendiente</span>';
 
         const tr = document.createElement("tr");
 
         tr.innerHTML = `
             <td>
-                <a href="javascript:void(0)" class="text-primary fw-bold"
+                <a href="javascript:void(0)"
+                   class="text-primary fw-bold"
                    onclick="abrirModalGestion('${l.id_lead}','${l.cliente_id}')">
                    ${l.nombres} ${l.apellidos}
                 </a>
@@ -1071,17 +1094,55 @@ function inicializarDataTableLeads(data) {
             <td>${l.fecha_creacion}</td>
             <td>${l.fec_ult_gest || ''}</td>
             <td>${l.fec_ult_asig || ''}</td>
-            <td>${gestion}</td>
+            <td>${fueGestionadoHoy}</td>
         `;
 
         tbody.appendChild(tr);
     });
 
-    tablaLeadsFoco = $('#leads_list').DataTable({
+    /* ==========================================
+       DATATABLE + FILTROS POR COLUMNA
+    ========================================== */
+    tablaLeadsFoco = $(tableId).DataTable({
         responsive: true,
+        ordering: true,
+        orderCellsTop: true,
+        fixedHeader: true,
         pageLength: 10,
+
         language: {
             url: "//cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json"
+        },
+
+        initComplete: function () {
+
+            const api = this.api();
+
+            /* CLONAR HEADER */
+            if ($(tableId + ' thead tr').length === 1) {
+                $(tableId + ' thead tr')
+                    .clone(true)
+                    .appendTo(tableId + ' thead');
+            }
+
+            /* INPUTS FILTRO */
+            $(tableId + ' thead tr:eq(1) th').each(function (i) {
+
+                $(this).html(`
+                    <input type="text"
+                        class="form-control form-control-sm"
+                        placeholder="Filtrar..."
+                        style="width:100%;" />
+                `);
+
+                $('input', this).on('keyup change clear', function () {
+
+                    if (api.column(i).search() !== this.value) {
+                        api.column(i).search(this.value).draw();
+                    }
+
+                });
+            });
         }
     });
 }
