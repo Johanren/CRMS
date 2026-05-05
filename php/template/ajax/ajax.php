@@ -476,6 +476,42 @@ if (isset($_POST['accion'])) {
 
             echo json_encode(['ok' => true]);
             break;
+        case "listar_mensajes":
+
+            $lead_id = $_POST['conversacion_id'];
+
+            $conn = new Conexion();
+            $conectar = $conn->conectar();
+
+            /* 🔹 Obtener conversación */
+            $sql = "SELECT id 
+            FROM chat_conversaciones 
+            WHERE lead_id = ? AND estado = 'activo'
+            LIMIT 1";
+
+            $stmt = $conectar->prepare($sql);
+            $stmt->execute([$lead_id]);
+            $conv = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if (!$conv) {
+                echo json_encode([]);
+                break;
+            }
+
+            $conversacion_id = $conv['id'];
+
+            /* 🔹 Obtener mensajes */
+            $sql = "SELECT emisor, mensaje, created_at 
+                FROM chat_mensajes
+                WHERE conversacion_id = ?
+                ORDER BY created_at ASC";
+
+            $stmt = $conectar->prepare($sql);
+            $stmt->execute([$conversacion_id]);
+
+            echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
+
+            break;
         case 'guardar_mensajes_rst':
             echo json_encode($lis_mensaje::guardarMensajesRST());
             break;
@@ -1121,7 +1157,7 @@ if (isset($_GET['accion'])) {
             echo json_encode($leads->reporteLeadsPastelMotivo());
             break;
         case 'actualizar_fecha_gestion':
-            $id = $_GET['id_lead'] ?? ''; 
+            $id = $_GET['id_lead'] ?? '';
             $cliente_id = $_GET['cliente_id'] ?? '';
             echo json_encode($leads->actualizarFechaGestionLeads($id, $cliente_id));
             break;

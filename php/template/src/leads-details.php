@@ -480,8 +480,35 @@ $esModal = isset($_GET['modal']) && $_GET['modal'] == 1;
                             </div>
                         </div>
                         <!-- /Files -->
+                        <style>
+                            .chat-bubble {
+                                display: inline-block;
+                                padding: 10px 14px;
+                                border-radius: 12px;
+                                margin: 5px 0;
+                                max-width: 70%;
+                                font-size: 14px;
+                                position: relative;
+                            }
 
-                        <!-- Email -->
+                            .msg-cliente {
+                                background: #ffffff;
+                                color: #000;
+                                border: 1px solid #ddd;
+                            }
+
+                            .msg-asesor {
+                                background: #dcf8c6;
+                                color: #000;
+                            }
+
+                            .chat-bubble .hora {
+                                font-size: 10px;
+                                color: #666;
+                                margin-top: 4px;
+                            }
+                        </style>
+                        <!-- CHAT -->
                         <div class="tab-pane fade" id="tab_5">
                             <div class="card h-100">
                                 <div class="card-header bg-success text-white">

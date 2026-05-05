@@ -46,6 +46,9 @@ class LeadsModels
 
     public static function actualizarLeads($data, $id, $id_user, $id_estado_leads)
     {
+
+        $cod = $_SESSION['cod_emp'] ?? $data['cod_emp'];
+
         $sql = "UPDATE leads SET user_id = ?, cliente_id = ?, info_adicional = ?, carrera_id = ?, horario_id = ?, interes_id = ?, medio_id = ?, fuente_id = ?, campana_id = ?, accion_id = ?, departamento_id = ?, barrio_id = ?, ciudad_id = ?, estado_leads_id = ?, observaciones = ?, cod_emp = ?, url_origen = ? WHERE cliente_id = ?";
         $conn = new Conexion();
         $conectar = $conn->conectar();
@@ -66,7 +69,7 @@ class LeadsModels
         $stmt->bindParam(13, $data["ciudad"]);
         $stmt->bindParam(14, $id_estado_leads);
         $stmt->bindParam(15, $data["observacionLeads"]);
-        $stmt->bindParam(16, $_SESSION['cod_emp'] ?? $data['cod_emp']);
+        $stmt->bindParam(16, $cod);
         $stmt->bindParam(17, $data["origen_url"]);
         $stmt->bindParam(18, $id);
         if ($stmt->execute()) {
@@ -218,10 +221,10 @@ class LeadsModels
         $params = [$_SESSION['cod_emp'], $_SESSION['foco']];
 
         // Seguridad por Rol
-        /*if (isset($_SESSION['rol']) && $_SESSION['rol'] !== 'Admin' && $texto === "" && empty($asesor)) {
+        if (isset($_SESSION['rol']) && $_SESSION['rol'] !== 'Admin' && $texto === "" && empty($asesor)) {
             $sql .= " AND l.user_id = ?";
             $params[] = $_SESSION['user_id'];
-        }*/
+        }
 
         // Filtros de Texto y Arrays
         if ($texto !== "") {
@@ -255,9 +258,33 @@ class LeadsModels
         }
 
         if (!empty($horario)) {
-            $placeholders = implode(",", array_fill(0, count($horario), "?"));
-            $sql .= " AND (h.descripcion IN ($placeholders) OR h.id_horario IN ($placeholders))";
-            $params = array_merge($params, $horario, $horario);
+
+            //  Detectar si viene "NULL"
+            $tieneNull = in_array("NULL", $horario);
+
+            //  Filtrar valores distintos de "NULL"
+            $horarioFiltrado = array_filter($horario, function ($h) {
+                return strtoupper($h) !== "NULL";
+            });
+
+            $condiciones = [];
+
+            //  Condición IN (solo si hay valores normales)
+            if (!empty($horarioFiltrado)) {
+                $placeholders = implode(",", array_fill(0, count($horarioFiltrado), "?"));
+                $condiciones[] = "(h.descripcion IN ($placeholders) OR h.id_horario IN ($placeholders))";
+                $params = array_merge($params, $horarioFiltrado, $horarioFiltrado);
+            }
+
+            //  Condición IS NULL
+            if ($tieneNull) {
+                $condiciones[] = "(h.descripcion IS NULL OR h.id_horario IS NULL)";
+            }
+
+            //  Unir todo con OR
+            if (!empty($condiciones)) {
+                $sql .= " AND (" . implode(" OR ", $condiciones) . ")";
+            }
         }
 
         if (!empty($fecha_inicio) && !empty($fecha_fin)) {
@@ -433,7 +460,7 @@ class LeadsModels
     {
         $cod_emp = $data['cod_emp'] ?? $_SESSION['cod_emp'] ?? $_GET['cod_emp'] ?? $_POST['cod_emp'] ?? null;
 
-        $sql = "SELECT l.user_id, COUNT(*) AS total FROM leads l INNER JOIN user u ON u.id_user = l.user_id INNER JOIN user_role ur ON ur.id_rol = u.rol_id WHERE l.cod_emp = '$cod_emp' AND ur.activo = 1 GROUP BY l.user_id ORDER BY total ASC LIMIT 1";
+        $sql = "SELECT l.user_id, COUNT(*) AS total FROM leads l INNER JOIN user u ON u.id_user = l.user_id INNER JOIN user_role ur ON ur.id_rol = u.rol_id WHERE u.cod_emp = '$cod_emp' AND ur.activo = 1 GROUP BY l.user_id ORDER BY total ASC LIMIT 1";
 
         $conn = new Conexion();
         $conectar = $conn->conectar();
@@ -542,7 +569,7 @@ class LeadsModels
         // Agregamos comodines para LIKE
         $valorLike = "%$valor%";
 
-        // 🔹 1️⃣ Buscar primero en leads + cliente
+        //  1️⃣ Buscar primero en leads + cliente
         $sql1 = "SELECT 
                 CONCAT(c.nombres, ' ', c.apellidos) AS nombre,
                 c.telefono_principal,
@@ -572,7 +599,7 @@ class LeadsModels
             ];
         }
 
-        // 🔹 2️⃣ Si no existe, buscar en telemercadeo
+        //  2️⃣ Si no existe, buscar en telemercadeo
         $sql2 = "SELECT 
                 CONCAT(nom_con, ' ', ape_con) AS nombre,
                 telefono AS telefono_principal,
@@ -736,7 +763,7 @@ class LeadsModels
 
     public static function listarReporteRstDia($mes = null, $anio = null)
     {
-        // 🔹 Si no vienen mes o año, se calculan automáticamente
+        //  Si no vienen mes o año, se calculan automáticamente
         $mes  = $mes  ?? date('m');
         $anio = $anio ?? date('Y');
 
@@ -849,7 +876,7 @@ class LeadsModels
 
     public static function listarReporteLeadDia($mes = null, $anio = null, $texto = "", $asesor = [], $carreras = [], $horario = [], $interes = [], $medio = [], $fuente = [], $campana = [], $accion = [], $departamento = [], $ciudad = [], $barrio = [], $estados = [], $fecha_inicio = "", $fecha_fin = [])
     {
-        // 🔹 Configuración inicial de fechas
+        //  Configuración inicial de fechas
         $mes  = $mes  ?? date('m');
         $anio = $anio ?? date('Y');
         $codEmp = $_SESSION['cod_emp'] ?? $_GET['cod_emp'];
@@ -1454,7 +1481,7 @@ class LeadsModels
 
     public static function listarReporteRstDiaTEO($mes = null, $anio = null)
     {
-        // 🔹 Si no vienen mes o año, se calculan automáticamente
+        //  Si no vienen mes o año, se calculan automáticamente
         $mes  = $mes  ?? date('m');
         $anio = $anio ?? date('Y');
 

@@ -694,6 +694,17 @@ function listarLeadsDesdeFoco(programaNombre, jornadaNombre) {
         } catch (e) {
             horarioArray = [jornadaNombre];
         }
+
+        //  Validar si existe "POR CONFIRMAR"
+        const existePorConfirmar = horarioArray.some(item =>
+            typeof item === "string" &&
+            item.trim().toUpperCase() === "POR CONFIRMAR"
+        );
+
+        //  Si existe, agregar "NULL" (evitando duplicados)
+        if (existePorConfirmar && !horarioArray.includes("NULL")) {
+            horarioArray.push("NULL");
+        }
     }
 
     /* ESTADOS */
@@ -812,7 +823,7 @@ function renderTablaResumen(data, programaNombre, jornadaNombre) {
 
         data.forEach(row => {
 
-            let fila = (row.desc_pro || "SIN CARRERA") + " - " + (row.horario || "");
+            let fila = (row.desc_pro || "SIN CARRERA") + " - " + (row.horario || "SIN JORNADA");
             let estado = row.estado || "SIN ESTADO";
 
             if (!agrupado[fila]) agrupado[fila] = {};
@@ -832,7 +843,7 @@ function renderTablaResumen(data, programaNombre, jornadaNombre) {
 
         data.forEach(row => {
 
-            let fila = (row.desc_pro || "") + " - " + (row.horario || "SIN JORNADA");
+            let fila = (row.desc_pro || "SIN CARRERA") + " - " + (row.horario || "SIN JORNADA");
             let estado = row.estado || "SIN ESTADO";
 
             if (!agrupado[fila]) agrupado[fila] = {};
@@ -852,7 +863,7 @@ function renderTablaResumen(data, programaNombre, jornadaNombre) {
 
         data.forEach(row => {
 
-            let fila = (row.desc_pro || "") + " - " + (row.horario || "");
+            let fila = (row.desc_pro || "SIN CARRERA") + " - " + (row.horario || "SIN JORNADA");
             let estado = row.estado || "SIN ESTADO";
 
             if (!agrupado[fila]) agrupado[fila] = {};
@@ -1339,7 +1350,7 @@ function activarPorcentajeResumen(leadsData) {
         let totalresultadoDencidad = 0;
         let totalFalta = 0;
         let totalGrupo = 0;
-        // 🔹 RESULTADO = SI(cupos=0,0,ventas*meta)
+        //  RESULTADO = SI(cupos=0,0,ventas*meta)
         document.querySelectorAll("#tablaFocoResultado tbody tr").forEach(tr => {
 
             const cupos = Number(tr.querySelector(".col-cupos")?.textContent || 0);
@@ -1761,7 +1772,7 @@ async function guardarEdicion(td, nuevoValor, valorOriginal) {
     let reintegros = 0;
     let cupos = 0;
 
-    // 🔹 Leer valores actuales aunque NO se editen
+    //  Leer valores actuales aunque NO se editen
     celdas.forEach(celda => {
         if (celda.dataset?.programa === programa) {
             if (celda.dataset.campo === "ventas") {
@@ -1773,11 +1784,11 @@ async function guardarEdicion(td, nuevoValor, valorOriginal) {
         }
     });
 
-    // 🔹 Reemplazar solo el campo editado
+    //  Reemplazar solo el campo editado
     if (campoEditado === "ventas") ventas = nuevoValor;
     if (campoEditado === "reintegros") reintegros = nuevoValor;
 
-    // 🔹 TU REGLA DE NEGOCIO
+    //  TU REGLA DE NEGOCIO
     cupos = ventas + reintegros;
 
     const datos = new FormData();

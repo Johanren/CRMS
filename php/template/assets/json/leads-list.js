@@ -1893,7 +1893,7 @@ function abrirModalPerdido(nombreEstado) {
     // Muestra el contenedor y HACE QUE SEA OBLIGATORIO
     const divMotivo = document.getElementById("listar_motivo");
     const selectMotivo = document.getElementById("motivo");
-    
+
     divMotivo.style.display = "block";
     selectMotivo.required = true; // <--- AGREGADO
 
@@ -3042,6 +3042,8 @@ function enviarMensaje() {
     const mensaje = document.getElementById('mensaje').value;
     const conversacion_id = document.getElementById('conversacion_id').value;
 
+    if (!mensaje.trim()) return;
+
     fetch('ajax/ajax.php', {
         method: 'POST',
         body: new URLSearchParams({
@@ -3050,11 +3052,57 @@ function enviarMensaje() {
             mensaje
         })
     })
+    .then(r => r.json())
+    .then(() => {
+        document.getElementById('mensaje').value = '';
+        cargarMensajes();
+    });
+}
+
+function cargarMensajes() {
+
+    const conversacion_id = document.getElementById('conversacion_id').value;
+
+    fetch('ajax/ajax.php', {
+        method: 'POST',
+        body: new URLSearchParams({
+            accion: 'listar_mensajes',
+            conversacion_id
+        })
+    })
         .then(r => r.json())
-        .then(() => {
-            document.getElementById('mensaje').value = '';
-            cargarMensajes();
+        .then(data => {
+
+            const contenedor = document.getElementById('chatMensajes');
+            contenedor.innerHTML = '';
+
+            data.forEach(msg => {
+
+                let clase = '';
+                let align = '';
+
+                if (msg.emisor === 'asesor') {
+                    clase = 'msg-asesor';
+                    align = 'text-end';
+                } else {
+                    clase = 'msg-cliente';
+                    align = 'text-start';
+                }
+
+                contenedor.innerHTML += `
+                <div class="${align}">
+                    <div class="chat-bubble ${clase}">
+                        ${msg.mensaje}
+                        <div class="hora">${msg.created_at}</div>
+                    </div>
+                </div>
+            `;
+            });
+
+            contenedor.scrollTop = contenedor.scrollHeight;
         });
 }
+
+setInterval(cargarMensajes, 3000);
 
 actualizarTimeline();

@@ -48,7 +48,7 @@
         <!-- Sidenav Menu -->
         <div class="sidebar-inner" data-simplebar>
             <div id="sidebar-menu" class="sidebar-menu">
-                <ul><?php if ($_SESSION['rol'] == "Admin") { ?>
+                <ul><?php if ($_SESSION['rol'] == "Admin" || $_SESSION['rol'] == "Lider Comercial") { ?>
                         <li class="menu-title"><span>Menú Principal</span></li>
                         <li>
                             <ul>

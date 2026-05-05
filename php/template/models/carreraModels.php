@@ -5,7 +5,7 @@ class CarreraModels
     public static function listarCarrera()
     {
         $emp = $_SESSION['cod_emp'] ?? $_GET['cod_emp'];
-        $sql = "SELECT * FROM programa p INNER JOIN empresa e ON p.emp_pro = id_emp WHERE p.emp_pro = ?";
+        $sql = "SELECT * FROM programa p INNER JOIN empresa e ON p.emp_pro = id_emp WHERE p.emp_pro = ? ORDER BY p.desc_pro ASC";
         $conn = new Conexion();
         $conectar = $conn->conectar();
         $stmt = $conectar->prepare($sql);
