@@ -18,11 +18,213 @@ if (isset($_POST['action'])) {
 
     switch ($_POST['action']) {
         case 'listar':
-            // Importante: Ordenar por prioridad descendente desde la base de datos
-            $sql = "SELECT * FROM prioridad WHERE foc_pri = :foc_pri ORDER BY CAST(pri_pri AS UNSIGNED) DESC";
-            $stmt = $conectar->prepare($sql);
-            $stmt->execute([':foc_pri' => 56]);
-            echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
+
+            try {
+
+                // =====================================================
+                // ACTIVAR ERRORES PDO
+                // =====================================================
+                $conectar->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+                $conectar->beginTransaction();
+                session_start();
+                $foco = $_SESSION['foco'];
+                $empresa = $_SESSION['cod_emp'];
+
+                // =====================================================
+                // VALIDAR QUE EXISTA FOCO EN SESSION
+                // =====================================================
+                if (empty($foco)) {
+
+                    echo json_encode([
+                        'status' => 'error',
+                        'message' => 'No existe foco en sesión'
+                    ]);
+
+                    exit;
+                }
+
+                // =====================================================
+                // OBTENER DETALLES DEL FOCO
+                // =====================================================
+                $sqlFoco = "SELECT 
+                        fd.foc_fde,
+                        fd.prog_fde,
+                        fd.jorn_fde,
+                        fd.ven_fde,
+                        fd.emp_fde,
+                        p.desc_pro,
+                        h.descripcion
+                    FROM foco_detalle fd
+                    INNER JOIN programa p 
+                        ON p.cod_pro = fd.prog_fde
+                    INNER JOIN horario h 
+                        ON h.id_horario = fd.jorn_fde
+                    WHERE fd.foc_fde = ?
+                    AND fd.emp_fde = ?";
+
+                $stmtFoco = $conectar->prepare($sqlFoco);
+
+                $stmtFoco->execute([
+                    $foco,
+                    $empresa
+                ]);
+
+                $detallesFoco = $stmtFoco->fetchAll(PDO::FETCH_ASSOC);
+
+                // =====================================================
+                // SI NO HAY DETALLES
+                // =====================================================
+                if (empty($detallesFoco)) {
+
+                    echo json_encode([
+                        'status' => 'error',
+                        'message' => 'El foco no tiene detalles registrados',
+                        'foco' => $foco
+                    ]);
+
+                    exit;
+                }
+
+                // =====================================================
+                // RECORRER DETALLES DEL FOCO
+                // =====================================================
+                foreach ($detallesFoco as $detalle) {
+
+                    // =====================================================
+                    // VALIDAR SI YA EXISTE EN PRIORIDAD
+                    // =====================================================
+                    $sqlExiste = "SELECT cpr_pri
+                          FROM prioridad
+                          WHERE cpr_pri = ?
+                          AND cho_pri = ?
+                          AND foc_pri = ?
+                          AND emp_pri = ?";
+
+                    $stmtExiste = $conectar->prepare($sqlExiste);
+
+                    $stmtExiste->execute([
+                        $detalle['prog_fde'],
+                        $detalle['jorn_fde'],
+                        $detalle['foc_fde'],
+                        $detalle['emp_fde']
+                    ]);
+
+                    $existe = $stmtExiste->fetch(PDO::FETCH_ASSOC);
+
+                    // =====================================================
+                    // INSERTAR SI NO EXISTE
+                    // =====================================================
+                    if (!$existe) {
+
+                        $sqlInsert = "INSERT INTO prioridad
+                (
+                    cpr_pri,
+                    dpr_pri,
+                    cho_pri,
+                    dho_pri,
+                    cup_pri,
+                    pri_pri,
+                    emp_pri,
+                    foc_pri
+                )
+                VALUES (?,?,?,?,?,?,?,?)";
+
+                        $stmtInsert = $conectar->prepare($sqlInsert);
+
+                        $stmtInsert->execute([
+                            $detalle['prog_fde'],
+                            $detalle['desc_pro'],
+                            $detalle['jorn_fde'],
+                            $detalle['descripcion'],
+                            $detalle['ven_fde'],
+                            1,
+                            $detalle['emp_fde'],
+                            $detalle['foc_fde']
+                        ]);
+                    } else {
+
+                        // =====================================================
+                        // ACTUALIZAR SI EXISTE
+                        // =====================================================
+                        $sqlUpdate = "UPDATE prioridad
+                SET
+                    dpr_pri = ?,
+                    dho_pri = ?,
+                    cup_pri = ?
+                WHERE cpr_pri = ?
+                AND cho_pri = ?
+                AND foc_pri = ?
+                AND emp_pri = ?";
+
+                        $stmtUpdate = $conectar->prepare($sqlUpdate);
+
+                        $stmtUpdate->execute([
+                            $detalle['desc_pro'],
+                            $detalle['descripcion'],
+                            $detalle['ven_fde'],
+                            $detalle['prog_fde'],
+                            $detalle['jorn_fde'],
+                            $detalle['foc_fde'],
+                            $detalle['emp_fde']
+                        ]);
+                    }
+                }
+
+                // =====================================================
+                // ELIMINAR PRIORIDADES QUE YA NO EXISTAN EN FOCO
+                // =====================================================
+                $sqlDelete = "DELETE pri
+        FROM prioridad pri
+        LEFT JOIN foco_detalle fd
+            ON fd.prog_fde = pri.cpr_pri
+            AND fd.jorn_fde = pri.cho_pri
+            AND fd.foc_fde = pri.foc_pri
+            AND fd.emp_fde = pri.emp_pri
+        WHERE fd.prog_fde IS NULL
+        AND pri.foc_pri = ?
+        AND pri.emp_pri = ?";
+
+                $stmtDelete = $conectar->prepare($sqlDelete);
+
+                $stmtDelete->execute([
+                    $foco,
+                    $empresa
+                ]);
+
+                // =====================================================
+                // LISTAR PRIORIDADES
+                // =====================================================
+                $sql = "SELECT *
+                FROM prioridad
+                WHERE foc_pri = :foc_pri
+                AND emp_pri = :emp_pri
+                ORDER BY CAST(pri_pri AS UNSIGNED) DESC";
+
+                $stmt = $conectar->prepare($sql);
+
+                $stmt->execute([
+                    ':foc_pri' => $foco,
+                    ':emp_pri' => $empresa
+                ]);
+
+                $resultado = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                $conectar->commit();
+
+                echo json_encode($resultado);
+            } catch (Exception $e) {
+
+                if ($conectar->inTransaction()) {
+                    $conectar->rollBack();
+                }
+
+                echo json_encode([
+                    'status' => 'error',
+                    'message' => $e->getMessage()
+                ]);
+            }
+
             break;
 
         case 'insertar':
@@ -53,7 +255,6 @@ if (isset($_POST['action'])) {
             $stmt->execute();
             echo json_encode(["success" => true]);
             break;
-        
     }
     exit;
 }

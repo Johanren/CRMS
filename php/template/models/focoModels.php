@@ -11,10 +11,14 @@ class focoModels
 
             $db->beginTransaction();
 
-            // Verificar si el FOCO ya existe
+            // =========================
+            // VALIDAR FOCO
+            // =========================
             $sqlCheck = "SELECT id_foc 
                      FROM foco 
-                     WHERE id_foc = ? AND emp_foc = ?";
+                     WHERE id_foc = ? 
+                     AND emp_foc = ?";
+
             $stmtCheck = $db->prepare($sqlCheck);
             $stmtCheck->execute([
                 $data["codigoFoco"],
@@ -23,14 +27,17 @@ class focoModels
 
             $foco = $stmtCheck->fetch(PDO::FETCH_ASSOC);
 
-            // Si NO existe → crear FOCO
+            // =========================
+            // CREAR FOCO SI NO EXISTE
+            // =========================
             if (!$foco) {
 
                 $sqlInsertFoco = "INSERT INTO foco 
-                (id_foc, nom_foc, fini_foc, ffin_foc, emp_foc, tot_foc)
-                VALUES (?,?,?,?,?,?)";
+            (id_foc, nom_foc, fini_foc, ffin_foc, emp_foc, tot_foc)
+            VALUES (?,?,?,?,?,?)";
 
                 $stmtFoco = $db->prepare($sqlInsertFoco);
+
                 $stmtFoco->execute([
                     $data["codigoFoco"],
                     $data["nombreFoco"],
@@ -41,12 +48,15 @@ class focoModels
                 ]);
             }
 
-            // Registrar SIEMPRE el detalle
+            // =========================
+            // INSERTAR DETALLE
+            // =========================
             $sqlDetalle = "INSERT INTO foco_detalle 
-            (foc_fde, prog_fde, jorn_fde, cup_fde, rein_fde, ven_fde, emp_fde)
-            VALUES (?,?,?,?,?,?,?)";
+                (foc_fde, prog_fde, jorn_fde, cup_fde, rein_fde, ven_fde, emp_fde)
+                VALUES (?,?,?,?,?,?,?)";
 
             $stmtDetalle = $db->prepare($sqlDetalle);
+
             $stmtDetalle->execute([
                 $data["codigoFoco"],
                 $data["carrera"],
@@ -56,6 +66,82 @@ class focoModels
                 $data["totalCupoFoco"],
                 $_SESSION["cod_emp"]
             ]);
+
+            // ===================================================
+            // VALIDAR SI YA EXISTE EN PRIORIDAD
+            // ===================================================
+            $sqlExistePrioridad = "SELECT id_pri 
+                FROM prioridad 
+                WHERE cpr_pri = ?
+                AND cho_pri = ?
+                AND foc_pri = ?
+                AND emp_pri = ?";
+
+            $stmtExistePrioridad = $db->prepare($sqlExistePrioridad);
+
+            $stmtExistePrioridad->execute([
+                $data["carrera"],
+                $data["horario"],
+                $data["codigoFoco"],
+                $_SESSION["cod_emp"]
+            ]);
+
+            $prioridad = $stmtExistePrioridad->fetch(PDO::FETCH_ASSOC);
+
+            // ===================================================
+            // INSERTAR EN PRIORIDAD SI NO EXISTE
+            // ===================================================
+            if (!$prioridad) {
+
+                // Nombre programa
+                $sqlPrograma = "SELECT desc_pro 
+                    FROM programa 
+                    WHERE cod_pro = ? 
+                    LIMIT 1";
+
+                $stmtPrograma = $db->prepare($sqlPrograma);
+                $stmtPrograma->execute([$data["carrera"]]);
+
+                $programa = $stmtPrograma->fetch(PDO::FETCH_ASSOC);
+
+                // Nombre jornada
+                $sqlHorario = "SELECT descripcion 
+                    FROM horario 
+                    WHERE id_horario = ? 
+                    LIMIT 1";
+
+                $stmtHorario = $db->prepare($sqlHorario);
+                $stmtHorario->execute([$data["horario"]]);
+
+                $horario = $stmtHorario->fetch(PDO::FETCH_ASSOC);
+
+                // Insert prioridad
+                $sqlInsertPrioridad = "INSERT INTO prioridad
+                    (
+                        cpr_pri,
+                        dpr_pri,
+                        cho_pri,
+                        dho_pri,
+                        cup_pri,
+                        pri_pri,
+                        emp_pri,
+                        foc_pri
+                    )
+                    VALUES (?,?,?,?,?,?,?,?)";
+
+                $stmtInsertPrioridad = $db->prepare($sqlInsertPrioridad);
+
+                $stmtInsertPrioridad->execute([
+                    $data["carrera"],
+                    $programa["desc_pro"] ?? '',
+                    $data["horario"],
+                    $horario["descripcion"] ?? '',
+                    $data["totalCupoFoco"],
+                    1,
+                    $_SESSION["cod_emp"],
+                    $data["codigoFoco"]
+                ]);
+            }
 
             $db->commit();
 
@@ -76,7 +162,6 @@ class focoModels
             ];
         }
     }
-
 
     public static function listarFocoDetalle()
     {
@@ -217,65 +302,65 @@ class focoModels
     ) {
 
         $sql = "
-    SELECT
-        h.descripcion AS jornada,
-        p.desc_pro AS programa,
-        p.val_pro AS valor_programa,
+        SELECT
+            h.descripcion AS jornada,
+            p.desc_pro AS programa,
+            p.val_pro AS valor_programa,
 
-        fd.cup_fde AS cupos,
-        fd.ven_fde AS ventas,
-        fd.rein_fde AS reintegros,
+            fd.cup_fde AS cupos,
+            fd.ven_fde AS ventas,
+            fd.rein_fde AS reintegros,
 
-        f.nom_foc AS foco,
-        f.fini_foc AS fecha_inicio,
-        f.ffin_foc AS fecha_fin,
+            f.nom_foc AS foco,
+            f.fini_foc AS fecha_inicio,
+            f.ffin_foc AS fecha_fin,
 
-        /* Leads con horario correcto */
-        COUNT(DISTINCT CASE 
-            WHEN l.estado_leads_id NOT IN (6,7,8)
-            AND l.horario_id = fd.jorn_fde
-            THEN l.id_lead
-        END) AS con_horario,
+            /* Leads con horario correcto */
+            COUNT(DISTINCT CASE 
+                WHEN l.estado_leads_id NOT IN (6,7,8)
+                AND l.horario_id = fd.jorn_fde
+                THEN l.id_lead
+            END) AS con_horario,
 
-        /* Leads solo carrera */
-        COUNT(DISTINCT CASE 
-            WHEN l.estado_leads_id NOT IN (6,7,8)
-            AND (l.horario_id <> fd.jorn_fde OR l.horario_id IS NULL)
-            THEN l.id_lead
-        END) AS solo_carrera,
+            /* Leads solo carrera */
+            COUNT(DISTINCT CASE 
+                WHEN l.estado_leads_id NOT IN (6,7,8)
+                AND (l.horario_id <> fd.jorn_fde OR l.horario_id IS NULL)
+                THEN l.id_lead
+            END) AS solo_carrera,
 
-        /* Ventas estado 6 válidas */
-        COUNT(DISTINCT CASE 
-            WHEN l.estado_leads_id = 6
-            AND l.foco = ?
-            AND l.Nfactura IS NOT NULL
-            AND l.valorF IS NOT NULL
-            AND l.metodoF IS NOT NULL
-            AND l.horario_id = fd.jorn_fde
-            THEN l.id_lead
-        END) AS ventas_estado_6
+            /* Ventas estado 6 válidas */
+            COUNT(DISTINCT CASE 
+                WHEN l.estado_leads_id = 6
+                AND l.foco = ?
+                AND l.Nfactura IS NOT NULL
+                AND l.valorF IS NOT NULL
+                AND l.metodoF IS NOT NULL
+                AND l.horario_id = fd.jorn_fde
+                THEN l.id_lead
+            END) AS ventas_estado_6
 
-    FROM foco_detalle fd
+        FROM foco_detalle fd
 
-    INNER JOIN foco f 
-        ON f.id_foc = fd.foc_fde
-        AND f.emp_foc = fd.emp_fde
+        INNER JOIN foco f 
+            ON f.id_foc = fd.foc_fde
+            AND f.emp_foc = fd.emp_fde
 
-    INNER JOIN programa p 
-        ON p.cod_pro = fd.prog_fde
+        INNER JOIN programa p 
+            ON p.cod_pro = fd.prog_fde
 
-    INNER JOIN horario h 
-        ON h.id_horario = fd.jorn_fde
+        INNER JOIN horario h 
+            ON h.id_horario = fd.jorn_fde
 
-    /* UN SOLO JOIN A LEADS */
-    LEFT JOIN leads l
-        ON l.carrera_id = fd.prog_fde
-        AND l.cod_emp = f.emp_foc
+        /* UN SOLO JOIN A LEADS */
+        LEFT JOIN leads l
+            ON l.carrera_id = fd.prog_fde
+            AND l.cod_emp = f.emp_foc
 
-    WHERE 
-        f.emp_foc = ?
-        AND f.id_foc = ?
-    ";
+        WHERE 
+            f.emp_foc = ?
+            AND f.id_foc = ?
+        ";
 
         $params = [
             $_SESSION["foco"],
@@ -284,8 +369,8 @@ class focoModels
         ];
 
         /* ============================
-       FILTRO POR ASESOR
-    ============================ */
+        FILTRO POR ASESOR
+        ============================ */
         if (!empty($asesor)) {
 
             $placeholders = implode(",", array_fill(0, count($asesor), "?"));
@@ -300,8 +385,8 @@ class focoModels
         }
 
         /* ============================
-       FILTRO POR ESTADO
-    ============================ */
+        FILTRO POR ESTADO
+        ============================ */
         if (!empty($estados)) {
 
             $placeholders = implode(",", array_fill(0, count($estados), "?"));
@@ -317,8 +402,8 @@ class focoModels
         }
 
         /* ============================
-       FILTRO POR CARRERA
-    ============================ */
+        FILTRO POR CARRERA
+        ============================ */
         if (!empty($carrera)) {
 
             $placeholders = implode(",", array_fill(0, count($carrera), "?"));
@@ -327,24 +412,24 @@ class focoModels
         }
 
         /* ============================
-       GROUP BY
-    ============================ */
+        GROUP BY
+        ============================ */
         $sql .= "
-    GROUP BY
-        h.descripcion,
-        p.desc_pro,
-        p.val_pro,
-        fd.cup_fde,
-        fd.ven_fde,
-        fd.rein_fde,
-        f.nom_foc,
-        f.fini_foc,
-        f.ffin_foc
+        GROUP BY
+            h.descripcion,
+            p.desc_pro,
+            p.val_pro,
+            fd.cup_fde,
+            fd.ven_fde,
+            fd.rein_fde,
+            f.nom_foc,
+            f.fini_foc,
+            f.ffin_foc
 
-    ORDER BY
-        h.descripcion,
-        p.desc_pro
-    ";
+        ORDER BY
+            h.descripcion,
+            p.desc_pro
+        ";
 
         $conn = new Conexion();
         $pdo = $conn->conectar();
@@ -355,40 +440,139 @@ class focoModels
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-
-
     public static function actulizarFocoDetalle($data)
     {
-        $sql = "UPDATE foco_detalle fd INNER JOIN programa p ON p.cod_pro = fd.prog_fde INNER JOIN horario h ON h.id_horario = fd.jorn_fde SET fd.cup_fde = ?, fd.rein_fde = ?, fd.ven_fde = ? WHERE h.descripcion = ? AND p.desc_pro = ?";
         $conn = new Conexion();
         $conectar = $conn->conectar();
-        $stmt = $conectar->prepare($sql);
 
-        $stmt->bindParam(1, $data['ventas']);
-        $stmt->bindParam(2, $data['reintegros']);
-        $stmt->bindParam(3, $data['cupos']);
-        $stmt->bindParam(4, $data['jornada']);
-        $stmt->bindParam(5, $data['programa']);
-        if ($stmt->execute()) {
-            return ['status' => 'success', 'message' => 'Foco detalle actualizado'];
+        try {
+
+            $conectar->beginTransaction();
+
+            // ============================================
+            // ACTUALIZAR FOCO DETALLE
+            // ============================================
+            $sql = "UPDATE foco_detalle fd 
+                INNER JOIN programa p ON p.cod_pro = fd.prog_fde 
+                INNER JOIN horario h ON h.id_horario = fd.jorn_fde 
+                SET 
+                    fd.cup_fde = ?, 
+                    fd.rein_fde = ?, 
+                    fd.ven_fde = ? 
+                WHERE h.descripcion = ? 
+                AND p.desc_pro = ?";
+
+            $stmt = $conectar->prepare($sql);
+
+            $stmt->bindParam(1, $data['ventas']);
+            $stmt->bindParam(2, $data['reintegros']);
+            $stmt->bindParam(3, $data['cupos']);
+            $stmt->bindParam(4, $data['jornada']);
+            $stmt->bindParam(5, $data['programa']);
+
+            $stmt->execute();
+
+            // ============================================
+            // ACTUALIZAR PRIORIDAD
+            // ============================================
+            $sqlPrioridad = "UPDATE prioridad pri
+                INNER JOIN programa p ON p.cod_pro = pri.cpr_pri
+                INNER JOIN horario h ON h.id_horario = pri.cho_pri
+                SET pri.cup_pri = ?
+                WHERE h.descripcion = ?
+                AND p.desc_pro = ?
+                AND pri.emp_pri = ?";
+
+            $stmtPrioridad = $conectar->prepare($sqlPrioridad);
+
+            $stmtPrioridad->execute([
+                $data['cupos'],
+                $data['jornada'],
+                $data['programa'],
+                $_SESSION["cod_emp"]
+            ]);
+
+            $conectar->commit();
+
+            return [
+                'status' => 'success',
+                'message' => 'Foco detalle actualizado'
+            ];
+        } catch (Exception $e) {
+
+            if ($conectar->inTransaction()) {
+                $conectar->rollBack();
+            }
+
+            return [
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ];
         }
-
-        return "error";
     }
 
     public static function eliminarFocoDetalle($data)
     {
-        $sql = "DELETE fd FROM foco_detalle fd INNER JOIN programa p ON p.cod_pro = fd.prog_fde INNER JOIN horario h ON h.id_horario = fd.jorn_fde WHERE h.descripcion = ? AND p.desc_pro = ?";
         $conn = new Conexion();
         $conectar = $conn->conectar();
-        $stmt = $conectar->prepare($sql);
-        $stmt->bindParam(1, $data['jornada']);
-        $stmt->bindParam(2, $data['programa']);
-        if ($stmt->execute()) {
-            return ['status' => 'success', 'message' => 'Foco detalle actualizado'];
-        }
 
-        return "error";
+        try {
+
+            $conectar->beginTransaction();
+
+            // ============================================
+            // ELIMINAR DE FOCO DETALLE
+            // ============================================
+            $sql = "DELETE fd 
+            FROM foco_detalle fd 
+            INNER JOIN programa p ON p.cod_pro = fd.prog_fde 
+            INNER JOIN horario h ON h.id_horario = fd.jorn_fde 
+            WHERE h.descripcion = ? 
+            AND p.desc_pro = ?";
+
+            $stmt = $conectar->prepare($sql);
+
+            $stmt->bindParam(1, $data['jornada']);
+            $stmt->bindParam(2, $data['programa']);
+
+            $stmt->execute();
+
+            // ============================================
+            // ELIMINAR TAMBIEN EN PRIORIDAD
+            // ============================================
+            $sqlPrioridad = "DELETE pri
+                FROM prioridad pri
+                INNER JOIN programa p ON p.cod_pro = pri.cpr_pri
+                INNER JOIN horario h ON h.id_horario = pri.cho_pri
+                WHERE h.descripcion = ?
+                AND p.desc_pro = ?
+                AND pri.emp_pri = ?";
+
+            $stmtPrioridad = $conectar->prepare($sqlPrioridad);
+
+            $stmtPrioridad->execute([
+                $data['jornada'],
+                $data['programa'],
+                $_SESSION["cod_emp"]
+            ]);
+
+            $conectar->commit();
+
+            return [
+                'status' => 'success',
+                'message' => 'Foco detalle eliminado'
+            ];
+        } catch (Exception $e) {
+
+            if ($conectar->inTransaction()) {
+                $conectar->rollBack();
+            }
+
+            return [
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ];
+        }
     }
 
     public static function reporteFocoActivoMatriz()

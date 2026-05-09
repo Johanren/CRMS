@@ -3052,16 +3052,23 @@ function enviarMensaje() {
             mensaje
         })
     })
-    .then(r => r.json())
-    .then(() => {
-        document.getElementById('mensaje').value = '';
-        cargarMensajes();
-    });
+        .then(r => r.json())
+        .then(() => {
+            document.getElementById('mensaje').value = '';
+            cargarMensajes();
+        });
 }
+
+let primeraCarga = true;
 
 function cargarMensajes() {
 
     const conversacion_id = document.getElementById('conversacion_id').value;
+    const contenedor = document.getElementById('chatMensajes');
+
+    // Detectar si el usuario está abajo
+    const estaAbajo =
+        contenedor.scrollHeight - contenedor.scrollTop <= contenedor.clientHeight + 50;
 
     fetch('ajax/ajax.php', {
         method: 'POST',
@@ -3073,7 +3080,6 @@ function cargarMensajes() {
         .then(r => r.json())
         .then(data => {
 
-            const contenedor = document.getElementById('chatMensajes');
             contenedor.innerHTML = '';
 
             data.forEach(msg => {
@@ -3099,7 +3105,18 @@ function cargarMensajes() {
             `;
             });
 
-            contenedor.scrollTop = contenedor.scrollHeight;
+            // Primera vez SIEMPRE baja
+            if (primeraCarga) {
+                contenedor.scrollTop = contenedor.scrollHeight;
+                primeraCarga = false;
+                return;
+            }
+
+            // Después solo baja si el usuario está abajo
+            if (estaAbajo) {
+                contenedor.scrollTop = contenedor.scrollHeight;
+            }
+
         });
 }
 
