@@ -46,6 +46,7 @@ function exportarExcel(tipo) {
 
     window.location.href = "ajax/exportar_excel.php?" + params.toString();
 }
+
 async function cargarTablaFoco() {
 
     const datos = new FormData();
@@ -57,6 +58,24 @@ async function cargarTablaFoco() {
     });
 
     const data = await res.json();
+
+    /* ================= DATOS GENERALES ================= */
+    if (data.length > 0) {
+
+        // Toma el primer registro
+        const info = data[0];
+
+        // Codigo -> P56 => 56
+        document.getElementById("codigoFoco").value =
+            info.foco.replace(/[^\d]/g, '');
+
+        // Nombre -> P56
+        document.getElementById("nombreFoco").value = info.foco;
+
+        // Fechas
+        document.getElementById("fechaInicioFoco").value = info.fecha_inicio;
+        document.getElementById("fechaFinFoco").value = info.fecha_fin;
+    }
 
     const jornadas = [...new Set(data.map(d => d.jornada))];
     const programas = [...new Set(data.map(d => d.programa))];
@@ -102,8 +121,8 @@ async function cargarTablaFoco() {
 
             const filaData = data.find(d => d.jornada === jornada && d.programa === programa);
 
-            const c = filaData ? parseInt(filaData.ventas) : 0;
-            const v = filaData ? parseInt(filaData.cupos) : 0;
+            const c = filaData ? parseInt(filaData.cupos) : 0;
+            const v = filaData ? parseInt(filaData.ventas) : 0;
             const r = filaData ? parseInt(filaData.reintegros) : 0;
 
             totalC += c;

@@ -29,7 +29,7 @@ class ListMensajeModels
                 $stmt->execute();
 
                 // 2️⃣ Enviar SMS
-                $envio = ListMensajeModels::enviarSMS(
+                $envio = self::enviarSMS(
                     $m['numero'],
                     $m['mensaje'],
                     $m['cliente'],
@@ -64,83 +64,169 @@ class ListMensajeModels
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    private static function enviarSMS($numero, $mensaje, $cliente, $dateToSend = null)
+    private static function enviarSMS($numero, $mensaje, $cliente = '', $dateToSend = null)
     {
-        /* =========================
-       VARIABLES DINÁMICAS
-    ========================= */
-        $country        = "57";
-        $encoding       = "string";
-        $messageFormat  = 1;
 
-        /* =========================
-       LISTA DESTINATARIOS
-    ========================= */
-        $addresseeList = [
-            [
-                "mobile"           => $numero,
-                "correlationLabel" => $cliente
-            ]
-        ];
+        try {
 
-        /* =========================
-       DATA BASE
-    ========================= */
-        $postData = [
-            "country"        => $country,
-            "message"        => $mensaje,
-            "encoding"       => $encoding,
-            "messageFormat"  => $messageFormat,
-            "addresseeList"  => $addresseeList
-        ];
+            /*
+            ==========================================
+            LIMPIAR NÚMERO
+            ==========================================
+            */
+            $numero = preg_replace(
+                '/[^0-9]/',
+                '',
+                $numero
+            );
 
-        /* =========================
-       ENVÍO PROGRAMADO (OPCIONAL)
-       Formato requerido:
-       yyyy-MM-dd HH:mm:ss
-    ========================= */
-        if (!empty($dateToSend)) {
-            $postData["dateToSend"] = date('Y-m-d H:i:s', strtotime($dateToSend));
-        }
+            /*
+            ==========================================
+            AGREGAR INDICATIVO 57
+            ==========================================
+            */
+            if (strlen($numero) == 10) {
 
-        $jsonData = json_encode($postData, JSON_UNESCAPED_UNICODE);
+                $numero = '57' . $numero;
+            }
 
-        /* =========================
-       CURL
-    ========================= */
-        $curl = curl_init();
+            /*
+            ==========================================
+            VALIDAR NÚMERO
+            ==========================================
+            */
+            if (!preg_match('/^57[0-9]{10}$/', $numero)) {
 
-        curl_setopt_array($curl, [
-            CURLOPT_URL            => 'https://apitellit.aldeamo.com/SmsiWS/smsSendPost/',
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING       => '',
-            CURLOPT_MAXREDIRS      => 10,
-            CURLOPT_TIMEOUT        => 30,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST  => 'POST',
-            CURLOPT_POSTFIELDS     => $jsonData,
-            CURLOPT_HTTPHEADER     => [
-                'Content-Type: application/json',
-                'Authorization: Basic bXVsdGljb21wdXRvOk5Ca2xmZCRzYXM1ZGM='
-            ],
-        ]);
+                return [
+                    'ok'    => false,
+                    'error' => 'Número inválido'
+                ];
+            }
 
-        $response = curl_exec($curl);
-        $error    = curl_error($curl);
-        curl_close($curl);
+            /*
+            ==========================================
+            PAYLOAD CRWAVE
+            ==========================================
+            */
+            $payload = [
 
-        if ($error) {
+                "messages" => [
+                    [
+                        "phone_number"   => $numero,
+                        "message" => $mensaje
+                    ]
+                ]
+
+            ];
+
+            /*
+            ==========================================
+            FECHA PROGRAMADA
+            ==========================================
+            */
+            if (!empty($dateToSend)) {
+
+                $payload['date_to_send'] = date(
+                    'Y-m-d H:i:s',
+                    strtotime($dateToSend)
+                );
+            }
+
+            /*
+            ==========================================
+            JSON
+            ==========================================
+            */
+            $jsonData = json_encode(
+                $payload,
+                JSON_UNESCAPED_UNICODE
+            );
+
+            /*
+            ==========================================
+            CURL
+            ==========================================
+            */
+            $curl = curl_init();
+
+            curl_setopt_array($curl, [
+
+                CURLOPT_URL => 'https://crwave.com.co/client/api/v1/sms/batch/',
+
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING       => '',
+                CURLOPT_MAXREDIRS      => 10,
+                CURLOPT_TIMEOUT        => 60,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
+
+                CURLOPT_CUSTOMREQUEST  => 'POST',
+
+                CURLOPT_POSTFIELDS     => $jsonData,
+
+                CURLOPT_HTTPHEADER => [
+
+                    'Content-Type: application/json',
+
+                    /*
+                    ==========================================
+                    REEMPLAZA TU TOKEN
+                    ==========================================
+                    */
+                    'Authorization: Token e8248e3af9b51010422e09c55fe7ff517eb12f4fe395d236020652d806639354'
+
+                ],
+
+            ]);
+
+            /*
+            ==========================================
+            RESPUESTA
+            ==========================================
+            */
+            $response  = curl_exec($curl);
+            $error     = curl_error($curl);
+            $httpCode  = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+            curl_close($curl);
+
+            /*
+            ==========================================
+            ERROR CURL
+            ==========================================
+            */
+            if ($error) {
+
+                return [
+                    'ok'    => false,
+                    'error' => $error
+                ];
+            }
+
+            /*
+            ==========================================
+            DECODIFICAR JSON
+            ==========================================
+            */
+            $data = json_decode($response, true);
+
             return [
-                'ok' => false,
-                'error' => $error
+
+                'ok'        => $httpCode == 202,
+                'http_code' => $httpCode,
+                'cliente'   => $cliente,
+                'numero'    => $numero,
+                'response'  => $data,
+                'raw'       => $response
+
+            ];
+        } catch (Exception $e) {
+
+            return [
+                'ok'    => false,
+                'error' => $e->getMessage()
             ];
         }
-
-        return [
-            'ok'       => true,
-            'response' => $response
-        ];
     }
 
     public static function reporte1Mensajes()

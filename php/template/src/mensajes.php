@@ -2,60 +2,190 @@
 
 <?php
 
-/* =========================
-           VARIABLES DINÁMICAS
-        ========================= */
+class ListMensajeModels
+{
 
-$country        = "57";
-$message        = "Prueba crm";
-$encoding       = "string";
-$messageFormat  = 1;
+    public static function enviarSMS(
+        $numero,
+        $mensaje,
+        $cliente = '',
+        $dateToSend = null
+    ) {
 
-/* Lista de destinatarios */
-$addresseeList = [
-    [
-        "mobile" => '3186447732',
-        "correlationLabel" => "Veimar"
-    ]
-];
-//"dateToSend": "string",yyyy-MM-dd HH:mm:ss
+        try {
 
-$postData = [
-    "country"        => $country,
-    "message"        => $message,
-    "encoding"       => $encoding,
-    "messageFormat"  => $messageFormat,
-    "addresseeList"  => $addresseeList
-];
-$jsonData = json_encode($postData, JSON_UNESCAPED_UNICODE);
+            /*
+            ==========================================
+            LIMPIAR NÚMERO
+            ==========================================
+            */
+            $numero = preg_replace(
+                '/[^0-9]/',
+                '',
+                $numero
+            );
 
-/*$curl = curl_init();
-        curl_setopt_array($curl, [
-            CURLOPT_URL            => 'https://apitellit.aldeamo.com/SmsiWS/smsSendPost/',
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING       => '',
-            CURLOPT_MAXREDIRS      => 10,
-            CURLOPT_TIMEOUT        => 30,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST  => 'POST',
-            CURLOPT_POSTFIELDS     => $jsonData,
-            CURLOPT_HTTPHEADER     => [
-                'Content-Type: application/json',
-                'Authorization: Basic bXVsdGljb21wdXRvOk5Ca2xmZCRzYXM1ZGM='
-            ],
-        ]);
+            /*
+            ==========================================
+            AGREGAR INDICATIVO 57
+            ==========================================
+            */
+            if (strlen($numero) == 10) {
 
-        $response = curl_exec($curl);
+                $numero = '57' . $numero;
+            }
 
-        if ($response === false) {
-            echo 'Error CURL: ' . curl_error($curl);
+            /*
+            ==========================================
+            VALIDAR NÚMERO
+            ==========================================
+            */
+            if (!preg_match('/^57[0-9]{10}$/', $numero)) {
+
+                return [
+                    'ok'    => false,
+                    'error' => 'Número inválido'
+                ];
+            }
+
+            /*
+            ==========================================
+            PAYLOAD CRWAVE
+            ==========================================
+            */
+            $payload = [
+
+                "messages" => [
+                    [
+                        "phone_number"   => $numero,
+                        "message" => $mensaje
+                    ]
+                ]
+
+            ];
+
+            /*
+            ==========================================
+            FECHA PROGRAMADA
+            ==========================================
+            */
+            if (!empty($dateToSend)) {
+
+                $payload['date_to_send'] = date(
+                    'Y-m-d H:i:s',
+                    strtotime($dateToSend)
+                );
+            }
+
+            /*
+            ==========================================
+            JSON
+            ==========================================
+            */
+            $jsonData = json_encode(
+                $payload,
+                JSON_UNESCAPED_UNICODE
+            );
+
+            /*
+            ==========================================
+            CURL
+            ==========================================
+            */
+            $curl = curl_init();
+
+            curl_setopt_array($curl, [
+
+                CURLOPT_URL => 'https://crwave.com.co/client/api/v1/sms/batch/',
+
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING       => '',
+                CURLOPT_MAXREDIRS      => 10,
+                CURLOPT_TIMEOUT        => 60,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
+
+                CURLOPT_CUSTOMREQUEST  => 'POST',
+
+                CURLOPT_POSTFIELDS     => $jsonData,
+
+                CURLOPT_HTTPHEADER => [
+
+                    'Content-Type: application/json',
+
+                    /*
+                    ==========================================
+                    REEMPLAZA TU TOKEN
+                    ==========================================
+                    */
+                    'Authorization: Token e8248e3af9b51010422e09c55fe7ff517eb12f4fe395d236020652d806639354'
+
+                ],
+
+            ]);
+
+            /*
+            ==========================================
+            RESPUESTA
+            ==========================================
+            */
+            $response  = curl_exec($curl);
+            $error     = curl_error($curl);
+            $httpCode  = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+            curl_close($curl);
+
+            /*
+            ==========================================
+            ERROR CURL
+            ==========================================
+            */
+            if ($error) {
+
+                return [
+                    'ok'    => false,
+                    'error' => $error
+                ];
+            }
+
+            /*
+            ==========================================
+            DECODIFICAR JSON
+            ==========================================
+            */
+            $data = json_decode($response, true);
+
+            return [
+
+                'ok'        => $httpCode == 202,
+                'http_code' => $httpCode,
+                'cliente'   => $cliente,
+                'numero'    => $numero,
+                'response'  => $data,
+                'raw'       => $response
+
+            ];
+        } catch (Exception $e) {
+
+            return [
+                'ok'    => false,
+                'error' => $e->getMessage()
+            ];
         }
+    }
+}
 
-        curl_close($curl);
+/*
+==========================================
+PRUEBA
+==========================================
+*/
 
-        echo $response."<br>";*/
+/*$envio = ListMensajeModels::enviarSMS('3142905475','Mensaje de prueba desde CRWave','yo',null);
 
+echo "<pre>";
+print_r($envio);
+echo "</pre>";*/
 ?>
 
 <!-- ========================
@@ -92,7 +222,6 @@ $esModal = isset($_GET['modal']) && $_GET['modal'] == 1;
             </div>
         </div>
         <!-- End Page Header -->
-
         <!-- card start -->
         <div class="card border-0 rounded-0">
             <div class="card-header d-flex align-items-center justify-content-between gap-2 flex-wrap">
@@ -626,8 +755,41 @@ $esModal = isset($_GET['modal']) && $_GET['modal'] == 1;
                 body: datos
             })
             .then(res => res.json())
-            .then(r => alert(r.ok ? '✔ Mensajes guardados' : '❌ Error'))
-            .catch(() => alert('❌ Error de conexión'));
+
+            .then(r => {
+
+                if (r.ok) {
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Mensajes enviados',
+                        text: `Se enviaron ${r.enviados} mensajes correctamente`,
+                        confirmButtonText: 'Aceptar'
+                    });
+
+                } else {
+
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: r.error || 'Ocurrió un error al guardar los mensajes',
+                        confirmButtonText: 'Cerrar'
+                    });
+
+                }
+
+            })
+
+            .catch(() => {
+
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error de conexión',
+                    text: 'No fue posible conectar con el servidor',
+                    confirmButtonText: 'Cerrar'
+                });
+
+            });
     }
 </script>
 
