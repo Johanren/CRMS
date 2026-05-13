@@ -485,7 +485,7 @@ switch ($tipo) {
 
     case "CRMS_lead":
         // 1. Obtener la data del modelo
-        $data = LeadsControllers::listarReporteCRMLeads($asesor, $carreras, $horario, $estados);
+        $data = LeadsControllers::listarReporteCRMLeads($texto, $asesor, $carreras, $horario, $interes, $medio, $fuente, $campana, $accion, $departamento, $ciudad, $barrio, $estados, $fecha_inicio, $fecha_fin);
 
         if (empty($data)) {
             die("No hay datos para exportar.");
@@ -581,7 +581,7 @@ switch ($tipo) {
 
     case "estado_lead":
 
-        $respuesta = LeadsControllers::ctrReporteEstadoLeads($texto, $asesor, $carreras, $estados, $fecha_inicio, $fecha_fin, 1, 10000);
+        $respuesta = LeadsControllers::ctrReporteEstadoLeads($texto, $asesor, $carreras, $horario, $interes, $medio, $fuente, $campana, $accion, $departamento, $ciudad, $barrio, $estados, $fecha_inicio, $fecha_fin, 1, 10000);
         $data = $respuesta['data'] ?? [];
 
         if (empty($data)) {
@@ -630,7 +630,7 @@ switch ($tipo) {
 
     case "lead_dia":
 
-        $respuesta = LeadsControllers::listarReporteLeadDia($mes, $anio, $asesor, $carreras, $estados);
+        $respuesta = LeadsControllers::listarReporteLeadDia($mes, $anio, $texto, $asesor, $carreras, $horario, $interes, $medio, $fuente, $campana, $accion, $departamento, $ciudad, $barrio, $estados, $fecha_inicio, $fecha_fin);
         $data = $respuesta['porEstado'] ?? [];
 
         if (empty($data)) {
@@ -714,7 +714,7 @@ switch ($tipo) {
 
     case "reporte_fuente":
 
-        $data = LeadsControllers::reporteLeadsFuente($texto, $asesor, $carreras, $estados, $fecha_inicio, $fecha_fin);
+        $data = LeadsControllers::reporteLeadsFuente($texto, $asesor, $carreras, $horario, $interes, $medio, $fuente, $campana, $accion, $departamento, $ciudad, $barrio, $estados, $fecha_inicio, $fecha_fin);
 
         if (empty($data)) {
             die("No hay datos para exportar.");
@@ -1019,7 +1019,7 @@ switch ($tipo) {
         $dataEstados = $dataRespuesta['porEstado'] ?? [];
 
         // Obtenemos el detalle que usa el DataTable
-        $dataDetalle = LeadsControllers::listarReporteRst($texto, $asesor);
+        $dataDetalle = LeadsControllers::listarReporteRst($texto, $asesor, $carreras, $horario, $interes, $medio, $fuente, $campana, $accion, $departamento, $ciudad, $barrio, $estados, $fecha_inicio, $fecha_fin);
 
         $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
 
