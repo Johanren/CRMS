@@ -89,6 +89,7 @@ $page  = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
 $mes = date('m');
 $anio = date('Y');
+$estadosPer = isset($_GET['estadosPer']) ? json_decode($_GET['estadosPer']) : [];
 
 switch ($tipo) {
     case "leads":
@@ -484,14 +485,29 @@ switch ($tipo) {
         break;
 
     case "CRMS_lead":
-        // 1. Obtener la data del modelo
-        $data = LeadsControllers::listarReporteCRMLeads($texto, $asesor, $carreras, $horario, $interes, $medio, $fuente, $campana, $accion, $departamento, $ciudad, $barrio, $estados, $fecha_inicio, $fecha_fin);
+
+        $data = LeadsControllers::listarReporteCRMLeads(
+            $texto,
+            $asesor,
+            $carreras,
+            $horario,
+            $interes,
+            $medio,
+            $fuente,
+            $campana,
+            $accion,
+            $departamento,
+            $ciudad,
+            $barrio,
+            $estados,
+            $fecha_inicio,
+            $fecha_fin
+        );
 
         if (empty($data)) {
             die("No hay datos para exportar.");
         }
 
-        // 2. Procesar la data para crear la matriz (Pivot)
         $programas = [];
         $horarios = [];
         $matriz = [];
@@ -509,22 +525,27 @@ switch ($tipo) {
         ksort($programas);
         ksort($horarios);
 
-        // 3. Crear el Spreadsheet
         $spreadsheet = new Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
 
-        // --- ENCABEZADOS ---
+        // =====================================================
+        // HOJA 1: RESUMEN GENERAL
+        // =====================================================
+
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('Resumen');
+
         $sheet->setCellValue("A1", "Programa / Horario");
+
         $col = 2;
         foreach ($horarios as $h) {
             $sheet->setCellValueByColumnAndRow($col, 1, $h);
             $col++;
         }
+
         $sheet->setCellValueByColumnAndRow($col, 1, "Total General");
         $colFinal = $col;
-
-        // --- CUERPO ---
         $fila = 2;
+
         $totalesColumnas = array_fill(2, count($horarios), 0);
         $granTotal = 0;
 
@@ -543,13 +564,11 @@ switch ($tipo) {
                 $col++;
             }
 
-            // Total al final de la fila
             $sheet->setCellValueByColumnAndRow($col, $fila, $totalFila);
             $granTotal += $totalFila;
             $fila++;
         }
 
-        // --- FILA DE TOTALES (PIE) ---
         $sheet->setCellValue("A{$fila}", "Total general");
         $col = 2;
         foreach ($totalesColumnas as $totalCol) {
@@ -558,22 +577,193 @@ switch ($tipo) {
         }
         $sheet->setCellValueByColumnAndRow($col, $fila, $granTotal);
 
-        // --- ESTILOS ---
         $lastColLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colFinal);
 
-        // Bordes y alineación
         $sheet->getStyle("A1:{$lastColLetter}{$fila}")->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
         $sheet->getStyle("A1:{$lastColLetter}1")->getFont()->setBold(true);
         $sheet->getStyle("A{$fila}:{$lastColLetter}{$fila}")->getFont()->setBold(true);
 
-        // Auto-ajustar columnas
         foreach (range('A', $lastColLetter) as $columnID) {
             $sheet->getColumnDimension($columnID)->setAutoSize(true);
         }
 
-        // --- DESCARGA ---
+
+        // =====================================================
+        // NUEVA HOJA INTERMEDIA (PROVIENE DE TU JAVASCRIPT)
+        // =====================================================
+        
+        $detalleLeads = LeadsControllers::listarLeads(
+            $texto, $asesor, $carreras, $horario, $interes, $medio, $fuente, 
+            $campana, $accion, $departamento, $ciudad, $barrio, $estados, 
+            $fecha_inicio, $fecha_fin, $tipo, $estadosPer
+        );
+
+        $sheetResumenFiltrado = $spreadsheet->createSheet();
+        $sheetResumenFiltrado->setTitle('Resumen Filtrado');
+
+        // Determinar las etiquetas dinámicas basándonos en si se filtró o no
+        // Evaluamos si las variables traen un valor específico o "TODOS"
+        $programaNombre = (!empty($carreras) && $carreras !== 'TODOS') ? $carreras : 'TODOS';
+        $jornadaNombre  = (!empty($horario) && $horario !== 'TODOS') ? $horario : 'TODOS';
+
+        $ordenBaseEstados = ["Nuevo Leads", "Prospecto", "Leads Activo", "Interesado", "En Decisión"];
+
+        // 1. Obtener los estados únicos que existen en el detalle de la data
+        $estadosData = [];
+        foreach ($detalleLeads as $row) {
+            $estTrim = isset($row['estado']) ? trim($row['estado']) : '';
+            if ($estTrim !== '') {
+                $estadosData[$estTrim] = $estTrim;
+            }
+        }
+
+        // 2. Clasificar y ordenar los estados tal cual lo hace tu JS
+        $estadosIntermedio = [];
+        foreach ($ordenBaseEstados as $est) {
+            if (isset($estadosData[$est])) {
+                $estadosIntermedio[] = $est;
+            }
+        }
+        foreach ($estadosData as $est) {
+            if (!in_array($est, $ordenBaseEstados)) {
+                $estadosIntermedio[] = $est;
+            }
+        }
+
+        // 3. Definir primera columna según la lógica combinada de tu JS
+        $primeraColumna = "Detalle";
+        if ($jornadaNombre !== "TODOS" && $programaNombre === "TODOS") {
+            $primeraColumna = "Carreras";
+        } elseif ($programaNombre !== "TODOS" && $jornadaNombre === "TODOS") {
+            $primeraColumna = "Jornadas";
+        }
+
+        // 4. Agrupar cantidades por fila (Carrera - Jornada) y Estado
+        $agrupadoIntermedio = [];
+        foreach ($detalleLeads as $row) {
+            $carreraDesc = $row['desc_pro'] ?? "SIN CARRERA";
+            $jornadaDesc = $row['horario'] ?? "SIN JORNADA";
+            $filaKey = $carreraDesc . " - " . $jornadaDesc;
+            $estadoKey = $row['estado'] ?? "SIN ESTADO";
+
+            if (!isset($agrupadoIntermedio[$filaKey])) {
+                $agrupadoIntermedio[$filaKey] = [];
+            }
+            if (!isset($agrupadoIntermedio[$filaKey][$estadoKey])) {
+                $agrupadoIntermedio[$filaKey][$estadoKey] = 0;
+            }
+            $agrupadoIntermedio[$filaKey][$estadoKey]++;
+        }
+
+        // 5. Renderizar Encabezados en la Excel
+        $sheetResumenFiltrado->setCellValue("A1", $primeraColumna);
+        $colIdx = 2;
+        foreach ($estadosIntermedio as $est) {
+            $sheetResumenFiltrado->setCellValueByColumnAndRow($colIdx, 1, $est);
+            $colIdx++;
+        }
+        $sheetResumenFiltrado->setCellValueByColumnAndRow($colIdx, 1, "Total");
+        $colFinalIntermedio = $colIdx;
+
+        // 6. Volcar los datos de las filas
+        $filaIdx = 2;
+        $totalGeneralIntermedio = 0;
+        $totalesColumnasIntermedio = array_fill(2, count($estadosIntermedio), 0);
+
+        foreach ($agrupadoIntermedio as $nombreFila => $estadosRow) {
+            $sheetResumenFiltrado->setCellValue("A{$filaIdx}", $nombreFila);
+            
+            $colIdx = 2;
+            $totalFilaIntermedio = 0;
+
+            foreach ($estadosIntermedio as $est) {
+                $cantidad = $estadosRow[$est] ?? 0;
+                $totalFilaIntermedio += $cantidad;
+                $totalesColumnasIntermedio[$colIdx] += $cantidad;
+
+                if ($cantidad > 0) {
+                    $sheetResumenFiltrado->setCellValueByColumnAndRow($colIdx, $filaIdx, $cantidad);
+                } else {
+                    $sheetResumenFiltrado->setCellValueByColumnAndRow($colIdx, $filaIdx, "-");
+                }
+                $colIdx++;
+            }
+
+            // Celda del total de la fila
+            $sheetResumenFiltrado->setCellValueByColumnAndRow($colIdx, $filaIdx, $totalFilaIntermedio);
+            $totalGeneralIntermedio += $totalFilaIntermedio;
+            $filaIdx++;
+        }
+
+        // 7. Fila de Totales Generales de la hoja intermedia
+        $sheetResumenFiltrado->setCellValue("A{$filaIdx}", "TOTALES");
+        $colIdx = 2;
+        foreach ($totalesColumnasIntermedio as $sumaCol) {
+            $sheetResumenFiltrado->setCellValueByColumnAndRow($colIdx, $filaIdx, $sumaCol);
+            $colIdx++;
+        }
+        $sheetResumenFiltrado->setCellValueByColumnAndRow($colIdx, $filaIdx, $totalGeneralIntermedio);
+
+        // Estilos de la Hoja Intermedia
+        $lastColLetterIntermedio = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colFinalIntermedio);
+        $sheetResumenFiltrado->getStyle("A1:{$lastColLetterIntermedio}{$filaIdx}")->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+        $sheetResumenFiltrado->getStyle("A1:{$lastColLetterIntermedio}1")->getFont()->setBold(true);
+        $sheetResumenFiltrado->getStyle("A{$filaIdx}:{$lastColLetterIntermedio}{$filaIdx}")->getFont()->setBold(true);
+
+        foreach (range('A', $lastColLetterIntermedio) as $columnID) {
+            $sheetResumenFiltrado->getColumnDimension($columnID)->setAutoSize(true);
+        }
+
+
+        // =====================================================
+        // HOJA 3: DETALLE LEADS (ANTERIOR HOJA 2)
+        // =====================================================
+
+        $sheetDetalle = $spreadsheet->createSheet();
+        $sheetDetalle->setTitle('Detalle Leads');
+
+        $encabezados = [
+            'Nombre', 'Carrera', 'Telefono', 'Estado', 'Asesor', 
+            'Fecha creación', 'Fecha ultima gestion', 'Fecha ultima asignacion', 'Gestion'
+        ];
+
+        $col = 1;
+        foreach ($encabezados as $encabezado) {
+            $sheetDetalle->setCellValueByColumnAndRow($col, 1, $encabezado);
+            $col++;
+        }
+
+        $filaDetalle = 2;
+        $hoy = date('Y-m-d');
+
+        foreach ($detalleLeads as $l) {
+            $gestion = (!empty($l['fec_ult_gest']) && $l['fec_ult_gest'] == $hoy) ? 'OK' : 'Pendiente';
+
+            $sheetDetalle->setCellValue("A{$filaDetalle}", trim(($l['nombres'] ?? '') . ' ' . ($l['apellidos'] ?? '')));
+            $sheetDetalle->setCellValue("B{$filaDetalle}", $l['desc_pro'] ?? '');
+            $sheetDetalle->setCellValue("C{$filaDetalle}", $l['telefono_principal'] ?? '');
+            $sheetDetalle->setCellValue("D{$filaDetalle}", $l['estado'] ?? '');
+            $sheetDetalle->setCellValue("E{$filaDetalle}", $l['nombreAsesor'] ?? '');
+            $sheetDetalle->setCellValue("F{$filaDetalle}", $l['fecha_creacion'] ?? '');
+            $sheetDetalle->setCellValue("G{$filaDetalle}", $l['fec_ult_gest'] ?? '');
+            $sheetDetalle->setCellValue("H{$filaDetalle}", $l['fec_ult_asig'] ?? '');
+            $sheetDetalle->setCellValue("I{$filaDetalle}", $gestion);
+
+            $filaDetalle++;
+        }
+
+        $sheetDetalle->getStyle("A1:I1")->getFont()->setBold(true);
+        $sheetDetalle->getStyle("A1:I" . ($filaDetalle - 1))->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+        
+        foreach (range('A', 'I') as $columnID) {
+            $sheetDetalle->getColumnDimension($columnID)->setAutoSize(true);
+        }
+
+        // Configuración final de salida
+        $spreadsheet->setActiveSheetIndex(0);
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment; filename="Reporte_CRMS_Leads.xlsx"');
+        header('Cache-Control: max-age=0');
         $writer = new Xlsx($spreadsheet);
         $writer->save("php://output");
         exit;

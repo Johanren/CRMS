@@ -16,15 +16,20 @@ class CarreraModels
 
     public static function agregarCarrera($data)
     {
-        $sql = "INSERT INTO programa (desc_pro, nlar_pro, val_pro, emp_pro) VALUES (?,?,?,?)";
+        // Usamos COALESCE para que si la tabla está vacía, empiece en 1
+        $sql = "INSERT INTO programa (cod_pro, desc_pro, nlar_pro, val_pro, emp_pro) 
+            VALUES ((SELECT COALESCE(MAX(cod_pro), 0) + 1 FROM programa p), ?, ?, ?, ?)";
+
         $conn = new Conexion();
         $conectar = $conn->conectar();
         $stmt = $conectar->prepare($sql);
 
+        // Nota: Ahora los parámetros se corren una posición porque agregamos cod_pro al inicio
         $stmt->bindParam(1, $data["nom_carr"]);
         $stmt->bindParam(2, $data["nom_carr_lar"]);
         $stmt->bindParam(3, $data["val_carr"]);
         $stmt->bindParam(4, $data["emp_carr"]);
+
         if ($stmt->execute()) {
             return "ok";
         }

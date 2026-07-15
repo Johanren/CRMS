@@ -309,8 +309,9 @@ $esModal = isset($_GET['modal']) && $_GET['modal'] == 1;
                         Guardar mensajes
                     </button>
                 </div>
-
+                
                 <div class="table-responsive mt-5">
+                    <p>Total de registros: <span id="totalRegistros"></span></p>
                     <table id="tabla_leads" class="table table-striped table-bordered w-100">
                         <thead>
                             <tr>
@@ -635,7 +636,11 @@ $esModal = isset($_GET['modal']) && $_GET['modal'] == 1;
                 zeroRecords: "No hay resultados"
             }
         });
+
+        var total = tablaLeads.rows().count();
+        $('#totalRegistros').text(total);
     }
+
 
     function limpiarTabla(msg) {
         if (tablaLeads) {

@@ -49,10 +49,10 @@ class UserModels
         $conectar = $conn->conectar();
 
         /* ================= VALIDAR USUARIO ================= */
-        $sqlCheck = "SELECT id_user FROM user WHERE email = ? OR codigo = ?";
+        $sqlCheck = "SELECT id_user FROM user WHERE email = ?";
         $stmtCheck = $conectar->prepare($sqlCheck);
         $stmtCheck->bindParam(1, $data['correoUser']);
-        $stmtCheck->bindParam(2, $data['codigoUser']);
+        //$stmtCheck->bindParam(2, $data['codigoUser']);
         $stmtCheck->execute();
 
         if ($stmtCheck->rowCount() > 0) {
